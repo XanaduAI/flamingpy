@@ -32,7 +32,7 @@ class EGraph(nx.Graph):
         if 'dims' not in self.graph:
             self.graph['dims'] = None
 
-    def adj(self):
+    def adj_mat(self):
         return nx.to_numpy_array(self)
 
     def color(self, coord):
@@ -267,7 +267,7 @@ class CVGraph:
         else:
             self.graph = EGraph(g)
         self._translator = translator
-        self._SCZ = SCZ_mat(self.graph.adj())
+        self._SCZ = SCZ_mat(self.graph.adj_mat())
         self._delta = delta
         self._N = self.graph.number_of_nodes()
 
