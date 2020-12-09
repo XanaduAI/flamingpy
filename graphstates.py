@@ -345,7 +345,9 @@ class CVGraph:
         cov_phase = self._SCZ @ cov_phase @ self._SCZ.T
         # Step 1d: extract p variances
         self._cov_p = cov_phase[self._N:, self._N:]
-        self._p_var = np.diag(self._cov_p)
+        self.var_p = np.diag(self._cov_p)
+        for i in range(self._N):
+            self.graph.nodes[self.ind_dict[i]]['var_p'] = self.var_p[i]
 
     # Note that only the getter function has been defined for the properties
     # below because I am treating these as private. This can be changed if we
@@ -361,10 +363,6 @@ class CVGraph:
         """array: the phase-space covariance matrix."""
         return self._cov_p
 
-    @property
-    def p_var(self):
-        """array: the p variances of the modes."""
-        return self._p_var
 
     @property
     def Z_probs(self):
