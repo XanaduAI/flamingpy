@@ -397,7 +397,7 @@ class CVGraph:
                   'been performed.')
             return
 
-    def sketch(self, label=False):
+    def sketch(self, label=None):
         """Sketch the CVRHG lattice. GKP states black, p states orange.
         Args:
             label (bool): if 'v', label the p variances; if 'e', the
@@ -417,28 +417,30 @@ class CVGraph:
         black_line = mlines.Line2D([], [], color='black', marker='.',
                                    markersize=14, label='GKP')
         ax.legend(handles=[orange_line, black_line])
-        if label:
-            if label == 'v':
-                results = self._p_var
-                title = "p Variances"
-            elif label == 'e':
-                results = self.Z_probs
-                title = "Phase Error Probabilities"
-            elif label == 'h':
-                results = self.hom_outcomes
-                title = "p-homodyne Outcomes"
-            elif label == 'b':
-                results = self.bit_values
-                title = "Bit Values"
-            if results is None:
+
+        title_dict = {'var_p': 'p Variances',
+                      'p_phase': 'Phase error probabilities',
+                      'hom_val': 'p-homodyne outcomes',
+                      'bit_val': 'Bit values'}
+
+        try:
+            title = title_dict[label]
+        except KeyError:
+            print('No such label permitted.')
+            return
+
+        ax.set_title(title_dict[label], fontsize=16, family='serif')
+        for node in self.graph:
+            try:
+                value = self.graph.nodes[node][label]
+            except KeyError:
+                print(title + ' have not yet been computed.')
                 return
-            else:
-                for i in range(self._N):
-                    x, z, y = idg.nodes[i]['pos']
-                    ax.set_title(title, fontsize=16, family='serif')
-                    ax.text(x, y, z, '{:.0g}'.format(results[i]),
-                            fontdict=fontdict, color='MediumBlue',
-                            backgroundcolor='w')
+            x, z, y = node
+            ax.text(x, y, z, '{:.0g}'.format(value),
+                    fontdict=fontdict, color='MediumBlue',
+                    backgroundcolor='w')
+
         plt.draw()
 
 
@@ -458,5 +460,6 @@ if __name__ == '__main__':
     G = CVGraph(RHG, swap_prob=0.1, delta=delta)
     G.eval_Z_probs()
     G.measure_p()
-    for label in {'v', 'e', 'h', 'b'}:
+    G.translate_outcomes()
+    for label in {'var_p', 'p_phase', 'hom_val', 'bit_val'}:
         G.sketch(label)
