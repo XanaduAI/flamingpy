@@ -314,6 +314,16 @@ class CVGraph:
         outcomes = mvn(mean=np.zeros(self._N), cov=self._cov_p)
         self._hom_outcomes = outcomes
         self._bit_values = self._translator(outcomes)
+    def translate_outcomes(self):
+        try:
+            cv_values = self.hom_outcomes
+            bit_values = self._translator(cv_values)
+            for i in range(len(bit_values)):
+                self.graph.nodes[self.ind_dict[i]]['bit_val'] = bit_values[i]
+        except Exception:
+            print('A homodyne measurement has not yet been performed. Please '
+                  'use measure_p() first.')
+            return
 
     def hybridize(self, swap_prob):
         """Populate nodes with p-squeezed states at random."""
