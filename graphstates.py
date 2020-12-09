@@ -305,15 +305,19 @@ class CVGraph:
 
     def eval_Z_probs(self):
         """Evaluate the probability of phase errors at each mode."""
-        self._Z_probs = p_err(self._p_var, translator=self._translator)
+        errs = p_err(self.var_p, translator=self._translator)
+        for i in range(len(errs)):
+            self.graph.nodes[self.ind_dict[i]]['p_phase'] = errs[i]
 
     def measure_p(self):
         """Conduct a p-homodyne measurement on the lattice."""
         # Randomly sample of a normal distribution centred at 0 with
         # covariances matrix given by cov_p.
         outcomes = mvn(mean=np.zeros(self._N), cov=self._cov_p)
-        self._hom_outcomes = outcomes
-        self._bit_values = self._translator(outcomes)
+        # bit_values = self.translator(outcomes)
+        for i in range(len(outcomes)):
+            self.graph.nodes[self.ind_dict[i]]['hom_val'] = outcomes[i]
+
     def translate_outcomes(self):
         try:
             cv_values = self.hom_outcomes
@@ -366,7 +370,8 @@ class CVGraph:
     def Z_probs(self):
         """array: the phase error probabilities of the modes."""
         try:
-            return self._Z_probs
+            phase_errs = [self.graph.nodes[node]['p_phase'] for node in self.graph]
+            return phase_errs
         except Exception:
             print('Z error probabilities have not yet been computed. Please '
                   'use eval_Z_probs() first.')
@@ -376,7 +381,8 @@ class CVGraph:
     def hom_outcomes(self):
         """array: the results of the p-homodyne measurement."""
         try:
-            return self._hom_outcomes
+            outcomes = [self.graph.nodes[node]['hom_val'] for node in self.graph]
+            return outcomes
         except Exception:
             print('A homodyne measurement has not yet been performed. Please '
                   'use measure_p() first.')
@@ -386,10 +392,11 @@ class CVGraph:
     def bit_values(self):
         """array: bit values associated with the p measurement."""
         try:
-            return self._bit_values
+            bit_values = [self.graph.nodes[node]['bit_val'] for node in self.graph]
+            return bit_values
         except Exception:
-            print('A homodyne measurement has not yet been performed. Please '
-                  'use measure_p() first.')
+            print('A homodyne measurement or a translation has not yet'
+                  'been performed.')
             return
 
     def sketch(self, label=False):
