@@ -275,9 +275,18 @@ class CVGraph:
             self.hybridize(swap_prob)
         else:
             self._p_inds = p_inds
-        if model == 'grn':
-            self.grn_model(delta)
+
         self._indexed_graph = self.graph.index()
+        idg = self._indexed_graph
+        self.ind_dict = {n: idg.nodes[n]['pos'] for n in idg.nodes}
+        for ind in self._p_inds:
+            self.graph.nodes[self.ind_dict[ind]]['type'] = 'p'
+
+        for ind in set(idg.nodes).difference(self._p_inds):
+            self.graph.nodes[self.ind_dict[ind]]['type'] = 'GKP'
+
+        if model == 'grn':
+                    self.grn_model(delta)
 
 
     def SCZ(self, heat_map=0):
