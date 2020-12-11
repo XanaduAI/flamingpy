@@ -175,7 +175,7 @@ def basic_translate(outcomes):
     # Bin width
     alpha = np.sqrt(np.pi)
     n = len(outcomes)
-    bit_values = np.zeros(n)
+    bit_values = np.zeros(n, dtype=int)
     for i in range(n):
         div = np.divmod(outcomes[i], alpha)
         if div[1] < alpha/2:
