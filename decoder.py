@@ -16,8 +16,28 @@
 import numpy as np
 import networkx as nx
 import itertools as it
+import matplotlib.pyplot as plt
 
 from graphstates import EGraph, CVGraph, RHG_graph
+
+
+def graph_drawer(G):
+    """Convenience function for drawing decoding and matching graphs."""
+    title = G.graph['title']
+    fig = plt.figure()
+    plt.title(title, family='serif', size=10)
+    weight_list = [edge[2]['weight'] for edge in G.edges.data()]
+    drawing = nx.draw_circular(G,
+                               edgelist=[],
+                               with_labels=True,
+                               node_color='k',
+                               font_size=8,
+                               font_color='w',
+                               font_family='serif')
+    r = nx.draw_networkx_edges(G,
+                               nx.circular_layout(G),
+                               edge_color=weight_list)
+    plt.colorbar(r)
 
 
 def RHG_syndrome_coords(dims, code='primal'):
