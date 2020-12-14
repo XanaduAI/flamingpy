@@ -97,12 +97,12 @@ def assign_weights(CVG):
     return
 
 
-def decoding_graph(G, code='primal'):
+def decoding_graph(G, code='primal', draw=False):
     """Create a decoding graph from the RHG lattice G. Note that one 
     must first compute the phase error probabilities, conduct a 
-    homodyne measurement, and translate the outcomes on G."""
+    homodyne |measurement, and translate the outcomes on G."""
 
-    G_dec = nx.Graph()
+    G_dec = nx.Graph(title='Decoding Graph')
     stabes = RHG_stabilizers(G, code)
     for stabe in stabes:
         if parity(stabe) == 1:
@@ -112,7 +112,10 @@ def decoding_graph(G, code='primal'):
         if common_vertex:
             weight = G.graph.nodes[common_vertex.pop()]['weight']
             G_dec.add_edge(stabe1, stabe2, weight=weight)
-    return G_dec
+    G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute='stabilizer')
+    if draw:
+        graph_drawer(G_relabelled)
+    return G_relabelled
 
 
 if __name__ == '__main__':
