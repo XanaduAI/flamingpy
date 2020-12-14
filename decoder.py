@@ -15,6 +15,7 @@
 
 import numpy as np
 import networkx as nx
+import networkx.algorithms.shortest_paths as sp
 import itertools as it
 import matplotlib.pyplot as plt
 
@@ -118,6 +119,24 @@ def decoding_graph(G, code='primal', draw=False):
     return G_relabelled
 
 
+def matching_graph(G, alg='dijkstra', draw=False):
+    """Create a matching graph from the decoding graph G according to
+    algorithm alg. If draw, draw the matching graph with a color bar."""
+
+    if alg == 'dijkstra':
+        d_alg = sp.all_pairs_dijkstra_path_length
+    path_lengths = d_alg(G)
+    G_match = nx.Graph(title='Matching Graph')
+    for tup in path_lengths:
+        for stabe in tup[1]:
+            if tup[0] != stabe:
+                w = tup[1][stabe]
+                G_match.add_edge(tup[0], stabe, weight=w)
+    if draw:
+        graph_drawer(G_match)
+    return G_match
+
+
 if __name__ == '__main__':
     RHG = RHG_graph(2)
 
@@ -131,4 +150,5 @@ if __name__ == '__main__':
     assign_weights(G)
 
     G.sketch('bit_val')
-    G_dec = decoding_graph(G)
+    G_dec = decoding_graph(G, draw=True)
+    G_match = matching_graph(G_dec, draw=True)
