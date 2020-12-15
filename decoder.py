@@ -133,16 +133,39 @@ def decoding_graph(G, code='primal', draw=False):
 
     G_dec = nx.Graph(title='Decoding Graph')
     stabes = RHG_stabilizers(G, code)
-    for stabe in stabes:
-        if parity(stabe) == 1:
-            G_dec.add_node(stabe)
-    for (stabe1, stabe2) in it.combinations(G_dec, 2):
-        common_vertex = set(stabe1.graph.nodes).intersection(stabe2.graph.nodes)
+    cubes = [RHGCube(stabe) for stabe in stabes]
+    G_dec.add_nodes_from(cubes)
+    for (cube1, cube2) in it.combinations(G_dec, 2):
+        common_vertex = set(cube1.coords()).intersection(cube2.coords())
         if common_vertex:
             weight = G.graph.nodes[common_vertex.pop()]['weight']
-            G_dec.add_edge(stabe1, stabe2, weight=weight)
+            G_dec.add_edge(cube1, cube2, weight=weight)
     G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute='stabilizer')
+    mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
     if draw:
+        shape = 2 * np.array(G.graph.graph['dims'])
+        fig = plt.figure(figsize=(np.sum(shape)+2, np.sum(shape)+2))
+        ax = fig.gca(projection='3d')
+        # ax = G.sketch()
+        # ax = G.graph.draw(0, 0)
+        voxels = np.zeros(shape)
+        colors = np.zeros(shape, dtype=object)
+        for cube in cubes:
+            xmin, xmed, xmax = cube.xlims()
+            ymin, ymed, ymax = cube.ylims()
+            zmin, zmed, zmax = cube.zlims()
+            voxels[xmin:xmax, ymin:ymax, zmin:zmax] = True
+            if cube.parity() == 0:
+                colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0050'
+            else:
+                colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000050'
+            if cube in mapping:
+                ax.text(xmed, ymed, zmed, mapping[cube], fontsize=30)
+        ax.voxels(voxels, facecolors=colors)
+        from matplotlib.patches import Patch
+        legend_elements = [Patch(facecolor='#00FF0050', label='+1 parity'),
+                           Patch(facecolor='#FF000050', label='-1 parity')]
+        ax.legend(handles=legend_elements, fontsize=30)
         graph_drawer(G_relabelled)
     return G_relabelled
 
