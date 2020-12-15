@@ -119,6 +119,8 @@ def assign_weights(CVG):
             print('Z error probabilities have not yet been computed. Please '
                   'use eval_Z_probs() first.')
             return
+        if err_prob == 0:
+            err_prob = 1e-10
         weight_dict = {0: err_prob, 1: err_prob, 2: 1/4, 3: 1/3, 4: 2/5}
         G.nodes[node]['weight'] = -np.log(weight_dict[p_count])
     return
