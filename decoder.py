@@ -179,10 +179,13 @@ def matching_graph(G, alg='dijkstra', draw=False):
     path_lengths = d_alg(G)
     G_match = nx.Graph(title='Matching Graph')
     for tup in path_lengths:
-        for stabe in tup[1]:
-            if tup[0] != stabe:
-                w = tup[1][stabe]
-                G_match.add_edge(tup[0], stabe, weight=w)
+        for cube in tup[1]:
+            parity1 = G.nodes[cube]['stabilizer'].parity()
+            parity2 = G.nodes[tup[0]]['stabilizer'].parity()
+            if parity1 and parity2:
+                if tup[0] != cube:
+                    w = tup[1][cube]
+                    G_match.add_edge(tup[0], cube, weight=w)
     if draw:
         graph_drawer(G_match)
     return G_match
