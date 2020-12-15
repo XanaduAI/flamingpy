@@ -88,58 +88,6 @@ class EGraph(nx.Graph):
         return indexed_graph
 
 
-def RHG_graph(dims, pol=0):
-    '''Return an EGraph of the RHG lattice.'''
-    # Dimensions of the lattice.
-    if np.size(dims) == 1:
-        dims = (dims, dims, dims)
-    nx, ny, nz = dims
-
-    lattice = EGraph(dims=dims)
-    # lattice.graph['dims'] = dims
-    # Coordinates of red qubits in even and odd vertical slices.
-    even_red = [(2*i+1, 2*j+1, 2*k) for (i, j, k) in
-                it.product(range(nx), range(ny), range(nz+1))]
-    odd_red = [(2*i, 2*j, 2*k+1) for (i, j, k) in
-               it.product(range(nx+1), range(ny+1), range(nz))]
-    all_red = set(even_red + odd_red)
-
-    # Coordinates of green qubits in even and odd horizontal slices.
-    even_green = [(2*i+1, 2*j, k) for (i, j, k) in
-                  it.product(range(nx), range(ny+1), range(2*nz+1))]
-    odd_green = [(2*i, 2*j+1, k) for (i, j, k) in
-                 it.product(range(nx+1), range(ny), range(2*nz+1))]
-    all_green = set(even_green + odd_green)
-
-    # Coordinates of all potential neighbours of red vertices.
-    def red_neighbours(p):
-        right = (p[0]+1, p[1], p[2])
-        top = (p[0], p[1]+1, p[2])
-        left = (p[0]-1, p[1], p[2])
-        bottom = (p[0], p[1]-1, p[2])
-        return [bottom, left, top, right]
-
-    def green_neighbours(p):
-        return {(p[0], p[1], p[2]-1), (p[0], p[1], p[2]+1)}
-
-    for point in all_red:
-        for i in range(4):
-            polarity = (-1) ** (pol * (point[2] + i))
-            neighbour = red_neighbours(point)[i]
-            if neighbour in all_green:
-                lattice.add_edge(point, neighbour, weight=polarity)
-        lattice.nodes[point]['color'] = 'red'
-
-    for point in all_green:
-        polarity = (-1) ** (pol * (point[1] + 1))
-        for neighbour in green_neighbours(point):
-            if neighbour in all_green:
-                lattice.add_edge(point, neighbour, weight=polarity)
-        lattice.nodes[point]['color'] = 'green'
-
-    return lattice
-
-
 def SCZ_mat(adj):
     """Return a symplectic matrix corresponding to CZ gate application.
 
@@ -286,7 +234,6 @@ class CVGraph:
 
         if model == 'grn':
                     self.grn_model(delta)
-
 
     def SCZ(self, heat_map=0):
         """Return the symplectic matrix associated with CZ application.
@@ -446,21 +393,4 @@ class CVGraph:
 
 
 if __name__ == '__main__':
-    RHG = RHG_graph(1)
-    RHG.draw(label=1)
-    # p states at random locations.
-    # Test dim X dim X dim lattice, with p% p-squeezed states randomly located,
-    # and variance of of delta.
-    dim = 2
-    delta = 0.1
-    # Number of qubits in the lattice.
-    N = RHG.number_of_nodes()
-    # Percent p-squeezed states.
-    p = 0.3
-    # p states at random locations.
-    G = CVGraph(RHG, swap_prob=0.1, delta=delta)
-    G.eval_Z_probs()
-    G.measure_p()
-    G.translate_outcomes()
-    for label in {'var_p', 'p_phase', 'hom_val', 'bit_val'}:
-        G.sketch(label)
+    pass

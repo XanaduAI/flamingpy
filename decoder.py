@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'''The decoder module'''
+"""The decoder module."""
 
 import numpy as np
 import networkx as nx
@@ -19,7 +19,8 @@ import networkx.algorithms.shortest_paths as sp
 import itertools as it
 import matplotlib.pyplot as plt
 
-from graphstates import EGraph, CVGraph, RHG_graph
+from graphstates import EGraph, CVGraph, basic_translate
+import RHG
 
 
 def graph_drawer(G):
@@ -39,70 +40,6 @@ def graph_drawer(G):
                                nx.circular_layout(G),
                                edge_color=weight_list)
     plt.colorbar(r)
-
-
-def RHG_syndrome_coords(dims, code='primal'):
-    """Return a list of lists of coordinates associated to six-body
-    X stabilizer elements of the RHG lattice."""
-
-    nx, ny, nz = dims
-    combs = it.product(range(nx), range(ny), range(nz))
-    if code == 'primal':
-        all_syndrome6 = [[(2*i+1, 2*j+1, 2*k),
-                          (2*i+1, 2*j, 2*k+1),
-                          (2*i, 2*j+1, 2*k+1),
-                          (2*i+1, 2*j+1, 2*k+2),
-                          (2*i+1, 2*j+2, 2*k+1),
-                          (2*i+2, 2*j+1, 2*k+1)
-                          ] for (i, j, k) in combs]
-    return all_syndrome6
-
-
-def RHG_stabilizers(G, code='primal'):
-    """Return a list of subgraphs induced by the qubits with cordinates
-    from RHG_syndrome_coords."""
-
-    syn_list = RHG_syndrome_coords(G.graph.graph['dims'], code)
-    cube_list = []
-    for l in syn_list:
-        cube_graph = G.graph.subgraph(l)
-        cube_list.append(CVGraph(cube_graph))
-    return cube_list
-
-
-class RHGCube:
-    """A class for representing an RHG latice cube. Initialized by supplying
-    a CVGraph object corresponding to the subgraph induced by the six facial
-    nodes of the cube."""
-    def __init__(self, G):
-        self.cvgraph = G
-
-    def parity(self):
-        G = self.cvgraph
-        bit_vals = [G.graph.nodes[node]['bit_val'] for node in G.graph]
-        return int(np.sum(bit_vals) % 2)
-
-    def coords(self):
-        return [tup for tup in self.cvgraph.graph.nodes]
-
-    def xlims(self):
-        xs = [tup[0] for tup in self.coords()]
-        xmin, xmax = np.min(xs), np.max(xs)
-        xmed = (xmin + xmax) / 2
-        return (xmin, xmed, xmax)
-
-    def ylims(self):
-        ys = [tup[1] for tup in self.coords()]
-        ymin, ymax = np.min(ys), np.max(ys)
-        ymed = (ymin + ymax) / 2
-        return (ymin, ymed, ymax)
-
-    def zlims(self):
-        zs = [tup[2] for tup in self.coords()]
-        zmin, zmax = np.min(zs), np.max(zs)
-        zmed = (zmin + zmax) / 2
-        return (zmin, zmed, zmax)
-
 
 def assign_weights(CVG):
     """Assign weights to qubits in a hybrid p-squeezed/GKP CV graph 
@@ -137,8 +74,7 @@ def decoding_graph(G, code='primal', draw=False, drawing_opts={}):
     drawing_opts = dict(draw_dict, **drawing_opts)
 
     G_dec = nx.Graph(title='Decoding Graph')
-    stabes = RHG_stabilizers(G, code)
-    cubes = [RHGCube(stabe) for stabe in stabes]
+    cubes = RHG.RHG_stabilizers(G, code)
     G_dec.add_nodes_from(cubes)
     for (cube1, cube2) in it.combinations(G_dec, 2):
         common_vertex = set(cube1.coords()).intersection(cube2.coords())
@@ -204,18 +140,17 @@ def matching_graph(G, alg='dijkstra', draw=False):
 
 
 if __name__ == '__main__':
-    RHG = RHG_graph(2)
+    RHG_lattice = RHG.RHG_graph(2, pol=1)
 
     swap_prob = 0.2
-    delta = 0.1
+    delta = 0.01
 
-    G = CVGraph(RHG, swap_prob=swap_prob, delta=delta)
+    G = CVGraph(RHG_lattice, swap_prob=swap_prob, delta=delta)
     G.eval_Z_probs()
     G.measure_p()
     G.translate_outcomes()
     assign_weights(G)
 
-    G.sketch('bit_val')
-    dw = {'show_nodes': True, 'label_nodes': 'bit_val', 'label_cubes': True}
+    dw = {'show_nodes': True, 'label_nodes': False, 'label_cubes': False}
     G_dec = decoding_graph(G, draw=True, drawing_opts=dw)
     G_match = matching_graph(G_dec, draw=True)
