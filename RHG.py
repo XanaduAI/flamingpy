@@ -135,6 +135,8 @@ class RHGCube:
         zmed = (zmin + zmax) / 2
         return (zmin, zmed, zmax)
 
+
+if __name__ == '__main__':
     RHG = RHG_graph(1)
     RHG.draw(label=1)
     # p states at random locations.
@@ -158,7 +160,3 @@ class RHGCube:
             # 'bit_val'
             }:
         G.sketch(label)
-
-
-if __name__ == '__main__':
-    pass
