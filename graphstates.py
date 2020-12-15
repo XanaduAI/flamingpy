@@ -20,17 +20,15 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from scipy.special import erf
 
-# Style for figures
-fontdict = {'fontsize': 14, 'family': 'serif'}
-
 
 class EGraph(nx.Graph):
     '''An enhanced graph class based on networkx.Graph.'''
 
-    def __init__(self):
-        nx.Graph.__init__(self)
-        if 'dims' not in self.graph:
-            self.graph['dims'] = None
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if 'dims' in self.graph:
+            tot = np.sum(self.graph['dims'])
+            self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
 
     def adj_mat(self):
         return nx.to_numpy_array(self)
@@ -65,7 +63,7 @@ class EGraph(nx.Graph):
             ax.scatter(x, y, z, s=70, c=color*node_color+(1-color)*'k')
             indices = {c: n for (n, c) in enumerate(self.nodes)}
             if label:
-                ax.text(x, y, z, str(indices[point]), fontdict=fontdict,
+                ax.text(x, y, z, str(indices[point]), fontdict=self.font_props,
                         color='MediumBlue', backgroundcolor='w')
         # Plotting edges.
         for edge in self.edges:
@@ -73,12 +71,13 @@ class EGraph(nx.Graph):
             x2, z2, y2 = edge[1]
             plt.plot([x1, x2], [y1, y2], [z1, z2], c='grey')
 
+        ax.tick_params(labelsize=self.font_props['size'])
         plt.xticks(range(0, 2*nx + 1))
         plt.yticks(range(0, 2*nz + 1))
         ax.set_zticks(range(0, 2*ny + 1))
-        ax.set_xlabel('x', fontdict=fontdict)
-        ax.set_ylabel('z', fontdict=fontdict)
-        ax.set_zlabel('y', fontdict=fontdict)
+        ax.set_xlabel('x', fontdict=self.font_props)
+        ax.set_ylabel('z', fontdict=self.font_props)
+        ax.set_zlabel('y', fontdict=self.font_props)
         plt.rcParams['grid.color'] = "lightgray"
         plt.tight_layout(pad=3)
         plt.draw()
@@ -96,8 +95,8 @@ def RHG_graph(dims, pol=0):
         dims = (dims, dims, dims)
     nx, ny, nz = dims
 
-    lattice = EGraph()
-    lattice.graph['dims'] = dims
+    lattice = EGraph(dims=dims)
+    # lattice.graph['dims'] = dims
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [(2*i+1, 2*j+1, 2*k) for (i, j, k) in
                 it.product(range(nx), range(ny), range(nz+1))]
@@ -175,7 +174,7 @@ def basic_translate(outcomes):
     # Bin width
     alpha = np.sqrt(np.pi)
     n = len(outcomes)
-    bit_values = np.zeros(n)
+    bit_values = np.zeros(n, dtype=int)
     for i in range(n):
         div = np.divmod(outcomes[i], alpha)
         if div[1] < alpha/2:
@@ -406,6 +405,7 @@ class CVGraph:
         Returns:
             None
         """
+        font_props = self.graph.font_props
         idg = self._indexed_graph
         p_coords = [idg.nodes[ind]['pos'] for ind in self._p_inds]
         ax = self.graph.draw(0, 0)
@@ -416,32 +416,33 @@ class CVGraph:
                                     markersize=14, label='p')
         black_line = mlines.Line2D([], [], color='black', marker='.',
                                    markersize=14, label='GKP')
-        ax.legend(handles=[orange_line, black_line])
+        ax.legend(handles=[orange_line, black_line], prop=font_props)
 
         title_dict = {'var_p': 'p Variances',
                       'p_phase': 'Phase error probabilities',
                       'hom_val': 'p-homodyne outcomes',
                       'bit_val': 'Bit values'}
 
-        try:
-            title = title_dict[label]
-        except KeyError:
-            print('No such label permitted.')
-            return
-
-        ax.set_title(title_dict[label], fontsize=16, family='serif')
-        for node in self.graph:
+        if label:
             try:
-                value = self.graph.nodes[node][label]
+                title = title_dict[label]
             except KeyError:
-                print(title + ' have not yet been computed.')
-                return
-            x, z, y = node
-            ax.text(x, y, z, '{:.0g}'.format(value),
-                    fontdict=fontdict, color='MediumBlue',
-                    backgroundcolor='w')
+                print('No such label permitted.')
+
+            ax.set_title(title_dict[label], fontdict=font_props)
+            for node in self.graph:
+                try:
+                    value = self.graph.nodes[node][label]
+                except KeyError:
+                    print(title + ' have not yet been computed.')
+                    return
+                x, z, y = node
+                ax.text(x, y, z, '{:.0g}'.format(value),
+                        fontdict=font_props, color='MediumBlue',
+                        backgroundcolor='w')
 
         plt.draw()
+        return ax
 
 
 if __name__ == '__main__':
