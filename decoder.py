@@ -32,7 +32,7 @@ def graph_drawer(G):
                                edgelist=[],
                                with_labels=True,
                                node_color='k',
-                               font_size=8,
+                               font_size=7,
                                font_color='w',
                                font_family='serif')
     r = nx.draw_networkx_edges(G,
@@ -126,10 +126,15 @@ def assign_weights(CVG):
     return
 
 
-def decoding_graph(G, code='primal', draw=False):
+def decoding_graph(G, code='primal', draw=False, drawing_opts={}):
     """Create a decoding graph from the RHG lattice G. Note that one 
     must first compute the phase error probabilities, conduct a 
     homodyne |measurement, and translate the outcomes on G."""
+
+    draw_dict = {'show_nodes': False, 'label_nodes': None, 'label_cubes': True}
+    # Combine default dictionary with supplied dictionary, duplicates
+    # favor supplied dictionary.
+    drawing_opts = dict(draw_dict, **drawing_opts)
 
     G_dec = nx.Graph(title='Decoding Graph')
     stabes = RHG_stabilizers(G, code)
@@ -144,9 +149,13 @@ def decoding_graph(G, code='primal', draw=False):
     mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
     if draw:
         shape = 2 * np.array(G.graph.graph['dims'])
-        fig = plt.figure(figsize=(np.sum(shape)+2, np.sum(shape)+2))
-        ax = fig.gca(projection='3d')
-        # ax = G.sketch()
+        if drawing_opts['show_nodes']:
+            ax = G.sketch(drawing_opts['label_nodes'])
+            leg = ax.get_legend()
+        else:
+            fig = plt.figure(figsize=(np.sum(shape)+2, np.sum(shape)+2))
+            ax = fig.gca(projection='3d')
+            leg = None
         # ax = G.graph.draw(0, 0)
         voxels = np.zeros(shape)
         colors = np.zeros(shape, dtype=object)
@@ -165,7 +174,10 @@ def decoding_graph(G, code='primal', draw=False):
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='#00FF0050', label='+1 parity'),
                            Patch(facecolor='#FF000050', label='-1 parity')]
-        ax.legend(handles=legend_elements, fontsize=30)
+        font_props = G.graph.font_props
+        ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
+        if leg:
+            ax.add_artist(leg)
         graph_drawer(G_relabelled)
     return G_relabelled
 
@@ -204,5 +216,6 @@ if __name__ == '__main__':
     assign_weights(G)
 
     G.sketch('bit_val')
-    G_dec = decoding_graph(G, draw=True)
+    dw = {'show_nodes': True, 'label_nodes': 'bit_val', 'label_cubes': True}
+    G_dec = decoding_graph(G, draw=True, drawing_opts=dw)
     G_match = matching_graph(G_dec, draw=True)
