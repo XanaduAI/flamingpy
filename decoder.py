@@ -70,12 +70,38 @@ def RHG_stabilizers(G, code='primal'):
     return cube_list
 
 
-def parity(cube):
-    """Obtain the parity of the bit values following a measurement of
-    the a six-body X stabilizer element represented in cube."""
+class RHGCube:
+    """A class for representing an RHG latice cube. Initialized by supplying
+    a CVGraph object corresponding to the subgraph induced by the six facial
+    nodes of the cube."""
+    def __init__(self, G):
+        self.cvgraph = G
 
-    bit_vals = [cube.graph.nodes[node]['bit_val'] for node in cube.graph]
-    return np.sum(bit_vals) % 2
+    def parity(self):
+        G = self.cvgraph
+        bit_vals = [G.graph.nodes[node]['bit_val'] for node in G.graph]
+        return int(np.sum(bit_vals) % 2)
+
+    def coords(self):
+        return [tup for tup in self.cvgraph.graph.nodes]
+
+    def xlims(self):
+        xs = [tup[0] for tup in self.coords()]
+        xmin, xmax = np.min(xs), np.max(xs)
+        xmed = (xmin + xmax) / 2
+        return (xmin, xmed, xmax)
+
+    def ylims(self):
+        ys = [tup[1] for tup in self.coords()]
+        ymin, ymax = np.min(ys), np.max(ys)
+        ymed = (ymin + ymax) / 2
+        return (ymin, ymed, ymax)
+
+    def zlims(self):
+        zs = [tup[2] for tup in self.coords()]
+        zmin, zmax = np.min(zs), np.max(zs)
+        zmed = (zmin + zmax) / 2
+        return (zmin, zmed, zmax)
 
 
 def assign_weights(CVG):
