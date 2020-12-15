@@ -27,10 +27,11 @@ fontdict = {'fontsize': 14, 'family': 'serif'}
 class EGraph(nx.Graph):
     '''An enhanced graph class based on networkx.Graph.'''
 
-    def __init__(self):
-        nx.Graph.__init__(self)
-        if 'dims' not in self.graph:
-            self.graph['dims'] = None
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if 'dims' in self.graph:
+            tot = np.sum(self.graph['dims'])
+            self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
 
     def adj_mat(self):
         return nx.to_numpy_array(self)
@@ -96,8 +97,8 @@ def RHG_graph(dims, pol=0):
         dims = (dims, dims, dims)
     nx, ny, nz = dims
 
-    lattice = EGraph()
-    lattice.graph['dims'] = dims
+    lattice = EGraph(dims=dims)
+    # lattice.graph['dims'] = dims
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [(2*i+1, 2*j+1, 2*k) for (i, j, k) in
                 it.product(range(nx), range(ny), range(nz+1))]
