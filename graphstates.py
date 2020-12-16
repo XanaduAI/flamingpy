@@ -31,7 +31,7 @@ class EGraph(nx.Graph):
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
 
     def adj_mat(self):
-        return nx.to_numpy_array(self)
+        return nx.to_numpy_array(self, nodelist=sorted(self.nodes))
 
     def color(self, coord):
         return self.nodes[coord]['color']
