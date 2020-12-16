@@ -88,6 +88,24 @@ def RHG_syndrome_coords(dims, code='primal'):
     return all_syndrome6
 
 
+def RHG_boundary_coords(dims, code='primal'):
+    """Obtain the coordinates of the vertices at the centres of primal
+    cubes on the boundary of the RHG lattice with dimension dims."""
+    if code == 'primal':
+        odds = [range(1, 2*dims[0], 2),
+                range(1, 2*dims[1], 2),
+                range(1, 2*dims[2], 2)]
+        combs = []
+        for i, j in ((0,1), (0,2), (1,2)):
+            for tup in it.product(odds[i], odds[j]):
+                ind = {0, 1, 2}.difference({i, j}).pop()
+                l = list(tup)
+                m = list(tup)
+                l.insert(ind, 0)
+                m.insert(ind, 2 * dims[ind])
+                combs.append(tuple(l))
+                combs.append(tuple(m))
+    return combs
 def RHG_stabilizers(G, code='primal'):
     """Return a list of subgraphs induced by the qubits with cordinates
     from RHG_syndrome_coords."""
