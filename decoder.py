@@ -185,25 +185,59 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
         graph_drawer(G_relabelled)
     return G_relabelled
 
+def matching_graph(G, bc='periodic', alg='dijkstra', draw=False):
+    """Create a matching graph from the decoding graph G.
 
-def matching_graph(G, alg='dijkstra', draw=False):
-    """Create a matching graph from the decoding graph G according to
-    algorithm alg. If draw, draw the matching graph with a color bar."""
+    Create graph according to algorithm alg. If draw, draw the matching
+    graph with a color bar."""
 
-    if alg == 'dijkstra':
-        d_alg = sp.all_pairs_dijkstra_path_length
-    path_lengths = d_alg(G)
+    # An empty matching graph.
     G_match = nx.Graph(title='Matching Graph')
-    for tup in path_lengths:
-        for cube in tup[1]:
-            parity1 = G.nodes[cube]['stabilizer'].parity()
-            parity2 = G.nodes[tup[0]]['stabilizer'].parity()
-            if parity1 and parity2:
-                if tup[0] != cube:
-                    w = tup[1][cube]
-                    G_match.add_edge(tup[0], cube, weight=w)
+
+    # Get the indices of the odd parity cubes from teh decoding graph.
+    odd_parity_inds = G.graph['odd_cubes']
+
+    # Give shorter names to the Dijkstra shortest path algorithms.
+    if alg == 'dijkstra':
+        alg1 = sp.dijkstra_path_length
+        alg2 = sp.multi_source_dijkstra
+
+    # Find the shortest paths between odd-parity cubes.
+    for (cube1, cube2) in it.combinations(odd_parity_inds, 2):
+        path_length = alg1(G, cube1, cube2)
+        # Add edge to the matching graph between the cubes, with weight
+        # equal to the length of the shortest path.
+        G_match.add_edge(cube1, cube2, weight=path_length)
+
+    # For non-periodic boundary conditions, include boundary vertices.
+    if bc != 'periodic':
+        # Get the indics of the boundary vertices from the decoding 
+        # graph.
+        boundary_inds = G.graph['boundary_points']
+        # Keep track of the boundary points that have been connected
+        # to a cube.
+        used_boundary_points = []
+        for cube in odd_parity_inds:
+            # Find the shortest path from the any of the boundary
+            # vertices to the cube. Note that we might wish to change
+            # the sources to unused boundary vertices so that each
+            # cube is connected to a unique vertex.
+            point_paths = alg2(G, sources=boundary_inds, target=cube)
+            point = point_paths[1][0]
+            # Add edge to the matching graph between the cube and
+            # the boundary vertex, with weight equal to the length
+            # of the shortest path.
+            G_match.add_edge(cube, point, weight=point_paths[0])
+            # ADd to the list of used boundary vertices.
+            used_boundary_points.append(point)
+
+        # Add edge with weight 0 between any two boundary points.
+        for (point1, point2) in it.combinations(used_boundary_points, 2):
+            G_match.add_edge(point1, point2, weight=0)
+
     if draw:
         graph_drawer(G_match)
+
     return G_match
 
 
@@ -217,8 +251,8 @@ if __name__ == '__main__':
     G.eval_Z_probs()
     G.measure_p()
     G.translate_outcomes()
-    assign_weights(G)
+    assign_weights(G, method='blueprint')
 
     dw = {'show_nodes': True, 'label_nodes': False, 'label_cubes': False}
-    G_dec = decoding_graph(G, draw=True, drawing_opts=dw)
-    G_match = matching_graph(G_dec, draw=True)
+    G_dec = decoding_graph(G, bc='non-periodic', draw=True, drawing_opts=dw)
+    G_match = matching_graph(G_dec, bc='non-periodic', draw=True)
