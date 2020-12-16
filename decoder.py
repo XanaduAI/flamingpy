@@ -41,25 +41,46 @@ def graph_drawer(G):
                                edge_color=weight_list)
     plt.colorbar(r)
 
-def assign_weights(CVG):
-    """Assign weights to qubits in a hybrid p-squeezed/GKP CV graph 
-    state per the heuristic procedure in the blueprint."""
+def assign_weights(CVG, method='naive', code='primal'):
+    """Assign weights to qubits in a hybrid CV graph state.
+
+    By default, use unity weights; otherwise use the heristic weights
+    from the blueprint."""
 
     G = CVG.graph
-    for node in G:
-        neighbors = G.subgraph(G[node]).nodes
-        p_list = [neighbors[v]['type'] for v in neighbors if neighbors[v]['type'] == 'p']
-        p_count = len(p_list)
-        try:
-            err_prob = G.nodes[node]['p_phase']
-        except Exception:
-            print('Z error probabilities have not yet been computed. Please '
-                  'use eval_Z_probs() first.')
-            return
-        if err_prob == 0:
-            err_prob = 1e-10
-        weight_dict = {0: err_prob, 1: err_prob, 2: 1/4, 3: 1/3, 4: 2/5}
-        G.nodes[node]['weight'] = -np.log(weight_dict[p_count])
+    dims = G.graph['dims']
+    # Get and denest the syndrome coordinates.
+    syndrome_coords = [a for b in RHG.RHG_syndrome_coords(dims, code) for a in b]
+    error_printed = False
+    for node in syndrome_coords:
+        # Naive weight assignment, unity weights.
+        if method=='naive':
+            G.nodes[node]['weight'] = 1
+        # Blueprint weight assignment dependent on type of neighbour.
+        if method=='blueprint':
+            neighbors = G.subgraph(G[node]).nodes
+            # List and number of p-squeezed states in neighborhood of node.
+            p_list = [neighbors[v]['type'] for v in neighbors if neighbors[v]['type'] == 'p']
+            p_count = len(p_list)
+            # If phase error information available, use it; otherwise set
+            # error probability to 0 and print a message.
+            if 'p_phase' in G.nodes[node]:
+                err_prob = G.nodes[node]['p_phase']
+            else:
+                err_prob = 0
+                if not error_printed:
+                    print('Z error probabilities have not yet been computed. Please '
+                          'use eval_Z_probs() first. Setting error probability in 0 '
+                          'and 1 swap-out case to 0. \n')
+                    error_printed = True
+            # Allow for taking log of 0.
+            if err_prob == 0:
+                err_prob = 1e-10
+            # Dictionary of the form number of swapouts: error probability.
+            weight_dict = {0: err_prob, 1: err_prob, 2: 1/4, 3: 1/3, 4: 2/5}
+            # Multiplicative factor.
+            mult = 100
+            G.nodes[node]['weight'] = - mult * np.log(weight_dict[p_count])
     return
 
 
