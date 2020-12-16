@@ -84,57 +84,104 @@ def assign_weights(CVG, method='naive', code='primal'):
     return
 
 
-def decoding_graph(G, code='primal', draw=False, drawing_opts={}):
-    """Create a decoding graph from the RHG lattice G. Note that one 
-    must first compute the phase error probabilities, conduct a 
-    homodyne |measurement, and translate the outcomes on G."""
+def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={}):
+    """Create a decoding graph from the RHG lattice G. 
 
-    draw_dict = {'show_nodes': False, 'label_nodes': None, 'label_cubes': True}
-    # Combine default dictionary with supplied dictionary, duplicates
-    # favor supplied dictionary.
-    drawing_opts = dict(draw_dict, **drawing_opts)
+    Note that one ought first compute the phase error probabilities, 
+    conduct a homodyne measurement, and translate the outcomes on G."""
 
+    # An empty decoding graph.
     G_dec = nx.Graph(title='Decoding Graph')
     cubes = RHG.RHG_stabilizers(G, code)
     G_dec.add_nodes_from(cubes)
+
+    # For stabilizer cubes sharing a vertex, define an edge between
+    # them with weight equal to the weight assigned to the vertex.
     for (cube1, cube2) in it.combinations(G_dec, 2):
         common_vertex = set(cube1.coords()).intersection(cube2.coords())
         if common_vertex:
             weight = G.graph.nodes[common_vertex.pop()]['weight']
             G_dec.add_edge(cube1, cube2, weight=weight)
+
+    # Include boundary vertices in the case of non-periodic boundary
+    # conditions. Note that info about boundary conditions will
+    # probably be located later in the graph G.
+    if bc != 'periodic':
+        # For boundary points sharing a vertex with a stabilizer cube,
+        # add an edge between them with weight equal to the weight assigned
+        # to the vertex.
+        bound_points = RHG.RHG_boundary_coords(np.array(G.graph.graph['dims']))
+        for (cube, point) in it.product(G_dec, bound_points):
+                if point in cube.coords():
+                    weight = G.graph.nodes[point]['weight']
+                    G_dec.add_edge(cube, point, weight=weight)
+
+    # Relabel the nodes of the decoding graph to integers and define
+    # the mapping between nodes and indices.
     G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute='stabilizer')
     mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
+
+    # Indices of odd parity cubes and boundary vertices; add these
+    # index lists to the graph attributes dictionary, to be used by the
+    # matching graph.
+    odd_parity_cubes = [cube for cube in cubes if cube.parity()]
+    odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
+    G_relabelled.graph['odd_cubes'] = odd_parity_inds[:]
+    if bc != 'periodic':
+        bound_inds = [mapping[point] for point in bound_points]
+        G_relabelled.graph['boundary_points'] = bound_inds[:]
+
+    # Draw the lattice and the abstract decoding graph.
     if draw:
+        # Default drawing options.
+        draw_dict = {'show_nodes': False, 'label_nodes': None, 'label_cubes': True}
+        # Combine default dictionary with supplied dictionary, duplicates
+        # favor supplied dictionary.
+        drawing_opts = dict(draw_dict, **drawing_opts)
+
         shape = 2 * np.array(G.graph.graph['dims'])
+        # If show_nodes is True, get the axes object and legend from
+        # CVGraph.sketch (this also plots the graph in the console).
         if drawing_opts['show_nodes']:
             ax = G.sketch(drawing_opts['label_nodes'])
             leg = ax.get_legend()
+        # If show_nodes is False, create a new figure with size
+        # determined by the dimensions of the lattice.
         else:
             fig = plt.figure(figsize=(np.sum(shape)+2, np.sum(shape)+2))
             ax = fig.gca(projection='3d')
             leg = None
-        # ax = G.graph.draw(0, 0)
+        # Illustrate stabilizers with voxels colored green for even
+        # parity and red for odd pariy.
         voxels = np.zeros(shape)
         colors = np.zeros(shape, dtype=object)
         for cube in cubes:
-            xmin, xmed, xmax = cube.xlims()
-            ymin, ymed, ymax = cube.ylims()
-            zmin, zmed, zmax = cube.zlims()
-            voxels[xmin:xmax, ymin:ymax, zmin:zmax] = True
-            if cube.parity() == 0:
-                colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0050'
-            else:
+            # Obtain smallest, largest, and middle coordinates for each
+            # cube.
+            xmin, xmid, xmax = cube.xlims()
+            ymin, ymid, ymax = cube.ylims()
+            zmin, zmid, zmax = cube.zlims()
+            # Fill in the color arrays depending on parity.
+            if cube.parity():
                 colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000050'
+            else:
+                colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0050'
             if cube in mapping:
-                ax.text(xmed, ymed, zmed, mapping[cube], fontsize=30)
-        ax.voxels(voxels, facecolors=colors)
+                ax.text(xmid, ymid, zmid, mapping[cube], fontsize=30)
+        # Use colors array in voxel parameter because it is 0 in the
+        # right places.
+        ax.voxels(colors, facecolors=colors)
+        # Define a legend for red/green cubes.
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='#00FF0050', label='+1 parity'),
                            Patch(facecolor='#FF000050', label='-1 parity')]
         font_props = G.graph.font_props
         ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
+        # Since CGGraph.sketch() legend has been overwritten, readd
+        # it to the plot.
         if leg:
             ax.add_artist(leg)
+        # Draw the abstract graph representation.
         graph_drawer(G_relabelled)
     return G_relabelled
 
