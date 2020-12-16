@@ -106,13 +106,18 @@ class RHGCube:
     nodes of the cube."""
     def __init__(self, G):
         self.cvgraph = G
+        self._parity = None
 
     def parity(self):
+        if not self._parity is None:
+            return self._parity
         G = self.cvgraph
         bit_vals = [G.graph.nodes[node]['bit_val'] for node in G.graph]
         # hom_vals = [G.graph.nodes[node]['hom_val'] for node in G.graph]
         # return basic_translate([np.sum(hom_vals)])
-        return int(np.sum(bit_vals) % 2)
+        par = int(np.sum(bit_vals) % 2)
+        self._parity = par
+        return par
 
     def coords(self):
         return [tup for tup in self.cvgraph.graph.nodes]
