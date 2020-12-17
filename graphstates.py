@@ -24,8 +24,8 @@ from scipy.special import erf
 class EGraph(nx.Graph):
     '''An enhanced graph class based on networkx.Graph.'''
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if 'dims' in self.graph:
             tot = np.sum(self.graph['dims'])
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
