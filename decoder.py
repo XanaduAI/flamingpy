@@ -248,7 +248,8 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
                            bc=bc)
     return G_relabelled
 
-def matching_graph(G, bc='periodic', alg='dijkstra', draw=False):
+
+def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}):
     """Create a matching graph from the decoding graph G.
 
     Create graph according to algorithm alg. If draw, draw the matching
@@ -262,16 +263,15 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False):
 
     # Give shorter names to the Dijkstra shortest path algorithms.
     if alg == 'dijkstra':
-        alg1 = sp.dijkstra_path_length
+        alg1 = sp.single_source_dijkstra
         alg2 = sp.multi_source_dijkstra
 
     # Find the shortest paths between odd-parity cubes.
     for (cube1, cube2) in it.combinations(odd_parity_inds, 2):
-        path_length = alg1(G, cube1, cube2)
+        length, path = alg1(G, cube1, cube2)
         # Add edge to the matching graph between the cubes, with weight
         # equal to the length of the shortest path.
-        G_match.add_edge(cube1, cube2, weight=path_length)
-
+        G_match.add_edge(cube1, cube2, weight=length, inverse_weight=1/length, path=path)
     # For non-periodic boundary conditions, include boundary vertices.
     if bc != 'periodic':
         # Get the indics of the boundary vertices from the decoding 
@@ -286,21 +286,21 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False):
             # the sources to unused boundary vertices so that each
             # cube is connected to a unique vertex.
             point_paths = alg2(G, sources=boundary_inds, target=cube)
-            point = point_paths[1][0]
+            path = point_paths[1]
+            point = path[0]
             # Add edge to the matching graph between the cube and
             # the boundary vertex, with weight equal to the length
             # of the shortest path.
-            G_match.add_edge(cube, point, weight=point_paths[0])
-            # ADd to the list of used boundary vertices.
+            G_match.add_edge(cube, point, weight=point_paths[0], inverse_weight=1/point_paths[0], path=path)
+            # Add to the list of used boundary vertices.
             used_boundary_points.append(point)
 
         # Add edge with weight 0 between any two boundary points.
         for (point1, point2) in it.combinations(used_boundary_points, 2):
-            G_match.add_edge(point1, point2, weight=0)
+            G_match.add_edge(point1, point2, weight=1e-9, inverse_weight=1e-9)
 
     if draw:
         graph_drawer(G_match)
-
     return G_match
 
 
