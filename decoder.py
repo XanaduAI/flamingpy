@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from graphstates import EGraph, CVGraph, basic_translate
 import RHG
 
+
 def graph_drawer(G):
     """Convenience function for drawing decoding and matching graphs."""
     title = G.graph['title']
@@ -40,12 +41,25 @@ def graph_drawer(G):
                                edge_color=weight_list)
     plt.colorbar(r)
 
-def syndrome_plot(cubes, G, index_dict=None, code='primal', drawing_opts={}):
+
+def syndrome_plot(G_dec, G, index_dict=None, code='primal', drawing_opts={}, bc='periodic'):
     """Convenience function for drawing the syndrome plot given the underlying
     graph G and a list of cubes cubes."""
 
+    if bc != 'periodic':
+        bound_inds = G_dec.graph['boundary_points']
+        points = [G_dec.nodes[i]['stabilizer'] for i in bound_inds]
+    else:
+        bound_inds = {}
+
+    cube_inds = set(G_dec.nodes).difference(bound_inds)
+    cubes = [G_dec.nodes[i]['stabilizer'] for i in cube_inds]
     # Default drawing options.
-    draw_dict = {'show_nodes': False, 'label_nodes': None, 'label_cubes': True}
+    draw_dict = {'show_nodes': False,
+                 'label_nodes': None,
+                 'label_cubes': True,
+                 'label_boundary': False,
+                 'legend': True}
     # Combine default dictionary with supplied dictionary, duplicates
     # favor supplied dictionary.
     drawing_opts = dict(draw_dict, **drawing_opts)
@@ -114,16 +128,24 @@ def syndrome_plot(cubes, G, index_dict=None, code='primal', drawing_opts={}):
     z[:, :, 1::2] += 0.95
     ax.voxels(x, y, z, filled_e, facecolors=filled_e)
 
+    if bc != 'periodic' and drawing_opts['label_boundary']:
+        print(len(points))
+        for point in points:
+            ax.scatter(point[0], point[1], point[2], s=70, c='k')
+            ax.text(point[0], point[1], point[2], index_dict[point], fontdict=font_props)
+
     # Define a legend for red/green cubes.
     from matplotlib.patches import Patch
     legend_elements = [Patch(facecolor='#00FF0050', label='even parity'),
                        Patch(facecolor='#FF000050', label='odd parity')]
-    ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
-    # Since CGGraph.sketch() legend has been overwritten, readd
+    if drawing_opts['legend']:
+        ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
+    # Since CVGraph.sketch() legend has been overwritten, readd
     # it to the plot.
     if leg:
         ax.add_artist(leg)
     return ax
+
 
 def assign_weights(CVG, method='naive', code='primal'):
     """Assign weights to qubits in a hybrid CV graph state.
@@ -166,6 +188,7 @@ def assign_weights(CVG, method='naive', code='primal'):
             mult = 100
             G.nodes[node]['weight'] = - mult * np.log(weight_dict[p_count])
     return
+
 
 def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={}):
     """Create a decoding graph from the RHG lattice G. 
@@ -217,7 +240,12 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
     # Draw the lattice and the abstract decoding graph.
     if draw:
         graph_drawer(G_relabelled)
-        syndrome_plot(cubes, G, index_dict=mapping, code=code, drawing_opts=drawing_opts)
+        ax = syndrome_plot(G_relabelled,
+                           G,
+                           index_dict=mapping,
+                           code=code,
+                           drawing_opts=drawing_opts,
+                           bc=bc)
     return G_relabelled
 
 def matching_graph(G, bc='periodic', alg='dijkstra', draw=False):
