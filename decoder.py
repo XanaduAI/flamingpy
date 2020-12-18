@@ -304,6 +304,31 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
     return G_match
 
 
+def MWPM(G_match, G_dec, alg='blossom_nx', draw=False):
+    """Minimum-weight-perfect matching on matching graph G."""
+
+    if alg == 'blossom_nx':
+        alg = nx.max_weight_matching
+    matching = alg(G_match, maxcardinality=True, weight="inverse_weight")
+    print(matching)
+    if draw:
+        for pair in matching:
+            xlist, ylist, zlist = [], [], []
+            print(pair)
+            path = G_match.edges[pair]['path']
+            print(path)
+            for node in path:
+                stabe = G_dec.nodes[node]['stabilizer']
+                if isinstance(stabe, RHG.RHGCube):
+                    x, y, z = stabe.midpoint()
+                else:
+                    x, y, z = stabe
+                xlist += [x]
+                ylist += [y]
+                zlist += [z]
+            plt.title('Minimum-weight perfect matching', family='serif', size=20)
+            plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
+
 if __name__ == '__main__':
     RHG_lattice = RHG.RHG_graph(2, pol=1)
 
@@ -316,6 +341,8 @@ if __name__ == '__main__':
     G.translate_outcomes()
     assign_weights(G, method='blueprint')
 
-    dw = {'show_nodes': True, 'label_nodes': False, 'label_cubes': False}
-    G_dec = decoding_graph(G, bc='non-periodic', draw=True, drawing_opts=dw)
-    G_match = matching_graph(G_dec, bc='non-periodic', draw=True)
+    dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
+          'label_boundary': False, 'legend':False}
+    G_dec = decoding_graph(G, bc='', drawing_opts=dw, draw=True)
+    G_match = matching_graph(G_dec, bc='', draw=False)
+    matching = MWPM(G_match, G_dec, draw=True)
