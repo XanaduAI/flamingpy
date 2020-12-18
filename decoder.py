@@ -139,7 +139,9 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
         # favor supplied dictionary.
         drawing_opts = dict(draw_dict, **drawing_opts)
 
-        shape = 2 * np.array(G.graph.graph['dims'])
+        # Shape and font properties from the original graph.
+        shape = np.array(G.graph.graph['dims'])
+        font_props = G.graph.font_props
         # If show_nodes is True, get the axes object and legend from
         # CVGraph.sketch (this also plots the graph in the console).
         if drawing_opts['show_nodes']:
@@ -148,34 +150,63 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
         # If show_nodes is False, create a new figure with size
         # determined by the dimensions of the lattice.
         else:
-            fig = plt.figure(figsize=(np.sum(shape)+2, np.sum(shape)+2))
+            # TODO: Initialize axes based on empty ax object from G.sketch()
+            # but prevent from G.sketch() from plotting.
+            fig = plt.figure(figsize=(2 * (np.sum(shape)+2),  2 * (np.sum(shape)+2)))
             ax = fig.gca(projection='3d')
+            ax.tick_params(labelsize=font_props['size'])
+            plt.xticks(range(0, 2*shape[0] + 1))
+            plt.yticks(range(0, 2*shape[1] + 1))
+            ax.set_zticks(range(0, 2*shape[2] + 1))
+            ax.set_xlabel('x', fontdict=font_props, labelpad=20)
+            ax.set_ylabel('z', fontdict=font_props, labelpad=20)
+            ax.set_zlabel('y', fontdict=font_props, labelpad=20)
+            plt.rcParams['grid.color'] = "lightgray"
+            # plt.tight_layout(pad=3)
             leg = None
         # Illustrate stabilizers with voxels colored green for even
         # parity and red for odd pariy.
-        voxels = np.zeros(shape)
-        colors = np.zeros(shape, dtype=object)
+        filled = np.zeros(shape, dtype=object)
         for cube in cubes:
             # Obtain smallest, largest, and middle coordinates for each
-            # cube.
-            xmin, xmid, xmax = cube.xlims()
-            ymin, ymid, ymax = cube.ylims()
-            zmin, zmid, zmax = cube.zlims()
+            # cube. Divided by 2 becaues voxels are 1X1X1.
+            xmin, xmax = np.array(cube.xlims(), dtype=int) // 2
+            ymin, ymax = np.array(cube.ylims(), dtype=int) // 2
+            zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
+            xmid, ymid, zmid = np.array(cube.midpoint())
             # Fill in the color arrays depending on parity.
             if cube.parity():
-                colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000050'
+                filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000015'
             else:
-                colors[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0050'
+                filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0015'
             if cube in mapping:
-                ax.text(xmid, ymid, zmid, mapping[cube], fontsize=30)
-        # Use colors array in voxel parameter because it is 0 in the
-        # right places.
-        ax.voxels(colors, facecolors=colors)
+                ax.text(xmid, ymid, zmid, mapping[cube], fontdict=font_props)
+
+        # This portion adapted from a Matplotlib official example to fix
+        # an issue with filling in the insides of voxels: the code
+        # expands the indices and creates small gaps between the voxels.
+
+        def explode(data):
+            size = np.array(data.shape) * 2
+            data_e = np.zeros(size - 1, dtype=data.dtype)
+            data_e[::2, ::2, ::2] = data
+            return data_e
+        # upscale the above voxel image, leaving gaps
+        filled_e = explode(filled)
+        # Shrink the gaps
+        x, y, z = np.indices(np.array(filled_e.shape) + 1, dtype=float)
+        x[0::2, :, :] += 0.05
+        y[:, 0::2, :] += 0.05
+        z[:, :, 0::2] += 0.05
+        x[1::2, :, :] += 0.95
+        y[:, 1::2, :] += 0.95
+        z[:, :, 1::2] += 0.95
+        ax.voxels(x, y, z, filled_e, facecolors=filled_e)
+
         # Define a legend for red/green cubes.
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor='#00FF0050', label='+1 parity'),
                            Patch(facecolor='#FF000050', label='-1 parity')]
-        font_props = G.graph.font_props
         ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
         # Since CGGraph.sketch() legend has been overwritten, readd
         # it to the plot.
