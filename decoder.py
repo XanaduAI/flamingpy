@@ -22,7 +22,6 @@ import matplotlib.pyplot as plt
 from graphstates import EGraph, CVGraph, basic_translate
 import RHG
 
-
 def graph_drawer(G):
     """Convenience function for drawing decoding and matching graphs."""
     title = G.graph['title']
@@ -40,6 +39,91 @@ def graph_drawer(G):
                                nx.circular_layout(G),
                                edge_color=weight_list)
     plt.colorbar(r)
+
+def syndrome_plot(cubes, G, index_dict=None, code='primal', drawing_opts={}):
+    """Convenience function for drawing the syndrome plot given the underlying
+    graph G and a list of cubes cubes."""
+
+    # Default drawing options.
+    draw_dict = {'show_nodes': False, 'label_nodes': None, 'label_cubes': True}
+    # Combine default dictionary with supplied dictionary, duplicates
+    # favor supplied dictionary.
+    drawing_opts = dict(draw_dict, **drawing_opts)
+
+    # Shape and font properties from the original graph.
+    shape = np.array(G.graph.graph['dims'])
+    font_props = G.graph.font_props
+    # If show_nodes is True, get the axes object and legend from
+    # CVGraph.sketch (this also plots the graph in the console).
+    if drawing_opts['show_nodes']:
+        ax = G.sketch(drawing_opts['label_nodes'])
+        leg = ax.get_legend()
+    # If show_nodes is False, create a new figure with size
+    # determined by the dimensions of the lattice.
+    else:
+        # TODO: Initialize axes based on empty ax object from G.sketch()
+        # but prevent from G.sketch() from plotting.
+        fig = plt.figure(figsize=(2 * (np.sum(shape)+2),  2 * (np.sum(shape)+2)))
+        ax = fig.gca(projection='3d')
+        ax.tick_params(labelsize=font_props['size'])
+        plt.xticks(range(0, 2*shape[0] + 1))
+        plt.yticks(range(0, 2*shape[1] + 1))
+        ax.set_zticks(range(0, 2*shape[2] + 1))
+        ax.set_xlabel('x', fontdict=font_props, labelpad=20)
+        ax.set_ylabel('z', fontdict=font_props, labelpad=20)
+        ax.set_zlabel('y', fontdict=font_props, labelpad=20)
+        plt.rcParams['grid.color'] = "lightgray"
+        leg = None
+    # Illustrate stabilizers with voxels colored green for even
+    # parity and red for odd pariy.
+    filled = np.zeros(shape, dtype=object)
+    for cube in cubes:
+        # Obtain smallest, largest, and middle coordinates for each
+        # cube. Divided by 2 becaues voxels are 1X1X1.
+        xmin, xmax = np.array(cube.xlims(), dtype=int) // 2
+        ymin, ymax = np.array(cube.ylims(), dtype=int) // 2
+        zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
+        xmid, ymid, zmid = np.array(cube.midpoint())
+        # Fill in the color arrays depending on parity.
+        if cube.parity():
+            filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000015'
+        else:
+            filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0015'
+        if draw_dict['label_cubes'] and index_dict:
+            if cube in index_dict:
+                ax.text(xmid, ymid, zmid, index_dict[cube], fontdict=font_props)
+
+    # This portion adapted from a Matplotlib official example to fix
+    # an issue with filling in the insides of voxels: the code
+    # expands the indices and creates small gaps between the voxels.
+
+    def explode(data):
+        size = np.array(data.shape) * 2
+        data_e = np.zeros(size - 1, dtype=data.dtype)
+        data_e[::2, ::2, ::2] = data
+        return data_e
+    # upscale the above voxel image, leaving gaps
+    filled_e = explode(filled)
+    # Shrink the gaps
+    x, y, z = np.indices(np.array(filled_e.shape) + 1, dtype=float)
+    x[0::2, :, :] += 0.05
+    y[:, 0::2, :] += 0.05
+    z[:, :, 0::2] += 0.05
+    x[1::2, :, :] += 0.95
+    y[:, 1::2, :] += 0.95
+    z[:, :, 1::2] += 0.95
+    ax.voxels(x, y, z, filled_e, facecolors=filled_e)
+
+    # Define a legend for red/green cubes.
+    from matplotlib.patches import Patch
+    legend_elements = [Patch(facecolor='#00FF0050', label='even parity'),
+                       Patch(facecolor='#FF000050', label='odd parity')]
+    ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
+    # Since CGGraph.sketch() legend has been overwritten, readd
+    # it to the plot.
+    if leg:
+        ax.add_artist(leg)
+    return ax
 
 def assign_weights(CVG, method='naive', code='primal'):
     """Assign weights to qubits in a hybrid CV graph state.
@@ -82,7 +166,6 @@ def assign_weights(CVG, method='naive', code='primal'):
             mult = 100
             G.nodes[node]['weight'] = - mult * np.log(weight_dict[p_count])
     return
-
 
 def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={}):
     """Create a decoding graph from the RHG lattice G. 
@@ -133,87 +216,8 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
 
     # Draw the lattice and the abstract decoding graph.
     if draw:
-        # Default drawing options.
-        draw_dict = {'show_nodes': False, 'label_nodes': None, 'label_cubes': True}
-        # Combine default dictionary with supplied dictionary, duplicates
-        # favor supplied dictionary.
-        drawing_opts = dict(draw_dict, **drawing_opts)
-
-        # Shape and font properties from the original graph.
-        shape = np.array(G.graph.graph['dims'])
-        font_props = G.graph.font_props
-        # If show_nodes is True, get the axes object and legend from
-        # CVGraph.sketch (this also plots the graph in the console).
-        if drawing_opts['show_nodes']:
-            ax = G.sketch(drawing_opts['label_nodes'])
-            leg = ax.get_legend()
-        # If show_nodes is False, create a new figure with size
-        # determined by the dimensions of the lattice.
-        else:
-            # TODO: Initialize axes based on empty ax object from G.sketch()
-            # but prevent from G.sketch() from plotting.
-            fig = plt.figure(figsize=(2 * (np.sum(shape)+2),  2 * (np.sum(shape)+2)))
-            ax = fig.gca(projection='3d')
-            ax.tick_params(labelsize=font_props['size'])
-            plt.xticks(range(0, 2*shape[0] + 1))
-            plt.yticks(range(0, 2*shape[1] + 1))
-            ax.set_zticks(range(0, 2*shape[2] + 1))
-            ax.set_xlabel('x', fontdict=font_props, labelpad=20)
-            ax.set_ylabel('z', fontdict=font_props, labelpad=20)
-            ax.set_zlabel('y', fontdict=font_props, labelpad=20)
-            plt.rcParams['grid.color'] = "lightgray"
-            # plt.tight_layout(pad=3)
-            leg = None
-        # Illustrate stabilizers with voxels colored green for even
-        # parity and red for odd pariy.
-        filled = np.zeros(shape, dtype=object)
-        for cube in cubes:
-            # Obtain smallest, largest, and middle coordinates for each
-            # cube. Divided by 2 becaues voxels are 1X1X1.
-            xmin, xmax = np.array(cube.xlims(), dtype=int) // 2
-            ymin, ymax = np.array(cube.ylims(), dtype=int) // 2
-            zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
-            xmid, ymid, zmid = np.array(cube.midpoint())
-            # Fill in the color arrays depending on parity.
-            if cube.parity():
-                filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000015'
-            else:
-                filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0015'
-            if cube in mapping:
-                ax.text(xmid, ymid, zmid, mapping[cube], fontdict=font_props)
-
-        # This portion adapted from a Matplotlib official example to fix
-        # an issue with filling in the insides of voxels: the code
-        # expands the indices and creates small gaps between the voxels.
-
-        def explode(data):
-            size = np.array(data.shape) * 2
-            data_e = np.zeros(size - 1, dtype=data.dtype)
-            data_e[::2, ::2, ::2] = data
-            return data_e
-        # upscale the above voxel image, leaving gaps
-        filled_e = explode(filled)
-        # Shrink the gaps
-        x, y, z = np.indices(np.array(filled_e.shape) + 1, dtype=float)
-        x[0::2, :, :] += 0.05
-        y[:, 0::2, :] += 0.05
-        z[:, :, 0::2] += 0.05
-        x[1::2, :, :] += 0.95
-        y[:, 1::2, :] += 0.95
-        z[:, :, 1::2] += 0.95
-        ax.voxels(x, y, z, filled_e, facecolors=filled_e)
-
-        # Define a legend for red/green cubes.
-        from matplotlib.patches import Patch
-        legend_elements = [Patch(facecolor='#00FF0050', label='+1 parity'),
-                           Patch(facecolor='#FF000050', label='-1 parity')]
-        ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
-        # Since CGGraph.sketch() legend has been overwritten, readd
-        # it to the plot.
-        if leg:
-            ax.add_artist(leg)
-        # Draw the abstract graph representation.
         graph_drawer(G_relabelled)
+        syndrome_plot(cubes, G, index_dict=mapping, code=code, drawing_opts=drawing_opts)
     return G_relabelled
 
 def matching_graph(G, bc='periodic', alg='dijkstra', draw=False):
