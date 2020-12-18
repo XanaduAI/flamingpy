@@ -143,21 +143,20 @@ class RHGCube:
     def xlims(self):
         xs = [tup[0] for tup in self.coords()]
         xmin, xmax = np.min(xs), np.max(xs)
-        xmed = (xmin + xmax) / 2
-        return (xmin, xmed, xmax)
+        return xmin, xmax
 
     def ylims(self):
         ys = [tup[1] for tup in self.coords()]
         ymin, ymax = np.min(ys), np.max(ys)
-        ymed = (ymin + ymax) / 2
-        return (ymin, ymed, ymax)
+        return ymin, ymax
 
     def zlims(self):
         zs = [tup[2] for tup in self.coords()]
         zmin, zmax = np.min(zs), np.max(zs)
-        zmed = (zmin + zmax) / 2
-        return (zmin, zmed, zmax)
+        return zmin, zmax
 
+    def midpoint(self):
+        return (np.average(self.xlims()), np.average(self.ylims()), np.average(self.zlims()))
 
 if __name__ == '__main__':
     RHG = RHG_graph(1)
