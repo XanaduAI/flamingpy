@@ -273,13 +273,13 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
         # equal to the length of the shortest path.
         G_match.add_edge(cube1, cube2, weight=length, inverse_weight=1/length, path=path)
     # For non-periodic boundary conditions, include boundary vertices.
+    used_boundary_points = []
     if bc != 'periodic':
         # Get the indics of the boundary vertices from the decoding 
         # graph.
         boundary_inds = G.graph['boundary_points']
         # Keep track of the boundary points that have been connected
         # to a cube.
-        used_boundary_points = []
         for cube in odd_parity_inds:
             # Find the shortest path from the any of the boundary
             # vertices to the cube. Note that we might wish to change
@@ -299,8 +299,12 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
         for (point1, point2) in it.combinations(used_boundary_points, 2):
             G_match.add_edge(point1, point2, weight=1e-9, inverse_weight=1e-9)
 
+    # Add indices of used boundary points as a graph attribute.
+    G_match.graph['used_boundary_points'] = used_boundary_points[:]
+
     if draw:
         graph_drawer(G_match)
+
     return G_match
 
 
