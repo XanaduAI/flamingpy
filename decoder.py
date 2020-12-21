@@ -297,7 +297,7 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
 
         # Add edge with weight 0 between any two boundary points.
         for (point1, point2) in it.combinations(used_boundary_points, 2):
-            G_match.add_edge(point1, point2, weight=1e-9, inverse_weight=1e-9)
+            G_match.add_edge(point1, point2, weight=1e-9, inverse_weight=1e9)
 
     # Add indices of used boundary points as a graph attribute.
     G_match.graph['used_boundary_points'] = used_boundary_points[:]
