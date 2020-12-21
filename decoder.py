@@ -308,30 +308,31 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
     return G_match
 
 
-def MWPM(G_match, G_dec, alg='blossom_nx', draw=False):
+def MWPM(G_match, G_dec, alg='blossom_nx', bc='periodic', draw=False):
     """Minimum-weight-perfect matching on matching graph G."""
 
     if alg == 'blossom_nx':
         alg = nx.max_weight_matching
     matching = alg(G_match, maxcardinality=True, weight="inverse_weight")
-    print(matching)
     if draw:
+        boundary = G_match.graph['used_boundary_points']
         for pair in matching:
-            xlist, ylist, zlist = [], [], []
-            print(pair)
-            path = G_match.edges[pair]['path']
-            print(path)
-            for node in path:
-                stabe = G_dec.nodes[node]['stabilizer']
-                if isinstance(stabe, RHG.RHGCube):
-                    x, y, z = stabe.midpoint()
-                else:
-                    x, y, z = stabe
-                xlist += [x]
-                ylist += [y]
-                zlist += [z]
-            plt.title('Minimum-weight perfect matching', family='serif', size=20)
-            plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
+            if pair not in it.product(boundary, boundary):
+                xlist, ylist, zlist = [], [], []
+                path = G_match.edges[pair]['path']
+                for node in path:
+                    stabe = G_dec.nodes[node]['stabilizer']
+                    if isinstance(stabe, RHG.RHGCube):
+                        x, y, z = stabe.midpoint()
+                    else:
+                        x, y, z = stabe
+                        plt.plot(x, y, z, marker='2', ms=50, c='k')
+                    xlist += [x]
+                    ylist += [y]
+                    zlist += [z]
+                plt.title('Minimum-weight perfect matching', family='serif', size=20)
+                plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
+        graph_drawer(G_match)
 
 if __name__ == '__main__':
     RHG_lattice = RHG.RHG_graph(2, pol=1)
