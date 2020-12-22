@@ -161,6 +161,35 @@ def p_err(var, var_num=5, translator=basic_translate):
                           - erf(i*np.sqrt(np.pi)/(2*var)))
     return error
 
+def Z_err_cond(var, hom_val, var_num=5):
+    """Return the conditional phase error probability for lattice nodes.
+
+    Return the phase error probability for a list of variances var
+    given homodyne outcomes hom_val, with var_num used to determine 
+    the number of terms to keep in the summation in the formula.
+
+    Args:
+        var (array): the lattice p variances
+        hom_val (array): the p-homodyne outcomes
+        var_num (float): number of variances away from the origin we
+            include in the integral
+    Returns:
+        array: probability of Z (phase flip) errors for each variance,
+            contioned on the homodyne outcomes.
+    """
+    # Find largest bin number by finding largest variance, multiplying by
+    # var_num, then rounding up to nearest integer of form 4n+1, which are
+    # the left boundaries of the 0 bins mod sqrt(pi)
+    n_max = int(np.ceil(var_num * np.amax(var)) // 2 * 4 + 1)
+    # Initiate a list with length same as var
+    ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
+    error = np.zeros(len(var))
+    # TODO: Double check the next line.
+    mod_val = np.mod(hom_val, np.sqrt(np.pi))
+    numerator = np.sum([ex(mod_val, 2*i+1) for i in range(-n_max, n_max)], 0)
+    denominator = np.sum([ex(mod_val, i) for i in range(-n_max, n_max)], 0)
+    error = (numerator / denominator).round(5)
+    return error
 
 class CVGraph:
     '''A class for representing continuous-variable graph states.
@@ -255,6 +284,19 @@ class CVGraph:
         for i in range(len(errs)):
             self.graph.nodes[self.ind_dict[i]]['p_phase'] = errs[i]
 
+
+    def eval_Z_probs_cond(self):
+        """Evaluate the conditional phase error probability of each mode."""
+        try:
+            hom_vals = self.hom_outcomes
+        except Exception:
+            return
+
+        Z_errs = Z_err_cond(self.var_p, hom_vals)
+        for i in range(len(Z_errs)):
+            self.graph.nodes[self.ind_dict[i]]['p_phase_cond'] = Z_errs[i]
+
+
     def measure_p(self):
         """Conduct a p-homodyne measurement on the lattice."""
         # Randomly sample of a normal distribution centred at 0 with
@@ -322,6 +364,17 @@ class CVGraph:
             return
 
     @property
+    def Z_probs_cond(self):
+        """array: the conditional phase error probabilities of the modes."""
+        try:
+            phase_errs = [self.graph.nodes[node]['p_phase_cond'] for node in self.graph]
+            return phase_errs
+        except Exception:
+            print('Conditional Z error probabilities have not yet been computed. Please '
+                  'use eval_Z_probs_cond() first.')
+            return
+
+    @property
     def hom_outcomes(self):
         """array: the results of the p-homodyne measurement."""
         try:
@@ -330,7 +383,7 @@ class CVGraph:
         except Exception:
             print('A homodyne measurement has not yet been performed. Please '
                   'use measure_p() first.')
-            return
+            raise
 
     @property
     def bit_values(self):
@@ -367,6 +420,7 @@ class CVGraph:
 
         title_dict = {'var_p': 'p Variances',
                       'p_phase': 'Phase error probabilities',
+                      'p_phase_cond': 'Conditional phase error probabilities',
                       'hom_val': 'p-homodyne outcomes',
                       'bit_val': 'Bit values'}
 
