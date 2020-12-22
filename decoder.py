@@ -168,15 +168,15 @@ def assign_weights(CVG, method='naive', code='primal'):
             # List and number of p-squeezed states in neighborhood of node.
             p_list = [neighbors[v]['type'] for v in neighbors if neighbors[v]['type'] == 'p']
             p_count = len(p_list)
-            # If phase error information available, use it; otherwise set
+            # If conditional phase error information available, use it; otherwise set
             # error probability to 0 and print a message.
-            if 'p_phase' in G.nodes[node]:
-                err_prob = G.nodes[node]['p_phase']
+            if 'p_phase_cond' in G.nodes[node]:
+                err_prob = G.nodes[node]['p_phase_cond']
             else:
                 err_prob = 0
                 if not error_printed:
-                    print('Z error probabilities have not yet been computed. Please '
-                          'use eval_Z_probs() first. Setting error probability in 0 '
+                    print('Conditional Z error probabilities have not yet been computed. Please '
+                          'use eval_Z_probs_cond() first. Setting error probability in 0 '
                           'and 1 swap-out case to 0. \n')
                     error_printed = True
             # Allow for taking log of 0.
@@ -271,6 +271,8 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
         length, path = alg1(G, cube1, cube2)
         # Add edge to the matching graph between the cubes, with weight
         # equal to the length of the shortest path.
+        if length == 0:
+            length = 1e-9
         G_match.add_edge(cube1, cube2, weight=length, inverse_weight=1/length, path=path)
     # For non-periodic boundary conditions, include boundary vertices.
     used_boundary_points = []
@@ -288,10 +290,13 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
             point_paths = alg2(G, sources=boundary_inds, target=cube)
             path = point_paths[1]
             point = path[0]
+            length = point_paths[0]
+            if length == 0:
+                length = 1e-9
             # Add edge to the matching graph between the cube and
             # the boundary vertex, with weight equal to the length
             # of the shortest path.
-            G_match.add_edge(cube, point, weight=point_paths[0], inverse_weight=1/point_paths[0], path=path)
+            G_match.add_edge(cube, point, weight=length, inverse_weight=1/length, path=path)
             # Add to the list of used boundary vertices.
             used_boundary_points.append(point)
 
@@ -341,8 +346,8 @@ if __name__ == '__main__':
     delta = 0.01
 
     G = CVGraph(RHG_lattice, swap_prob=swap_prob, delta=delta)
-    G.eval_Z_probs()
     G.measure_p()
+    G.eval_Z_probs_cond()
     G.translate_outcomes()
     assign_weights(G, method='blueprint')
 
