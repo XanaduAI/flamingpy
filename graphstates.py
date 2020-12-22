@@ -185,7 +185,7 @@ def Z_err_cond(var, hom_val, var_num=5):
     ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
     error = np.zeros(len(var))
     # TODO: Double check the next line.
-    mod_val = np.mod(hom_val, np.sqrt(np.pi))
+    mod_val = np.fmod(hom_val, np.sqrt(np.pi))
     numerator = np.sum([ex(mod_val, 2*i+1) for i in range(-n_max, n_max)], 0)
     denominator = np.sum([ex(mod_val, i) for i in range(-n_max, n_max)], 0)
     error = (numerator / denominator).round(5)
