@@ -182,14 +182,19 @@ def Z_err_cond(var, hom_val, var_num=5):
     # the left boundaries of the 0 bins mod sqrt(pi)
     n_max = int(np.ceil(var_num * np.amax(var)) // 2 * 4 + 1)
     # Initiate a list with length same as var
+    # TODO replace ex with normal pdf?
     ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
     error = np.zeros(len(var))
-    # TODO: Double check the next line.
-    mod_val = np.fmod(hom_val, np.sqrt(np.pi))
-    numerator = np.sum([ex(mod_val, 2*i+1) for i in range(-n_max, n_max)], 0)
-    denominator = np.sum([ex(mod_val, i) for i in range(-n_max, n_max)], 0)
-    error = (numerator / denominator).round(5)
-    return error
+    alpha = np.sqrt(np.pi)
+    # Take modulus to obtain a new range of 0 to sqrt(pi).
+    mod_val = np.mod(hom_val, alpha)
+    # If mod_val is less than sqrt(pi)/2, keep it as is. If greater, convert
+    # it to sqrt(pi) - mod_val.
+    z = mod_val + (((np.sign(alpha/2 - mod_val) - 1)) / 2) * alpha
+    numerator = np.sum([ex(z, 2*i+1) for i in range(-n_max, n_max)], 0)
+    denominator = np.sum([ex(z, i) for i in range(-n_max, n_max)], 0)
+    error = numerator / denominator
+    return error.round(5)
 
 class CVGraph:
     '''A class for representing continuous-variable graph states.
