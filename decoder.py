@@ -195,6 +195,21 @@ def assign_weights(CVG, method='naive', code='primal'):
     return
 
 
+def CV_decoder(G, translator=basic_translate):
+    """The inner (CV) decoder, aka translator, aka binning function.
+
+    Convert homodyne outcomes to bit values according to translator."""
+    try:
+        cv_values = G.hom_outcomes
+    except Exception:
+        print('A homodyne measurement has not yet been performed. Please '
+              'use measure_p() first.')
+        return
+    bit_values = translator(cv_values)
+    for i in range(len(bit_values)):
+        G.graph.nodes[G.ind_dict[i]]['bit_val'] = bit_values[i]
+
+
 def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={}):
     """Create a decoding graph from the RHG lattice G. 
 
@@ -353,7 +368,7 @@ if __name__ == '__main__':
     G = CVGraph(RHG_lattice, swap_prob=swap_prob, delta=delta)
     G.measure_p()
     G.eval_Z_probs_cond()
-    G.translate_outcomes()
+    CV_decoder(G)
     assign_weights(G, method='blueprint')
 
     dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,

@@ -37,15 +37,15 @@ class EGraph(nx.Graph):
         return self.nodes[coord]['color']
 
     def draw(self, color=1, label=0):
-        '''Draw the graph.
+        """Draw the graph.
         Args:
             label (bool): if True, label the indices; unlabelled by
                 default.
             color (bool): if True, color the syndrome and data qubits
                 red and green, respectively; colored by default.
         Returns:
-            None
-        '''
+            A matplotib Axes object.
+        """
         # Recommended to be viewed with IPython.
         if self.graph['dims']:
             nx, ny, nz = self.graph['dims']
@@ -125,11 +125,6 @@ class CVGraph:
         delta (float): the quadrature blurring parameter, related to
             the squeezing of the GKP states and the momentum-quadrature
             variance of the p-squeezed states; 0.01 by default
-        # indfunc (function): the function used to index the coordinates
-        #     of the lattice; basic_index by default
-        translator (function): the translator or binning function
-            between CV outcomes and bit values; basic_translate by
-            default
 
     Attributes:
         dims (int or tuple): the size of the lattice, as above
@@ -146,6 +141,9 @@ class CVGraph:
         p_var (array): the p variances of the modes
         Z_probs (array): if eval_z_probs has been run, the phase error
             probabilities of the modes
+        Z_probs_cond (array): if eval_z_probs_cond has been run, the 
+            phase  error probabilities of the modes conditioned on 
+            homodyne outcomes
         hom_outcomes (array): if measure_p has been run, the results
             of the latest p-homodyne measurement
         bit_values (array): if measure_p has been run, the bit values
@@ -153,12 +151,11 @@ class CVGraph:
             binning function translator.
     '''
     def __init__(self, g, model='grn', p_inds=[], swap_prob=None,
-                 delta=0.01, translator=basic_translate):
+                 delta=0.01):
         if isinstance(g, EGraph):
             self.graph = g
         else:
             self.graph = EGraph(g)
-        self._translator = translator
         self._SCZ = SCZ_mat(self.graph.adj_mat())
         self._delta = delta
         self._N = self.graph.number_of_nodes()
@@ -200,7 +197,6 @@ class CVGraph:
         for i in range(len(errs)):
             self.graph.nodes[self.ind_dict[i]]['p_phase'] = errs[i]
 
-
     def eval_Z_probs_cond(self):
         """Evaluate the conditional phase error probability of each mode."""
         try:
@@ -212,7 +208,6 @@ class CVGraph:
         for i in range(len(Z_errs)):
             self.graph.nodes[self.ind_dict[i]]['p_phase_cond'] = Z_errs[i]
 
-
     def measure_p(self):
         """Conduct a p-homodyne measurement on the lattice."""
         # Randomly sample of a normal distribution centred at 0 with
@@ -221,17 +216,6 @@ class CVGraph:
         # bit_values = self.translator(outcomes)
         for i in range(len(outcomes)):
             self.graph.nodes[self.ind_dict[i]]['hom_val'] = outcomes[i]
-
-    def translate_outcomes(self):
-        try:
-            cv_values = self.hom_outcomes
-            bit_values = self._translator(cv_values)
-            for i in range(len(bit_values)):
-                self.graph.nodes[self.ind_dict[i]]['bit_val'] = bit_values[i]
-        except Exception:
-            print('A homodyne measurement has not yet been performed. Please '
-                  'use measure_p() first.')
-            return
 
     def hybridize(self, swap_prob):
         """Populate nodes with p-squeezed states at random."""
@@ -266,7 +250,6 @@ class CVGraph:
     def cov_p(self):
         """array: the phase-space covariance matrix."""
         return self._cov_p
-
 
     @property
     def Z_probs(self):
@@ -314,12 +297,13 @@ class CVGraph:
 
     def sketch(self, label=None):
         """Sketch the CVRHG lattice. GKP states black, p states orange.
+
         Args:
             label (bool): if 'v', label the p variances; if 'e', the
                 phase error probabilities; if 'h', the p-homodyne
                 outcomes; if 'b', the bit values; otherwise, no label.
         Returns:
-            None
+            A matplotib Axes object.
         """
         font_props = self.graph.font_props
         idg = self._indexed_graph
