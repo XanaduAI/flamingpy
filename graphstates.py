@@ -24,8 +24,8 @@ from GKP import basic_translate, Z_err, Z_err_cond
 class EGraph(nx.Graph):
     '''An enhanced graph class based on networkx.Graph.'''
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if 'dims' in self.graph:
             tot = np.sum(self.graph['dims'])
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
@@ -75,9 +75,9 @@ class EGraph(nx.Graph):
         plt.xticks(range(0, 2*nx + 1))
         plt.yticks(range(0, 2*nz + 1))
         ax.set_zticks(range(0, 2*ny + 1))
-        ax.set_xlabel('x', fontdict=self.font_props)
-        ax.set_ylabel('z', fontdict=self.font_props)
-        ax.set_zlabel('y', fontdict=self.font_props)
+        ax.set_xlabel('x', fontdict=self.font_props, labelpad=20)
+        ax.set_ylabel('z', fontdict=self.font_props, labelpad=20)
+        ax.set_zlabel('y', fontdict=self.font_props, labelpad=20)
         plt.rcParams['grid.color'] = "lightgray"
         plt.tight_layout(pad=3)
         plt.draw()
@@ -295,7 +295,7 @@ class CVGraph:
                   'been performed.')
             return
 
-    def sketch(self, label=None):
+    def sketch(self, label=None, legend=True, title=True):
         """Sketch the CVRHG lattice. GKP states black, p states orange.
 
         Args:
@@ -316,7 +316,8 @@ class CVGraph:
                                     markersize=14, label='p')
         black_line = mlines.Line2D([], [], color='black', marker='.',
                                    markersize=14, label='GKP')
-        ax.legend(handles=[orange_line, black_line], prop=font_props)
+        if legend:
+            ax.legend(handles=[orange_line, black_line], prop=font_props)
 
         title_dict = {'var_p': 'p Variances',
                       'p_phase': 'Phase error probabilities',
@@ -326,11 +327,13 @@ class CVGraph:
 
         if label:
             try:
-                title = title_dict[label]
+                name = title_dict[label]
             except KeyError:
                 print('No such label permitted.')
 
-            ax.set_title(title_dict[label], fontdict=font_props)
+            if title:
+                ax.set_title(name, fontdict=font_props)
+
             for node in self.graph:
                 try:
                     value = self.graph.nodes[node][label]
