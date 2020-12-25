@@ -138,17 +138,14 @@ def Z_err_cond(var, hom_val, var_num=5):
     # Find largest bin number by finding largest variance, multiplying by
     # var_num, then rounding up to nearest integer of form 4n+1, which are
     # the left boundaries of the 0 bins mod sqrt(pi)
-    n_max = int(np.ceil(var_num * np.amax(var)) // 2 * 4 + 1)
+    # n_max = int(np.ceil(var_num * np.amax(var)) // 2 * 4 + 1)
+    # TODO: Make the following line smarter.
+    n_max = var_num
     # Initiate a list with length same as var
     # TODO replace ex with normal pdf?
     ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
     error = np.zeros(len(var))
-    alpha = np.sqrt(np.pi)
-    # Take modulus to obtain a new range of 0 to sqrt(pi).
-    mod_val = np.mod(hom_val, alpha)
-    # If mod_val is less than sqrt(pi)/2, keep it as is. If greater, convert
-    # it to sqrt(pi) - mod_val.
-    z = mod_val + (((np.sign(alpha/2 - mod_val) - 1)) / 2) * alpha
+    z = integer_fractional(hom_val, np.sqrt(np.pi))[1]
     numerator = np.sum([ex(z, 2*i+1) for i in range(-n_max, n_max)], 0)
     denominator = np.sum([ex(z, i) for i in range(-n_max, n_max)], 0)
     error = numerator / denominator
