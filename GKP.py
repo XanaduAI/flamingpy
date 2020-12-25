@@ -59,6 +59,40 @@ def basic_translate(outcomes):
     return bit_values
 
 
+def integer_fractional(x, alpha, draw=0):
+    """Obtain the integer and fractional part of x with respect to alpha.
+
+    Any real number x can be expressed as n * alpha + f, where n is an
+    integer, alpha is any real number, and f is a real number such that
+    |f| <= alpha / 2. This function returns n and f.
+    """
+    # Take modulus to obtain a new range of 0 to sqrt(pi).
+    mod_val = np.mod(x, alpha)
+    # If mod_val is less than sqrt(pi)/2, keep it as is. If greater, convert
+    # it to sqrt(pi) - mod_val.
+    # f = mod_val + (((np.sign(alpha/2 - mod_val) - 1)) / 2) * alpha
+    f = np.vectorize(math.remainder)(x, alpha)
+    n = (x - f) / alpha
+    if draw:
+        xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
+        newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha)+1)
+        newxlabels = [to_pi_string(tick) for tick in newxticks]
+        plt.plot(x, n, ',')
+        plt.title('Integer Part')
+        plt.xticks(newxticks, newxlabels, fontsize='small')
+        plt.show()
+
+        plt.title('Fractional Part')
+        plt.plot(x, f, ',')
+        newyticks = np.linspace(-alpha/2, alpha/2, num=7)
+        newylabels = ['{:.3f}'.format(tick) for tick in newyticks[1:-1]]
+        newylabels = [to_pi_string(-alpha/2)] + newylabels + [to_pi_string(alpha/2)]
+        plt.xticks(newxticks, newxlabels, fontsize='small')
+        plt.yticks(newyticks, newylabels)
+        plt.show()
+    return n, f
+
+
 def Z_err(var, var_num=5):
     """Return the probability of Z errors for a list of variances.
 
