@@ -11,9 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import erf
+import matplotlib.pyplot as plt
+
+
+def to_pi_string(x, tex=1):
+    """Convert x, a multiple of sqrt(pi)/2, to a string."""
+    remainder = math.remainder(x, np.sqrt(np.pi) / 2)
+    if not round(remainder):
+        integer = round(x / (np.sqrt(np.pi)/2))
+        pref = int(integer * ((1 - integer % 2) / 2 + integer % 2))
+        x_str = (not bool(round(x))) * '0' + bool(round(x)) * (
+            bool(tex) * '$' + (not bool(1 + pref)) * '-' +
+            bool(1 - abs(pref)) * str(pref) + r'\sqrt{\pi}' + (integer % 2) * '/2' +
+            bool(tex) * '$'
+            )
+        return x_str
+    return str(x)
 
 def basic_translate(outcomes):
     """Naively translate CV outcomes to bit values.
