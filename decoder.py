@@ -13,6 +13,7 @@
 # limitations under the License.
 """The decoder module."""
 
+import sys
 import numpy as np
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
@@ -22,6 +23,8 @@ import matplotlib.pyplot as plt
 from graphstates import EGraph, CVGraph, basic_translate
 import RHG
 
+smallest_number = sys.float_info.min
+largest_number = sys.float_info.max
 
 def graph_drawer(G):
     """Convenience function for drawing decoding and matching graphs."""
@@ -180,14 +183,31 @@ def assign_weights(CVG, method='naive', code='primal'):
                           'and 1 swap-out case to 0. \n')
                     error_printed = True
             # Allow for taking log of 0.
+            # TODO: Is this the best way to do it? Or can I just choose
+            # an arbitrary small number?
             if err_prob == 0:
-                err_prob = 1e-10
+                err_prob = smallest_number
             # Dictionary of the form number of swapouts: error probability.
             weight_dict = {0: err_prob, 1: err_prob, 2: 1/4, 3: 1/3, 4: 2/5}
-            # Multiplicative factor.
-            mult = 100
-            G.nodes[node]['weight'] = - mult * np.log(weight_dict[p_count])
+            # Do we a multiplicative factor here, followed by rounding to get
+            # integral weights?
+            G.nodes[node]['weight'] = - np.log(weight_dict[p_count])
     return
+
+
+def CV_decoder(G, translator=basic_translate):
+    """The inner (CV) decoder, aka translator, aka binning function.
+
+    Convert homodyne outcomes to bit values according to translator."""
+    try:
+        cv_values = G.hom_outcomes
+    except Exception:
+        print('A homodyne measurement has not yet been performed. Please '
+              'use measure_p() first.')
+        return
+    bit_values = translator(cv_values)
+    for i in range(len(bit_values)):
+        G.graph.nodes[G.ind_dict[i]]['bit_val'] = bit_values[i]
 
 
 def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={}):
@@ -272,7 +292,7 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
         # Add edge to the matching graph between the cubes, with weight
         # equal to the length of the shortest path.
         if length == 0:
-            length = 1e-9
+            length = smallest_number
         G_match.add_edge(cube1, cube2, weight=length, inverse_weight=1/length, path=path)
     # For non-periodic boundary conditions, include boundary vertices.
     used_boundary_points = []
@@ -292,7 +312,7 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
             point = path[0]
             length = point_paths[0]
             if length == 0:
-                length = 1e-9
+                length = smallest_number
             # Add edge to the matching graph between the cube and
             # the boundary vertex, with weight equal to the length
             # of the shortest path.
@@ -302,7 +322,7 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
 
         # Add edge with weight 0 between any two boundary points.
         for (point1, point2) in it.combinations(used_boundary_points, 2):
-            G_match.add_edge(point1, point2, weight=1e-9, inverse_weight=1e9)
+            G_match.add_edge(point1, point2, weight=smallest_number, inverse_weight=largest_number)
 
     # Add indices of used boundary points as a graph attribute.
     G_match.graph['used_boundary_points'] = used_boundary_points[:]
@@ -348,7 +368,7 @@ if __name__ == '__main__':
     G = CVGraph(RHG_lattice, swap_prob=swap_prob, delta=delta)
     G.measure_p()
     G.eval_Z_probs_cond()
-    G.translate_outcomes()
+    CV_decoder(G)
     assign_weights(G, method='blueprint')
 
     dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,

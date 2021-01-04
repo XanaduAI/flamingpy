@@ -18,14 +18,14 @@ import numpy as np
 from numpy.random import (multivariate_normal as mvn, default_rng as rng)
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-from scipy.special import erf
 
+from GKP import basic_translate, Z_err, Z_err_cond
 
 class EGraph(nx.Graph):
     '''An enhanced graph class based on networkx.Graph.'''
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if 'dims' in self.graph:
             tot = np.sum(self.graph['dims'])
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
@@ -37,15 +37,15 @@ class EGraph(nx.Graph):
         return self.nodes[coord]['color']
 
     def draw(self, color=1, label=0):
-        '''Draw the graph.
+        """Draw the graph.
         Args:
             label (bool): if True, label the indices; unlabelled by
                 default.
             color (bool): if True, color the syndrome and data qubits
                 red and green, respectively; colored by default.
         Returns:
-            None
-        '''
+            A matplotib Axes object.
+        """
         # Recommended to be viewed with IPython.
         if self.graph['dims']:
             nx, ny, nz = self.graph['dims']
@@ -75,9 +75,9 @@ class EGraph(nx.Graph):
         plt.xticks(range(0, 2*nx + 1))
         plt.yticks(range(0, 2*nz + 1))
         ax.set_zticks(range(0, 2*ny + 1))
-        ax.set_xlabel('x', fontdict=self.font_props)
-        ax.set_ylabel('z', fontdict=self.font_props)
-        ax.set_zlabel('y', fontdict=self.font_props)
+        ax.set_xlabel('x', fontdict=self.font_props, labelpad=20)
+        ax.set_ylabel('z', fontdict=self.font_props, labelpad=20)
+        ax.set_zlabel('y', fontdict=self.font_props, labelpad=20)
         plt.rcParams['grid.color'] = "lightgray"
         plt.tight_layout(pad=3)
         plt.draw()
@@ -107,90 +107,6 @@ def SCZ_mat(adj):
     return symplectic
 
 
-def basic_translate(outcomes):
-    """Naively translate CV outcomes to bit values.
-
-    The function treats values in (-sqrt(pi)/2, sqrt(pi)/2) as 0
-    and those in (sqrt(pi)/2, 3sqrt(pi)/2) as 1. Values on the
-    boundary are assigned a random bit value. The rest of the bins
-    are defined periodically.
-    Args:
-        outcomes (array): the values of a p-homodyne measurement
-    Retruns:
-        array: the corresponding bit values.
-    """
-    # Bin width
-    alpha = np.sqrt(np.pi)
-    n = len(outcomes)
-    bit_values = np.zeros(n, dtype=int)
-    for i in range(n):
-        div = np.divmod(outcomes[i], alpha)
-        if div[1] < alpha/2:
-            bit_values[i] = div[0] % 2
-        elif div[1] > alpha / 2:
-            bit_values[i] = (div[0]+1) % 2
-        else:
-            bit_values[i] = np.random.randint(2)
-    return bit_values
-
-
-def p_err(var, var_num=5, translator=basic_translate):
-    """Return the probability of Z errors for a list of variances.
-
-    Args:
-        var (array): array of lattice p variances
-        var_num (float): number of variances away from the origin we
-            include in the integral
-        translator (function): the CV-to-bit translator; the basic
-            binning function by default
-    Returns:
-        array: probability of Z (phase flip) errors for each variance.
-    """
-    if translator == basic_translate:
-        # Find largest bin number by finding largest variance, multiplying by
-        # var_num, then rounding up to nearest integer of form 4n+1, which are
-        # the left boundaries of the 0 bins mod sqrt(pi)
-        n_max = int(np.ceil(var_num*np.amax(var))//2*4 + 1)
-        # error = 1 - integral over the 0 bins
-        # Initiate a list with length same as var
-        error = np.ones(len(var))
-        # Integral over 0 bins that fell within var_num*var_max away from
-        # origin
-        for i in range(-n_max, n_max, 4):
-            error -= 0.5*(erf((i+2)*np.sqrt(np.pi)/(2*var))
-                          - erf(i*np.sqrt(np.pi)/(2*var)))
-    return error
-
-def Z_err_cond(var, hom_val, var_num=5):
-    """Return the conditional phase error probability for lattice nodes.
-
-    Return the phase error probability for a list of variances var
-    given homodyne outcomes hom_val, with var_num used to determine 
-    the number of terms to keep in the summation in the formula.
-
-    Args:
-        var (array): the lattice p variances
-        hom_val (array): the p-homodyne outcomes
-        var_num (float): number of variances away from the origin we
-            include in the integral
-    Returns:
-        array: probability of Z (phase flip) errors for each variance,
-            contioned on the homodyne outcomes.
-    """
-    # Find largest bin number by finding largest variance, multiplying by
-    # var_num, then rounding up to nearest integer of form 4n+1, which are
-    # the left boundaries of the 0 bins mod sqrt(pi)
-    n_max = int(np.ceil(var_num * np.amax(var)) // 2 * 4 + 1)
-    # Initiate a list with length same as var
-    ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
-    error = np.zeros(len(var))
-    # TODO: Double check the next line.
-    mod_val = np.fmod(hom_val, np.sqrt(np.pi))
-    numerator = np.sum([ex(mod_val, 2*i+1) for i in range(-n_max, n_max)], 0)
-    denominator = np.sum([ex(mod_val, i) for i in range(-n_max, n_max)], 0)
-    error = (numerator / denominator).round(5)
-    return error
-
 class CVGraph:
     '''A class for representing continuous-variable graph states.
 
@@ -209,11 +125,6 @@ class CVGraph:
         delta (float): the quadrature blurring parameter, related to
             the squeezing of the GKP states and the momentum-quadrature
             variance of the p-squeezed states; 0.01 by default
-        # indfunc (function): the function used to index the coordinates
-        #     of the lattice; basic_index by default
-        translator (function): the translator or binning function
-            between CV outcomes and bit values; basic_translate by
-            default
 
     Attributes:
         dims (int or tuple): the size of the lattice, as above
@@ -230,6 +141,9 @@ class CVGraph:
         p_var (array): the p variances of the modes
         Z_probs (array): if eval_z_probs has been run, the phase error
             probabilities of the modes
+        Z_probs_cond (array): if eval_z_probs_cond has been run, the 
+            phase  error probabilities of the modes conditioned on 
+            homodyne outcomes
         hom_outcomes (array): if measure_p has been run, the results
             of the latest p-homodyne measurement
         bit_values (array): if measure_p has been run, the bit values
@@ -237,12 +151,11 @@ class CVGraph:
             binning function translator.
     '''
     def __init__(self, g, model='grn', p_inds=[], swap_prob=None,
-                 delta=0.01, translator=basic_translate):
+                 delta=0.01):
         if isinstance(g, EGraph):
             self.graph = g
         else:
             self.graph = EGraph(g)
-        self._translator = translator
         self._SCZ = SCZ_mat(self.graph.adj_mat())
         self._delta = delta
         self._N = self.graph.number_of_nodes()
@@ -280,10 +193,9 @@ class CVGraph:
 
     def eval_Z_probs(self):
         """Evaluate the probability of phase errors at each mode."""
-        errs = p_err(self.var_p, translator=self._translator)
+        errs = Z_err(self.var_p)
         for i in range(len(errs)):
             self.graph.nodes[self.ind_dict[i]]['p_phase'] = errs[i]
-
 
     def eval_Z_probs_cond(self):
         """Evaluate the conditional phase error probability of each mode."""
@@ -296,7 +208,6 @@ class CVGraph:
         for i in range(len(Z_errs)):
             self.graph.nodes[self.ind_dict[i]]['p_phase_cond'] = Z_errs[i]
 
-
     def measure_p(self):
         """Conduct a p-homodyne measurement on the lattice."""
         # Randomly sample of a normal distribution centred at 0 with
@@ -305,17 +216,6 @@ class CVGraph:
         # bit_values = self.translator(outcomes)
         for i in range(len(outcomes)):
             self.graph.nodes[self.ind_dict[i]]['hom_val'] = outcomes[i]
-
-    def translate_outcomes(self):
-        try:
-            cv_values = self.hom_outcomes
-            bit_values = self._translator(cv_values)
-            for i in range(len(bit_values)):
-                self.graph.nodes[self.ind_dict[i]]['bit_val'] = bit_values[i]
-        except Exception:
-            print('A homodyne measurement has not yet been performed. Please '
-                  'use measure_p() first.')
-            return
 
     def hybridize(self, swap_prob):
         """Populate nodes with p-squeezed states at random."""
@@ -350,7 +250,6 @@ class CVGraph:
     def cov_p(self):
         """array: the phase-space covariance matrix."""
         return self._cov_p
-
 
     @property
     def Z_probs(self):
@@ -396,14 +295,15 @@ class CVGraph:
                   'been performed.')
             return
 
-    def sketch(self, label=None):
+    def sketch(self, label=None, legend=True, title=True):
         """Sketch the CVRHG lattice. GKP states black, p states orange.
+
         Args:
             label (bool): if 'v', label the p variances; if 'e', the
                 phase error probabilities; if 'h', the p-homodyne
                 outcomes; if 'b', the bit values; otherwise, no label.
         Returns:
-            None
+            A matplotib Axes object.
         """
         font_props = self.graph.font_props
         idg = self._indexed_graph
@@ -416,7 +316,8 @@ class CVGraph:
                                     markersize=14, label='p')
         black_line = mlines.Line2D([], [], color='black', marker='.',
                                    markersize=14, label='GKP')
-        ax.legend(handles=[orange_line, black_line], prop=font_props)
+        if legend:
+            ax.legend(handles=[orange_line, black_line], prop=font_props)
 
         title_dict = {'var_p': 'p Variances',
                       'p_phase': 'Phase error probabilities',
@@ -426,11 +327,13 @@ class CVGraph:
 
         if label:
             try:
-                title = title_dict[label]
+                name = title_dict[label]
             except KeyError:
                 print('No such label permitted.')
 
-            ax.set_title(title_dict[label], fontdict=font_props)
+            if title:
+                ax.set_title(name, fontdict=font_props)
+
             for node in self.graph:
                 try:
                     value = self.graph.nodes[node][label]

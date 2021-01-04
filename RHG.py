@@ -174,11 +174,11 @@ if __name__ == '__main__':
     G = CVGraph(RHG, swap_prob=0.1, delta=delta)
     G.eval_Z_probs()
     G.measure_p()
-    G.translate_outcomes()
+    G.eval_Z_probs_cond()
     for label in {
-            # 'var_p',
-            # 'p_phase',
+            'var_p',
+            'p_phase',
+            'p_phase_cond',
             'hom_val',
-            # 'bit_val'
             }:
         G.sketch(label)
