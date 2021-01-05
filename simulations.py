@@ -25,13 +25,10 @@ from graphstates import CVGraph
 from RHG import RHG_graph
 
 
-def monte_carlo(trials, distance, delta, swap_prob, save=False):
-    # L = distance
-    # RHG_lattice = RHG_graph(L, pol=1)
-
+def monte_carlo(code_lattice, trials, delta, swap_prob, save=False):
     successes = 0
     for i in range(trials):
-        # G = CVGraph(RHG_lattice, model='grn', swap_prob=swap_prob, delta=delta)
+        # G = CVGraph(code_lattice, model='grn', swap_prob=swap_prob, delta=delta)
         # G.measure_p()
         # G.eval_Z_probs_cond()
         # result = correct(G, inner='basic', outer='MWPM', bc='non-periodic')
@@ -56,13 +53,16 @@ if __name__ == '__main__':
         writer = csv.writer(file)
 
     trials = 100
-    distances = [1, 2]
+    distances = [1, 2, 3]
     deltas = [0.01, 0.1]
     probs = [0, 0.25]
-    for (l, d, p) in it.product(distances, deltas, probs):
-        p_fail, err = monte_carlo(trials, l, d, p, True)
-        current_time = datetime.now().time().strftime("%H:%M:%S")
-        writer.writerow([current_time, l, d, p, p_fail, err, trials])
+    for l in distances:
+        L = l
+        RHG_lattice = RHG_graph(L, pol=1)
+        for (d, p) in it.product(deltas, probs):
+            p_fail, err = monte_carlo(RHG_lattice, trials, d, p, True)
+            current_time = datetime.now().time().strftime("%H:%M:%S")
+            writer.writerow([current_time, l, d, p, p_fail, err, trials])
 
     file.close()
     table = pd.read_csv(file_name)
