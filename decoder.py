@@ -359,6 +359,12 @@ def MWPM(G_match, G_dec, alg='blossom_nx', bc='periodic', draw=False):
                 plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
         graph_drawer(G_match)
 
+def recovery():
+    return
+
+def check_correction(G):
+    return
+
 if __name__ == '__main__':
     RHG_lattice = RHG.RHG_graph(2, pol=1)
 
