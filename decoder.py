@@ -150,7 +150,7 @@ def syndrome_plot(G_dec, G, index_dict=None, code='primal', drawing_opts={}, bc=
     return ax
 
 
-def assign_weights(CVG, method='naive', code='primal'):
+def assign_weights(CVG, method='unit', code='primal'):
     """Assign weights to qubits in a hybrid CV graph state.
 
     By default, use unity weights; otherwise use the heristic weights
@@ -163,7 +163,7 @@ def assign_weights(CVG, method='naive', code='primal'):
     error_printed = False
     for node in syndrome_coords:
         # Naive weight assignment, unity weights.
-        if method=='naive':
+        if method=='unit':
             G.nodes[node]['weight'] = 1
         # Blueprint weight assignment dependent on type of neighbour.
         if method=='blueprint':
