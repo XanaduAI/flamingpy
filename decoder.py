@@ -359,11 +359,39 @@ def MWPM(G_match, G_dec, alg='blossom_nx', bc='periodic', draw=False):
                 plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
         graph_drawer(G_match)
 
-def recovery():
+def recovery(G):
     return
 
 def check_correction(G):
     return
+
+def correct(G,
+           inner=None,
+           outer='MWPM',
+           weights='unit',
+           bc='non-periodic',
+           draw=False,
+           drawing_opts={}):
+
+    inner_dict = {'basic': basic_translate}
+    outer_dict = {'MWPM': 'MWPM'}
+
+    if inner:
+        CV_decoder(G, translator=inner_dict[inner])
+
+   # TODO: Eventually, have boundary conditions be a graph attribute of 
+   # code graph, e.g. bc = G.graph['boundary_conditions']
+
+    if outer_dict[outer] == 'MWPM':
+        assign_weights(G, method=weights)
+        G_dec = decoding_graph(G, bc=bc, draw=draw, drawing_opts=drawing_opts)
+        G_match = matching_graph(G_dec, bc=bc)
+        matching = MWPM(G_match, G_dec, draw=draw)
+        recovery(G)
+
+    result = check_correction(G)
+    return result
+
 
 if __name__ == '__main__':
     RHG_lattice = RHG.RHG_graph(2, pol=1)
@@ -374,11 +402,16 @@ if __name__ == '__main__':
     G = CVGraph(RHG_lattice, swap_prob=swap_prob, delta=delta)
     G.measure_p()
     G.eval_Z_probs_cond()
-    CV_decoder(G)
-    assign_weights(G, method='blueprint')
 
     dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
           'label_boundary': False, 'legend':False}
-    G_dec = decoding_graph(G, bc='', drawing_opts=dw, draw=True)
-    G_match = matching_graph(G_dec, bc='', draw=False)
-    matching = MWPM(G_match, G_dec, draw=True)
+
+    # CV_decoder(G)
+    # assign_weights(G, method='blueprint')
+    # G_dec = decoding_graph(G, bc='', drawing_opts=dw, draw=True)
+    # G_match = matching_graph(G_dec, bc='', draw=False)
+    # matching = MWPM(G_match, G_dec, draw=True)
+
+    correct(G, inner='basic', outer='MWPM', weights='blueprint', bc='non-periodic',
+           draw=True, drawing_opts=dw)
+
