@@ -41,3 +41,38 @@ def monte_carlo(trials, distance, delta, swap_prob, save=False):
     err = np.sqrt((p_fail * (1 - p_fail)) / trials)
     return p_fail, err
 
+if __name__ == '__main__':
+    todays_date = date.today().strftime("%d-%m-%Y")
+    file_name = 'data/' + todays_date + '.csv'
+    try:
+        file = open(file_name, 'x')
+        # writer = csv.DictWriter(file, ['time', 'delta', 'p_swap', 'p_fail', 'error', 'trials'])
+        # writer.writeheader()
+        writer = csv.writer(file)
+        writer.writerow(['time', 'distance', 'delta', 'p_swap', 'p_fail', 'error', 'trials'])
+
+    except Exception:
+        file = open(file_name, 'a')
+        writer = csv.writer(file)
+
+    trials = 100
+    distances = [1, 2]
+    deltas = [0.01, 0.1]
+    probs = [0, 0.25]
+    for (l, d, p) in it.product(distances, deltas, probs):
+        p_fail, err = monte_carlo(trials, l, d, p, True)
+        current_time = datetime.now().time().strftime("%H:%M:%S")
+        writer.writerow([current_time, l, d, p, p_fail, err, trials])
+
+    file.close()
+    table = pd.read_csv(file_name)
+
+    fig, ax = plt.subplots()
+    table.plot.scatter(x='delta', y='p_fail', ax=ax)
+
+    ax.set_xlabel('$\delta$')
+    ax.set_ylabel('$p_{fail}$')
+    plt.show()
+
+    print(table)
+
