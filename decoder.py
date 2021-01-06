@@ -303,11 +303,12 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
         # Keep track of the boundary points that have been connected
         # to a cube.
         for cube in odd_parity_inds:
+            remaining_boundary = list(set(boundary_inds).difference(set(used_boundary_points)))
             # Find the shortest path from the any of the boundary
             # vertices to the cube. Note that we might wish to change
             # the sources to unused boundary vertices so that each
             # cube is connected to a unique vertex.
-            point_paths = alg2(G, sources=boundary_inds, target=cube)
+            point_paths = alg2(G, sources=remaining_boundary, target=cube)
             path = point_paths[1]
             point = path[0]
             length = point_paths[0]
