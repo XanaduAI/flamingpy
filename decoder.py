@@ -360,9 +360,34 @@ def MWPM(G_match, G_dec, alg='blossom_nx', bc='periodic', draw=False):
     return matching
 
 
+def recovery(G_match, G_dec, G, matching, check=False):
+    boundary = G_match.graph['used_boundary_points']
+    for pair in matching:
+        if pair not in it.product(boundary, boundary):
+            path = G_match.edges[pair]['path']
+            pairs = [(path[i], path[i+1]) for i in range(len(path)-1)]
+            for pair in pairs:
+                common_vertex = G_dec.edges[pair]['common_vertex']
+                G.graph.nodes[common_vertex]['bit_val'] ^= 1
 
-def recovery(G):
-    return
+    if check:
+        G_dec_new = decoding_graph(G, draw=True)
+        odd_cubes = G_dec_new.graph['odd_cubes']
+        if odd_cubes:
+            print('Unsatisfied stabilizers:', odd_cubes)
+        else:
+            print('Recovery worked!')
+
+    # if check:
+    #     parity = 0
+    #     for stabe in G_dec:
+    #         if isinstance(stabe, RHG.RHGCube):
+    #             stabe._parity = None
+    #             parity ^= stabe.parity()
+    #     return (G, bool(1-parity))
+
+    return G
+
 
 def check_correction(G):
     return
