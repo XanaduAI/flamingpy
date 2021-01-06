@@ -357,6 +357,9 @@ def MWPM(G_match, G_dec, alg='blossom_nx', bc='periodic', draw=False):
                 plt.title('Minimum-weight perfect matching', family='serif', size=20)
                 plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
         graph_drawer(G_match)
+    return matching
+
+
 
 def recovery(G):
     return
