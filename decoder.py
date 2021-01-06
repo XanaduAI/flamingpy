@@ -132,7 +132,6 @@ def syndrome_plot(G_dec, G, index_dict=None, code='primal', drawing_opts={}, bc=
     ax.voxels(x, y, z, filled_e, facecolors=filled_e)
 
     if bc != 'periodic' and drawing_opts['label_boundary']:
-        print(len(points))
         for point in points:
             ax.scatter(point[0], point[1], point[2], s=70, c='k')
             ax.text(point[0], point[1], point[2], index_dict[point], fontdict=font_props)
@@ -226,8 +225,9 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
     for (cube1, cube2) in it.combinations(G_dec, 2):
         common_vertex = set(cube1.coords()).intersection(cube2.coords())
         if common_vertex:
-            weight = G.graph.nodes[common_vertex.pop()]['weight']
-            G_dec.add_edge(cube1, cube2, weight=weight)
+            coordinate = common_vertex.pop()
+            weight = G.graph.nodes[coordinate]['weight']
+            G_dec.add_edge(cube1, cube2, weight=weight, common_vertex=coordinate)
 
     # Include boundary vertices in the case of non-periodic boundary
     # conditions. Note that info about boundary conditions will
@@ -240,7 +240,7 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
         for (cube, point) in it.product(G_dec, bound_points):
                 if point in cube.coords():
                     weight = G.graph.nodes[point]['weight']
-                    G_dec.add_edge(cube, point, weight=weight)
+                    G_dec.add_edge(cube, point, weight=weight, common_vertex=point)
 
     # Relabel the nodes of the decoding graph to integers and define
     # the mapping between nodes and indices.
