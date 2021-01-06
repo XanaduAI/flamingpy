@@ -312,18 +312,16 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
             path = point_paths[1]
             point = path[0]
             length = point_paths[0]
-            if length == 0:
-                length = smallest_number
             # Add edge to the matching graph between the cube and
             # the boundary vertex, with weight equal to the length
             # of the shortest path.
-            G_match.add_edge(cube, point, weight=length, inverse_weight=1/length, path=path)
+            G_match.add_edge(cube, point, weight=length, inverse_weight=-length, path=path)
             # Add to the list of used boundary vertices.
             used_boundary_points.append(point)
 
         # Add edge with weight 0 between any two boundary points.
         for (point1, point2) in it.combinations(used_boundary_points, 2):
-            G_match.add_edge(point1, point2, weight=smallest_number, inverse_weight=largest_number)
+            G_match.add_edge(point1, point2, weight=0, inverse_weight=0)
 
     # Add indices of used boundary points as a graph attribute.
     G_match.graph['used_boundary_points'] = used_boundary_points[:]
