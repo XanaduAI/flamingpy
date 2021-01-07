@@ -414,14 +414,14 @@ def correct(G,
         G_dec = decoding_graph(G, bc=bc, draw=draw, drawing_opts=drawing_opts)
         G_match = matching_graph(G_dec, bc=bc)
         matching = MWPM(G_match, G_dec, draw=draw)
-        recovery(G)
+        # recovery(G)
 
     result = check_correction(G)
     return result
 
 
 if __name__ == '__main__':
-    RHG_lattice = RHG.RHG_graph(2, pol=1)
+    RHG_lattice = RHG.RHG_graph(1, boundaries='primal', pol=1)
 
     swap_prob = 0.2
     delta = 0.01
@@ -430,7 +430,7 @@ if __name__ == '__main__':
     G.measure_p()
     G.eval_Z_probs_cond()
 
-    dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
+    dw = {'show_nodes': True, 'label_nodes': '', 'label_cubes': True,
           'label_boundary': False, 'legend':False}
 
     # CV_decoder(G)

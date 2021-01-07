@@ -20,27 +20,39 @@ import matplotlib.pyplot as plt
 
 from graphstates import EGraph, CVGraph
 
-def RHG_graph(dims, pol=0):
+def RHG_graph(dims, boundaries='primal', pol=0):
     '''Return an EGraph of the RHG lattice.'''
     # Dimensions of the lattice.
     if np.size(dims) == 1:
         dims = (dims, dims, dims)
     nx, ny, nz = dims
 
-    lattice = EGraph(dims=dims)
-    # lattice.graph['dims'] = dims
+    # Dealing with boundaries
+    if type(boundaries) == str:
+        boundaries = [boundaries] * 6
+    if not boundaries:
+        boundaries = ['primal'] * 5 + ['dual']
+        nz += 1
+    type_dict = {'dual': 0, 'primal': 1}
+    bound_labels = ['left', 'bottom', 'front', 'right', 'top', 'back']
+    bound_labels_dict = {bound_labels[i]: boundaries[i] for i in range(6)}
+    x_factor, y_factor, z_factor = [type_dict[typ] for typ in boundaries[3:]]
+
+    # Define the EGraph of the lattice
+    lattice = EGraph(dims=dims, boundaries=bound_labels_dict)
+
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [(2*i+1, 2*j+1, 2*k) for (i, j, k) in
-                it.product(range(nx), range(ny), range(nz+1))]
+                it.product(range(nx), range(ny), range(nz+z_factor))]
     odd_red = [(2*i, 2*j, 2*k+1) for (i, j, k) in
-               it.product(range(nx+1), range(ny+1), range(nz))]
+               it.product(range(nx+x_factor), range(ny+y_factor), range(nz))]
     all_red = set(even_red + odd_red)
 
     # Coordinates of green qubits in even and odd horizontal slices.
     even_green = [(2*i+1, 2*j, k) for (i, j, k) in
-                  it.product(range(nx), range(ny+1), range(2*nz+1))]
+                  it.product(range(nx), range(ny+y_factor), range(2*nz+z_factor))]
     odd_green = [(2*i, 2*j+1, k) for (i, j, k) in
-                 it.product(range(nx+1), range(ny), range(2*nz+1))]
+                 it.product(range(nx+x_factor), range(ny), range(2*nz+z_factor))]
     all_green = set(even_green + odd_green)
 
     # Coordinates of all potential neighbours of red vertices.
@@ -106,6 +118,7 @@ def RHG_boundary_coords(dims, code='primal'):
                 combs.append(tuple(l))
                 combs.append(tuple(m))
     return combs
+
 def RHG_stabilizers(G, code='primal'):
     """Return a list of subgraphs induced by the qubits with cordinates
     from RHG_syndrome_coords."""
