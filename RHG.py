@@ -119,6 +119,13 @@ def RHG_boundary_coords(dims, code='primal'):
                 combs.append(tuple(m))
     return combs
 
+
+def RHG_slice_coords(RHG_lattice, plane, number):
+    plane_dict = {'x': 0, 'y': 1, 'z': 2}
+    plane_ind = plane_dict[plane]
+    coords = [point for point in RHG_lattice.nodes if point[plane_ind] == number]
+    return coords
+
 def RHG_stabilizers(G, code='primal'):
     """Return a list of subgraphs induced by the qubits with cordinates
     from RHG_syndrome_coords."""
