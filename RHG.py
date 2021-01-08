@@ -85,6 +85,7 @@ def RHG_graph(dims, boundaries='natural', pol=0):
 
     bound_arr = np.array(boundaries[3:])
     periodic_inds = np.where(bound_arr=='periodic')[0]
+    dims = (nx, ny, nz)
     for ind in periodic_inds:
         low_slice = set([point for point in lattice.nodes if point[ind] == 0])
         high_slice = set([point for point in lattice.nodes if point[ind] == 2*dims[ind]-1])
