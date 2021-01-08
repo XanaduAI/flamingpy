@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 from graphstates import EGraph, CVGraph
 
-def RHG_graph(dims, boundaries='primal', pol=0):
+def RHG_graph(dims, boundaries='natural', pol=0):
     '''Return an EGraph of the RHG lattice.'''
     # Dimensions of the lattice.
     if np.size(dims) == 1:
@@ -28,12 +28,14 @@ def RHG_graph(dims, boundaries='primal', pol=0):
     nx, ny, nz = dims
 
     # Dealing with boundaries
-    if type(boundaries) == str:
-        boundaries = [boundaries] * 6
-    if not boundaries:
-        boundaries = ['primal'] * 5 + ['dual']
+    if boundaries == 'natural':
+        boundaries = ['primal'] * 3 + ['periodic'] * 2 + ['dual']
+        nx += 1
+        ny += 1
         nz += 1
-    type_dict = {'dual': 0, 'primal': 1}
+    elif type(boundaries) == str:
+        boundaries = ['primal'] * 3 + [boundaries] * 3
+    type_dict = {'periodic': 0, 'dual': 0, 'primal': 1}
     bound_labels = ['left', 'bottom', 'front', 'right', 'top', 'back']
     bound_labels_dict = {bound_labels[i]: boundaries[i] for i in range(6)}
     x_factor, y_factor, z_factor = [type_dict[typ] for typ in boundaries[3:]]
@@ -81,6 +83,31 @@ def RHG_graph(dims, boundaries='primal', pol=0):
                 lattice.add_edge(point, neighbour, weight=polarity)
         lattice.nodes[point]['color'] = 'green'
 
+    bound_arr = np.array(boundaries[3:])
+    periodic_inds = np.where(bound_arr=='periodic')[0]
+    for ind in periodic_inds:
+        low_slice = set([point for point in lattice.nodes if point[ind] == 0])
+        high_slice = set([point for point in lattice.nodes if point[ind] == 2*dims[ind]-1])
+        if ind in (0, 1):
+            low_reds = all_red.intersection(low_slice)
+            high_reds = all_red.intersection(high_slice)
+            for point in low_reds:
+                polarity = (-1) ** (pol * (point[2] + ind + 1))
+                high_green = list(point)
+                high_green[ind] = 2*dims[ind]-1
+                lattice.add_edge(point, tuple(high_green), weight=polarity)
+            for point in high_reds:
+                polarity = (-1) ** (pol * (point[2] + ind + 1))
+                low_green = list(point)
+                low_green[ind] = 0
+                lattice.add_edge(point, tuple(low_green), weight=polarity)
+        if ind == 2:
+            low_greens = all_green.intersection(low_slice)
+            for point in low_greens:
+                polarity = (-1) ** (pol * (point[1] + 1))
+                high_green = list(point[:])
+                high_green[ind] = 2*dims[ind] - 1
+                lattice.add_edge(point, tuple(high_green), weight=polarity)
     return lattice
 
 def RHG_syndrome_coords(dims, code='primal'):
