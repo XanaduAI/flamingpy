@@ -33,8 +33,6 @@ class EGraph(nx.Graph):
     def adj_mat(self):
         return nx.to_numpy_array(self, nodelist=sorted(self.nodes))
 
-    def color(self, coord):
-        return self.nodes[coord]['color']
 
     def draw(self, color=1, label=0, pol=1):
         """Draw the graph.
@@ -59,7 +57,7 @@ class EGraph(nx.Graph):
         # into the page; however the axes labels are correct.
         for point in self.nodes:
             x, z, y = point
-            node_color = self.color(point)
+            node_color = self.nodes[point]['color']
             ax.scatter(x, y, z, s=70, c=color*node_color+(1-color)*'k')
             indices = {c: n for (n, c) in enumerate(sorted(self.nodes))}
             if label:
