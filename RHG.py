@@ -29,32 +29,31 @@ def RHG_graph(dims, boundaries='natural', pol=0):
 
     # Dealing with boundaries
     if boundaries == 'natural':
-        boundaries = ['primal'] * 3 + ['periodic'] * 2 + ['dual']
-        nx += 1
-        ny += 1
-        nz += 1
+        boundaries = ['periodic', 'periodic', 'primal']
     elif type(boundaries) == str:
-        boundaries = ['primal'] * 3 + [boundaries] * 3
-    type_dict = {'periodic': 0, 'dual': 0, 'primal': 1}
-    bound_labels = ['left', 'bottom', 'front', 'right', 'top', 'back']
-    bound_labels_dict = {bound_labels[i]: boundaries[i] for i in range(6)}
-    x_factor, y_factor, z_factor = [type_dict[typ] for typ in boundaries[3:]]
+        boundaries = [boundaries] * 3
+    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+    max_dict = {'primal': 1, 'dual': 0, 'periodic': 0}
+    bound_labels = ['x', 'y', 'z']
+    bound_labels_dict = {bound_labels[i]: boundaries[i] for i in range(3)}
+    x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
+    x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
     # Define the EGraph of the lattice
     lattice = EGraph(dims=dims, boundaries=bound_labels_dict)
 
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [(2*i+1, 2*j+1, 2*k) for (i, j, k) in
-                it.product(range(nx), range(ny), range(nz+z_factor))]
+                it.product(range(nx), range(ny), range(z_min, nz+z_max))]
     odd_red = [(2*i, 2*j, 2*k+1) for (i, j, k) in
-               it.product(range(nx+x_factor), range(ny+y_factor), range(nz))]
+               it.product(range(x_min, nx+x_max), range(y_min, ny+y_max), range(nz))]
     all_red = set(even_red + odd_red)
 
     # Coordinates of green qubits in even and odd horizontal slices.
     even_green = [(2*i+1, 2*j, k) for (i, j, k) in
-                  it.product(range(nx), range(ny+y_factor), range(2*nz+z_factor))]
+                  it.product(range(nx), range(y_min, ny+y_max), range(z_min, 2*nz+z_max))]
     odd_green = [(2*i, 2*j+1, k) for (i, j, k) in
-                 it.product(range(nx+x_factor), range(ny), range(2*nz+z_factor))]
+                 it.product(range(x_min, nx+x_max), range(ny), range(z_min, 2*nz+z_max))]
     all_green = set(even_green + odd_green)
 
     # Coordinates of all potential neighbours of red vertices.
@@ -83,7 +82,7 @@ def RHG_graph(dims, boundaries='natural', pol=0):
                 lattice.add_edge(point, neighbour, weight=polarity)
         lattice.nodes[point]['color'] = 'green'
 
-    bound_arr = np.array(boundaries[3:])
+    bound_arr = np.array(boundaries)
     periodic_inds = np.where(bound_arr=='periodic')[0]
     dims = (nx, ny, nz)
     for ind in periodic_inds:
