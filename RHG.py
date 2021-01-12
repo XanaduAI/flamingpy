@@ -153,8 +153,7 @@ def RHG_syndrome_coords(G):
                     highest_point = stabe[3+ind]
                     other_side = list(highest_point)
                     other_side[ind] = mins[ind]
-                    print(highest_point, other_side)
-                    stabe[3+ind] = other_side
+                    stabe[3+ind] = tuple(other_side)
                     periodic_six_bodies.append(stabe)
             if ind in dual_inds:
                 m1, M1 = mins[:], maxes[:]
