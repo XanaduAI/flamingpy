@@ -34,13 +34,19 @@ class EGraph(nx.Graph):
         return nx.to_numpy_array(self, nodelist=sorted(self.nodes))
 
 
-    def draw(self, color=1, label=0, pol=1):
+    def draw(self, color_nodes=False, color_edges=False, label=False):
         """Draw the graph.
+
         Args:
+            color_nodes (bool): If True, color nodes based on 'color' 
+                attributes attached to the node. Black by default.
+            color_edges (bool): If True, color edges based on 'color'
+                attributes attached to the node. Grey by default.
             label (bool): if True, label the indices; unlabelled by
                 default.
-            color (bool): if True, color the syndrome and data qubits
-                red and green, respectively; colored by default.
+            polarity (bool): if True, color edges with +1 weights blue
+                and -1 weights red. All edges grey by default.
+
         Returns:
             A matplotib Axes object.
         """
@@ -57,25 +63,22 @@ class EGraph(nx.Graph):
         # into the page; however the axes labels are correct.
         for point in self.nodes:
             x, z, y = point
-            node_color = self.nodes[point]['color']
-            ax.scatter(x, y, z, s=70, c=color*node_color+(1-color)*'k')
+            color_bool = int(color_nodes)
+            if 'color' in self.nodes[point]:
+                node_color = self.nodes[point]['color']
+            ax.scatter(x, y, z, s=70, c=color_bool*node_color+(1-color_bool)*'k')
             indices = {c: n for (n, c) in enumerate(sorted(self.nodes))}
             if label:
                 ax.text(x, y, z, str(indices[point]), fontdict=self.font_props,
                         color='MediumBlue', backgroundcolor='w')
         # Plotting edges.
         for edge in self.edges:
-            if pol:
-                if 'weight' in self.edges[edge]:
-                    polarity = self.edges[edge]['weight']
-                    color = ((polarity + 1) // 2) * 'b' + abs((polarity - 1) // 2) * 'r'
-                else:
-                    color = 'grey'
-            else:
-                color = 'grey'
+            color = int(color_edges)
+            if 'color' in self.edges[edge]:
+                edge_color = self.edges[edge]['color']
             x1, z1, y1 = edge[0]
             x2, z2, y2 = edge[1]
-            plt.plot([x1, x2], [y1, y2], [z1, z2], c=color)
+            plt.plot([x1, x2], [y1, y2], [z1, z2], c=color_bool*edge_color+(1-color_bool)*'grey')
 
         ax.tick_params(labelsize=self.font_props['size'])
         plt.xticks(range(0, 2*nx + 1))
@@ -301,7 +304,7 @@ class CVGraph:
                   'been performed.')
             return
 
-    def sketch(self, label=None, legend=True, title=True, pol=0):
+    def sketch(self, label=None, legend=True, title=True, color_nodes=False, color_edges=False):
         """Sketch the CVRHG lattice. GKP states black, p states orange.
 
         Args:
@@ -314,7 +317,7 @@ class CVGraph:
         font_props = self.graph.font_props
         idg = self._indexed_graph
         p_coords = [idg.nodes[ind]['pos'] for ind in self._p_inds]
-        ax = self.graph.draw(0, 0, pol)
+        ax = self.graph.draw(color_nodes=color_nodes, color_edges=color_edges, label=0)
         for point in p_coords:
             x, z, y = point
             ax.scatter(x, y, z, s=40, c='orange')
