@@ -382,8 +382,25 @@ def recovery(G_match, G_dec, G, matching, check=False):
     return G
 
 
-def check_correction(G):
-    return
+def check_correction(G, plane='x', sheet=0, sanity_check=False):
+    dims = np.array(G.graph.graph['dims'])
+    dims = (dims[0]+1, dims[1]+1, dims[2]+1)
+    dir_dict = {'x': 0, 'y': 1, 'z': 2}
+    if sanity_check:
+        lim = 2*dims[dir_dict[plane]]
+    else:
+        lim = 1
+    truthlist = []
+    for sheet in range(lim):
+        slice_verts = RHG.RHG_slice_coords(G.graph, plane, sheet)
+        syndrome_verts = [a for b in RHG.RHG_syndrome_coords(G.graph) for a in b]
+        only_primal = set(slice_verts).intersection(set(syndrome_verts))
+        parity = 0
+        for node in only_primal:
+            parity ^= G.graph.nodes[node]['bit_val']
+        truthlist.append(bool(1-parity))
+    return truthlist
+
 
 def correct(G,
            inner=None,
