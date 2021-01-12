@@ -11,41 +11,55 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'''This module provides classes for DV and CV graph states.'''
-import itertools as it
+"""Classes for representing graph states."""
 import networkx as nx
 import numpy as np
 from numpy.random import (multivariate_normal as mvn, default_rng as rng)
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
-from GKP import basic_translate, Z_err, Z_err_cond
+from GKP import Z_err, Z_err_cond
+
 
 class EGraph(nx.Graph):
-    '''An enhanced graph class based on networkx.Graph.'''
+    """An enhanced graph class based on a NetworkX Graph.
+
+    A class for adding some functionality to a NetworkX graph,
+    including a drawing function draw and some short-hand/conveience
+    methods.
+
+    Attributes:
+        font_props (dict): graph-size-dependent font properties for use
+            in the draw method and in classes that make use of EGraph.
+    """
 
     def __init__(self, *args, **kwargs):
+        """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
         if 'dims' in self.graph:
             tot = np.sum(self.graph['dims'])
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
+        # TODO: If dims not specified, look at number of nodes in graph
+        # to detemrine font properties.
 
     def adj_mat(self):
-        return nx.to_numpy_array(self, nodelist=sorted(self.nodes))
+        """Return the adjacency matrix of the graph.
 
+        Indices correspond to sorted nodes.
+        """
+        return nx.to_numpy_array(self, nodelist=sorted(self.nodes))
+        # TODO: Sort nodes depending on user preference.
 
     def draw(self, color_nodes=False, color_edges=False, label=False):
         """Draw the graph.
 
         Args:
-            color_nodes (bool): If True, color nodes based on 'color' 
+            color_nodes (bool): If True, color nodes based on 'color'
                 attributes attached to the node. Black by default.
             color_edges (bool): If True, color edges based on 'color'
                 attributes attached to the node. Grey by default.
             label (bool): if True, label the indices; unlabelled by
                 default.
-            polarity (bool): if True, color edges with +1 weights blue
-                and -1 weights red. All edges grey by default.
 
         Returns:
             A matplotib Axes object.
@@ -63,27 +77,35 @@ class EGraph(nx.Graph):
         # into the page; however the axes labels are correct.
         for point in self.nodes:
             x, z, y = point
+
+            # Color based on color attribute; otherwise black.
             color_bool = int(color_nodes)
             if 'color' in self.nodes[point]:
                 node_color = self.nodes[point]['color']
-            ax.scatter(x, y, z, s=70, c=color_bool*node_color+(1-color_bool)*'k')
+            color = color_bool * node_color + (1 - color_bool) * 'k'
+
+            ax.scatter(x, y, z, s=70, c=color)
             indices = {c: n for (n, c) in enumerate(sorted(self.nodes))}
             if label:
                 ax.text(x, y, z, str(indices[point]), fontdict=self.font_props,
                         color='MediumBlue', backgroundcolor='w')
         # Plotting edges.
         for edge in self.edges:
-            color = int(color_edges)
+
+            # Color based on color attribute; otherwise black.
+            color_bool = int(color_edges)
             if 'color' in self.edges[edge]:
                 edge_color = self.edges[edge]['color']
+            color = color_bool * edge_color + (1 - color_bool) * 'grey'
+
             x1, z1, y1 = edge[0]
             x2, z2, y2 = edge[1]
-            plt.plot([x1, x2], [y1, y2], [z1, z2], c=color_bool*edge_color+(1-color_bool)*'grey')
+            plt.plot([x1, x2], [y1, y2], [z1, z2], c=color)
 
         ax.tick_params(labelsize=self.font_props['size'])
-        plt.xticks(range(0, 2*nx + 1))
-        plt.yticks(range(0, 2*nz + 1))
-        ax.set_zticks(range(0, 2*ny + 1))
+        plt.xticks(range(0, 2 * nx + 1))
+        plt.yticks(range(0, 2 * nz + 1))
+        ax.set_zticks(range(0, 2 * ny + 1))
         ax.set_xlabel('x', fontdict=self.font_props, labelpad=20)
         ax.set_ylabel('z', fontdict=self.font_props, labelpad=20)
         ax.set_zlabel('y', fontdict=self.font_props, labelpad=20)
@@ -93,7 +115,15 @@ class EGraph(nx.Graph):
         return ax
 
     def index(self):
-        indexed_graph = nx.convert_node_labels_to_integers(self, ordering='sorted', label_attribute='pos')
+        """Return a relabelled graph with indices as labels.
+
+        Point tuples are stored in the 'pos' attribute of the new graph.
+        Use the default sort as the index mapping.
+        """
+        # TODO: Let user specify index mapping.
+        indexed_graph = nx.convert_node_labels_to_integers(self,
+                                                           ordering='sorted',
+                                                           label_attribute='pos')
         return indexed_graph
 
 
@@ -105,7 +135,8 @@ def SCZ_mat(adj):
 
     Args:
         adj (array): N by N binary symmetric matrix. If modes i and j
-            are linked by a CZ, then entry ij and ji is 1; otherwise 0.
+            are linked by a CZ, then entry ij and ji is equal to the
+            weight of the edge (1 by default); otherwise 0.
     Returns:
         array: 2N by 2N symplectic matrix
     """
@@ -117,15 +148,18 @@ def SCZ_mat(adj):
 
 
 class CVGraph:
-    '''A class for representing continuous-variable graph states.
+    """A class for representing continuous-variable graph states.
 
     Has all the functionality of an EGraph, but associates its
     nodes with continuous-variable quantum states and its edges with
     continuous-variable CZ gates.
 
+    For now, only a hybrid state of p-squeezed and GKP states is
+    considered.
+
     Args:
         g (graph-type): the graph underlying the state
-        model (str): the error model; gaussian random noise (GRN) by
+        model (str): the noise model; Gaussian random noise (GRN) by
             default
         p_inds (array): the indices of the p-squeezed states; empty by
             default (meaning only GKP states present)
@@ -136,31 +170,38 @@ class CVGraph:
             variance of the p-squeezed states; 0.01 by default
 
     Attributes:
-        dims (int or tuple): the size of the lattice, as above
-        coords (set): the coordinates of the lattice
-        indices (dict): a dictionary of the form {index: coordinate},
-            where the indices are derived from indfunc. Note that this
-            swaps the order of the dictionary output by indfunc
-        N (int): the number of qubits in the lattice
-        SCZ (np.array): the symplectic matrix associated with the CZ
-            application at the the lattice edges. Note that this is 
-            technically a public method that can also draw SCZ.
-        p_indices (array): the indices of the p-squeezed states
-        cov_p (array): the phase-space covariance matrix
-        p_var (array): the p variances of the modes
+        graph (EGraph): the unerlying graph representation
+        _N (int): the number of qubits in the lattice
+        _delta (float): the delta from the Args above
+        _SCZ (np.array): the symplectic matrix associated with the CZ
+            application at the the lattice edges
+        _p_inds (array): the indices of the p-squeezed states
+        _indexed_graph (nx.Graph): a graph with nodes relabelled as
+            integer indices
+        ind_dict(dict): a dictionary between indices and coordinates
+        cov_p (array): the phase-space covariance matrix (populated
+            if 'grn' model specified)
+        var_ p (array): the p variances of the modes populated if
+            'grn' model specified)
         Z_probs (array): if eval_z_probs has been run, the phase error
             probabilities of the modes
-        Z_probs_cond (array): if eval_z_probs_cond has been run, the 
-            phase  error probabilities of the modes conditioned on 
+        Z_probs_cond (array): if eval_z_probs_cond has been run, the
+            phase error probabilities of the modes conditioned on
             homodyne outcomes
         hom_outcomes (array): if measure_p has been run, the results
             of the latest p-homodyne measurement
-        bit_values (array): if measure_p has been run, the bit values
-            associated with the latest p-homodyne measurement, assuming
-            binning function translator.
-    '''
-    def __init__(self, g, model='grn', p_inds=[], swap_prob=None,
-                 delta=0.01):
+    """
+
+    def __init__(self, g, model='grn', p_inds=[], swap_prob=None, delta=0.01):
+        """Initialize the CVGraph.
+
+        Convert g into an EGraph and designate nodes either p-squeezed
+        or GKP states depending. If p_inds is not empty, manually
+        populate those nodes with p-squeezed states. If swap_prob is
+        given, run the hybridize method to populate the lattice at
+        random with a numer of p-squeezed states equal to swap_prob *
+        (# of nodes).
+        """
         if isinstance(g, EGraph):
             self.graph = g
         else:
@@ -184,12 +225,14 @@ class CVGraph:
             self.graph.nodes[self.ind_dict[ind]]['type'] = 'GKP'
 
         if model == 'grn':
-                    self.grn_model(delta)
+            self.grn_model(delta)
 
     def SCZ(self, heat_map=0):
         """Return the symplectic matrix associated with CZ application.
+
         Args:
             heat_map (bool): if True, draw a heat map of the matrix.
+
         Returns:
             array: the symplectic matrix.
         """
@@ -227,17 +270,33 @@ class CVGraph:
             self.graph.nodes[self.ind_dict[i]]['hom_val'] = outcomes[i]
 
     def hybridize(self, swap_prob):
-        """Populate nodes with p-squeezed states at random."""
+        """Populate nodes with p-squeezed states at random.
+
+        Args:
+            swap_prob (float): the probability of swapping out a GKP
+                state for a p-squeezed state.
+
+        Returns:
+            None
+        """
         num_p = swap_prob * self._N
         self._p_inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
 
     def grn_model(self, delta):
+        """Apply Gaussian Random Noise model to the CVGraph.
+
+        Args:
+            delta (float): the sqeezing/blurring/variance parameter
+
+        Returns:
+            None
+        """
         # Step 1: Construct the phase-space covariance matrix
         # Basis ordering: all N q's, then all N p's
         # Step 1a: initialize all as GKPs
-        cov_phase = delta * np.eye(2*self._N)
+        cov_phase = delta * np.eye(2 * self._N)
         # Step 1b: replace p in relevant locations
-        cov_phase[self._p_inds, self._p_inds] = 1/delta
+        cov_phase[self._p_inds, self._p_inds] = 1 / delta
         # Step 1c: apply CZ gates
         cov_phase = self._SCZ @ cov_phase @ self._SCZ.T
         # Step 1d: extract p variances
@@ -305,12 +364,27 @@ class CVGraph:
             return
 
     def sketch(self, label=None, legend=True, title=True, color_nodes=False, color_edges=False):
-        """Sketch the CVRHG lattice. GKP states black, p states orange.
+        """Sketch the underlying graph with CV labels.
+
+        GKP states are black, p-squeezed states are orange. If a label
+        is specified from the keys in the following dictionary, data
+        corresponding to the values will be displayed:
+
+            {'var_p': 'p Variances',
+            'p_phase': 'Phase error probabilities',
+            'p_phase_cond': 'Conditional phase error probabilities',
+            'hom_val': 'p-homodyne outcomes',
+            'bit_val': 'Bit values'}.
 
         Args:
-            label (bool): if 'v', label the p variances; if 'e', the
-                phase error probabilities; if 'h', the p-homodyne
-                outcomes; if 'b', the bit values; otherwise, no label.
+            label (bool): if a string from the above dictionary, plot
+                the correspond value; otherwise, no label.
+            legend (bool): if True, display a legend
+            title (bool): if True, display a title
+            color_nodes (bool): If True, color nodes based on 'color'
+                attributes attached to the node. Black by default.
+            color_edges (bool): If True, color edges based on 'color'
+                attributes attached to the node. Grey by default.
         Returns:
             A matplotib Axes object.
         """
