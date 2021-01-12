@@ -45,15 +45,12 @@ def graph_drawer(G):
     plt.colorbar(r)
 
 
-def syndrome_plot(G_dec, G, index_dict=None, code='primal', drawing_opts={}, bc='periodic'):
+def syndrome_plot(G_dec, G, index_dict=None, code='primal', drawing_opts={}):
     """Convenience function for drawing the syndrome plot given the underlying
     graph G and a list of cubes cubes."""
 
-    if bc != 'periodic':
-        bound_inds = G_dec.graph['boundary_points']
-        points = [G_dec.nodes[i]['stabilizer'] for i in bound_inds]
-    else:
-        bound_inds = {}
+    bound_inds = G_dec.graph['boundary_points']
+    points = [G_dec.nodes[i]['stabilizer'] for i in bound_inds]
 
     cube_inds = set(G_dec.nodes).difference(bound_inds)
     cubes = [G_dec.nodes[i]['stabilizer'] for i in cube_inds]
@@ -131,7 +128,7 @@ def syndrome_plot(G_dec, G, index_dict=None, code='primal', drawing_opts={}, bc=
     z[:, :, 1::2] += 0.95
     ax.voxels(x, y, z, filled_e, facecolors=filled_e)
 
-    if bc != 'periodic' and drawing_opts['label_boundary']:
+    if drawing_opts['label_boundary']:
         for point in points:
             ax.scatter(point[0], point[1], point[2], s=70, c='k')
             ax.text(point[0], point[1], point[2], index_dict[point], fontdict=font_props)
@@ -158,7 +155,7 @@ def assign_weights(CVG, method='unit', code='primal'):
     G = CVG.graph
     dims = G.graph['dims']
     # Get and denest the syndrome coordinates.
-    syndrome_coords = [a for b in RHG.RHG_syndrome_coords(dims, code) for a in b]
+    syndrome_coords = [a for b in RHG.RHG_syndrome_coords(CVG.graph) for a in b]
     error_printed = False
     for node in syndrome_coords:
         # Naive weight assignment, unity weights.
@@ -209,7 +206,7 @@ def CV_decoder(G, translator=basic_translate):
         G.graph.nodes[G.ind_dict[i]]['bit_val'] = bit_values[i]
 
 
-def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={}):
+def decoding_graph(G, code='primal', draw=False, drawing_opts={}):
     """Create a decoding graph from the RHG lattice G. 
 
     Note that one ought first compute the phase error probabilities, 
@@ -217,9 +214,8 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
 
     # An empty decoding graph.
     G_dec = nx.Graph(title='Decoding Graph')
-    cubes = RHG.RHG_stabilizers(G, code)
+    cubes = RHG.RHG_stabilizers(G)
     G_dec.add_nodes_from(cubes)
-
     # For stabilizer cubes sharing a vertex, define an edge between
     # them with weight equal to the weight assigned to the vertex.
     for (cube1, cube2) in it.combinations(G_dec, 2):
@@ -230,17 +226,16 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
             G_dec.add_edge(cube1, cube2, weight=weight, common_vertex=coordinate)
 
     # Include boundary vertices in the case of non-periodic boundary
-    # conditions. Note that info about boundary conditions will
-    # probably be located later in the graph G.
-    if bc != 'periodic':
+    # conditions.
+    boundaries = G.graph.graph['boundaries']
+    bound_points = RHG.RHG_boundary_coords(G.graph)
         # For boundary points sharing a vertex with a stabilizer cube,
         # add an edge between them with weight equal to the weight assigned
         # to the vertex.
-        bound_points = RHG.RHG_boundary_coords(np.array(G.graph.graph['dims']))
-        for (cube, point) in it.product(G_dec, bound_points):
-                if point in cube.coords():
-                    weight = G.graph.nodes[point]['weight']
-                    G_dec.add_edge(cube, point, weight=weight, common_vertex=point)
+    for (cube, point) in it.product(G_dec, bound_points):
+        if point in cube.coords():
+            weight = G.graph.nodes[point]['weight']
+            G_dec.add_edge(cube, point, weight=weight, common_vertex=point)
 
     # Relabel the nodes of the decoding graph to integers and define
     # the mapping between nodes and indices.
@@ -253,9 +248,8 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
     odd_parity_cubes = [cube for cube in cubes if cube.parity()]
     odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
     G_relabelled.graph['odd_cubes'] = odd_parity_inds[:]
-    if bc != 'periodic':
-        bound_inds = [mapping[point] for point in bound_points]
-        G_relabelled.graph['boundary_points'] = bound_inds[:]
+    bound_inds = [mapping[point] for point in bound_points]
+    G_relabelled.graph['boundary_points'] = bound_inds[:]
 
     # Draw the lattice and the abstract decoding graph.
     if draw:
@@ -264,8 +258,7 @@ def decoding_graph(G, code='primal', bc='periodic', draw=False, drawing_opts={})
                            G,
                            index_dict=mapping,
                            code=code,
-                           drawing_opts=drawing_opts,
-                           bc=bc)
+                           drawing_opts=drawing_opts)
     return G_relabelled
 
 
@@ -295,13 +288,13 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
             length = smallest_number
         G_match.add_edge(cube1, cube2, weight=length, inverse_weight=1/length, path=path)
     # For non-periodic boundary conditions, include boundary vertices.
+    # Get the indices of the boundary vertices from the decoding
+    # graph.
+    boundary_inds = G.graph['boundary_points']
+    # Keep track of the boundary points that have been connected
+    # to a cube.
     used_boundary_points = []
-    if bc != 'periodic':
-        # Get the indics of the boundary vertices from the decoding 
-        # graph.
-        boundary_inds = G.graph['boundary_points']
-        # Keep track of the boundary points that have been connected
-        # to a cube.
+    if boundary_inds:
         for cube in odd_parity_inds:
             remaining_boundary = list(set(boundary_inds).difference(set(used_boundary_points)))
             # Find the shortest path from the any of the boundary
@@ -318,10 +311,10 @@ def matching_graph(G, bc='periodic', alg='dijkstra', draw=False, drawing_opts={}
             G_match.add_edge(cube, point, weight=length, inverse_weight=-length, path=path)
             # Add to the list of used boundary vertices.
             used_boundary_points.append(point)
-
-        # Add edge with weight 0 between any two boundary points.
-        for (point1, point2) in it.combinations(used_boundary_points, 2):
-            G_match.add_edge(point1, point2, weight=0, inverse_weight=0)
+    
+            # Add edge with weight 0 between any two boundary points.
+            for (point1, point2) in it.combinations(used_boundary_points, 2):
+                G_match.add_edge(point1, point2, weight=0, inverse_weight=0)
 
     # Add indices of used boundary points as a graph attribute.
     G_match.graph['used_boundary_points'] = used_boundary_points[:]
@@ -411,11 +404,10 @@ def correct(G,
 
     if outer_dict[outer] == 'MWPM':
         assign_weights(G, method=weights)
-        G_dec = decoding_graph(G, bc=bc, draw=draw, drawing_opts=drawing_opts)
-        G_match = matching_graph(G_dec, bc=bc)
+        G_dec = decoding_graph(G, draw=draw, drawing_opts=drawing_opts)
+        G_match = matching_graph(G_dec)
         matching = MWPM(G_match, G_dec, draw=draw)
         # recovery(G)
-
     result = check_correction(G)
     return result
 
@@ -431,14 +423,15 @@ if __name__ == '__main__':
     G.eval_Z_probs_cond()
 
     dw = {'show_nodes': True, 'label_nodes': '', 'label_cubes': True,
-          'label_boundary': False, 'legend':False}
+          'label_boundary': True, 'legend': True}
 
-    # CV_decoder(G)
-    # assign_weights(G, method='blueprint')
-    # G_dec = decoding_graph(G, bc='', drawing_opts=dw, draw=True)
-    # G_match = matching_graph(G_dec, bc='', draw=False)
-    # matching = MWPM(G_match, G_dec, draw=True)
+    CV_decoder(G)
+    assign_weights(G, method='blueprint')
+    G_dec = decoding_graph(G, drawing_opts=dw, draw=True)
+    G_match = matching_graph(G_dec, draw=False)
+    matching = MWPM(G_match, G_dec, draw=True)
+    recovered = recovery(G_match, G_dec, G, matching, check=True)
 
-    correct(G, inner='basic', outer='MWPM', weights='blueprint', bc='non-periodic',
-           draw=True, drawing_opts=dw)
+    # correct(G, inner='basic', outer='MWPM', weights='blueprint', bc='non-periodic',
+    #        draw=True, drawing_opts=dw)
 
