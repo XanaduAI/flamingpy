@@ -66,19 +66,21 @@ def RHG_graph(dims, boundaries='natural', pol=0):
     def green_neighbours(p):
         return {(p[0], p[1], p[2]-1), (p[0], p[1], p[2]+1)}
 
+    color = lambda polarity: ((polarity + 1) // 2) * 'b' + abs((polarity - 1) // 2) * 'r'
+
     for point in all_red:
         for i in range(4):
             polarity = (-1) ** (pol * (point[2] + i))
             neighbour = red_neighbours(point)[i]
             if neighbour in all_green:
-                lattice.add_edge(point, neighbour, weight=polarity)
+                lattice.add_edge(point, neighbour, weight=polarity, color=color(polarity))
         lattice.nodes[point]['color'] = 'red'
 
     for point in all_green:
         polarity = (-1) ** (pol * (point[1] + 1))
         for neighbour in green_neighbours(point):
             if neighbour in all_green:
-                lattice.add_edge(point, neighbour, weight=polarity)
+                lattice.add_edge(point, neighbour, weight=polarity, color=color(polarity))
         lattice.nodes[point]['color'] = 'green'
 
     bound_arr = np.array(boundaries)
@@ -94,19 +96,19 @@ def RHG_graph(dims, boundaries='natural', pol=0):
                 polarity = (-1) ** (pol * (point[2] + ind + 1))
                 high_green = list(point)
                 high_green[ind] = 2*dims[ind]-1
-                lattice.add_edge(point, tuple(high_green), weight=polarity)
+                lattice.add_edge(point, tuple(high_green), weight=polarity, color=color(polarity))
             for point in high_reds:
                 polarity = (-1) ** (pol * (point[2] + ind + 1))
                 low_green = list(point)
                 low_green[ind] = 0
-                lattice.add_edge(point, tuple(low_green), weight=polarity)
+                lattice.add_edge(point, tuple(low_green), weight=polarity, color=color(polarity))
         if ind == 2:
             low_greens = all_green.intersection(low_slice)
             for point in low_greens:
                 polarity = (-1) ** (pol * (point[1] + 1))
                 high_green = list(point[:])
                 high_green[ind] = 2*dims[ind] - 1
-                lattice.add_edge(point, tuple(high_green), weight=polarity)
+                lattice.add_edge(point, tuple(high_green), weight=polarity, color=color(polarity))
     return lattice
 
 def RHG_syndrome_coords(G):
