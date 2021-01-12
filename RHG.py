@@ -110,21 +110,66 @@ def RHG_graph(dims, boundaries='natural', pol=0):
                 lattice.add_edge(point, tuple(high_green), weight=polarity)
     return lattice
 
-def RHG_syndrome_coords(dims, code='primal'):
+def RHG_syndrome_coords(G):
     """Return a list of lists of coordinates associated to six-body
     X stabilizer elements of the RHG lattice."""
 
-    nx, ny, nz = dims
-    combs = it.product(range(nx), range(ny), range(nz))
-    if code == 'primal':
-        all_syndrome6 = [[(2*i+1, 2*j+1, 2*k),
-                          (2*i+1, 2*j, 2*k+1),
-                          (2*i, 2*j+1, 2*k+1),
-                          (2*i+1, 2*j+1, 2*k+2),
-                          (2*i+1, 2*j+2, 2*k+1),
-                          (2*i+2, 2*j+1, 2*k+1)
-                          ] for (i, j, k) in combs]
-    return all_syndrome6
+    dims = G.graph['dims']
+    boundaries = np.array(G.graph['boundaries'])
+
+    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+    max_dict = {'primal': 0, 'dual': 1, 'periodic': 1}
+    mins = [min_dict[typ] for typ in boundaries]
+    ma = [max_dict[typ] for typ in boundaries]
+    maxes = [dims[i] - ma[i] for i in range(3)]
+
+    ranges = lambda mins, maxes: [range(mins[i], maxes[i]) for i in range(3)]
+    def stabe_points(combs):
+        six_body_stabes = [[
+            (2*i, 2*j+1, 2*k+1),
+            (2*i+1, 2*j, 2*k+1),
+            (2*i+1, 2*j+1, 2*k),
+            (2*i+2, 2*j+1, 2*k+1),
+            (2*i+1, 2*j+2, 2*k+1),
+            (2*i+1, 2*j+1, 2*k+2)] for (i, j, k) in combs]
+        return six_body_stabes
+
+    middle_combs = it.product(*ranges(mins, maxes))
+    six_body_stabes = stabe_points(middle_combs)
+
+    dual_inds = np.where(boundaries =='dual')[0]
+    periodic_inds = np.where(boundaries =='periodic')[0]
+    five_body_stabes = []
+    periodic_six_bodies = []
+    if dual_inds.size or periodic_inds.size:
+        for ind in range(3):
+            m2, M2 = mins[:], maxes[:]
+            m2[ind] = maxes[ind]
+            M2[ind] += 1
+            combs_max = it.product(*ranges(m2, M2))
+            stabes_max = stabe_points(combs_max)
+            if ind in periodic_inds:
+                for stabe in stabes_max:
+                    highest_point = stabe[3+ind]
+                    other_side = list(highest_point)
+                    other_side[ind] = mins[ind]
+                    print(highest_point, other_side)
+                    stabe[3+ind] = other_side
+                    periodic_six_bodies.append(stabe)
+            if ind in dual_inds:
+                m1, M1 = mins[:], maxes[:]
+                m1[ind] -= 1
+                M1[ind] = mins[ind]
+                combs_min = it.product(*ranges(m1, M1))
+                stabes_min = stabe_points(combs_min)
+                for i in range((len(stabes_min))):
+                    stabes_min[i].pop(ind)
+                    stabes_max[i].pop(3+ind)
+                five_body_stabes += stabes_min
+                five_body_stabes += stabes_max
+
+    all_stabes = six_body_stabes + periodic_six_bodies + five_body_stabes
+    return all_stabes
 
 
 def RHG_boundary_coords(dims, code='primal'):
