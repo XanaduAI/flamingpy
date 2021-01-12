@@ -171,23 +171,27 @@ def RHG_syndrome_coords(G):
     return all_stabes
 
 
-def RHG_boundary_coords(dims, code='primal'):
+def RHG_boundary_coords(G):
     """Obtain the coordinates of the vertices at the centres of primal
     cubes on the boundary of the RHG lattice with dimension dims."""
-    if code == 'primal':
-        odds = [range(1, 2*dims[0], 2),
-                range(1, 2*dims[1], 2),
-                range(1, 2*dims[2], 2)]
-        combs = []
-        for i, j in ((0,1), (0,2), (1,2)):
-            for tup in it.product(odds[i], odds[j]):
-                ind = {0, 1, 2}.difference({i, j}).pop()
-                l = list(tup)
-                m = list(tup)
-                l.insert(ind, 0)
-                m.insert(ind, 2 * dims[ind])
-                combs.append(tuple(l))
-                combs.append(tuple(m))
+
+    dims = G.graph['dims']
+    boundaries = np.array(G.graph['boundaries'])
+    bound_inds = np.where(boundaries=='primal')[0]
+    odds = [range(1, 2*dims[0], 2),
+            range(1, 2*dims[1], 2),
+            range(1, 2*dims[2], 2)]
+    combs = []
+    for ind in bound_inds:
+        if ind != 2:
+            for i, j in ((0,1), (0,2), (1,2)):
+                for tup in it.product(odds[i], odds[j]):
+                    l = list(tup)
+                    m = list(tup)
+                    l.insert(ind, 0)
+                    m.insert(ind, 2 * dims[ind])
+                    combs.append(tuple(l))
+                    combs.append(tuple(m))
     return combs
 
 
@@ -201,7 +205,7 @@ def RHG_stabilizers(G, code='primal'):
     """Return a list of subgraphs induced by the qubits with cordinates
     from RHG_syndrome_coords."""
 
-    syn_list = RHG_syndrome_coords(G.graph.graph['dims'], code)
+    syn_list = RHG_syndrome_coords(G.graph)
     cube_list = []
     for l in syn_list:
         cube_graph = G.graph.subgraph(l)
