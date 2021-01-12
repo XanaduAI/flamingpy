@@ -32,15 +32,14 @@ def RHG_graph(dims, boundaries='natural', pol=0):
         boundaries = ['periodic', 'periodic', 'primal']
     elif type(boundaries) == str:
         boundaries = [boundaries] * 3
-    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
-    max_dict = {'primal': 1, 'dual': 0, 'periodic': 0}
-    bound_labels = ['x', 'y', 'z']
-    bound_labels_dict = {bound_labels[i]: boundaries[i] for i in range(3)}
-    x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
-    x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
     # Define the EGraph of the lattice
-    lattice = EGraph(dims=dims, boundaries=bound_labels_dict)
+    lattice = EGraph(dims=dims, boundaries=boundaries)
+
+    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+    max_dict = {'primal': 1, 'dual': 0, 'periodic': 0}
+    x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
+    x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [(2*i+1, 2*j+1, 2*k) for (i, j, k) in
