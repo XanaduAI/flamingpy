@@ -201,7 +201,7 @@ def RHG_slice_coords(RHG_lattice, plane, number):
     coords = [point for point in RHG_lattice.nodes if point[plane_ind] == number]
     return coords
 
-def RHG_stabilizers(G, code='primal'):
+def RHG_stabilizers(G):
     """Return a list of subgraphs induced by the qubits with cordinates
     from RHG_syndrome_coords."""
 
@@ -209,7 +209,10 @@ def RHG_stabilizers(G, code='primal'):
     cube_list = []
     for l in syn_list:
         cube_graph = G.graph.subgraph(l)
-        cube_list.append(RHGCube(CVGraph(cube_graph)))
+        cube = RHGCube(CVGraph(cube_graph))
+        if len(cube_graph) == 5:
+            cube.type = 'five-body'
+        cube_list.append(cube)
     return cube_list
 
 
@@ -220,6 +223,7 @@ class RHGCube:
     def __init__(self, G):
         self.cvgraph = G
         self._parity = None
+        self.type = 'six-body'
 
     def parity(self):
         if not self._parity is None:
