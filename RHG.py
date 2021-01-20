@@ -101,20 +101,26 @@ def RHG_graph(dims, boundaries='natural', polarity=False):
 
     # Add edges between red points and all their neighbours.
     for point in all_red:
+        is_neighbour = 0
         for i in range(4):
             pol = (-1) ** (polarity * (point[2] + i))
             neighbour = red_neighbours(point)[i]
             if neighbour in all_green:
+                is_neighbour += 1
                 lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
-        lattice.nodes[point]['color'] = 'red'
+        if is_neighbour:
+            lattice.nodes[point]['color'] = 'red'
 
     # Add edges between green points and all their neighbours.
     for point in all_green:
+        is_neighbour = 0
         pol = (-1) ** (polarity * (point[1] + 1))
         for neighbour in green_neighbours(point):
             if neighbour in all_green:
+                is_neighbour += 1
                 lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
-        lattice.nodes[point]['color'] = 'green'
+        if is_neighbour:
+            lattice.nodes[point]['color'] = 'green'
 
     # Dealing with periodic boundary conditions.
     bound_arr = np.array(boundaries)
