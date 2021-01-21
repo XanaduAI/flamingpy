@@ -360,7 +360,7 @@ def RHG_boundary_coords(G):
     return combs
 
 
-def RHG_slice_coords(G, plane, number):
+def RHG_slice_coords(G, plane, number, boundaries='all'):
     """Obtain all the coordinates in a slice of RHG lattice G.
 
     Args:
@@ -374,6 +374,21 @@ def RHG_slice_coords(G, plane, number):
     plane_dict = {'x': 0, 'y': 1, 'z': 2}
     plane_ind = plane_dict[plane]
     coords = [point for point in G.nodes if point[plane_ind] == number]
+    dims = G.graph['dims']
+    if boundaries in ('primal', 'dual'):
+        remaining_inds = {0, 1, 2}.difference({plane_ind})
+        undesirables = []
+        for i in range(len(coords)):
+            for ind in remaining_inds:
+                if boundaries == 'dual':
+                    if coords[i][ind] == 0:
+                        undesirables.append(i)
+                if boundaries == 'primal':
+                    if coords[i][ind] == (2*dims[ind] - 1):
+                        undesirables.append(i)
+        coords = [coords[i] for i in range(len(coords)) if i not in undesirables]
+        return coords
+
     return coords
 
 
