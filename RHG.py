@@ -157,7 +157,6 @@ def RHG_graph(dims, boundaries='natural', polarity=False):
 
     return lattice
 
-
 def RHG_syndrome_coords(G):
     """Return the syndrome coordinates for RHG lattice G.
 
@@ -176,8 +175,8 @@ def RHG_syndrome_coords(G):
     dims = G.graph['dims']
     boundaries = np.array(G.graph['boundaries'])
 
-    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
-    max_dict = {'primal': 0, 'dual': 1, 'periodic': 1}
+    min_dict = {'primal': 0, 'dual': 0, 'periodic': 0}
+    max_dict = {'primal': 0, 'dual': 0, 'periodic': 0}
     mins = [min_dict[typ] for typ in boundaries]
     maxes = [max_dict[typ] for typ in boundaries]
     maxes = [dims[i] - maxes[i] for i in range(3)]
@@ -198,43 +197,146 @@ def RHG_syndrome_coords(G):
 
     # Stabilizers in bulk (+ boundary, in case of primal boundary)
     middle_inds = it.product(*ranges(mins, maxes))
-    six_body_stabes = stabe_points(middle_inds)
+    all_six_bodies = stabe_points(middle_inds)
+
+    all_stabes = []
+    periodic_inds = np.where(boundaries == 'periodic')[0]
+    dual_inds = np.where(boundaries == 'dual')[0]
+    for stabe in all_six_bodies:
+        actual_stabe = list(set(stabe).intersection(set(G)))
+        if len(actual_stabe) == 6:
+            all_stabes.append(actual_stabe)
+        if len(actual_stabe) == 5:
+            for ind in (0, 1, 2):
+                lowest_point = list(stabe[ind])
+                highest_point = stabe[3+ind]
+                if lowest_point[ind] == 2 * dims[ind] - 2:
+                    if ind in dual_inds:
+                        all_stabes.append(actual_stabe)
+                    if ind in periodic_inds:
+                        lowest_point[ind] = 0
+                        actual_stabe.append(tuple(lowest_point))
+                        all_stabes.append(actual_stabe)
+                if highest_point[ind] == 2:
+                    if ind in dual_inds:
+                        all_stabes.append(actual_stabe)
+        if len(actual_stabe) == 4:
+            y_list = []
+            for ind in (0, 2):
+                remaining_ind = {0, 2}.difference({ind}).pop()
+                last = 2 * dims[remaining_ind] - 1
+                second_last = 2 * dims[ind] - 2
+                lowest_point = list(stabe[ind])
+                if lowest_point[ind] == second_last:
+                    if ind in periodic_inds:
+                        lowest_point[ind] = 0
+                        actual_stabe.append(tuple(lowest_point))
+                    if lowest_point[remaining_ind] == last:
+                        y_val = lowest_point[1]
+                        if y_val not in y_list:
+                            y_list += [y_val]
+                            # new = [0, y_val, 0]
+                            # actual_stabe.append(tuple(new))
+                            all_stabes.append(actual_stabe)
+                    else:
+                        if ind in periodic_inds:
+                            new = [0, 0, 0]
+                            new[ind] = 2 * dims[ind] - 1
+                            new[remaining_ind] = lowest_point[remaining_ind]
+                            actual_stabe.append(tuple(new))
+                        all_stabes.append(actual_stabe)
+        if len(actual_stabe) == 3:
+            point = [2*dims[0]-1] * 3
+            for ind in (0, 1, 2):
+                if ind in periodic_inds:
+                    point_ind = point[:]
+                    point_ind[ind] = 0
+                    actual_stabe += [tuple(point_ind)]
+            all_stabes.append(actual_stabe)
 
     # Dealing with six-body X stabilizers on perodic boundaries,
     # and five-body X stabilizers on dual boundaries.
-    dual_inds = np.where(boundaries == 'dual')[0]
-    periodic_inds = np.where(boundaries == 'periodic')[0]
-    five_body_stabes = []
-    periodic_six_bodies = []
-    if dual_inds.size or periodic_inds.size:
-        for ind in range(3):
-            m2, M2 = mins[:], maxes[:]
-            m2[ind] = maxes[ind]
-            M2[ind] += 1
-            combs_max = it.product(*ranges(m2, M2))
-            stabes_max = stabe_points(combs_max)
-            if ind in periodic_inds:
-                for stabe in stabes_max:
-                    highest_point = stabe[3 + ind]
-                    other_side = list(highest_point)
-                    other_side[ind] = mins[ind]
-                    stabe[3 + ind] = tuple(other_side)
-                    periodic_six_bodies.append(stabe)
-            if ind in dual_inds:
-                m1, M1 = mins[:], maxes[:]
-                m1[ind] -= 1
-                M1[ind] = mins[ind]
-                combs_min = it.product(*ranges(m1, M1))
-                stabes_min = stabe_points(combs_min)
-                for i in range((len(stabes_min))):
-                    stabes_min[i].pop(ind)
-                    stabes_max[i].pop(3 + ind)
-                five_body_stabes += stabes_min
-                five_body_stabes += stabes_max
 
     # Put all the stabilizers into a list.
-    all_stabes = six_body_stabes + periodic_six_bodies + five_body_stabes
     return all_stabes
+
+# def RHG_syndrome_coords(G):
+#     """Return the syndrome coordinates for RHG lattice G.
+
+#     Generate a list of lists containing coordinates of six-body X
+#     stabilizers on non-periodic boundaries, followed by six-body X
+#     stabilizers on periodic boundaries, followed by five-body X
+#     stabilizers on dual boundaries.
+
+#     Args:
+#         G (EGraph): the RHG lattice
+
+#     Returns:
+#         list of lists of tuples: the syndrome coordinates.
+#     """
+#     # Dimensions, boundary types, max and min ranges.
+#     dims = G.graph['dims']
+#     boundaries = np.array(G.graph['boundaries'])
+
+#     min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+#     max_dict = {'primal': 0, 'dual': 1, 'periodic': 1}
+#     mins = [min_dict[typ] for typ in boundaries]
+#     maxes = [max_dict[typ] for typ in boundaries]
+#     maxes = [dims[i] - maxes[i] for i in range(3)]
+
+#     # Function for generating ranges from lists of mins and maxes.
+#     ranges = lambda mins, maxes: [range(mins[i], maxes[i]) for i in range(3)]
+
+#     def stabe_points(inds):
+#         """ALl the six-body stabilizers for indices in inds."""
+#         six_body_stabes = [[
+#             (2*i, 2*j + 1, 2*k + 1),
+#             (2*i + 1, 2*j, 2*k + 1),
+#             (2*i + 1, 2*j + 1, 2*k),
+#             (2*i + 2, 2*j + 1, 2*k + 1),
+#             (2*i + 1, 2*j + 2, 2*k + 1),
+#             (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
+#         return six_body_stabes
+
+#     # Stabilizers in bulk (+ boundary, in case of primal boundary)
+#     middle_inds = it.product(*ranges(mins, maxes))
+#     six_body_stabes = stabe_points(middle_inds)
+
+#     # Dealing with six-body X stabilizers on perodic boundaries,
+#     # and five-body X stabilizers on dual boundaries.
+#     dual_inds = np.where(boundaries == 'dual')[0]
+#     periodic_inds = np.where(boundaries == 'periodic')[0]
+#     five_body_stabes = []
+#     periodic_six_bodies = []
+#     if dual_inds.size or periodic_inds.size:
+#         for ind in range(3):
+#             m2, M2 = mins[:], maxes[:]
+#             m2[ind] = maxes[ind]
+#             M2[ind] += 1
+#             combs_max = it.product(*ranges(m2, M2))
+#             stabes_max = stabe_points(combs_max)
+#             if ind in periodic_inds:
+#                 for stabe in stabes_max:
+#                     highest_point = stabe[3 + ind]
+#                     other_side = list(highest_point)
+#                     other_side[ind] = mins[ind]
+#                     stabe[3 + ind] = tuple(other_side)
+#                     periodic_six_bodies.append(stabe)
+#             if ind in dual_inds:
+#                 m1, M1 = mins[:], maxes[:]
+#                 m1[ind] -= 1
+#                 M1[ind] = mins[ind]
+#                 combs_min = it.product(*ranges(m1, M1))
+#                 stabes_min = stabe_points(combs_min)
+#                 for i in range((len(stabes_min))):
+#                     stabes_min[i].pop(ind)
+#                     stabes_max[i].pop(3 + ind)
+#                 five_body_stabes += stabes_min
+#                 five_body_stabes += stabes_max
+
+#     # Put all the stabilizers into a list.
+#     all_stabes = six_body_stabes + periodic_six_bodies + five_body_stabes
+#     return all_stabes
 
 
 def RHG_boundary_coords(G):
