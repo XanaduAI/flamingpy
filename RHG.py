@@ -172,17 +172,12 @@ def RHG_syndrome_coords(G):
         list of lists of tuples: the syndrome coordinates.
     """
     # Dimensions, boundary types, max and min ranges.
-    dims = G.graph['dims']
+    dims = list(G.graph['dims'])
     boundaries = np.array(G.graph['boundaries'])
 
-    min_dict = {'primal': 0, 'dual': 0, 'periodic': 0}
-    max_dict = {'primal': 0, 'dual': 0, 'periodic': 0}
-    mins = [min_dict[typ] for typ in boundaries]
-    maxes = [max_dict[typ] for typ in boundaries]
-    maxes = [dims[i] - maxes[i] for i in range(3)]
-
     # Function for generating ranges from lists of mins and maxes.
-    ranges = lambda mins, maxes: [range(mins[i], maxes[i]) for i in range(3)]
+    ranges = [range(dims[i]) for i in range(3)]
+    inds = it.product(*ranges)
 
     def stabe_points(inds):
         """ALl the six-body stabilizers for indices in inds."""
@@ -195,11 +190,10 @@ def RHG_syndrome_coords(G):
             (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
         return six_body_stabes
 
-    # Stabilizers in bulk (+ boundary, in case of primal boundary)
-    middle_inds = it.product(*ranges(mins, maxes))
-    all_six_bodies = stabe_points(middle_inds)
-
+    # All potential six-body stabilizers
+    all_six_bodies = stabe_points(inds)
     all_stabes = []
+
     periodic_inds = np.where(boundaries == 'periodic')[0]
     dual_inds = np.where(boundaries == 'dual')[0]
     for stabe in all_six_bodies:
