@@ -600,7 +600,8 @@ def correct(G, inner='basic', outer='MWPM', weights='unit', draw=False, drawing_
 
 
 if __name__ == '__main__':
-    RHG_lattice = RHG.RHG_graph(2, boundaries=['primal', 'primal', 'primal'], polarity=1)
+    boundaries = 'periodic'
+    RHG_lattice = RHG.RHG_graph(2, boundaries=boundaries, polarity=1)
 
     swap_prob = 0
     delta = 0.1
@@ -609,7 +610,7 @@ if __name__ == '__main__':
     G.measure_p()
     G.eval_Z_probs_cond()
 
-    dw = {'show_nodes': True, 'label_nodes': '', 'label_cubes': True,
+    dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
           'label_boundary': False, 'legend': True}
 
     correct(G, inner='basic', outer='MWPM', weights='blueprint', draw=True, drawing_opts=dw)
