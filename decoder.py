@@ -520,7 +520,7 @@ def recovery(G_match, G_dec, G, matching, check=False):
     #     return (G, bool(1-parity))
 
 
-def check_correction(G, plane='x', sheet=0, sanity_check=False):
+def check_correction(G, plane=None, sheet=0, sanity_check=False):
     """Perform a correlation-surface check.
 
     Check the total parity of a correlation surface specified by
@@ -530,7 +530,8 @@ def check_correction(G, plane='x', sheet=0, sanity_check=False):
     Args:
         G (CVGraph): the recovered graph
         plane (str): 'x', 'y', or 'z', determining the direction of the
-            correlation surface
+            correlation surface; if None, select plane to check
+            depending on the boundary conditions
         sheet (int): the sheet index (from 0 to one less than the
             largest coordinate in the direction plane).
         sanity_check (bool): if True, display the total parity of
@@ -541,22 +542,39 @@ def check_correction(G, plane='x', sheet=0, sanity_check=False):
         None
     """
     dims = np.array(G.graph.graph['dims'])
-    dims = (dims[0] + 1, dims[1] + 1, dims[2] + 1)
     dir_dict = {'x': 0, 'y': 1, 'z': 2}
-    if sanity_check:
-        lim = 2 * dims[dir_dict[plane]]
+    truth_dict = {'x': [], 'y': [], 'z': []}
+    boundaries = G.graph.graph['boundaries']
+
+    planes_to_check = []
+    if plane:
+        planes_to_check += [plane]
     else:
-        lim = 1
-    truthlist = []
-    for sheet in range(lim):
-        slice_verts = RHG.RHG_slice_coords(G.graph, plane, sheet)
-        syndrome_verts = [a for b in RHG.RHG_syndrome_coords(G.graph) for a in b]
-        only_primal = set(slice_verts).intersection(set(syndrome_verts))
-        parity = 0
-        for node in only_primal:
-            parity ^= G.graph.nodes[node]['bit_val']
-        truthlist.append(bool(1 - parity))
-    return truthlist
+        for plane in ('x', 'y', 'z'):
+            if boundaries[dir_dict[plane]] == 'periodic':
+                planes_to_check.append(plane)
+
+    for plane in planes_to_check:
+        if sanity_check:
+            minimum = 0
+            maximum = 2 * dims[dir_dict[plane]]
+        else:
+            minimum = sheet
+            maximum = sheet + 2
+        for sheet in range(minimum, maximum, 2):
+            slice_verts = RHG.RHG_slice_coords(G.graph, plane, sheet, boundaries='dual')
+            syndrome_verts = [a for b in RHG.RHG_syndrome_coords(G.graph) for a in b]
+            only_primal = set(slice_verts).intersection(set(syndrome_verts))
+            parity = 0
+            for node in only_primal:
+                parity ^= G.graph.nodes[node]['bit_val']
+            truth_dict[plane].append(bool(1 - parity))
+
+    if sanity_check:
+        print(truth_dict)
+
+    all_surfaces = np.array([truth_dict[i][0] for i in planes_to_check])
+    return np.all(all_surfaces)
 
 
 def correct(G, inner='basic', outer='MWPM', weights='unit', draw=False, drawing_opts={}):
