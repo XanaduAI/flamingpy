@@ -48,7 +48,7 @@ def monte_carlo(code_lattice, trials, delta, swap_prob):
         G = CVGraph(code_lattice, model='grn', swap_prob=swap_prob, delta=delta)
         G.measure_p()
         G.eval_Z_probs_cond()
-        result = correct(G, inner='basic', outer='MWPM')[0]
+        result = correct(G, inner='basic', outer='MWPM')
         successes += result
         # successes += np.random.randint(2)
     p_fail = (trials - successes) / trials
