@@ -474,7 +474,7 @@ def MWPM(G_match, G_dec, alg='blossom_nx', draw=False):
     return matching
 
 
-def recovery(G_match, G_dec, G, matching, check=False):
+def recovery(G_match, G_dec, G, matching, sanity_check=False):
     """Run the recovery operation on graph G.
 
     Fip the bit values of all the vertices in the path connecting each
@@ -502,8 +502,8 @@ def recovery(G_match, G_dec, G, matching, check=False):
                 common_vertex = G_dec.edges[pair]['common_vertex']
                 G.graph.nodes[common_vertex]['bit_val'] ^= 1
 
-    if check:
-        G_dec_new = decoding_graph(G, draw=True)
+    if sanity_check:
+        G_dec_new = decoding_graph(G, draw=False)
         odd_cubes = G_dec_new.graph['odd_cubes']
         if odd_cubes:
             print('Unsatisfied stabilizers:', odd_cubes)
@@ -554,13 +554,10 @@ def check_correction(G, plane=None, sheet=0, sanity_check=False):
             if boundaries[dir_dict[plane]] == 'periodic':
                 planes_to_check.append(plane)
 
+    minimum, maximum = sheet, sheet + 2
     for plane in planes_to_check:
         if sanity_check:
-            minimum = 0
-            maximum = 2 * dims[dir_dict[plane]]
-        else:
-            minimum = sheet
-            maximum = sheet + 2
+            minimum, maximum = 0, 2 * dims[dir_dict[plane]]
         for sheet in range(minimum, maximum, 2):
             slice_verts = RHG.RHG_slice_coords(G.graph, plane, sheet, boundaries='dual')
             syndrome_verts = [a for b in RHG.RHG_syndrome_coords(G.graph) for a in b]
