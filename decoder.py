@@ -574,7 +574,13 @@ def check_correction(G, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
-def correct(G, inner='basic', outer='MWPM', weights='unit', draw=False, drawing_opts={}):
+def correct(G,
+            inner='basic',
+            outer='MWPM',
+            weights='unit',
+            draw=False,
+            drawing_opts={},
+            sanity_check=False):
     """Run through all the error-correction steps.
 
     Combines weight assignment, decoding and matching graph creation,
@@ -595,6 +601,10 @@ def correct(G, inner='basic', outer='MWPM', weights='unit', draw=False, drawing_
                 'label_cubes' -> indices of the stabilizers
                 'label_boundary'-> indices of the boundary points
                 'legend' -> legends for the nodes and cubes
+
+        sanity_check (bool): if True, check that the recovery
+            operation succeeded and verify that parity is conserved
+            among all correlation surfaces.
     Returns:
         bool: True if error correction succeeded, False if not.
     """
@@ -609,8 +619,8 @@ def correct(G, inner='basic', outer='MWPM', weights='unit', draw=False, drawing_
         G_dec = decoding_graph(G, draw=draw, drawing_opts=drawing_opts)
         G_match = matching_graph(G_dec)
         matching = MWPM(G_match, G_dec, draw=draw)
-        recovery(G_match, G_dec, G, matching)
-    result = check_correction(G)
+        recovery(G_match, G_dec, G, matching, sanity_check=sanity_check)
+    result = check_correction(G, sanity_check=sanity_check)
     return result
 
 
