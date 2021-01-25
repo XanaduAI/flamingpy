@@ -294,9 +294,9 @@ class CVGraph:
         # Step 1: Construct the phase-space covariance matrix
         # Basis ordering: all N q's, then all N p's
         # Step 1a: initialize all as GKPs
-        cov_phase = delta * np.eye(2 * self._N)
+        cov_phase = (delta / 2) * np.eye(2 * self._N)
         # Step 1b: replace p in relevant locations
-        cov_phase[self._p_inds, self._p_inds] = 1 / delta
+        cov_phase[self._p_inds, self._p_inds] = 1 / (2 * delta)
         # Step 1c: apply CZ gates
         cov_phase = self._SCZ @ cov_phase @ self._SCZ.T
         # Step 1d: extract p variances
