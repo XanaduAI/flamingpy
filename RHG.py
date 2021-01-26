@@ -330,7 +330,7 @@ class RHGCube:
 
     def __init__(self, G):
         """Initialize the RHGCube with its associated cvgraph."""
-        self.cvgraph = G
+        self.egraph = G
         self._parity = None
 
     def parity(self):
@@ -345,8 +345,8 @@ class RHGCube:
         # If parity already known, set self._parity to it.
         if self._parity is not None:
             return self._parity
-        G = self.cvgraph
-        bit_vals = [G.graph.nodes[node]['bit_val'] for node in G.graph]
+        G = self.egraph
+        bit_vals = [G.nodes[node]['bit_val'] for node in G]
 
         # TODO: Process the homodyne outcomes first, as below.
         # hom_vals = [G.graph.nodes[node]['hom_val'] for node in G.graph]
@@ -358,7 +358,7 @@ class RHGCube:
 
     def coords(self):
         """Return the coordinates of the syndrome vertices."""
-        return [tup for tup in self.cvgraph.graph.nodes]
+        return [tup for tup in self.egraph.nodes]
 
     def xlims(self):
         """Return the smallest and largest x vals of the coordinates."""
@@ -399,13 +399,7 @@ def RHG_stabilizers(G):
         list: the RHGCubes.
     """
     syn_list = RHG_syndrome_coords(G.graph)
-    cube_list = []
-    for stabe in syn_list:
-        cube_graph = G.graph.subgraph(stabe)
-        cube = RHGCube(CVGraph(cube_graph))
-        if len(cube_graph) == 5:
-            cube.type = 'five-body'
-        cube_list.append(cube)
+    cube_list = [RHGCube(G.graph.subgraph(stabe)) for stabe in syn_list]
     return cube_list
 
 
