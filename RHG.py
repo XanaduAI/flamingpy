@@ -332,7 +332,6 @@ class RHGCube:
         """Initialize the RHGCube with its associated cvgraph."""
         self.cvgraph = G
         self._parity = None
-        self.type = 'six-body'
 
     def parity(self):
         """Compute total parity of the cube.
