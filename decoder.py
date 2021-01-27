@@ -379,10 +379,9 @@ def matching_graph(G, alg='dijkstra', draw=False):
         length, path = alg1(G, cube1, cube2)
         # Add edge to the matching graph between the cubes, with weight
         # equal to the length of the shortest path.
-        if length == 0:
-            length = smallest_number
-        # TODO: Should the inverse_weight be -length?
-        G_match.add_edge(cube1, cube2, weight=length, inverse_weight=1/length, path=path)
+        # TODO: Is the behavior correct for negative weights, or do I
+        # want 1/weight or max_num - weight?
+        G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
     # For non-periodic boundary conditions, include boundary vertices.
     # Get the indices of the boundary vertices from the decoding
     # graph.
