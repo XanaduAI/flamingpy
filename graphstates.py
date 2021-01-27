@@ -272,6 +272,10 @@ class CVGraph:
     def hybridize(self, swap_prob):
         """Populate nodes with p-squeezed states at random.
 
+        The number of p states is the sample of the binomial
+        distribution with the number of trials equalling the size
+        of the graph state, and a success probability swap_prob.
+
         Args:
             swap_prob (float): the probability of swapping out a GKP
                 state for a p-squeezed state.
@@ -279,7 +283,7 @@ class CVGraph:
         Returns:
             None
         """
-        num_p = swap_prob * self._N
+        num_p = rng().binomial(self._N, swap_prob)
         self._p_inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
 
     def grn_model(self, delta):
