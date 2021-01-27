@@ -374,14 +374,23 @@ def matching_graph(G, alg='dijkstra', draw=False):
         alg1 = sp.single_source_dijkstra
         alg2 = sp.multi_source_dijkstra
 
+    # Combinations of odd-parity cubes.
+    odd_ind_dict = {i: [] for i in odd_parity_inds[:-1]}
+    odd_combs = it.combinations(odd_parity_inds, 2)
+    for pair in odd_combs:
+        odd_ind_dict[pair[0]] += [pair[1]]
     # Find the shortest paths between odd-parity cubes.
-    for (cube1, cube2) in it.combinations(odd_parity_inds, 2):
-        length, path = alg1(G, cube1, cube2)
-        # Add edge to the matching graph between the cubes, with weight
-        # equal to the length of the shortest path.
-        # TODO: Is the behavior correct for negative weights, or do I
-        # want 1/weight or max_num - weight?
-        G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
+    for cube1 in odd_parity_inds[:-1]:
+        lengths, paths = alg1(G, cube1)
+        for cube2 in odd_ind_dict[cube1]:
+            length = lengths[cube2]
+            path = paths[cube2]
+            # Add edge to the matching graph between the cubes, with weight
+            # equal to the length of the shortest path.
+            # TODO: Is the behavior correct for negative weights, or do I
+            # want 1/weight or max_num - weight?
+            G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
+
     # For non-periodic boundary conditions, include boundary vertices.
     # Get the indices of the boundary vertices from the decoding
     # graph.
