@@ -316,7 +316,7 @@ class CVGraph:
         if model == 'grn':
             self.grn_model(delta)
 
-    def SCZ(self, heat_map=0):
+    def SCZ(self, sparse=False, heat_map=False):
         """Return the symplectic matrix associated with CZ application.
 
         Args:
@@ -325,12 +325,8 @@ class CVGraph:
         Returns:
             array: the symplectic matrix.
         """
-        if heat_map:
-            print('The symplectic CZ matrix (dark spots 0, bright spots 1):')
-            plt.figure()
-            plt.matshow(self._SCZ, 0)
-            plt.show()
-        return self._SCZ
+        adj = self.graph.adj_generator(sparse=sparse)
+        return SCZ_mat(adj, heat_map=heat_map)
 
     def eval_Z_probs(self):
         """Evaluate the probability of phase errors at each mode."""
