@@ -168,20 +168,66 @@ def SCZ_mat(adj):
     """Return a symplectic matrix corresponding to CZ gate application.
 
     Gives the 2N by 2N symplectic matrix for CZ gate application
-    based on the adjacency matrix adj.
+    based on the adjacency matrix adj. Assumes quadrature-like
+    convention: (q1, ..., qN, p_1, ..., p_N).
 
     Args:
         adj (array): N by N binary symmetric matrix. If modes i and j
             are linked by a CZ, then entry ij and ji is equal to the
             weight of the edge (1 by default); otherwise 0.
     Returns:
-        array: 2N by 2N symplectic matrix
+        np.array or sp.sparse.csr_matrix: 2N by 2N symplectic matrix.
+            sparse if the adjacency matrix is sparse.
     """
     # Number of modes
-    N = len(adj)
+    N = adj.shape[0]
+    if type(adj) == np.ndarray:
+        identity = np.eye(N, dtype=np.int8)
+        zeros = np.zeros((N, N), dtype=np.int8)
+        block_func = np.block
+    else:
+        # TODO: Specify kind of Scip y sparse matrix?
+        identity = sp.identity(N, dtype=np.int8)
+        zeros = sp.csr_matrix((N, N), dtype=np.int8)
+        block_func = sp.bmat
     # Construct symplectic
-    symplectic = np.block([[np.eye(N), np.zeros((N, N))], [adj, np.eye(N)]])
+    symplectic = block_func([
+        [identity, zeros],
+        [adj, identity]])
     return symplectic
+
+
+def SCZ_apply(adj, quads, one_shot=True):
+    """Apply SCZ matrix to one- or two-dimensional array quads.
+
+    If one-shot is True, use SCZ_mat to apply a symplectic CZ matrix
+    to a matrix or vector of quadratures. Otherwise, take advantage of
+    the block structure of a symplectic SCZ matrix for a more memory-
+    efficient matrix multiplication.
+    """
+    N = quads.shape[0] // 2
+    if len(quads.shape) == 1:
+        if one_shot:
+            new_quads = SCZ_mat(adj).dot(quads)
+        else:
+            old_qs = quads[:N]
+            old_ps = quads[N:]
+            new_quads = np.empty(2 * N, quads.dtype)
+            new_quads[:N] = old_qs
+            new_quads[N:] = adj.dot(old_qs) + old_ps
+    if len(quads.shape) == 2:
+        if one_shot:
+            SCZ = SCZ_mat(adj)
+            new_quads = SCZ.dot(SCZ.dot(quads).T).T
+        else:
+            c1, c2, c3, c4 = quads[:N, :N], quads[:N, N:], quads[N:, :N], quads[N:, N:]
+            block2 = (adj.dot(c1.T)).T + c2
+            block3 = adj.dot(c1) + c3
+            block4 = c4 + adj.dot(c2) + (adj.dot(c3.T)).T + adj.dot(adj.dot(c1).T).T
+            new_quads = np.block([
+                [c1, block2],
+                [block3, block4]])
+    return new_quads
 
 
 class CVGraph:
