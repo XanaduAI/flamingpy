@@ -126,17 +126,14 @@ class EGraph(nx.Graph):
         fig = plt.figure(figsize=(2 * (nx + ny + nz + 2),
                                   2 * (nx + ny + nz + 2)))
         ax = fig.add_subplot(111, projection='3d')
-        # Plotting points. y and z are swapped in the loops to compare
-        # the lattice diagrams from our notes, where the z axis goes
-        # into the page; however the axes labels are correct.
+        # Plotting points. y and z are swapped in the loops so that
+        # z goes into the page; however, the axes labels are correct.
         for point in self.nodes:
             x, z, y = point
 
-            # Color based on color attribute; otherwise black.
-            color_bool = int(color_nodes)
-            if 'color' in self.nodes[point]:
-                node_color = self.nodes[point]['color']
-            color = color_bool * node_color + (1 - color_bool) * 'k'
+            # Color based on color attribute, if available; default if
+            # unavailable; black if color_nodes is False
+            color = self.nodes[point].get('color') if color_nodes else 'k'
 
             ax.scatter(x, y, z, s=70, c=color)
             if label:
@@ -146,11 +143,9 @@ class EGraph(nx.Graph):
         # Plotting edges.
         for edge in self.edges:
 
-            # Color based on color attribute; otherwise black.
-            color_bool = int(color_edges)
-            if 'color' in self.edges[edge]:
-                edge_color = self.edges[edge]['color']
-            color = color_bool * edge_color + (1 - color_bool) * 'grey'
+            # Color based on color attribute, if available; default if
+            # unavailable; black if color_edges is False
+            color = self.edges[edge].get('color') if color_edges else 'k'
 
             x1, z1, y1 = edge[0]
             x2, z2, y2 = edge[1]
