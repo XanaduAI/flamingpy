@@ -163,18 +163,6 @@ class EGraph(nx.Graph):
         plt.draw()
         return ax
 
-    def index(self):
-        """Return a relabelled graph with indices as labels.
-
-        Point tuples are stored in the 'pos' attribute of the new graph.
-        Use the default sort as the index mapping.
-        """
-        # TODO: Let user specify index mapping.
-        indexed_graph = nx.convert_node_labels_to_integers(self,
-                                                           ordering='sorted',
-                                                           label_attribute='pos')
-        return indexed_graph
-
 
 def SCZ_mat(adj):
     """Return a symplectic matrix corresponding to CZ gate application.
