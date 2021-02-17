@@ -154,7 +154,7 @@ def Z_err_cond(var, hom_val, var_num=5):
     numerator = np.sum([ex(z, 2 * i + 1) for i in range(-n_max, n_max)], 0)
     denominator = np.sum([ex(z, i) for i in range(-n_max, n_max)], 0)
     error = numerator / denominator
-    return error.round(5)
+    return error
 
 
 if __name__ == '__main__':
