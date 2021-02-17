@@ -18,6 +18,7 @@ from numpy.random import (multivariate_normal as mvn, default_rng as rng)
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
+import scipy.sparse as sp
 from GKP import Z_err, Z_err_cond
 
 
@@ -31,9 +32,20 @@ class EGraph(nx.Graph):
     Attributes:
         font_props (dict): graph-size-dependent font properties for use
             in the draw method and in classes that make use of EGraph.
+        indexer (str): method for indexing the nodes; 'default' for
+            Python's sorted function; 'macronodes' for rounding
+            micronodes to integers, sorting those, and
+            furthermore sorting the micronodes within each macronodes,
+            all using Python's 'sorted'.
+        to_indices (dict): if self.index_generator() has been run,
+            a dictionary of the form {points: indices}
+        to_points (dict): if self.index_generator() has been run,
+            a dictionary of the form {indixes: points}
+        adj_mat (np.array): if self.adj_generator() has been run,
+            the adjacency mtrix of the graph.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, indexer='default', *args, **kwargs):
         """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
         if 'dims' in self.graph:
@@ -41,14 +53,56 @@ class EGraph(nx.Graph):
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
         # TODO: If dims not specified, look at number of nodes in graph
         # to detemrine font properties.
+        self.indexer = indexer
+        self.to_indices = None
+        self.to_points = None
+        self.adj_mat = None
 
-    def adj_mat(self):
+    def index_generator(self):
+        """Return a relabelled graph with indices as labels.
+
+        Point tuples are stored in the 'pos' attribute of the new graph.
+        Use the default sort as the index mapping.
+        """
+        # TODO: Let user specify index mapping.
+        # TODO: SortedDict implementation.
+        N = self.order()
+        if self.to_indices is not None:
+            return self.to_indices
+        if self.indexer == 'default':
+            ind_dict = dict(zip(sorted(self.nodes()), range(N)))
+        if self.indexer == 'macronodes':
+            self.macro = nx.Graph()
+            for node in self.nodes():
+                rounded = tuple(np.round(node).astype(int))
+                self.macro.nodes[rounded]['micronodes'].append(node)
+            sorted_macro = sorted(self.macro)
+            points = []
+            for vertex in sorted_macro:
+                points += self.macro.nodes[vertex]['micronodes']
+            ind_dict = {points[i]: i for i in range(N)}
+        self.to_indices = ind_dict
+        self.to_points = {index: point for point, index in ind_dict.items()}
+        return ind_dict
+
+    def adj_generator(self, sparse=True):
         """Return the adjacency matrix of the graph.
 
         Indices correspond to sorted nodes.
         """
-        return nx.to_numpy_array(self, nodelist=sorted(self.nodes))
-        # TODO: Sort nodes depending on user preference.
+        if self.adj_mat is not None:
+            return self.adj_mat
+        if not self.to_points:
+            self.index_generator()
+        # TODO: SortedDict implementation.
+        sorted_nodes = [self.to_points[i] for i in range(self.order())]
+        # TODO: New data type in case of fancier weights.
+        if sparse:
+            adj = nx.to_scipy_sparse_matrix(self, nodelist=sorted_nodes, dtype=np.int8)
+        else:
+            adj = nx.to_numpy_array(self, nodelist=sorted_nodes, dtype=np.int8)
+        self.adj_mat = adj
+        return adj
 
     def draw(self, color_nodes=False, color_edges=False, label=False):
         """Draw the graph.
@@ -58,8 +112,8 @@ class EGraph(nx.Graph):
                 attributes attached to the node. Black by default.
             color_edges (bool): If True, color edges based on 'color'
                 attributes attached to the node. Grey by default.
-            label (bool): if True, label the indices; unlabelled by
-                default.
+            label (bool): if True, label the indices as per
+                self.index_generator; unlabelled by default.
 
         Returns:
             A matplotib Axes object.
@@ -85,8 +139,8 @@ class EGraph(nx.Graph):
             color = color_bool * node_color + (1 - color_bool) * 'k'
 
             ax.scatter(x, y, z, s=70, c=color)
-            indices = {c: n for (n, c) in enumerate(sorted(self.nodes))}
             if label:
+                indices = self.index_generator()
                 ax.text(x, y, z, str(indices[point]), fontdict=self.font_props,
                         color='MediumBlue', backgroundcolor='w')
         # Plotting edges.
