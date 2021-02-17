@@ -164,7 +164,7 @@ class EGraph(nx.Graph):
         return ax
 
 
-def SCZ_mat(adj):
+def SCZ_mat(adj, heat_map=False):
     """Return a symplectic matrix corresponding to CZ gate application.
 
     Gives the 2N by 2N symplectic matrix for CZ gate application
@@ -194,6 +194,12 @@ def SCZ_mat(adj):
     symplectic = block_func([
         [identity, zeros],
         [adj, identity]])
+    if heat_map:
+        plt.figure()
+        if type(symplectic) != np.ndarray:
+            symplectic = symplectic.toarray()
+        plt.matshow(symplectic, 0)
+        plt.show()
     return symplectic
 
 
