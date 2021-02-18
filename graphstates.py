@@ -52,7 +52,10 @@ class EGraph(nx.Graph):
             tot = np.sum(self.graph['dims'])
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
         # TODO: If dims not specified, look at number of nodes in graph
-        # to detemrine font properties.
+        # to determine font properties.
+        # TODO: Store dims as EGraph attributes, rather than a graph
+        # attribute?
+        # TODO: Change mpl.rcParams options in one go.
         self.indexer = indexer
         self.to_indices = None
         self.to_points = None
@@ -102,6 +105,7 @@ class EGraph(nx.Graph):
         else:
             adj = nx.to_numpy_array(self, nodelist=sorted_nodes, dtype=np.int8)
         self.adj_mat = adj
+        # TODO: Heat map?
         return adj
 
     def draw(self, color_nodes=False, color_edges=False, label=False):
@@ -195,6 +199,7 @@ def SCZ_mat(adj, heat_map=False):
         [identity, zeros],
         [adj, identity]])
     if heat_map:
+        print('The symplectic CZ matrix (dark spots 0, bright spots 1):')
         plt.figure()
         if type(symplectic) != np.ndarray:
             symplectic = symplectic.toarray()
