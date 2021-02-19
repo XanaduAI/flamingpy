@@ -349,6 +349,47 @@ class CVGraph:
             if model['noise'] == 'grn':
                 self.grn_model()
 
+    def grn_model(self):
+        """Apply Gaussian Random Noise model to the CVGraph.
+
+        Store quadrature or noise information as attributes depnding
+        on the sampling order.
+        """
+        N = self._N
+        delta = self._delta
+
+        # For initial and final sampling, generate a sparse adjacency
+        # matrix in the EGraph and state-dependent noise vectors.
+        if self._sampling_order in ('initial', 'final'):
+            self._adj = self.egraph.adj_generator(sparse=True)
+            self._init_noise = np.empty(2 * N, dtype=np.float32)
+            for state in self._states:
+                indices = self._states[state]
+                if state == 'GKP':
+                    self._init_noise[indices] = delta / 2
+                    self._init_noise[indices + N] = delta / 2
+                if state == 'p':
+                    self._init_noise[indices] = delta / 2
+                    self._init_noise[indices + N] = 1 / (2 * delta)
+
+        # For final sampling, apply a symplectic CZ matrix to the
+        # initial noise covariance.
+        if self._sampling_order == 'final':
+            noise_cov_init = sp.diags(self._init_noise)
+            self._noise_cov = SCZ_apply(self._adj, noise_cov_init)
+            # TODO: Save var_p and var_q?
+
+        # For two-step sampling, sample for initial (ideal)
+        # state-dependent quadrature values.
+        if self._sampling_order == 'two-step':
+            self._init_quads = np.zeros(2 * N, dtype=np.float32)
+            for state in self._states:
+                indices = self._states[state]
+                for ind in indices:
+                    if state == 'p':
+                        self._init_quads[ind] = np.random.random() * (2 * np.sqrt(np.pi))
+                    if state == 'GKP':
+                        self._init_quads[ind] = np.random.randint(0, 2) * np.sqrt(np.pi)
 
 
     def SCZ(self, sparse=False, heat_map=False):
@@ -395,22 +436,6 @@ class CVGraph:
         Args:
             delta (float): the sqeezing/blurring/variance parameter
 
-        Returns:
-            None
-        """
-        # Step 1: Construct the phase-space covariance matrix
-        # Basis ordering: all N q's, then all N p's
-        # Step 1a: initialize all as GKPs
-        cov_phase = (delta / 2) * np.eye(2 * self._N)
-        # Step 1b: replace p in relevant locations
-        cov_phase[self._p_inds, self._p_inds] = 1 / (2 * delta)
-        # Step 1c: apply CZ gates
-        cov_phase = self._SCZ @ cov_phase @ self._SCZ.T
-        # Step 1d: extract p variances
-        self._cov_p = cov_phase[self._N:, self._N:]
-        self.var_p = np.diag(self._cov_p)
-        for i in range(self._N):
-            self.graph.nodes[self.ind_dict[i]]['var_p'] = self.var_p[i]
 
     # Note that only the getter function has been defined for the properties
     # below because I am treating these as private. This can be changed if we
