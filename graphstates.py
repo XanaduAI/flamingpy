@@ -391,6 +391,68 @@ class CVGraph:
                     if state == 'GKP':
                         self._init_quads[ind] = np.random.randint(0, 2) * np.sqrt(np.pi)
 
+    def measure_hom(self, quad='p', inds=[], method='cholesky', dim='single', updated_quads=[]):
+        """Conduct a homodyne measurement on the lattice.
+
+        Simulate a homodyne measurement of quadrature quad of states
+        at indices inds according to sampling order specified by
+        self._sampling_order. Use the Numpy random sampling method
+        method; by default, do many single-variable samplings where
+        appropriate, otherwise set dim = 'multi' for sampling once
+        from a multivariate distribution. (This might affect the speed
+        of implementation). If updated_quads is supplied, use those
+        instead of applying an SCZ matrix to the initial quads in
+        the two-step sampling.
+        """
+        N = self._N
+        if not len(inds):
+            inds = range(N)
+        N_inds = len(inds)
+        if self._sampling_order == 'initial':
+            means = np.zeros(2 * N, dtype=bool)
+            covs = self._init_noise
+            if dim == 'single':
+                initial = np.empty(2 * N, dtype=np.float32)
+                for i in range(2 * N):
+                    initial[i] = rng().normal(means[i], np.sqrt(covs[i]))
+                outcomes = SCZ_apply(self._adj, initial)
+            if dim == 'multi':
+                initial = rng().multivariate_normal(mean=means, cov=np.diag(covs), method=method)
+                outcomes = SCZ_apply(self._adj, initial)
+            if quad == 'q':
+                outcomes = outcomes[:N][inds]
+            elif quad == 'p':
+                outcomes = outcomes[N:][inds]
+        if self._sampling_order == 'two-step':
+            if len(updated_quads):
+                updated = updated_quads
+            else:
+                means = self._init_quads
+                adj = self.egraph.adj_generator(sparse=True)
+                updated = SCZ_apply(adj, means)
+            if quad == 'q':
+                means = updated[:N][inds]
+            elif quad == 'p':
+                means = updated[N:][inds]
+            if dim == 'single':
+                outcomes = np.empty(N_inds, dtype=np.float32)
+                sigma = np.sqrt(self._delta / 2)
+                for i in range(N_inds):
+                    outcomes[i] = rng().normal(means[i], sigma)
+            elif dim == 'multi':
+                covs = np.eye(N_inds, dtype=np.float32) * (self._delta / 2)
+                outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
+        if self._sampling_order == 'final':
+            cov_q = self._noise_cov[:N, :N]
+            cov_p = self._noise_cov[N:, N:]
+            cov_dict = {'q': cov_q, 'p': cov_p}
+            means = np.zeros(N_inds, dtype=np.bool)
+            # TODO: Is below correct?
+            covs = cov_dict[quad][inds, :][:, inds].toarray()
+            outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
+        for i in range(N_inds):
+            self.egraph.nodes[self.to_points[inds[i]]]['hom_val_' + quad] = outcomes[i]
+
 
     def SCZ(self, sparse=False, heat_map=False):
         """Return the symplectic matrix associated with CZ application.
@@ -421,20 +483,6 @@ class CVGraph:
         for i in range(len(Z_errs)):
             self.graph.nodes[self.ind_dict[i]]['p_phase_cond'] = Z_errs[i]
 
-    def measure_p(self):
-        """Conduct a p-homodyne measurement on the lattice."""
-        # Randomly sample of a normal distribution centred at 0 with
-        # covariances matrix given by cov_p.
-        outcomes = mvn(mean=np.zeros(self._N), cov=self._cov_p)
-        # bit_values = self.translator(outcomes)
-        for i in range(len(outcomes)):
-            self.graph.nodes[self.ind_dict[i]]['hom_val'] = outcomes[i]
-
-    def grn_model(self, delta):
-        """Apply Gaussian Random Noise model to the CVGraph.
-
-        Args:
-            delta (float): the sqeezing/blurring/variance parameter
 
 
     # Note that only the getter function has been defined for the properties
