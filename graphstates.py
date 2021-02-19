@@ -453,6 +453,41 @@ class CVGraph:
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]['hom_val_' + quad] = outcomes[i]
 
+    def eval_Z_probs(self, inds=[], exact=True, cond=False):
+        """Evaluate the probability of phase errors at nodes inds.
+
+        If inds not specified, compute probabilities for all nodes.
+        """
+        N = self._N
+        if not len(inds):
+            inds = range(N)
+        N_inds = len(inds)
+        if exact:
+            if self._sampling_order != 'final':
+                print('Sampling order must be "final"')
+                raise Exception
+            var_p = self._noise_cov[N:, N:][inds, :][:, inds].toarray()
+            var_p = np.diag(var_p)
+            if cond:
+                # TODO: Fix this.
+                hom_vals = self.hom_outcomes(inds=inds)
+                errs = Z_err_cond(var_p, hom_vals)
+
+            else:
+                errs = Z_err(var_p)
+            p_string = 'p_phase' + '_cond' * cond
+            for i in range(N_inds):
+                self.egraph.nodes[self.to_points[inds[i]]][p_string] = errs[i]
+        # TODO: Account for change in hom input for two-step sampling
+        # TODO: Fix the following to account for p-squeezed states in
+        # vicinity.
+        # else:
+        #     for i in range(N_inds):
+        #         point = self.to_points[inds[i]]
+        #         n_neighbors = len(self.egraph[point])
+        #         delta_effective = (n_neighbors + 1) * self._delta
+        #         err = Z_err([delta_effective])[0]
+        #         self.egraph.nodes[point]['p_phase'] = errs[i]
 
     def SCZ(self, sparse=False, heat_map=False):
         """Return the symplectic matrix associated with CZ application.
@@ -466,22 +501,6 @@ class CVGraph:
         adj = self.graph.adj_generator(sparse=sparse)
         return SCZ_mat(adj, heat_map=heat_map)
 
-    def eval_Z_probs(self):
-        """Evaluate the probability of phase errors at each mode."""
-        errs = Z_err(self.var_p)
-        for i in range(len(errs)):
-            self.graph.nodes[self.ind_dict[i]]['p_phase'] = errs[i]
-
-    def eval_Z_probs_cond(self):
-        """Evaluate the conditional phase error probability of each mode."""
-        try:
-            hom_vals = self.hom_outcomes
-        except Exception:
-            return
-
-        Z_errs = Z_err_cond(self.var_p, hom_vals)
-        for i in range(len(Z_errs)):
-            self.graph.nodes[self.ind_dict[i]]['p_phase_cond'] = Z_errs[i]
 
 
 
