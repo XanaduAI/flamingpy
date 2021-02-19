@@ -637,4 +637,27 @@ class CVGraph:
 
 
 if __name__ == '__main__':
-    pass
+    # Bell state EGraph
+    edge = [(0, 0, 0), (1, 1, 1)]
+    dims = (1, 1, 1)
+    bell_state = EGraph(dims=dims)
+    bell_state.add_edge(*edge, color='MidnightBlue')
+    # Plot the bel stat
+    bell_state.draw(color_nodes=False, color_edges=True)
+    bell_state.adj_generator(sparse=True)
+    # print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
+
+    # Noise model for CVGraph
+    model = {'noise': 'grn', 'delta': 1, 'sampling_order': 'final'}
+    CVbell = CVGraph(bell_state, model=model, p_swap=0)
+    CVbell.measure_hom('p', [1])
+    CVbell.measure_hom('q', [1])
+    CVbell.eval_Z_probs(cond=False)
+    CVbell.sketch('hom_val_p')
+    CVbell.sketch('hom_val_q')
+    CVbell.sketch('p_phase')
+    print('Nodes :', bell_state.nodes.data())
+    print('Edges :', bell_state.edges.data())
+    print('p indices: ', CVbell.p_inds, '\n')
+    print('GKP indices: ', CVbell.GKP_inds, '\n')
+    print('Symplectic CZ matrix: \n', CVbell.SCZ(heat_map=True), '\n')
