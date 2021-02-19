@@ -40,7 +40,7 @@ class EGraph(nx.Graph):
         to_indices (dict): if self.index_generator() has been run,
             a dictionary of the form {points: indices}
         to_points (dict): if self.index_generator() has been run,
-            a dictionary of the form {indixes: points}
+            a dictionary of the form {indices: points}
         adj_mat (np.array): if self.adj_generator() has been run,
             the adjacency mtrix of the graph.
     """
@@ -51,6 +51,8 @@ class EGraph(nx.Graph):
         if 'dims' in self.graph:
             tot = np.sum(self.graph['dims'])
             self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
+        else:
+            self.font_props = {'size': 14, 'family': 'serif'}
         # TODO: If dims not specified, look at number of nodes in graph
         # to determine font properties.
         # TODO: Store dims as EGraph attributes, rather than a graph
