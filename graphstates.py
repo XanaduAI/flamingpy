@@ -14,9 +14,9 @@
 """Classes for representing graph states."""
 import networkx as nx
 import numpy as np
-from numpy.random import (multivariate_normal as mvn, default_rng as rng)
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from numpy.random import default_rng as rng
 
 import scipy.sparse as sp
 from GKP import Z_err, Z_err_cond
@@ -505,7 +505,7 @@ class CVGraph:
         Returns:
             array: the symplectic matrix.
         """
-        adj = self.graph.adj_generator(sparse=sparse)
+        adj = self.egraph.adj_generator(sparse=sparse)
         return SCZ_mat(adj, heat_map=heat_map)
 
     def Z_probs(self, inds=[], cond=False):
