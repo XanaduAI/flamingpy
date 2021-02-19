@@ -255,36 +255,43 @@ class CVGraph:
 
     Args:
         g (graph-type): the graph underlying the state
-        model (str): the noise model; Gaussian random noise (GRN) by
-            default
-        p_inds (array): the indices of the p-squeezed states; empty by
-            default (meaning only GKP states present)
-        swap_prob (float): if supplied, the probability of a node being
-            a p-squeezed state
-        delta (float): the quadrature blurring parameter, related to
-            the squeezing of the GKP states and the momentum-quadrature
-            variance of the p-squeezed states; 0.01 by default
+        state (dict, optional): the dictionary of all non-GKP states
+            and their indices, of the form {'state': []}
+        model (dict, optional): the noise model dictionary of the form
+            (default values displayed):
+
+            {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01}
+
+            grn stands for Gaussian Random Noise; sampling_order
+            dictates how to simulate measurement outcomes: sample from
+            an uncorrelated noise matrix initially ('initial'), a
+            correlated noise matrix finally ('final'), or for ideal
+            homodyne outcomes initially and from a separable noise
+            covariance matrix finally ('two-step'); 'delta' is the
+            noise parameter, explained below.
+
+        swap_prob (float, optional): if supplied, the probability of a
+            node being a p-squeezed state. Overrides the indices given
+            in state.
+        delta (float, optional): the quadrature blurring parameter,
+            related to the squeezing of the GKP states and the
+            momentum-quadrature variance of the p-squeezed states;
+            0.01 by default. Overrides the delta given in 'model'.
 
     Attributes:
-        graph (EGraph): the unerlying graph representation
+        egraph (EGraph): the unerlying graph representation
         _N (int): the number of qubits in the lattice
+        _states (dict): states along with their indices
         _delta (float): the delta from the Args above
-        _SCZ (np.array): the symplectic matrix associated with the CZ
-            application at the the lattice edges
-        _p_inds (array): the indices of the p-squeezed states
-        _indexed_graph (nx.Graph): a graph with nodes relabelled as
-            integer indices
-        ind_dict(dict): a dictionary between indices and coordinates
-        cov_p (array): the phase-space covariance matrix (populated
-            if 'grn' model specified)
-        var_ p (array): the p variances of the modes populated if
-            'grn' model specified)
+        _sampling_order (str): the sampling order from the Args above
+        to_points (dict): pointer to self.egraph.to_points, the
+            dictionary from indices to coordinates
         Z_probs (array): if eval_z_probs has been run, the phase error
             probabilities of the modes
         Z_probs_cond (array): if eval_z_probs_cond has been run, the
             phase error probabilities of the modes conditioned on
             homodyne outcomes
-        hom_outcomes (array): if measure_p has been run, the results
+        hom_outcomes (array): if measure_hom has been run, the results
             of the latest p-homodyne measurement
     """
 
