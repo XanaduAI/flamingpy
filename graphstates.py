@@ -554,7 +554,8 @@ class CVGraph:
         else:
             print('Sampling order must be "final."')
 
-    def sketch(self, label=None, legend=True, title=True, color_nodes=False, color_edges=False):
+    def sketch(self, label=None, legend=True, title=True,
+               color_nodes=True, color_edges=False, state_colors={}):
         """Sketch the underlying graph with CV labels.
 
         GKP states are black, p-squeezed states are orange. If a label
@@ -579,26 +580,36 @@ class CVGraph:
         Returns:
             A matplotib Axes object.
         """
-        font_props = self.graph.font_props
-        idg = self._indexed_graph
-        p_coords = [idg.nodes[ind]['pos'] for ind in self._p_inds]
-        ax = self.graph.draw(color_nodes=color_nodes, color_edges=color_edges, label=0)
-        for point in p_coords:
-            x, z, y = point
-            ax.scatter(x, y, z, s=40, c='orange')
-        orange_line = mlines.Line2D([], [], color='orange', marker='.',
-                                    markersize=14, label='p')
-        black_line = mlines.Line2D([], [], color='black', marker='.',
-                                   markersize=14, label='GKP')
+        font_props = self.egraph.font_props
+        ax = self.egraph.draw(color_nodes=color_nodes, color_edges=color_edges, label=False)
+
+        handles = []
+        color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
+        i = 0
+        for state in self._states:
+            coords = [self.to_points[ind] for ind in self._states[state]]
+            color = state_colors.get(state)
+            if not color:
+                color = color_cycle[i]
+            for point in coords:
+                x, z, y = point
+                ax.scatter(x, y, z, s=200, c=color)
+            line = mlines.Line2D([], [], color=color, marker='.',
+                                    markersize=14, label=state)
+            handles += [line]
+            i += 1
+
         if legend:
-            ax.legend(handles=[orange_line, black_line], prop=font_props)
+            ax.legend(handles=handles, prop=font_props)
 
         title_dict = {'var_p': 'p Variances',
+                      'var_q': 'q Variances',
                       'p_phase': 'Phase error probabilities',
                       'p_phase_cond': 'Conditional phase error probabilities',
-                      'hom_val': 'p-homodyne outcomes',
-                      'bit_val': 'Bit values'}
-
+                      'hom_val_p': 'p-homodyne outcomes',
+                      'hom_val_q': 'q-homodyne outcomes',
+                      'bit_val': 'Bit values',
+                      'weight': 'Weights'}
         if label:
             try:
                 name = title_dict[label]
@@ -608,17 +619,19 @@ class CVGraph:
             if title:
                 ax.set_title(name, fontdict=font_props)
 
-            for node in self.graph:
+            n_uncomputed = 0
+            for node in self.egraph:
                 try:
-                    value = self.graph.nodes[node][label]
+                    value = self.egraph.nodes[node][label]
+                    x, z, y = node
+                    ax.text(x, y, z, '{:.2g}'.format(value),
+                            fontdict=font_props, color='MediumBlue',
+                            backgroundcolor='w')
                 except KeyError:
-                    print(title + ' have not yet been computed.')
-                    return
-                x, z, y = node
-                ax.text(x, y, z, '{:.0g}'.format(value),
-                        fontdict=font_props, color='MediumBlue',
-                        backgroundcolor='w')
-
+                    n_uncomputed += 1
+                    pass
+            if n_uncomputed > 0:
+                print('{} {} have not yet been computed.'.format(n_uncomputed, name.lower()))
         plt.draw()
         return ax
 
