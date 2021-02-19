@@ -501,66 +501,51 @@ class CVGraph:
         adj = self.graph.adj_generator(sparse=sparse)
         return SCZ_mat(adj, heat_map=heat_map)
 
+    def Z_probs(self, inds=[], cond=False):
+        """array: the phase error probabilities of modes inds."""
+        N = self._N
+        if not len(inds):
+            inds = range(N)
+        N_inds = len(inds)
+        p_string = 'p_phase' + '_cond' * bool(cond)
+        phase_errs = [self.egraph.nodes[self.to_points[i]].get(p_string) for i in range(N_inds)]
+        return phase_errs
 
+    def hom_outcomes(self, inds=[], quad='p'):
+        """array: quad-homodyne measurement outcomes for modes inds."""
+        N = self._N
+        if not len(inds):
+            inds = range(N)
+        N_inds = len(inds)
+        outcomes = [self.egraph.nodes[self.to_points[i]].get('hom_val_' + quad) for i in range(N_inds)]
+        return outcomes
 
+    def bit_values(self, inds=[]):
+        """array: bit values associated with the p measurement."""
+        N = self._N
+        if not len(inds):
+            inds = range(N)
+        N_inds = len(inds)
+        bits = [self.egraph.nodes[self.to_points[i]].get('bit_va;') for i in range(N_inds)]
+        return bits
 
-    # Note that only the getter function has been defined for the properties
-    # below because I am treating these as private. This can be changed if we
-    # would like the user to be able to change the values of these attribute
-    # for a given CVGraph object.
     @property
     def p_inds(self):
         """array: the indices of the p-squeezed states."""
-        return self._p_inds
+        return self._states.get('p')
 
     @property
-    def cov_p(self):
-        """array: the phase-space covariance matrix."""
-        return self._cov_p
+    def GKP_inds(self):
+        """array: the indices of the GKP states."""
+        return self._states.get('GKP')
 
     @property
-    def Z_probs(self):
-        """array: the phase error probabilities of the modes."""
-        try:
-            phase_errs = [self.graph.nodes[node]['p_phase'] for node in self.graph]
-            return phase_errs
-        except Exception:
-            print('Z error probabilities have not yet been computed. Please '
-                  'use eval_Z_probs() first.')
-            return
-
-    @property
-    def Z_probs_cond(self):
-        """array: the conditional phase error probabilities of the modes."""
-        try:
-            phase_errs = [self.graph.nodes[node]['p_phase_cond'] for node in self.graph]
-            return phase_errs
-        except Exception:
-            print('Conditional Z error probabilities have not yet been computed. Please '
-                  'use eval_Z_probs_cond() first.')
-            return
-
-    @property
-    def hom_outcomes(self):
-        """array: the results of the p-homodyne measurement."""
-        try:
-            outcomes = [self.graph.nodes[node]['hom_val'] for node in self.graph]
-            return outcomes
-        except Exception:
-            print('A homodyne measurement has not yet been performed. Please '
-                  'use measure_p() first.')
-            raise
-
-    @property
-    def bit_values(self):
-        """array: bit values associated with the p measurement."""
-        try:
-            bit_values = [self.graph.nodes[node]['bit_val'] for node in self.graph]
-            return bit_values
-        except Exception:
-            print('A homodyne measurement or a translation has not yet'
-                  'been performed.')
-            return
+    def noise_cov(self):
+        """array: the noise covariance matrix."""
+        if self._sampling_order == 'final':
+            return self._noise_cov
+        else:
+            print('Sampling order must be "final."')
 
     def sketch(self, label=None, legend=True, title=True, color_nodes=False, color_edges=False):
         """Sketch the underlying graph with CV labels.
