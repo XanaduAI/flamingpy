@@ -288,7 +288,7 @@ class CVGraph:
             of the latest p-homodyne measurement
     """
 
-    def __init__(self, g, model='grn', p_inds=[], swap_prob=None, delta=0.01):
+    def __init__(self, g, states={'p': np.empty(0, dtype=int)}, model={}, p_swap=0, delta=None):
         """Initialize the CVGraph.
 
         Convert g into an EGraph and designate nodes either p-squeezed
@@ -299,29 +299,57 @@ class CVGraph:
         (# of nodes).
         """
         if isinstance(g, EGraph):
-            self.graph = g
+            self.egraph = g
         else:
-            self.graph = EGraph(g)
-        self._SCZ = SCZ_mat(self.graph.adj_mat())
-        self._delta = delta
-        self._N = self.graph.number_of_nodes()
+            self.egraph = EGraph(g)
+        self._N = len(g)
 
-        if swap_prob:
-            self.hybridize(swap_prob)
-        else:
-            self._p_inds = p_inds
+        self._states = states
+        if states:
+            # Non-zero swap-out probability overrides indices specified
+            # in states and hybridizes the lattice. Print a message if
+            # both supplied.
+            # TODO: Raise exception?
+            if p_swap:
+                if len(states['p']):
+                    print('Both swap-out probability and indices of p-squeezed states supplied. '
+                          'Ignoring the indices.')
+                if p_swap == 1:
+                    states['p'] = np.arange(self._N)
+                else:
+                    num_p = rng().binomial(self._N, p_swap)
+                    inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
+                    states['p'] = inds
 
-        self._indexed_graph = self.graph.index()
-        idg = self._indexed_graph
-        self.ind_dict = {n: idg.nodes[n]['pos'] for n in idg.nodes}
-        for ind in self._p_inds:
-            self.graph.nodes[self.ind_dict[ind]]['type'] = 'p'
+            # Associated remaining indices with GKP states.
+            used_inds = np.empty(0, dtype=int)
+            for psi in states:
+                used_inds = np.concatenate([used_inds, states[psi]])
+            remaining_inds = list(set(range(self._N)).difference(set(used_inds)))
+            states['GKP'] = np.array(remaining_inds, dtype=int)
 
-        for ind in set(idg.nodes).difference(self._p_inds):
-            self.graph.nodes[self.ind_dict[ind]]['type'] = 'GKP'
+            # Generate EGraph indices.
+            self.egraph.index_generator()
+            self.to_points = self.egraph.to_points
 
-        if model == 'grn':
-            self.grn_model(delta)
+            for psi in states:
+                for ind in states[psi]:
+                    self.egraph.nodes[self.to_points[ind]]['state'] = psi
+
+            # Modelling the states.
+            # If both delta and delta in model specified, print a
+            # message that the former will be used.
+            if delta and model.get('delta'):
+                print('Delta supplied twice. Using the delta given by the delta argument.')
+                model['delta'] = delta
+            default_model = {'noise': 'grn', 'delta': 0.01, 'sampling_order': 'initial'}
+            model = {**default_model, **model}
+            self._delta = model['delta']
+            self._sampling_order = model['sampling_order']
+            if model['noise'] == 'grn':
+                self.grn_model()
+
+
 
     def SCZ(self, sparse=False, heat_map=False):
         """Return the symplectic matrix associated with CZ application.
@@ -360,23 +388,6 @@ class CVGraph:
         # bit_values = self.translator(outcomes)
         for i in range(len(outcomes)):
             self.graph.nodes[self.ind_dict[i]]['hom_val'] = outcomes[i]
-
-    def hybridize(self, swap_prob):
-        """Populate nodes with p-squeezed states at random.
-
-        The number of p states is the sample of the binomial
-        distribution with the number of trials equalling the size
-        of the graph state, and a success probability swap_prob.
-
-        Args:
-            swap_prob (float): the probability of swapping out a GKP
-                state for a p-squeezed state.
-
-        Returns:
-            None
-        """
-        num_p = rng().binomial(self._N, swap_prob)
-        self._p_inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
 
     def grn_model(self, delta):
         """Apply Gaussian Random Noise model to the CVGraph.
