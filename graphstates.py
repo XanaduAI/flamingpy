@@ -644,7 +644,7 @@ if __name__ == '__main__':
     # Noise model for CVGraph
     model = {'noise': 'grn', 'delta': 1, 'sampling_order': 'final'}
     CVbell = CVGraph(bell_state, model=model, p_swap=0)
-    CVbell.measure_hom('p', [9])
+    CVbell.measure_hom('p', [0])
     CVbell.measure_hom('q', [1])
     CVbell.eval_Z_probs(cond=False)
     CVbell.draw('hom_val_p')
