@@ -321,6 +321,7 @@ def RHG_boundary_coords(G):
                 high.append(tuple(m))
     return list(set(low)) + list(set(high))
 
+def RHG_slice_coords(G, plane, number):
     """Obtain all the coordinates in a slice of RHG lattice G.
 
     Args:
@@ -334,21 +335,6 @@ def RHG_boundary_coords(G):
     plane_dict = {'x': 0, 'y': 1, 'z': 2}
     plane_ind = plane_dict[plane]
     coords = [point for point in G.nodes if point[plane_ind] == number]
-    dims = G.graph['dims']
-    if boundaries in ('primal', 'dual'):
-        remaining_inds = {0, 1, 2}.difference({plane_ind})
-        undesirables = []
-        for i in range(len(coords)):
-            for ind in remaining_inds:
-                if boundaries == 'dual':
-                    if coords[i][ind] == 0:
-                        undesirables.append(i)
-                if boundaries == 'primal':
-                    if coords[i][ind] == (2*dims[ind] - 1):
-                        undesirables.append(i)
-        coords = [coords[i] for i in range(len(coords)) if i not in undesirables]
-        return coords
-
     return coords
 
 
@@ -421,12 +407,12 @@ class RHGCube:
 
 
 if __name__ == '__main__':
-    boundaries = 'natural'
+    boundaries = 'finite'
     # # boundaries = 'primal'
     # # boundaries = 'periodic'
     # # boundaries = ['primal', 'dual', 'primal']
     RHG = RHG_graph(2, boundaries=boundaries, polarity=True)
-    ax = RHG.draw(color_nodes=True, color_edges=True, label=True)
+    ax = RHG.draw(color_nodes=True, color_edges=True, label_indices=True)
 
     # Test dim X dim X dim lattice, with p% p-squeezed states randomly
     # located, and variance of of delta.
