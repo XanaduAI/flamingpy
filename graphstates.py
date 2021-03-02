@@ -568,35 +568,34 @@ class CVGraph:
         else:
             print('Sampling order must be "final."')
 
-    def sketch(self, label=None, legend=True, title=True,
-               color_nodes=True, color_edges=False, state_colors={}):
-        """Sketch the underlying graph with CV labels.
-
-        GKP states are black, p-squeezed states are orange. If a label
-        is specified from the keys in the following dictionary, data
-        corresponding to the values will be displayed:
-
-            {'var_p': 'p Variances',
-            'p_phase': 'Phase error probabilities',
-            'p_phase_cond': 'Conditional phase error probabilities',
-            'hom_val': 'p-homodyne outcomes',
-            'bit_val': 'Bit values'}.
+    def draw(self, label=None, title=True, legend=True, state_colors={}, **kwargs):
+        """Draw the underlying graph with CV labels.
 
         Args:
-            label (bool): if a string from the above dictionary, plot
-                the correspond value; otherwise, no label.
-            legend (bool): if True, display a legend
-            title (bool): if True, display a title
-            color_nodes (bool): If True, color nodes based on 'color'
-                attributes attached to the node. Black by default.
-            color_edges (bool): If True, color edges based on 'color'
-                attributes attached to the node. Grey by default.
+            label (str, optional): next to each node, plot the value of
+                the node attribute label if it exists and has been
+                computed. Some possible options:
+
+                {'p_phase': 'Phase error probabilities',
+                 'p_phase_cond': 'Conditional phase error probabilities',
+                 'hom_val_p': 'p-homodyne outcomes',
+                 'hom_val_q': 'q-homodyne outcomes',
+                 'bit_val': 'Bit values',
+                 'weight': 'Weights'}
+
+            title (bool, optional): if True, display a title
+                corresponding to the label
+            legend (bool, optional): if True, display a legend for
+                the states
+            state_color (dict, optional): dictionary of the form
+                {state_name: color}; if supplied overrides the
+                default color cycle for state colors.
+            **kwargs: The EGraph.draw arguments. Except for color_edges,
+                overwritten by the CVGraph.draw arguments.
         Returns:
             A matplotib Axes object.
         """
-        font_props = self.egraph.font_props
-        ax = self.egraph.draw(color_nodes=color_nodes, color_edges=color_edges, label=False)
-
+        ax = self.egraph.draw(**kwargs)
         handles = []
         color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
         i = 0
@@ -607,45 +606,40 @@ class CVGraph:
                 color = color_cycle[i]
             for point in coords:
                 x, z, y = point
-                ax.scatter(x, y, z, s=200, c=color)
-            line = mlines.Line2D([], [], color=color, marker='.',
-                                    markersize=14, label=state)
+                ax.scatter(x, y, z, s=plt.rcParams['lines.markersize'] * 5, c=color)
+            line = mlines.Line2D([], [], color=color, marker='.', label=state)
             handles += [line]
             i += 1
 
         if legend:
-            ax.legend(handles=handles, prop=font_props)
+            ax.legend(handles=handles)
 
-        title_dict = {'var_p': 'p Variances',
-                      'var_q': 'q Variances',
-                      'p_phase': 'Phase error probabilities',
+        title_dict = {'p_phase': 'Phase error probabilities',
                       'p_phase_cond': 'Conditional phase error probabilities',
                       'hom_val_p': 'p-homodyne outcomes',
                       'hom_val_q': 'q-homodyne outcomes',
                       'bit_val': 'Bit values',
                       'weight': 'Weights'}
         if label:
-            try:
-                name = title_dict[label]
-            except KeyError:
-                print('No such label permitted.')
+            name = title_dict.get(label) if title_dict.get(label) else label
 
             if title:
-                ax.set_title(name, fontdict=font_props)
+                ax.set_title(name)
 
             n_uncomputed = 0
             for node in self.egraph:
-                try:
-                    value = self.egraph.nodes[node][label]
+                value = self.egraph.nodes[node].get(label)
+                if value:
                     x, z, y = node
-                    ax.text(x, y, z, '{:.2g}'.format(value),
-                            fontdict=font_props, color='MediumBlue',
-                            backgroundcolor='w')
-                except KeyError:
+                    # Raise negative sign above node.
+                    sign = '^{-}' * (-int(np.sign(value)))
+                    number = r'${}{:.2g}$'.format(sign, np.abs(value))
+                    ax.text(x, y, z, number, color='MediumBlue', backgroundcolor='w')
+                else:
                     n_uncomputed += 1
-                    pass
             if n_uncomputed > 0:
-                print('{} {} have not yet been computed.'.format(n_uncomputed, name.lower()))
+                message = '{} at {} node(s) have not yet been computed.'
+                print(message.format(name.lower(), n_uncomputed))
         plt.draw()
         return ax
 
@@ -659,17 +653,17 @@ if __name__ == '__main__':
     # Plot the bell state
     bell_state.draw(color_nodes='magenta', color_edges=True, label_indices=True)
     bell_state.adj_generator(sparse=True)
-    # print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
+    print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
 
     # Noise model for CVGraph
     model = {'noise': 'grn', 'delta': 1, 'sampling_order': 'final'}
     CVbell = CVGraph(bell_state, model=model, p_swap=0)
-    CVbell.measure_hom('p', [1])
+    CVbell.measure_hom('p', [9])
     CVbell.measure_hom('q', [1])
     CVbell.eval_Z_probs(cond=False)
-    CVbell.sketch('hom_val_p')
-    CVbell.sketch('hom_val_q')
-    CVbell.sketch('p_phase')
+    CVbell.draw('hom_val_p')
+    CVbell.draw('hom_val_q')
+    CVbell.draw('p_phase')
     print('Nodes :', bell_state.nodes.data())
     print('Edges :', bell_state.edges.data())
     print('p indices: ', CVbell.p_inds, '\n')
