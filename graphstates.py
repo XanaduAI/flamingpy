@@ -527,9 +527,8 @@ class CVGraph:
         N = self._N
         if not len(inds):
             inds = range(N)
-        N_inds = len(inds)
         p_string = 'p_phase' + '_cond' * bool(cond)
-        phase_errs = [self.egraph.nodes[self.to_points[i]].get(p_string) for i in range(N_inds)]
+        phase_errs = [self.egraph.nodes[self.to_points[i]].get(p_string) for i in inds]
         return phase_errs
 
     def hom_outcomes(self, inds=[], quad='p'):
@@ -537,8 +536,7 @@ class CVGraph:
         N = self._N
         if not len(inds):
             inds = range(N)
-        N_inds = len(inds)
-        outcomes = [self.egraph.nodes[self.to_points[i]].get('hom_val_' + quad) for i in range(N_inds)]
+        outcomes = [self.egraph.nodes[self.to_points[i]].get('hom_val_' + quad) for i in inds]
         return outcomes
 
     def bit_values(self, inds=[]):
@@ -546,8 +544,7 @@ class CVGraph:
         N = self._N
         if not len(inds):
             inds = range(N)
-        N_inds = len(inds)
-        bits = [self.egraph.nodes[self.to_points[i]].get('bit_va;') for i in range(N_inds)]
+        bits = [self.egraph.nodes[self.to_points[i]].get('bit_val') for i in inds]
         return bits
 
     @property
