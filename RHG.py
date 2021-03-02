@@ -320,64 +320,61 @@ class RHGCube:
     """A class for representing an RHG latice stabilizer cube.
 
     Arguments:
-        G (CVGraph): a CVGraph whose EGraph is the subgraph induced
-            by the (five or six) stabilizer vertices.
+        G (EGraph): the subgraph of the RHG lattice EGraph induced by
+            the (three to six) stabilizer vertices
+        physical (NoneType): the list of physical coordinates
+            associated with the cube, for plotting purposes. Specified
+            during syndrome identification.
 
     Attributes:
-        cvgraph (CVGraph): the corresponding CVGraph
-        _parity (int): the total parity of the cube, if self.parity has
-            been run.
+        egraph (EGraph): the corresponding EGraph
         type (str): the type of stabilizer ('six-body' or 'five-body').
     """
 
     def __init__(self, G):
-        """Initialize the RHGCube with its associated cvgraph."""
+        """Initialize the RHGCube with its associated egraph."""
         self.egraph = G
-        self._parity = None
+        self.physical = None
 
+    @property
     def parity(self):
         """Compute total parity of the cube.
 
         For now, add the bit_values found in the 'bit_val' attribute
-        of the nodes of the cvgraph.
+        of the nodes of the EGraph.
 
         Returns:
             int: the total parity
         """
-        # If parity already known, set self._parity to it.
-        if self._parity is not None:
-            return self._parity
         G = self.egraph
         bit_vals = [G.nodes[node]['bit_val'] for node in G]
-
-        # TODO: Process the homodyne outcomes first, as below.
+        # TODO: Option for processing the homodyne outcomes first, as
+        # below.
         # hom_vals = [G.graph.nodes[node]['hom_val'] for node in G.graph]
         # return basic_translate([np.sum(hom_vals)])
-
         par = int(np.sum(bit_vals) % 2)
-        self._parity = par
         return par
 
     def coords(self):
         """Return the coordinates of the syndrome vertices."""
-        return [tup for tup in self.egraph.nodes]
+        return list(self.egraph.nodes)
 
     def xlims(self):
         """Return the smallest and largest x vals of the coordinates."""
-        xs = [tup[0] for tup in self.coords()]
-        xmin, xmax = np.min(xs), np.max(xs)
+        xs = [tup[0] for tup in self.physical]
+        xmin, xmax = min(xs), max(xs)
         return xmin, xmax
 
     def ylims(self):
         """Return the smallest and largest y vals of the coordinates."""
-        ys = [tup[1] for tup in self.coords()]
-        ymin, ymax = np.min(ys), np.max(ys)
+        ys = [tup[1] for tup in self.physical]
+        ymin, ymax = min(ys), max(ys)
         return ymin, ymax
 
     def zlims(self):
         """Return the smallest and largest z vals of the coordinates."""
-        zs = [tup[2] for tup in self.coords()]
-        zmin, zmax = np.min(zs), np.max(zs)
+        zs = [tup[2] for tup in self.physical]
+        zmin, zmax = min(zs), max(zs)
         return zmin, zmax
 
     def midpoint(self):
