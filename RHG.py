@@ -44,6 +44,7 @@ def RHG_graph(dims, boundaries='natural', polarity=False):
             noise-reduction strategy for the eventual CVGraph. Set
             edge 'color' attribute to blue/red for -1/+1 weights. By
             default, all edges have weight +1.
+
     Returns:
         EGraph: the RHG lattice.
     """
@@ -55,8 +56,8 @@ def RHG_graph(dims, boundaries='natural', polarity=False):
     nx, ny, nz = dims
 
     # Dealing with boundaries
-    if boundaries == 'natural':
-        boundaries = ['periodic', 'periodic', 'primal']
+    if boundaries == 'finite':
+        boundaries = ['primal', 'dual', 'dual']
     elif type(boundaries) == str:
         boundaries = [boundaries] * 3
 
@@ -156,6 +157,7 @@ def RHG_graph(dims, boundaries='natural', polarity=False):
                 lattice.add_edge(point, tuple(high_green), weight=pol, color=color(pol))
 
     return lattice
+
 
 def RHG_syndrome_coords(G):
     """Return the syndrome coordinates for RHG lattice G.
