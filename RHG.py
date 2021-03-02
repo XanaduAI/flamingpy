@@ -14,7 +14,6 @@
 """Classes for the RHG code and related functions."""
 import numpy as np
 import itertools as it
-
 from graphstates import EGraph, CVGraph
 
 
@@ -195,6 +194,7 @@ def RHG_syndrome_coords(G):
             (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
 
     all_stabes = []
+    all_cubes = []
 
     periodic_inds = np.where(boundaries == 'periodic')[0]
     dual_inds = np.where(boundaries == 'dual')[0]
@@ -202,19 +202,32 @@ def RHG_syndrome_coords(G):
         actual_stabe = list(set(stabe).intersection(set(G)))
         if len(actual_stabe) == 6:
             all_stabes.append(actual_stabe)
+            cube = RHGCube(G.subgraph(actual_stabe))
+            cube.physical = stabe
+            all_cubes.append(cube)
         if len(actual_stabe) == 5:
             for ind in (0, 1, 2):
                 lowest_point = list(stabe[ind])
                 highest_point = stabe[3 + ind]
                 if lowest_point[ind] == (2 * dims[ind] - 2):
                     if ind in dual_inds:
-                        all_stabes += [actual_stabe]
+                        all_stabes.append(actual_stabe)
+                        cube = RHGCube(G.subgraph(actual_stabe))
+                        cube.physical = stabe
+                        all_cubes.append(cube)
                     if ind in periodic_inds:
                         lowest_point[ind] = 0
-                        actual_stabe += [tuple(lowest_point)]
+                        virtual_point = tuple(lowest_point)
+                        actual_stabe += [virtual_point]
+                        cube = RHGCube(G.subgraph(actual_stabe))
+                        cube.physical = stabe
+                        all_cubes.append(cube)
                         all_stabes.append(actual_stabe)
                 if highest_point[ind] == 2 and ind in dual_inds:
                     all_stabes.append(actual_stabe)
+                    cube = RHGCube(G.subgraph(actual_stabe))
+                    cube.physical = stabe
+                    all_cubes.append(cube)
         if len(actual_stabe) == 4:
             average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
             rounded_avs = np.array([round(av) for av in average_point])
@@ -229,16 +242,35 @@ def RHG_syndrome_coords(G):
             if boundary_inds[0] in periodic_inds:
                 new_point = rounded_avs.copy()
                 new_point[boundary_inds[0]] = mins[boundary_inds[0]]
-                actual_stabe += [tuple(new_point)]
+                virtual_point = tuple(new_point)
+                actual_stabe += [virtual_point]
+                cube = RHGCube(G.subgraph(actual_stabe))
+                cube.physical = stabe
+            elif boundary_inds[0] in dual_inds:
+                cube = RHGCube(G.subgraph(actual_stabe))
+                cube.physical = stabe
             if boundary_inds[1] in periodic_inds:
                 new_point = rounded_avs.copy()
                 new_point[boundary_inds[1]] = mins[boundary_inds[1]]
-                actual_stabe += [tuple(new_point)]
+                virtual_point = tuple(new_point)
+                actual_stabe += [virtual_point]
+                cube = RHGCube(G.subgraph(actual_stabe))
+                cube.physical = stabe
+            elif boundary_inds[1] in dual_inds:
+                cube = RHGCube(G.subgraph(actual_stabe))
+                cube.physical = stabe
             if len(boundary_inds) == 3:
                 if boundary_inds[2] in periodic_inds:
                     new_point = rounded_avs.copy()
                     new_point[boundary_inds[2]] = mins[boundary_inds[2]]
-                    actual_stabe += [tuple(new_point)]
+                    virtual_point = tuple(new_point)
+                    actual_stabe += [virtual_point]
+                    cube = RHGCube(G.subgraph(actual_stabe))
+                    cube.physical = stabe
+                elif boundary_inds[2] in dual_inds:
+                    cube = RHGCube(G.subgraph(actual_stabe))
+                    cube.physical = stabe
+            all_cubes.append(cube)
             all_stabes.append(actual_stabe)
 
         if len(actual_stabe) == 3:
@@ -247,13 +279,19 @@ def RHG_syndrome_coords(G):
                 if ind in periodic_inds:
                     point_ind = point[:]
                     point_ind[ind] = 0
-                    actual_stabe += [tuple(point_ind)]
+                    virtual_point = tuple(point_ind)
+                    actual_stabe += [virtual_point]
+            cube = RHGCube(G.subgraph(actual_stabe))
+            cube.physical = stabe
+            all_cubes.append(cube)
             all_stabes.append(actual_stabe)
 
     # Dealing with six-body X stabilizers on perodic boundaries,
     # and five-body X stabilizers on dual boundaries.
 
     # Put all the stabilizers into a list.
+    G.graph['syndrome'] = all_stabes
+    G.graph['cubes'] = all_cubes
     return all_stabes
 
 
@@ -382,24 +420,6 @@ class RHGCube:
         # TODO: Perhaps choose a different point for a five-body
         # X stabilizer, for plotting purposes.
         return (np.average(self.xlims()), np.average(self.ylims()), np.average(self.zlims()))
-
-
-def RHG_stabilizers(G):
-    """Return a list of RHGCubes corresponding to RHG stabilizers.
-
-    For each stabilizer in G, generate an RHGCube and add it to the
-    list. For five-body X stabilizers, change the type attribute to
-    'five-body'.
-
-    Args:
-        G (EGraph): the RHG lattice
-
-    Returns:
-        list: the RHGCubes.
-    """
-    syn_list = RHG_syndrome_coords(G.graph)
-    cube_list = [RHGCube(G.graph.subgraph(stabe)) for stabe in syn_list]
-    return cube_list
 
 
 if __name__ == '__main__':
