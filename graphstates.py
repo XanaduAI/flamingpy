@@ -206,7 +206,7 @@ def SCZ_mat(adj, heat_map=False):
         zeros = np.zeros((N, N), dtype=np.int8)
         block_func = np.block
     else:
-        # TODO: Specify kind of Scip y sparse matrix?
+        # TODO: Specify kind of Scipy sparse matrix?
         identity = sp.identity(N, dtype=np.int8)
         zeros = sp.csr_matrix((N, N), dtype=np.int8)
         block_func = sp.bmat
@@ -268,9 +268,10 @@ class CVGraph:
     considered.
 
     Args:
-        g (graph-type): the graph underlying the state
+        g (graph-type): the graph underlying the state.
         state (dict, optional): the dictionary of all non-GKP states
-            and their indices, of the form {'state': []}
+            and their indices, of the form {'state': []}. By default,
+            all states are GKP states.
         model (dict, optional): the noise model dictionary of the form
             (default values displayed):
 
@@ -293,32 +294,17 @@ class CVGraph:
             0.01 by default. Overrides the delta given in 'model'.
 
     Attributes:
-        egraph (EGraph): the unerlying graph representation
-        _N (int): the number of qubits in the lattice
-        _states (dict): states along with their indices
-        _delta (float): the delta from the Args above
-        _sampling_order (str): the sampling order from the Args above
+        egraph (EGraph): the unerlying graph representation.
+        _N (int): the number of qubits in the lattice.
+        _states (dict): states along with their indices.
+        _delta (float): the delta from the Args above.
+        _sampling_order (str): the sampling order from the Args above.
         to_points (dict): pointer to self.egraph.to_points, the
-            dictionary from indices to coordinates
-        Z_probs (array): if eval_z_probs has been run, the phase error
-            probabilities of the modes
-        Z_probs_cond (array): if eval_z_probs_cond has been run, the
-            phase error probabilities of the modes conditioned on
-            homodyne outcomes
-        hom_outcomes (array): if measure_hom has been run, the results
-            of the latest p-homodyne measurement
+            dictionary from indices to coordinates.
     """
 
     def __init__(self, g, states={'p': np.empty(0, dtype=int)}, model={}, p_swap=0, delta=None):
-        """Initialize the CVGraph.
-
-        Convert g into an EGraph and designate nodes either p-squeezed
-        or GKP states depending. If p_inds is not empty, manually
-        populate those nodes with p-squeezed states. If swap_prob is
-        given, run the hybridize method to populate the lattice at
-        random with a numer of p-squeezed states equal to swap_prob *
-        (# of nodes).
-        """
+        """Initialize the CVGraph."""
         if isinstance(g, EGraph):
             self.egraph = g
         else:
@@ -342,7 +328,7 @@ class CVGraph:
                     inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
                     states['p'] = inds
 
-            # Associated remaining indices with GKP states.
+            # Associate remaining indices with GKP states.
             used_inds = np.empty(0, dtype=int)
             for psi in states:
                 used_inds = np.concatenate([used_inds, states[psi]])
@@ -383,20 +369,23 @@ class CVGraph:
         # matrix in the EGraph and state-dependent noise vectors.
         if self._sampling_order in ('initial', 'final'):
             self._adj = self.egraph.adj_generator(sparse=True)
-            self._init_noise = np.empty(2 * N, dtype=np.float32)
+            init_noise = np.empty(2 * N, dtype=np.float32)
             for state in self._states:
                 indices = self._states[state]
                 if state == 'GKP':
-                    self._init_noise[indices] = delta / 2
-                    self._init_noise[indices + N] = delta / 2
+                    init_noise[indices] = delta / 2
+                    init_noise[indices + N] = delta / 2
                 if state == 'p':
-                    self._init_noise[indices] = delta / 2
-                    self._init_noise[indices + N] = 1 / (2 * delta)
+                    init_noise[indices] = delta / 2
+                    init_noise[indices + N] = 1 / (2 * delta)
+
+        if self._sampling_order == 'initial':
+            self._init_noise = init_noise
 
         # For final sampling, apply a symplectic CZ matrix to the
         # initial noise covariance.
         if self._sampling_order == 'final':
-            noise_cov_init = sp.diags(self._init_noise)
+            noise_cov_init = sp.diags(init_noise)
             self._noise_cov = SCZ_apply(self._adj, noise_cov_init)
             # TODO: Save var_p and var_q?
 
@@ -408,9 +397,9 @@ class CVGraph:
                 indices = self._states[state]
                 for ind in indices:
                     if state == 'p':
-                        self._init_quads[ind] = np.random.random() * (2 * np.sqrt(np.pi))
+                        self._init_quads[ind] = rng().random() * (2 * np.sqrt(np.pi))
                     if state == 'GKP':
-                        self._init_quads[ind] = np.random.randint(0, 2) * np.sqrt(np.pi)
+                        self._init_quads[ind] = rng().integers(0, 2) * np.sqrt(np.pi)
 
     def measure_hom(self, quad='p', inds=[], method='cholesky', dim='single', updated_quads=[]):
         """Conduct a homodyne measurement on the lattice.
@@ -491,6 +480,7 @@ class CVGraph:
             var_p = np.diag(var_p)
             if cond:
                 # TODO: Fix this.
+                # TODO: Account for change in hom input for two-step sampling
                 hom_vals = self.hom_outcomes(inds=inds)
                 errs = Z_err_cond(var_p, hom_vals)
 
@@ -499,7 +489,6 @@ class CVGraph:
             p_string = 'p_phase' + '_cond' * cond
             for i in range(N_inds):
                 self.egraph.nodes[self.to_points[inds[i]]][p_string] = errs[i]
-        # TODO: Account for change in hom input for two-step sampling
         # TODO: Fix the following to account for p-squeezed states in
         # vicinity.
         # else:
