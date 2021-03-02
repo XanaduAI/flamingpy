@@ -23,15 +23,13 @@ from GKP import Z_err, Z_err_cond
 
 
 class EGraph(nx.Graph):
-    """An enhanced graph class based on a NetworkX Graph.
+    """An enhanced graph based on a NetworkX Graph.
 
     A class for adding some functionality to a NetworkX graph,
-    including a drawing function draw and some short-hand/conveience
+    including a drawing function draw and some short-hand/convenience
     methods.
 
     Attributes:
-        font_props (dict): graph-size-dependent font properties for use
-            in the draw method and in classes that make use of EGraph.
         indexer (str): method for indexing the nodes; 'default' for
             Python's sorted function; 'macronodes' for rounding
             micronodes to integers, sorting those, and
@@ -48,16 +46,7 @@ class EGraph(nx.Graph):
     def __init__(self, indexer='default', *args, **kwargs):
         """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
-        if 'dims' in self.graph:
-            tot = np.sum(self.graph['dims'])
-            self.font_props = {'size': 10 * tot ** (1 / 2), 'family': 'serif'}
-        else:
-            self.font_props = {'size': 14, 'family': 'serif'}
-        # TODO: If dims not specified, look at number of nodes in graph
-        # to determine font properties.
-        # TODO: Store dims as EGraph attributes, rather than a graph
-        # attribute?
-        # TODO: Change mpl.rcParams options in one go.
+
         self.indexer = indexer
         self.to_indices = None
         self.to_points = None
@@ -110,7 +99,7 @@ class EGraph(nx.Graph):
         # TODO: Heat map?
         return adj
 
-    def draw(self, color_nodes=False, color_edges=False, label=False):
+    def draw(self, color_nodes=False, color_edges=False, label_indices=False, display_axes=True):
         """Draw the graph.
 
         Args:
@@ -118,54 +107,79 @@ class EGraph(nx.Graph):
                 attributes attached to the node. Black by default.
             color_edges (bool): If True, color edges based on 'color'
                 attributes attached to the node. Grey by default.
-            label (bool): if True, label the indices as per
+            label_indices (bool): if True, label the indices as per
                 self.index_generator; unlabelled by default.
+            display_axes (bool): if False, turn off the axes.
 
         Returns:
             A matplotib Axes object.
         """
         # Recommended to be viewed with IPython.
-        if self.graph['dims']:
-            nx, ny, nz = self.graph['dims']
+        # Font properties
+        dims = self.graph.get('dims')
+        if dims:
+            # TODO: Store dims as EGraph attributes, rather than a graph
+            # attribute?
+            xmax, ymax, zmax = dims
+            font_size = 10 * sum(dims) ** (1 / 2)
         else:
-            nx, ny, nz = 5, 5, 5
-        fig = plt.figure(figsize=(2 * (nx + ny + nz + 2),
-                                  2 * (nx + ny + nz + 2)))
+            # TODO: If dims not specified find x, y, z limits of graph,
+            # supposing the graph is filled. Alternatively, just change
+            # the figure size?
+            xmax, ymax, zmax = 5, 5, 5
+            font_size = 14
+
+        # Set plotting options
+        plot_params = {'font.size': font_size, 'font.family': 'serif',
+                       'axes.labelsize': font_size, 'axes.titlesize': font_size,
+                       'xtick.labelsize': font_size, 'ytick.labelsize': font_size,
+                       'legend.fontsize': font_size, 'grid.color': 'lightgray',
+                       'lines.markersize': font_size}
+        plt.rcParams.update(plot_params)
+
+        fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
         ax = fig.add_subplot(111, projection='3d')
+
         # Plotting points. y and z are swapped in the loops so that
         # z goes into the page; however, the axes labels are correct.
         for point in self.nodes:
             x, z, y = point
 
-            # Color based on color attribute, if available; default if
-            # unavailable; black if color_nodes is False
-            color = self.nodes[point].get('color') if color_nodes else 'k'
+            # Color nodes based on color_nodes if string, or based on
+            # color attribute if True; black otherwise.
+            if type(color_nodes) == str:
+                color = color_nodes
+            else:
+                color = self.nodes[point].get('color') if color_nodes else 'k'
 
-            ax.scatter(x, y, z, s=70, c=color)
-            if label:
+            ax.scatter(x, y, z, c=color, s=plt.rcParams['lines.markersize'] * 5)
+            if label_indices:
                 indices = self.index_generator()
-                ax.text(x, y, z, str(indices[point]), fontdict=self.font_props,
-                        color='MediumBlue', backgroundcolor='w')
+                ax.text(x, y, z, str(indices[point]), backgroundcolor='w', zorder=2)
+
         # Plotting edges.
         for edge in self.edges:
 
-            # Color based on color attribute, if available; default if
-            # unavailable; black if color_edges is False
-            color = self.edges[edge].get('color') if color_edges else 'k'
+            # Color edges based on color_edges if string, or based on
+            # color ttribute if True; black otherwise.
+            if type(color_edges) == str:
+                color = color_edges
+            else:
+                color = self.edges[edge].get('color') if color_edges else 'k'
 
             x1, z1, y1 = edge[0]
             x2, z2, y2 = edge[1]
-            plt.plot([x1, x2], [y1, y2], [z1, z2], c=color)
+            plt.plot([x1, x2], [y1, y2], [z1, z2], color=color)
 
-        ax.tick_params(labelsize=self.font_props['size'])
-        plt.xticks(range(0, 2 * nx + 1))
-        plt.yticks(range(0, 2 * nz + 1))
-        ax.set_zticks(range(0, 2 * ny + 1))
-        ax.set_xlabel('x', fontdict=self.font_props, labelpad=20)
-        ax.set_ylabel('z', fontdict=self.font_props, labelpad=20)
-        ax.set_zlabel('y', fontdict=self.font_props, labelpad=20)
-        plt.rcParams['grid.color'] = "lightgray"
-        plt.tight_layout(pad=3)
+        plt.xticks(range(0, 2 * xmax + 1))
+        plt.yticks(range(0, 2 * zmax + 1))
+        ax.set_zticks(range(0, 2 * ymax + 1))
+        ax.set_xlabel('x', labelpad=15)
+        ax.set_ylabel('z', labelpad=15)
+        ax.set_zlabel('y', labelpad=15)
+        if not display_axes:
+            ax.axis('off')
+        plt.tight_layout(pad=5)
         plt.draw()
         return ax
 
@@ -642,8 +656,8 @@ if __name__ == '__main__':
     dims = (1, 1, 1)
     bell_state = EGraph(dims=dims)
     bell_state.add_edge(*edge, color='MidnightBlue')
-    # Plot the bel stat
-    bell_state.draw(color_nodes=False, color_edges=True)
+    # Plot the bell state
+    bell_state.draw(color_nodes='magenta', color_edges=True, label_indices=True)
     bell_state.adj_generator(sparse=True)
     # print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
 
