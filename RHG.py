@@ -308,21 +308,19 @@ def RHG_boundary_coords(G):
     odds = [range(1, 2 * dims[0], 2),
             range(1, 2 * dims[1], 2),
             range(1, 2 * dims[2], 2)]
-    combs = []
+    low = []
+    high = []
     for ind in bound_inds:
-        if ind != 2:
-            for i, j in ((0, 1), (0, 2), (1, 2)):
-                for tup in it.product(odds[i], odds[j]):
-                    l = list(tup)
-                    m = list(tup)
-                    l.insert(ind, 0)
-                    m.insert(ind, 2 * dims[ind])
-                    combs.append(tuple(l))
-                    combs.append(tuple(m))
-    return combs
+        for i, j in ((0, 1), (0, 2), (1, 2)):
+            for tup in it.product(odds[i], odds[j]):
+                l = list(tup)
+                m = list(tup)
+                l.insert(ind, 0)
+                m.insert(ind, 2 * dims[ind])
+                low.append(tuple(l))
+                high.append(tuple(m))
+    return list(set(low)) + list(set(high))
 
-
-def RHG_slice_coords(G, plane, number, boundaries='all'):
     """Obtain all the coordinates in a slice of RHG lattice G.
 
     Args:
