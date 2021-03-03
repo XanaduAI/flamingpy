@@ -20,8 +20,8 @@ import itertools as it
 import matplotlib.pyplot as plt
 
 from graphstates import CVGraph
-from GKP import basic_translate
-import RHG
+from GKP import basic_translate, Z_err_cond
+from RHG import RHGCube, RHGCode
 
 # Smallest and largest numbers representable.
 smallest_number = sys.float_info.min
@@ -51,7 +51,7 @@ def graph_drawer(G, label_edges=True):
     plt.colorbar(r)
 
 
-def syndrome_plot(G_dec, G, index_dict=None, drawing_opts={}):
+def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
     """Draw the syndrome plot for a CVGraph G.
 
     A comprehensive graphing tool for drawing the error syndrome of
@@ -79,11 +79,21 @@ def syndrome_plot(G_dec, G, index_dict=None, drawing_opts={}):
     Returns:
         matplotlib.pyplot.axes: the 'axes' object
     """
+    # Font properties
+    # TODO: Make consistent with EGraph fontprops
+    font_size = 10 * sum(code.dims) ** (1 / 2)
+    # Set plotting options
+    plot_params = {'font.size': font_size, 'font.family': 'serif',
+                   'axes.labelsize': font_size, 'axes.titlesize': font_size,
+                   'xtick.labelsize': font_size, 'ytick.labelsize': font_size,
+                   'legend.fontsize': font_size, 'grid.color': 'lightgray',
+                   'lines.markersize': font_size}
+    plt.rcParams.update(plot_params)
+
     bound_inds = G_dec.graph['boundary_points']
     points = [G_dec.nodes[i]['stabilizer'] for i in bound_inds]
 
-    cube_inds = set(G_dec.nodes).difference(bound_inds)
-    cubes = [G_dec.nodes[i]['stabilizer'] for i in cube_inds]
+    cubes = code.stabilizers
     # Default drawing options.
     draw_dict = {'show_nodes': False,
                  'label_nodes': None,
@@ -95,12 +105,12 @@ def syndrome_plot(G_dec, G, index_dict=None, drawing_opts={}):
     drawing_opts = {**draw_dict, **drawing_opts}
 
     # Shape and font properties from the original graph.
-    shape = np.array(G.graph.graph['dims'])
-    font_props = G.graph.font_props
+    shape = np.array(code.dims)
+    # font_props = state.font_props
     # If show_nodes is True, get the axes object and legend from
     # CVGraph.sketch (this also plots the graph in the console).
     if drawing_opts['show_nodes']:
-        ax = G.sketch(drawing_opts['label_nodes'])
+        ax = state.draw(label=drawing_opts['label_nodes'])
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
@@ -109,13 +119,19 @@ def syndrome_plot(G_dec, G, index_dict=None, drawing_opts={}):
         # but prevent from G.sketch() from plotting.
         fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
         ax = fig.gca(projection='3d')
-        ax.tick_params(labelsize=font_props['size'])
+        # ax.tick_params(labelsize=font_props['size'])
         plt.xticks(range(0, 2 * shape[0] + 1))
         plt.yticks(range(0, 2 * shape[1] + 1))
         ax.set_zticks(range(0, 2 * shape[2] + 1))
-        ax.set_xlabel('x', fontdict=font_props, labelpad=20)
-        ax.set_ylabel('z', fontdict=font_props, labelpad=20)
-        ax.set_zlabel('y', fontdict=font_props, labelpad=20)
+        ax.set_xlabel('x',
+                      # fontdict=font_props,
+                      labelpad=20)
+        ax.set_ylabel('z',
+                      # fontdict=font_props,
+                      labelpad=20)
+        ax.set_zlabel('y',
+                      # fontdict=font_props,
+                      labelpad=20)
         plt.rcParams['grid.color'] = "lightgray"
         leg = None
     # Illustrate stabilizers with voxels colored green for even
@@ -133,13 +149,15 @@ def syndrome_plot(G_dec, G, index_dict=None, drawing_opts={}):
         zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
         xmid, ymid, zmid = np.array(cube.midpoint())
         # Fill in the color arrays depending on parity.
-        if cube.parity():
+        if cube.parity:
             filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#FF000015'
         else:
             filled[xmin:xmax, ymin:ymax, zmin:zmax] = '#00FF0015'
         if drawing_opts['label_cubes'] and index_dict:
             if cube in index_dict:
-                ax.text(xmid, ymid, zmid, index_dict[cube], fontdict=font_props)
+                ax.text(xmid, ymid, zmid, index_dict[cube],
+                        # fontdict=font_props
+                        )
 
     # This portion adapted from a Matplotlib official example to fix
     # an issue with filling in the insides of voxels: the code
@@ -165,14 +183,18 @@ def syndrome_plot(G_dec, G, index_dict=None, drawing_opts={}):
     if drawing_opts['label_boundary']:
         for point in points:
             ax.scatter(point[0], point[1], point[2], s=70, c='k')
-            ax.text(point[0], point[1], point[2], index_dict[point], fontdict=font_props)
+            ax.text(point[0], point[1], point[2], index_dict[point],
+                    # fontdict=font_props
+                    )
 
     # Define a legend for red/green cubes.
     from matplotlib.patches import Patch
     legend_elements = [Patch(facecolor='#00FF0050', label='even parity'),
                        Patch(facecolor='#FF000050', label='odd parity')]
     if drawing_opts['legend']:
-        ax.legend(handles=legend_elements, prop=font_props, loc='upper left')
+        ax.legend(handles=legend_elements,
+                  # prop=font_props,
+                  loc='upper left')
     # Since CVGraph.sketch() legend has been overwritten, readd
     # it to the plot.
     if leg:
