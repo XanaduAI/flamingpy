@@ -13,329 +13,326 @@
 # limitations under the License.
 """Classes for the RHG code and related functions."""
 import numpy as np
+from matplotlib import pyplot as plt
 import itertools as it
 from graphstates import EGraph, CVGraph
 
 
-def RHG_graph(dims, boundaries='natural', polarity=False):
-    """Return an EGraph of a dims-dimensional RHG lattice.
+class RHGCode:
+    """RHG code class."""
 
-    Generate an RHG lattice with dimensions given by dims (an integer
-    denoting the number of stabilizer cubes in each direciton,
-    or a tuple specifying all three dimensions). By default, the
-    boundary conditions are periodic in 'x' and 'y' (the 'natural'
-    boundary conditions) and primal in 'z'. However, any combination
-    of boundary conditions can be specified. By default, all edges
-    are weight-1, but if polarity is True, make edges in certain
-    directions -1, for subsequent CV noise reduction.
+    def __init__(self, distance, boundaries='finite', polarity=False):
+        """Initialize the RHG code."""
+        # TODO: Check code distance convention.
+        if boundaries == 'finite':
+            self.boundaries = ['primal', 'dual', 'dual']
+        elif type(boundaries) == str:
+            self.boundaries = [boundaries] * 3
+        self.dims = (distance, distance, distance)
+        self.polarity = polarity
 
-    Args:
-        dims (int or list-type): the dimensions of the lattice (the
-            number of stabilizer cubes in each direction). In the case
-            of dual boundaries, incomplete stabilizer cubes are treated
-            as 0.5 of complete cubes
-        boundaries (str or list-type): if 'natural,' assume periodic
-            boundaries in x and y, and primal in z. If another string,
-            assume those boundaries in every direction. If a list-type
-            with three elements, assume x, y, z boundaries individually
-            specified
-        polarity (bool): if True, make some edges have weight -1, per
-            noise-reduction strategy for the eventual CVGraph. Set
-            edge 'color' attribute to blue/red for -1/+1 weights. By
-            default, all edges have weight +1.
+        self.graph = self.graph_generator(self.dims, self.boundaries, self.polarity)
+        self.stabilizers = self.identify_syndrome()
+        self.boundary_coords = self.identify_boundary()
 
-    Returns:
-        EGraph: the RHG lattice.
-    """
-    # Dimensions of the lattice.
-    # TODO: Check accuracy of dosctring description and compare with/
-    # incorporate code distance.
-    if np.size(dims) == 1:
-        dims = (dims, dims, dims)
-    nx, ny, nz = dims
+    def graph_generator(self, dims, boundaries='finite', polarity=False):
+        """Return an EGraph of a dims-dimensional RHG lattice.
 
-    # Dealing with boundaries
-    if boundaries == 'finite':
-        boundaries = ['primal', 'dual', 'dual']
-    elif type(boundaries) == str:
-        boundaries = [boundaries] * 3
+        Generate an RHG lattice with dimensions given by dims (an integer
+        denoting the number of stabilizer cubes in each direciton,
+        or a tuple specifying all three dimensions). By default, the
+        boundary conditions are periodic in 'x' and 'y' (the 'natural'
+        boundary conditions) and primal in 'z'. However, any combination
+        of boundary conditions can be specified. By default, all edges
+        are weight-1, but if polarity is True, make edges in certain
+        directions -1, for subsequent CV noise reduction.
 
-    # Define the EGraph of the lattice
-    lattice = EGraph(dims=dims, boundaries=boundaries)
+        Args:
+            dims (int or list-type): the dimensions of the lattice (the
+                number of stabilizer cubes in each direction). In the case
+                of dual boundaries, incomplete stabilizer cubes are treated
+                as 0.5 of complete cubes
+            boundaries (str or list-type): if 'natural,' assume periodic
+                boundaries in x and y, and primal in z. If another string,
+                assume those boundaries in every direction. If a list-type
+                with three elements, assume x, y, z boundaries individually
+                specified
+            polarity (bool): if True, make some edges have weight -1, per
+                noise-reduction strategy for the eventual CVGraph. Set
+                edge 'color' attribute to blue/red for -1/+1 weights. By
+                default, all edges have weight +1.
 
-    # Constrain the ranges of the coordinates depending on the type
-    # of boundaries.
-    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
-    max_dict = {'primal': 1, 'dual': 0, 'periodic': 0}
-    x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
-    x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
+        Returns:
+            EGraph: the RHG lattice.
+        """
+        # Dimensions of the lattice.
+        # TODO: Check accuracy of dosctring description and compare with/
+        # incorporate code distance.
+        nx, ny, nz = dims
+        # Dealing with boundaries
 
-    # Coordinates of red qubits in even and odd vertical slices.
-    even_red = [(2*i + 1, 2*j + 1, 2*k) for (i, j, k) in
-                it.product(range(nx), range(ny), range(z_min, nz+z_max))]
-    odd_red = [(2*i, 2*j, 2*k + 1) for (i, j, k) in
-               it.product(range(x_min, nx+x_max), range(y_min, ny+y_max), range(nz))]
-    all_red = set(even_red + odd_red)
+        # Define the EGraph of the lattice
+        lattice = EGraph(dims=dims)
 
-    # Coordinates of green qubits in even and odd horizontal slices.
-    even_green = [(2*i + 1, 2*j, k) for (i, j, k) in
-                  it.product(range(nx), range(y_min, ny + y_max), range(z_min, 2*nz + z_max))]
-    odd_green = [(2*i, 2*j + 1, k) for (i, j, k) in
-                 it.product(range(x_min, nx + x_max), range(ny), range(z_min, 2*nz + z_max))]
-    all_green = set(even_green + odd_green)
+        # Constrain the ranges of the coordinates depending on the type
+        # of boundaries.
+        min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+        max_dict = {'primal': 1, 'dual': 0, 'periodic': 0}
+        x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
+        x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
-    def red_neighbours(p):
-        """Coordinates of all potential neighbours of red vertices."""
-        right = (p[0] + 1, p[1], p[2])
-        top = (p[0], p[1] + 1, p[2])
-        left = (p[0] - 1, p[1], p[2])
-        bottom = (p[0], p[1] - 1, p[2])
-        return [bottom, left, top, right]
+        # Coordinates of red qubits in even and odd vertical slices.
+        even_red = [(2*i + 1, 2*j + 1, 2*k) for (i, j, k) in
+                    it.product(range(nx), range(ny), range(z_min, nz+z_max))]
+        odd_red = [(2*i, 2*j, 2*k + 1) for (i, j, k) in
+                   it.product(range(x_min, nx+x_max), range(y_min, ny+y_max), range(nz))]
+        all_red = set(even_red + odd_red)
 
-    def green_neighbours(p):
-        """Coordinates of all potential neighbours of green vertices."""
-        return {(p[0], p[1], p[2] - 1), (p[0], p[1], p[2] + 1)}
+        # Coordinates of green qubits in even and odd horizontal slices.
+        even_green = [(2*i + 1, 2*j, k) for (i, j, k) in
+                      it.product(range(nx), range(y_min, ny + y_max), range(z_min, 2*nz + z_max))]
+        odd_green = [(2*i, 2*j + 1, k) for (i, j, k) in
+                     it.product(range(x_min, nx + x_max), range(ny), range(z_min, 2*nz + z_max))]
+        all_green = set(even_green + odd_green)
 
-    # Polarity-dependent color function: blue for +1, red for -1.
-    color = lambda pol: ((pol + 1) // 2) * 'b' + abs((pol - 1) // 2) * 'r'
+        def red_neighbours(p):
+            """Coordinates of all potential neighbours of red vertices."""
+            right = (p[0] + 1, p[1], p[2])
+            top = (p[0], p[1] + 1, p[2])
+            left = (p[0] - 1, p[1], p[2])
+            bottom = (p[0], p[1] - 1, p[2])
+            return [bottom, left, top, right]
 
-    # Add edges between red points and all their neighbours.
-    for point in all_red:
-        is_neighbour = 0
-        for i in range(4):
-            pol = (-1) ** (polarity * (point[2] + i))
-            neighbour = red_neighbours(point)[i]
-            if neighbour in all_green:
-                is_neighbour += 1
-                lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
-        if is_neighbour:
-            lattice.nodes[point]['color'] = 'red'
+        def green_neighbours(p):
+            """Coordinates of all potential neighbours of green vertices."""
+            return {(p[0], p[1], p[2] - 1), (p[0], p[1], p[2] + 1)}
 
-    # Add edges between green points and all their neighbours.
-    for point in all_green:
-        is_neighbour = 0
-        pol = (-1) ** (polarity * (point[1] + 1))
-        for neighbour in green_neighbours(point):
-            if neighbour in all_green:
-                is_neighbour += 1
-                lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
-        if is_neighbour:
-            lattice.nodes[point]['color'] = 'green'
+        # Polarity-dependent color function: blue for +1, red for -1.
+        color = lambda pol: ((pol + 1) // 2) * 'b' + abs((pol - 1) // 2) * 'r'
 
-    # Dealing with periodic boundary conditions.
-    bound_arr = np.array(boundaries)
-    periodic_inds = np.where(bound_arr == 'periodic')[0]
-    for ind in periodic_inds:
-        # First and last slices of the lattice in the direction
-        # specified by ind.
-        low_slice = set([point for point in lattice.nodes if point[ind] == 0])
-        high_slice = set([point for point in lattice.nodes if point[ind] == 2*dims[ind] - 1])
-        if ind in (0, 1):
-            low_reds = all_red.intersection(low_slice)
-            high_reds = all_red.intersection(high_slice)
-            # Connect red in first slice to greens in last slice.
-            for point in low_reds:
-                pol = (-1) ** (polarity * (point[2] + ind + 1))
-                high_green = list(point)
-                high_green[ind] = 2 * dims[ind] - 1
-                lattice.add_edge(point, tuple(high_green), weight=pol, color=color(pol))
-            # Connect reds last slice to greens in first slice.
-            for point in high_reds:
-                pol = (-1) ** (polarity * (point[2] + ind + 1))
-                low_green = list(point)
-                low_green[ind] = 0
-                lattice.add_edge(point, tuple(low_green), weight=pol, color=color(pol))
-        # If periodic in z direction, connect greens in first slice with
-        # greens in last slice.
-        if ind == 2:
-            low_greens = all_green.intersection(low_slice)
-            for point in low_greens:
-                pol = (-1) ** (polarity * (point[1] + 1))
-                high_green = list(point[:])
-                high_green[ind] = 2 * dims[ind] - 1
-                lattice.add_edge(point, tuple(high_green), weight=pol, color=color(pol))
+        # Add edges between red points and all their neighbours.
+        for point in all_red:
+            is_neighbour = 0
+            for i in range(4):
+                pol = (-1) ** (polarity * (point[2] + i))
+                neighbour = red_neighbours(point)[i]
+                if neighbour in all_green:
+                    is_neighbour += 1
+                    lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
+            if is_neighbour:
+                lattice.nodes[point]['color'] = 'red'
 
-    return lattice
+        # Add edges between green points and all their neighbours.
+        for point in all_green:
+            is_neighbour = 0
+            pol = (-1) ** (polarity * (point[1] + 1))
+            for neighbour in green_neighbours(point):
+                if neighbour in all_green:
+                    is_neighbour += 1
+                    lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
+            if is_neighbour:
+                lattice.nodes[point]['color'] = 'green'
+    
+        # Dealing with periodic boundary conditions.
+        bound_arr = np.array(boundaries)
+        periodic_inds = np.where(bound_arr == 'periodic')[0]
+        for ind in periodic_inds:
+            # First and last slices of the lattice in the direction
+            # specified by ind.
+            low_slice = set([point for point in lattice.nodes if point[ind] == 0])
+            high_slice = set([point for point in lattice.nodes if point[ind] == 2*dims[ind] - 1])
+            if ind in (0, 1):
+                low_reds = all_red.intersection(low_slice)
+                high_reds = all_red.intersection(high_slice)
+                # Connect red in first slice to greens in last slice.
+                for point in low_reds:
+                    pol = (-1) ** (polarity * (point[2] + ind + 1))
+                    high_green = list(point)
+                    high_green[ind] = 2 * dims[ind] - 1
+                    lattice.add_edge(point, tuple(high_green), weight=pol, color=color(pol))
+                # Connect reds last slice to greens in first slice.
+                for point in high_reds:
+                    pol = (-1) ** (polarity * (point[2] + ind + 1))
+                    low_green = list(point)
+                    low_green[ind] = 0
+                    lattice.add_edge(point, tuple(low_green), weight=pol, color=color(pol))
+            # If periodic in z direction, connect greens in first slice with
+            # greens in last slice.
+            if ind == 2:
+                low_greens = all_green.intersection(low_slice)
+                for point in low_greens:
+                    pol = (-1) ** (polarity * (point[1] + 1))
+                    high_green = list(point[:])
+                    high_green[ind] = 2 * dims[ind] - 1
+                    lattice.add_edge(point, tuple(high_green), weight=pol, color=color(pol))
+        return lattice
 
+    def identify_stabilizers(self):
+        """Return the syndrome coordinates for RHG lattice G.
 
-def RHG_syndrome_coords(G):
-    """Return the syndrome coordinates for RHG lattice G.
+        Generate a list of lists containing coordinates of six-body X
+        stabilizers on non-periodic boundaries, followed by six-body X
+        stabilizers on periodic boundaries, followed by five-body X
+        stabilizers on dual boundaries.
 
-    Generate a list of lists containing coordinates of six-body X
-    stabilizers on non-periodic boundaries, followed by six-body X
-    stabilizers on periodic boundaries, followed by five-body X
-    stabilizers on dual boundaries.
+        Args:
+            G (EGraph): the RHG lattice
 
-    Args:
-        G (EGraph): the RHG lattice
+        Returns:
+            list of lists of tuples: the syndrome coordinates.
+        """
+        G = self.graph
+        # Dimensions, boundary types, max and min ranges.
+        dims = list(self.dims)
+        boundaries = np.array(self.boundaries)
+        min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+        mins = [min_dict[typ] for typ in boundaries]
+        maxes = np.array([2 * dims[i] - 1 for i in (0, 1, 2)])
 
-    Returns:
-        list of lists of tuples: the syndrome coordinates.
-    """
-    # Dimensions, boundary types, max and min ranges.
-    dims = list(G.graph['dims'])
-    boundaries = np.array(G.graph['boundaries'])
+        # Function for generating ranges from lists of mins and maxes.
+        ranges = [range(dims[i]) for i in range(3)]
+        inds = it.product(*ranges)
 
-    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
-    mins = [min_dict[typ] for typ in boundaries]
-    maxes = np.array([2 * dims[i] - 1 for i in (0, 1, 2)])
+        # All potential six-body stabilizers
+        all_six_bodies = [[
+                (2*i, 2*j + 1, 2*k + 1),
+                (2*i + 1, 2*j, 2*k + 1),
+                (2*i + 1, 2*j + 1, 2*k),
+                (2*i + 2, 2*j + 1, 2*k + 1),
+                (2*i + 1, 2*j + 2, 2*k + 1),
+                (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
 
-    # Function for generating ranges from lists of mins and maxes.
-    ranges = [range(dims[i]) for i in range(3)]
-    inds = it.product(*ranges)
+        all_cubes = []
 
-    # All potential six-body stabilizers
-    all_six_bodies = [[
-            (2*i, 2*j + 1, 2*k + 1),
-            (2*i + 1, 2*j, 2*k + 1),
-            (2*i + 1, 2*j + 1, 2*k),
-            (2*i + 2, 2*j + 1, 2*k + 1),
-            (2*i + 1, 2*j + 2, 2*k + 1),
-            (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
-
-    all_stabes = []
-    all_cubes = []
-
-    periodic_inds = np.where(boundaries == 'periodic')[0]
-    dual_inds = np.where(boundaries == 'dual')[0]
-    for stabe in all_six_bodies:
-        actual_stabe = list(set(stabe).intersection(set(G)))
-        if len(actual_stabe) == 6:
-            all_stabes.append(actual_stabe)
-            cube = RHGCube(G.subgraph(actual_stabe))
-            cube.physical = stabe
-            all_cubes.append(cube)
-        if len(actual_stabe) == 5:
-            for ind in (0, 1, 2):
-                lowest_point = list(stabe[ind])
-                highest_point = stabe[3 + ind]
-                if lowest_point[ind] == (2 * dims[ind] - 2):
-                    if ind in dual_inds:
-                        all_stabes.append(actual_stabe)
+        periodic_inds = np.where(boundaries == 'periodic')[0]
+        dual_inds = np.where(boundaries == 'dual')[0]
+        for stabe in all_six_bodies:
+            actual_stabe = list(set(stabe).intersection(set(G)))
+            if len(actual_stabe) == 6:
+                cube = RHGCube(G.subgraph(actual_stabe))
+                cube.physical = stabe
+                all_cubes.append(cube)
+            if len(actual_stabe) == 5:
+                for ind in (0, 1, 2):
+                    lowest_point = list(stabe[ind])
+                    highest_point = stabe[3 + ind]
+                    if lowest_point[ind] == (2 * dims[ind] - 2):
+                        if ind in dual_inds:
+                            cube = RHGCube(G.subgraph(actual_stabe))
+                            cube.physical = stabe
+                            all_cubes.append(cube)
+                        if ind in periodic_inds:
+                            lowest_point[ind] = 0
+                            virtual_point = tuple(lowest_point)
+                            actual_stabe += [virtual_point]
+                            cube = RHGCube(G.subgraph(actual_stabe))
+                            cube.physical = stabe
+                            all_cubes.append(cube)
+                    if highest_point[ind] == 2 and ind in dual_inds:
                         cube = RHGCube(G.subgraph(actual_stabe))
                         cube.physical = stabe
                         all_cubes.append(cube)
-                    if ind in periodic_inds:
-                        lowest_point[ind] = 0
-                        virtual_point = tuple(lowest_point)
-                        actual_stabe += [virtual_point]
-                        cube = RHGCube(G.subgraph(actual_stabe))
-                        cube.physical = stabe
-                        all_cubes.append(cube)
-                        all_stabes.append(actual_stabe)
-                if highest_point[ind] == 2 and ind in dual_inds:
-                    all_stabes.append(actual_stabe)
-                    cube = RHGCube(G.subgraph(actual_stabe))
-                    cube.physical = stabe
-                    all_cubes.append(cube)
-        if len(actual_stabe) == 4:
-            average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
-            rounded_avs = np.array([round(av) for av in average_point])
-            high_inds = np.where(maxes == rounded_avs)[0]
-            low_inds = np.where(mins == rounded_avs)[0]
-            if len(high_inds) >= 2:
-                boundary_inds = high_inds
-            if len(high_inds) == 1:
-                boundary_inds = np.array([low_inds[0], high_inds[0]])
-            if len(high_inds) == 0:
-                boundary_inds = low_inds
-            if boundary_inds[0] in periodic_inds:
-                new_point = rounded_avs.copy()
-                new_point[boundary_inds[0]] = mins[boundary_inds[0]]
-                virtual_point = tuple(new_point)
-                actual_stabe += [virtual_point]
-                cube = RHGCube(G.subgraph(actual_stabe))
-                cube.physical = stabe
-            elif boundary_inds[0] in dual_inds:
-                cube = RHGCube(G.subgraph(actual_stabe))
-                cube.physical = stabe
-            if boundary_inds[1] in periodic_inds:
-                new_point = rounded_avs.copy()
-                new_point[boundary_inds[1]] = mins[boundary_inds[1]]
-                virtual_point = tuple(new_point)
-                actual_stabe += [virtual_point]
-                cube = RHGCube(G.subgraph(actual_stabe))
-                cube.physical = stabe
-            elif boundary_inds[1] in dual_inds:
-                cube = RHGCube(G.subgraph(actual_stabe))
-                cube.physical = stabe
-            if len(boundary_inds) == 3:
-                if boundary_inds[2] in periodic_inds:
+            if len(actual_stabe) == 4:
+                average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
+                rounded_avs = np.array([round(av) for av in average_point])
+                high_inds = np.where(maxes == rounded_avs)[0]
+                low_inds = np.where(mins == rounded_avs)[0]
+                if len(high_inds) >= 2:
+                    boundary_inds = high_inds
+                if len(high_inds) == 1:
+                    boundary_inds = np.array([low_inds[0], high_inds[0]])
+                if len(high_inds) == 0:
+                    boundary_inds = low_inds
+                if boundary_inds[0] in periodic_inds:
                     new_point = rounded_avs.copy()
-                    new_point[boundary_inds[2]] = mins[boundary_inds[2]]
+                    new_point[boundary_inds[0]] = mins[boundary_inds[0]]
                     virtual_point = tuple(new_point)
                     actual_stabe += [virtual_point]
                     cube = RHGCube(G.subgraph(actual_stabe))
                     cube.physical = stabe
-                elif boundary_inds[2] in dual_inds:
+                elif boundary_inds[0] in dual_inds:
                     cube = RHGCube(G.subgraph(actual_stabe))
                     cube.physical = stabe
-            all_cubes.append(cube)
-            all_stabes.append(actual_stabe)
-
-        if len(actual_stabe) == 3:
-            point = [2 * dims[0] - 1] * 3
-            for ind in (0, 1, 2):
-                if ind in periodic_inds:
-                    point_ind = point[:]
-                    point_ind[ind] = 0
-                    virtual_point = tuple(point_ind)
+                if boundary_inds[1] in periodic_inds:
+                    new_point = rounded_avs.copy()
+                    new_point[boundary_inds[1]] = mins[boundary_inds[1]]
+                    virtual_point = tuple(new_point)
                     actual_stabe += [virtual_point]
-            cube = RHGCube(G.subgraph(actual_stabe))
-            cube.physical = stabe
-            all_cubes.append(cube)
-            all_stabes.append(actual_stabe)
+                    cube = RHGCube(G.subgraph(actual_stabe))
+                    cube.physical = stabe
+                elif boundary_inds[1] in dual_inds:
+                    cube = RHGCube(G.subgraph(actual_stabe))
+                    cube.physical = stabe
+                if len(boundary_inds) == 3:
+                    if boundary_inds[2] in periodic_inds:
+                        new_point = rounded_avs.copy()
+                        new_point[boundary_inds[2]] = mins[boundary_inds[2]]
+                        virtual_point = tuple(new_point)
+                        actual_stabe += [virtual_point]
+                        cube = RHGCube(G.subgraph(actual_stabe))
+                        cube.physical = stabe
+                    elif boundary_inds[2] in dual_inds:
+                        cube = RHGCube(G.subgraph(actual_stabe))
+                        cube.physical = stabe
+                all_cubes.append(cube)
 
-    # Dealing with six-body X stabilizers on perodic boundaries,
-    # and five-body X stabilizers on dual boundaries.
+            if len(actual_stabe) == 3:
+                point = [2 * dims[0] - 1] * 3
+                for ind in (0, 1, 2):
+                    if ind in periodic_inds:
+                        point_ind = point[:]
+                        point_ind[ind] = 0
+                        virtual_point = tuple(point_ind)
+                        actual_stabe += [virtual_point]
+                cube = RHGCube(G.subgraph(actual_stabe))
+                cube.physical = stabe
+                all_cubes.append(cube)
+        # Dealing with six-body X stabilizers on perodic boundaries,
+        # and five-body X stabilizers on dual boundaries.
+        return all_cubes
 
-    # Put all the stabilizers into a list.
-    G.graph['syndrome'] = all_stabes
-    G.graph['cubes'] = all_cubes
-    return all_stabes
+    def identify_boundary(self):
+        """Return coordinates of syndrome qubits on primal boundaries.
 
+        For now, omit primal boundaries in the z-direction.
+        """
+        # TODO: Dual boundaries, z-direction primal if necessary.
+        dims = self.dims
+        boundaries = np.array(self.boundaries)
+        bound_inds = np.where(boundaries == 'primal')[0]
+        # Odd indices, which is where primal syndrome qubits are located.
+        odds = [range(1, 2 * dims[0], 2),
+                range(1, 2 * dims[1], 2),
+                range(1, 2 * dims[2], 2)]
+        low = []
+        high = []
+        for ind in bound_inds:
+            for i, j in ((0, 1), (0, 2), (1, 2)):
+                for tup in it.product(odds[i], odds[j]):
+                    l = list(tup)
+                    m = list(tup)
+                    l.insert(ind, 0)
+                    m.insert(ind, 2 * dims[ind])
+                    low.append(tuple(l))
+                    high.append(tuple(m))
+        return list(set(low)) + list(set(high))
 
-def RHG_boundary_coords(G):
-    """Return coordinates of syndrome qubits on primal boundaries.
+    def slice_coords(self, plane, number):
+        """Obtain all the coordinates in a slice of RHG lattice G.
 
-    For now, omit primal boundaries in the z-direction.
-    """
-    # TODO: Dual boundaries, z-direction primal if necessary.
-    dims = G.graph['dims']
-    boundaries = np.array(G.graph['boundaries'])
-    bound_inds = np.where(boundaries == 'primal')[0]
-    # Odd indices, which is where primal syndrome qubits are located.
-    odds = [range(1, 2 * dims[0], 2),
-            range(1, 2 * dims[1], 2),
-            range(1, 2 * dims[2], 2)]
-    low = []
-    high = []
-    for ind in bound_inds:
-        for i, j in ((0, 1), (0, 2), (1, 2)):
-            for tup in it.product(odds[i], odds[j]):
-                l = list(tup)
-                m = list(tup)
-                l.insert(ind, 0)
-                m.insert(ind, 2 * dims[ind])
-                low.append(tuple(l))
-                high.append(tuple(m))
-    return list(set(low)) + list(set(high))
+        Args:
+            G (EGraph): the RHG lattice
+            plane (str): 'x', 'y', or 'z', denoting the slice direction
+            number (int): the index of the slice
 
-def RHG_slice_coords(G, plane, number):
-    """Obtain all the coordinates in a slice of RHG lattice G.
-
-    Args:
-        G (EGraph): the RHG lattice
-        plane (str): 'x', 'y', or 'z', denoting the slice direction
-        number (int): the index of the slice
-
-    Returns:
-        list of tuples: the coordinates of the slice.
-    """
-    plane_dict = {'x': 0, 'y': 1, 'z': 2}
-    plane_ind = plane_dict[plane]
-    coords = [point for point in G.nodes if point[plane_ind] == number]
-    return coords
+        Returns:
+            list of tuples: the coordinates of the slice.
+        """
+        G = self.graph
+        plane_dict = {'x': 0, 'y': 1, 'z': 2}
+        plane_ind = plane_dict[plane]
+        coords = [point for point in G.nodes if point[plane_ind] == number]
+        return coords
 
 
 class RHGCube:
