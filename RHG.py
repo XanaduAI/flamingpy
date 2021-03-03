@@ -457,9 +457,10 @@ if __name__ == '__main__':
     delta = 0.001
     # Percent p-squeezed states.
     p_swap = 0
+    CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
     for sampling_order in ['initial', 'final', 'two-step']:
         model = {'noise': 'grn', 'delta': delta, 'sampling_order': sampling_order}
-        CVRHG = CVGraph(RHG_lattice, model=model, p_swap=p_swap)
+        CVRHG.apply_noise(model)
         CVRHG.measure_hom('p')
         outcomes = CVRHG.hom_outcomes()
         plt.figure(figsize=(16, 9))

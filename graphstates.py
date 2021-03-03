@@ -317,7 +317,7 @@ class CVGraph:
             dictionary from indices to coordinates.
     """
 
-    def __init__(self, g, states={'p': np.empty(0, dtype=int)}, model={}, p_swap=0, delta=None):
+    def __init__(self, g, states={'p': np.empty(0, dtype=int)}, p_swap=0):
         """Initialize the CVGraph."""
         if isinstance(g, EGraph):
             self.egraph = g
@@ -357,18 +357,19 @@ class CVGraph:
                 for ind in self._states[psi]:
                     self.egraph.nodes[self.to_points[ind]]['state'] = psi
 
-            # Modelling the states.
-            # If both delta and delta in model specified, print a
-            # message that the former will be used.
-            if delta and model.get('delta'):
-                print('Delta supplied twice. Using the delta given by the delta argument.')
-                model['delta'] = delta
-            default_model = {'noise': 'grn', 'delta': 0.01, 'sampling_order': 'initial'}
-            model = {**default_model, **model}
-            self._delta = model['delta']
-            self._sampling_order = model['sampling_order']
-            if model['noise'] == 'grn':
-                self.grn_model()
+    def apply_noise(self, model={}, delta=None):
+        # Modelling the states.
+        # If both delta and delta in model specified, print a
+        # message that the former will be used.
+        if delta and model.get('delta'):
+            print('Delta supplied twice. Using the delta given by the delta argument.')
+            model['delta'] = delta
+        default_model = {'noise': 'grn', 'delta': 0.01, 'sampling_order': 'initial'}
+        model = {**default_model, **model}
+        self._delta = model['delta']
+        self._sampling_order = model['sampling_order']
+        if model['noise'] == 'grn':
+            self.grn_model()
 
     def grn_model(self):
         """Apply Gaussian Random Noise model to the CVGraph.
@@ -655,9 +656,10 @@ if __name__ == '__main__':
     bell_state.adj_generator(sparse=True)
     print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
 
+    CVbell = CVGraph(bell_state, p_swap=0)
     # Noise model for CVGraph
     model = {'noise': 'grn', 'delta': 1, 'sampling_order': 'final'}
-    CVbell = CVGraph(bell_state, model=model, p_swap=0)
+    CVbell.apply_noise(model)
     CVbell.measure_hom('p', [0])
     CVbell.measure_hom('q', [1])
     CVbell.eval_Z_probs(cond=False)
