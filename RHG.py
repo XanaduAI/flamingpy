@@ -182,6 +182,8 @@ class RHGCode:
         graph (EGraph): the EGraph correspond to the code.
         stabilizers (list of RHGCubes): the stabilizer elements of the
             code according to the error complex.
+        syndrome_coords (list of tup): the coordinates of the syndrome
+            vertices, according to the error complex.
         boundary_coords (list of tup): the coordinates of the boundary
             according to the error complex.
     """
@@ -233,7 +235,8 @@ class RHGCode:
                 (2*i + 1, 2*j + 2, 2*k + 1),
                 (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
 
-            all_cubes = []
+        all_cubes = []
+        syndrome_coords = []
 
         periodic_inds = np.where(boundaries == 'periodic')[0]
         dual_inds = np.where(boundaries == 'dual')[0]
@@ -242,6 +245,7 @@ class RHGCode:
             if len(actual_stabe) == 6:
                 cube = RHGCube(G.subgraph(actual_stabe))
                 cube.physical = stabe
+                syndrome_coords += actual_stabe
                 all_cubes.append(cube)
             if len(actual_stabe) == 5:
                 for ind in (0, 1, 2):
@@ -251,6 +255,7 @@ class RHGCode:
                         if ind in dual_inds:
                             cube = RHGCube(G.subgraph(actual_stabe))
                             cube.physical = stabe
+                            syndrome_coords += actual_stabe
                             all_cubes.append(cube)
                         if ind in periodic_inds:
                             lowest_point[ind] = 0
@@ -258,10 +263,12 @@ class RHGCode:
                             actual_stabe += [virtual_point]
                             cube = RHGCube(G.subgraph(actual_stabe))
                             cube.physical = stabe
+                            syndrome_coords += actual_stabe
                             all_cubes.append(cube)
                     if highest_point[ind] == 2 and ind in dual_inds:
                         cube = RHGCube(G.subgraph(actual_stabe))
                         cube.physical = stabe
+                        syndrome_coords += actual_stabe
                         all_cubes.append(cube)
             if len(actual_stabe) == 4:
                 average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
@@ -305,6 +312,7 @@ class RHGCode:
                     elif boundary_inds[2] in dual_inds:
                         cube = RHGCube(G.subgraph(actual_stabe))
                         cube.physical = stabe
+                syndrome_coords += actual_stabe
                 all_cubes.append(cube)
 
             if len(actual_stabe) == 3:
@@ -317,9 +325,11 @@ class RHGCode:
                         actual_stabe += [virtual_point]
                 cube = RHGCube(G.subgraph(actual_stabe))
                 cube.physical = stabe
+                syndrome_coords += actual_stabe
                 all_cubes.append(cube)
         # Dealing with six-body X stabilizers on perodic boundaries,
         # and five-body X stabilizers on dual boundaries.
+        self.syndrome_coords = syndrome_coords
         return all_cubes
 
     def identify_boundary(self, error_complex='primal'):
