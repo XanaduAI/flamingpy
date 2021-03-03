@@ -534,7 +534,7 @@ def MWPM(G_match, G_dec, alg='blossom_nx', draw=False, label_edges=False):
     return matching
 
 
-def recovery(G_match, G_dec, G, matching, sanity_check=False):
+def recovery(code, state, G_match, G_dec, matching, sanity_check=False):
     """Run the recovery operation on graph G.
 
     Fip the bit values of all the vertices in the path connecting each
@@ -553,17 +553,17 @@ def recovery(G_match, G_dec, G, matching, sanity_check=False):
         None or bool: if check, False if the recovery failed, True if
             it succeeded. Otherwise None.
     """
-    boundary = G_match.graph['used_boundary_points']
+    virtual_points = G_match.graph['virtual_points']
     for pair in matching:
-        if pair not in it.product(boundary, boundary):
+        if pair not in it.product(virtual_points, virtual_points):
             path = G_match.edges[pair]['path']
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:
                 common_vertex = G_dec.edges[pair]['common_vertex']
-                G.graph.nodes[common_vertex]['bit_val'] ^= 1
+                code.graph.nodes[common_vertex]['bit_val'] ^= 1
 
     if sanity_check:
-        G_dec_new = decoding_graph(G, draw=False)
+        G_dec_new = decoding_graph(code, state, draw=False)
         odd_cubes = G_dec_new.graph['odd_cubes']
         if odd_cubes:
             print('Unsatisfied stabilizers:', odd_cubes)
