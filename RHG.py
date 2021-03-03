@@ -201,7 +201,11 @@ class RHGCode:
         self._polarity = polarity
 
         self.graph = RHG_graph(self.dims, boundaries, self._polarity)
+        self.graph.index_generator()
+        # The following line also defines the self.syndrome_coords
+        # attribute.
         self.stabilizers = self.identify_stabilizers(self.complex)
+        self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
         self.boundary_coords = self.identify_boundary(self.complex)
 
     def identify_stabilizers(self, error_complex='primal'):

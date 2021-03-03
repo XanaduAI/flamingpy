@@ -725,8 +725,7 @@ if __name__ == '__main__':
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
-        syndrome_inds = [RHG_lattice.to_indices[coord] for coord in RHG_code.syndrome_coords]
-        CVRHG.measure_hom('p', syndrome_inds)
+        CVRHG.measure_hom('p', RHG_code.syndrome_inds)
         c = correct(code=RHG_code, state=CVRHG, decoder=decoder,
                     weight_options=weight_options, draw=False, drawing_opts=dw,
                     sanity_check=True)
