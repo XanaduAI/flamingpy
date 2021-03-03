@@ -372,7 +372,7 @@ def decoding_graph(code, state, draw=False, drawing_opts={}, label_edges=False):
     return G_relabelled
 
 
-def matching_graph(G, alg='dijkstra', draw=False):
+def matching_graph(G_dec, alg='dijkstra', draw=False, label_edges=False):
     """Create a matching graph from the decoding graph G.
 
     Generate a matching graph from the decoding graph G according to
@@ -406,12 +406,11 @@ def matching_graph(G, alg='dijkstra', draw=False):
     G_match = nx.Graph(title='Matching Graph')
 
     # Get the indices of the odd parity cubes from teh decoding graph.
-    odd_parity_inds = G.graph['odd_cubes']
+    odd_parity_inds = G_dec.graph['odd_cubes']
 
     # Give shorter names to the Dijkstra shortest path algorithms.
     if alg == 'dijkstra':
-        alg1 = sp.single_source_dijkstra
-        alg2 = sp.multi_source_dijkstra
+        alg = sp.single_source_dijkstra
 
     # Combinations of odd-parity cubes.
     odd_ind_dict = {i: [] for i in odd_parity_inds[:-1]}
@@ -420,7 +419,7 @@ def matching_graph(G, alg='dijkstra', draw=False):
         odd_ind_dict[pair[0]] += [pair[1]]
     # Find the shortest paths between odd-parity cubes.
     for cube1 in odd_parity_inds[:-1]:
-        lengths, paths = alg1(G, cube1)
+        lengths, paths = alg(G_dec, cube1)
         for cube2 in odd_ind_dict[cube1]:
             length = lengths[cube2]
             path = paths[cube2]
@@ -433,37 +432,51 @@ def matching_graph(G, alg='dijkstra', draw=False):
     # For non-periodic boundary conditions, include boundary vertices.
     # Get the indices of the boundary vertices from the decoding
     # graph.
-    boundary_inds = G.graph['boundary_points']
-    # Keep track of the boundary points that have been connected
-    # to a cube.
-    used_boundary_points = []
-    if boundary_inds:
+    bound_points = G_dec.graph['boundary_points']
+    # Connect two helper points, one per primal boundary, with weight 0
+    # to all the boundary points. This will speed up Dijkstra.
+    n_b = len(bound_points) // 2
+    low_bound_points, high_bound_points = bound_points[:n_b], bound_points[n_b:]
+    v_low = 'low'
+    v_high = 'high'
+    for point in low_bound_points:
+        G_dec.add_edge(v_low, point, weight=0)
+    for point in high_bound_points:
+        G_dec.add_edge(v_high, point, weight=0)
+
+    virtual_points = []
+    if G_dec.graph['boundary_points']:
+
+        i = 0
+        low_lengths, low_paths = alg(G_dec, 'low')
+        high_lengths, high_paths = alg(G_dec, 'high')
         for cube in odd_parity_inds:
-            remaining_boundary = list(set(boundary_inds).difference(set(used_boundary_points)))
-            # Find the shortest path from the any of the boundary
-            # vertices to the cube. Note that we might wish to change
-            # the sources to unused boundary vertices so that each
-            # cube is connected to a unique vertex.
-            point_paths = alg2(G, sources=remaining_boundary, target=cube)
-            path = point_paths[1]
-            point = path[0]
-            length = point_paths[0]
+            distances = (low_lengths[cube], high_lengths[cube])
+            where_shortest = np.argmin(distances)
+            if where_shortest == 0:
+                length = low_lengths[cube]
+                full_path = low_paths[cube]
+            if where_shortest == 1:
+                length = high_lengths[cube]
+                full_path = high_paths[cube]
+            point = full_path[1]
+            virtual_point = (point, i)
+            path = full_path[1:]
             # Add edge to the matching graph between the cube and
-            # the boundary vertex, with weight equal to the length
-            # of the shortest path.
-            G_match.add_edge(cube, point, weight=length, inverse_weight=-length, path=path)
-            # Add to the list of used boundary vertices.
-            used_boundary_points.append(point)
+            # the virtual excitation corresponding to the boundary
+            # vertex, with weight equal to the length of the shortest
+            # path.
+            G_match.add_edge(cube, virtual_point, weight=length, inverse_weight=-length, path=path)
+            i += 1
+            virtual_points += [virtual_point]
+        # Add edge with weight 0 between any two virtual excitations.
+        for (point1, point2) in it.combinations(virtual_points, 2):
+            G_match.add_edge(point1, point2, weight=0, inverse_weight=0)
 
-            # Add edge with weight 0 between any two boundary points.
-            for (point1, point2) in it.combinations(used_boundary_points, 2):
-                G_match.add_edge(point1, point2, weight=0, inverse_weight=0)
-
-    # Add indices of used boundary points as a graph attribute.
-    G_match.graph['used_boundary_points'] = used_boundary_points[:]
+    G_match.graph['virtual_points'] = virtual_points
 
     if draw:
-        graph_drawer(G_match)
+        graph_drawer(G_match, label_edges=label_edges)
 
     return G_match
 
