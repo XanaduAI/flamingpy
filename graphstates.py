@@ -630,7 +630,7 @@ class CVGraph:
             n_uncomputed = 0
             for node in self.egraph:
                 value = self.egraph.nodes[node].get(label)
-                if value:
+                if value is not None:
                     x, z, y = node
                     # Raise negative sign above node.
                     sign = '^{-}' * (-int(np.sign(value)))

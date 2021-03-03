@@ -29,7 +29,7 @@ largest_number = sys.float_info.max
 
 
 def graph_drawer(G, label_edges=True):
-    """Draw decoding and matching graphs with a color legend."""
+    """Draw decoding and matching graphs G with a color legend."""
     title = G.graph['title']
     plt.figure()
     plt.title(title, family='serif', size=10)
@@ -110,13 +110,15 @@ def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
     # If show_nodes is True, get the axes object and legend from
     # CVGraph.sketch (this also plots the graph in the console).
     if drawing_opts['show_nodes']:
+        # TODO: If draw method moved out of CVGraph and into EGraph,
+        # the state argument would be unnecessary here.
         ax = state.draw(label=drawing_opts['label_nodes'])
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
     else:
-        # TODO: Initialize axes based on empty ax object from G.sketch()
-        # but prevent from G.sketch() from plotting.
+        # TODO: Initialize axes based on empty ax object from state.draw()
+        # but prevent from state.draw() from plotting.
         fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
         ax = fig.gca(projection='3d')
         # ax.tick_params(labelsize=font_props['size'])
@@ -202,7 +204,7 @@ def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
     return ax
 
 
-def assign_weights(code, state, **kwargs):
+def assign_weights(code, **kwargs):
     """Assign weights to qubits in a hybrid CV graph state CVG.
 
     Args:
@@ -233,7 +235,7 @@ def assign_weights(code, state, **kwargs):
             p_list = [G.nodes[v]['type'] for v in neighbors if G.nodes[v]['type'] == 'p']
             p_count = len(p_list)
             if p_count in (0, 1):
-                delta_effective = (len(neighbors) + 1) * state._delta
+                delta_effective = (len(neighbors) + 1) * weight_options.get('delta')
                 hom_val = G.nodes[node]['hom_val_p']
                 err_prob = Z_err_cond([delta_effective], hom_val)[0]
                 # Allow for taking log of 0.
@@ -268,7 +270,7 @@ def assign_weights(code, state, **kwargs):
 # TODO: General functions for applying noise and measuring syndrome.
 
 
-def CV_decoder(code, state, translator=basic_translate, sketch=False):
+def CV_decoder(code, translator=basic_translate):
     """Convert homodyne outcomes to bit values according to translate.
 
     The inner (CV) decoder, aka translator, aka binning function. Set
@@ -288,8 +290,6 @@ def CV_decoder(code, state, translator=basic_translate, sketch=False):
         hom_val = code.graph.nodes[point]['hom_val_p']
         bit_val = translator([hom_val])[0]
         code.graph.nodes[point]['bit_val'] = bit_val
-    if sketch:
-        state.draw('bit_val')
 
 
 def decoding_graph(code, state, draw=False, drawing_opts={}, label_edges=False):
@@ -682,11 +682,12 @@ def correct(code,
     inner_decoder = decoder.get('inner')
     outer_decoder = decoder.get('outer')
     if inner_decoder:
-        CV_decoder(code, state, translator=inner_dict[inner_decoder])
+        CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == 'MWPM':
         label_edges = drawing_opts.get('label_edges')
-        assign_weights(code, state, **weight_options)
-        G_dec = decoding_graph(code, state, draw=draw, drawing_opts=drawing_opts, label_edges=label_edges)
+        assign_weights(code, **weight_options)
+        G_dec = decoding_graph(code, state, draw=draw,
+                               drawing_opts=drawing_opts, label_edges=label_edges)
         G_match = matching_graph(G_dec)
         matching = MWPM(G_match, G_dec, draw=draw, label_edges=label_edges)
         recovery(code, state, G_match, G_dec, matching, sanity_check=sanity_check)
@@ -700,9 +701,6 @@ if __name__ == '__main__':
     boundaries = 'periodic'
     RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=True)
     RHG_lattice = RHG_code.graph
-    RHG_lattice.index_generator()
-    RHG_lattice.adj_generator()
-    # print(RHG_code.syndrome_coords)
     # CV (outer) code/state
     p_swap = 0
     CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
@@ -713,7 +711,7 @@ if __name__ == '__main__':
 
     # Decoding options
     decoder = {'inner': 'basic', 'outer': 'MWPM'}
-    weight_options = {'method': 'unit', 'integer': True, 'multiplier': 100}
+    weight_options = {'method': 'unit', 'integer': True, 'multiplier': 100, 'delta': delta}
 
     # Drawing options
     dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
