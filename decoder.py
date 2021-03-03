@@ -481,7 +481,7 @@ def matching_graph(G_dec, alg='dijkstra', draw=False, label_edges=False):
     return G_match
 
 
-def MWPM(G_match, G_dec, alg='blossom_nx', draw=False):
+def MWPM(G_match, G_dec, alg='blossom_nx', draw=False, label_edges=False):
     """Run minimum-weight-perfect matching on matching graph G_match.
 
     Run a minimum-weight-perfect-matching (MWPM) algorithm (the
@@ -513,14 +513,14 @@ def MWPM(G_match, G_dec, alg='blossom_nx', draw=False):
     # TODO: Drop the requirement of the syndrome plot from having
     # to be plotted immediately prior to the matching.
     if draw:
-        boundary = G_match.graph['used_boundary_points']
+        virtual_points = G_match.graph['virtual_points']
         for pair in matching:
-            if pair not in it.product(boundary, boundary):
+            if pair not in it.product(virtual_points, virtual_points):
                 xlist, ylist, zlist = [], [], []
                 path = G_match.edges[pair]['path']
                 for node in path:
                     stabe = G_dec.nodes[node]['stabilizer']
-                    if isinstance(stabe, RHG.RHGCube):
+                    if isinstance(stabe, RHGCube):
                         x, y, z = stabe.midpoint()
                     else:
                         x, y, z = stabe
@@ -530,7 +530,7 @@ def MWPM(G_match, G_dec, alg='blossom_nx', draw=False):
                     zlist += [z]
                 plt.title('Minimum-weight perfect matching', family='serif', size=20)
                 plt.plot(xlist, ylist, zlist, 'o-k', ms=20, linewidth=5, c=np.random.rand(3))
-        graph_drawer(G_match)
+        graph_drawer(G_match, label_edges=label_edges)
     return matching
 
 
