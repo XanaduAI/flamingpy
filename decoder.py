@@ -580,7 +580,7 @@ def recovery(code, state, G_match, G_dec, matching, sanity_check=False):
     #     return (G, bool(1-parity))
 
 
-def check_correction(G, plane=None, sheet=0, sanity_check=False):
+def check_correction(code, state, plane=None, sheet=0, sanity_check=False):
     """Perform a correlation-surface check.
 
     Check the total parity of a correlation surface specified by
@@ -601,30 +601,31 @@ def check_correction(G, plane=None, sheet=0, sanity_check=False):
     Returns:
         None
     """
-    dims = np.array(G.graph.graph['dims'])
+    dims = np.array(code.dims)
     dir_dict = {'x': 0, 'y': 1, 'z': 2}
     truth_dict = {'x': [], 'y': [], 'z': []}
-    boundaries = G.graph.graph['boundaries']
+    boundaries = code.boundaries
 
     planes_to_check = []
     if plane:
         planes_to_check += [plane]
-    else:
-        for plane in ('x', 'y', 'z'):
-            if boundaries[dir_dict[plane]] == 'periodic':
-                planes_to_check.append(plane)
+    elif boundaries == ['periodic'] * 3:
+        planes_to_check = ['x', 'y', 'z']
+    elif tuple(boundaries) in set(it.permutations(['primal', 'dual', 'dual'])):
+        where_primal = np.where(np.array(boundaries) == 'primal')[0][0]
+        planes_to_check = [['x', 'y', 'z'][where_primal]]
 
     minimum, maximum = sheet, sheet + 2
     for plane in planes_to_check:
         if sanity_check:
             minimum, maximum = 0, 2 * dims[dir_dict[plane]]
         for sheet in range(minimum, maximum, 2):
-            slice_verts = RHG.RHG_slice_coords(G.graph, plane, sheet, boundaries='dual')
-            syndrome_verts = [a for b in RHG.RHG_syndrome_coords(G.graph) for a in b]
+            slice_verts = code.graph.slice_coords(plane, sheet)
+            syndrome_verts = code.syndrome_coords
             only_primal = set(slice_verts).intersection(set(syndrome_verts))
             parity = 0
             for node in only_primal:
-                parity ^= G.graph.nodes[node]['bit_val']
+                parity ^= code.graph.nodes[node]['bit_val']
             truth_dict[plane].append(bool(1 - parity))
 
     if sanity_check:
