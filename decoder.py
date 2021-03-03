@@ -265,6 +265,7 @@ def assign_weights(code, state, **kwargs):
         for node in syndrome_coords:
             G.nodes[node]['weight'] = 1
 
+# TODO: General functions for applying noise and measuring syndrome.
 
 
 def CV_decoder(code, state, translator=basic_translate, sketch=False):
@@ -694,18 +695,41 @@ def correct(code,
 
 
 if __name__ == '__main__':
+    # DV (inner) code
+    distance = 3
     boundaries = 'periodic'
-    RHG_lattice = RHG.RHG_graph(2, boundaries=boundaries, polarity=1)
+    RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=True)
+    RHG_lattice = RHG_code.graph
+    RHG_lattice.index_generator()
+    RHG_lattice.adj_generator()
+    # print(RHG_code.syndrome_coords)
+    # CV (outer) code/state
+    p_swap = 0
+    CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
 
-    swap_prob = 0
-    delta = 0.1
+    # Noise model
+    delta = 0.05
+    cv_noise = {'noise': 'grn', 'delta': delta, 'sampling_order': 'initial'}
 
-    G = CVGraph(RHG_lattice, swap_prob=swap_prob, delta=delta)
-    G.measure_p()
-    G.eval_Z_probs_cond()
+    # Decoding options
+    decoder = {'inner': 'basic', 'outer': 'MWPM'}
+    weight_options = {'method': 'unit', 'integer': True, 'multiplier': 100}
 
+    # Drawing options
     dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
-          'label_boundary': False, 'legend': True}
+          'label_boundary': False, 'legend': True, 'label_edges': True}
 
-    correct(G, inner='basic', outer='MWPM', weights='blueprint', draw=True, drawing_opts=dw)
-
+    trials = 100
+    success = 0
+    for trial in range(trials):
+        # Apply noise
+        CVRHG.apply_noise(cv_noise)
+        # Measure syndrome
+        syndrome_inds = [RHG_lattice.to_indices[coord] for coord in RHG_code.syndrome_coords]
+        CVRHG.measure_hom('p', syndrome_inds)
+        c = correct(code=RHG_code, state=CVRHG, decoder=decoder,
+                    weight_options=weight_options, draw=False, drawing_opts=dw,
+                    sanity_check=True)
+        success += c
+    error = (trials - success) / trials
+    print(error)
