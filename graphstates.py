@@ -120,15 +120,14 @@ class EGraph(nx.Graph):
         if dims:
             # TODO: Store dims as EGraph attributes, rather than a graph
             # attribute?
-            xmax, ymax, zmax = dims
             font_size = 10 * sum(dims) ** (1 / 2)
         else:
             # TODO: If dims not specified find x, y, z limits of graph,
             # supposing the graph is filled. Alternatively, just change
             # the figure size?
-            xmax, ymax, zmax = 5, 5, 5
+            dims = (5, 5, 5)
             font_size = 14
-
+        xmax, ymax, zmax = dims
         # Set plotting options
         plot_params = {'font.size': font_size, 'font.family': 'serif',
                        'axes.labelsize': font_size, 'axes.titlesize': font_size,
