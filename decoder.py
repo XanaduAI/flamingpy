@@ -202,54 +202,66 @@ def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
     return ax
 
 
-def assign_weights(CVG, method='unit'):
+def assign_weights(code, state, **kwargs):
     """Assign weights to qubits in a hybrid CV graph state CVG.
 
     Args:
-        CVG (CVGraph): the CVGraph whose error probabilities have been
-            computed
-        method (str): the method for weight assignment. By default,
-            'unit', denoting weight 1 everyoewhere. For heuristic
-            weight assignment from blueprint, use 'blueprint'
+        code (code class): the qubit code
+        state (CVGraph): the CVGraph whose syndrome has been measured
+        method (str, optional): the method for weight assignment. By
+            default, 'unit', denoting weight 1 everyoewhere. For
+            heuristic and analog weight assignment from blueprint, use
+            'blueprint'
+        integer (bool, optional): whether to convert weights to
+            integers using Python's round function; False by default
+        multiplier (int, optional): multiply the weight by multiplier
+            before rounding; 1 by default.
 
     Returns:
         None
     """
-    G = CVG.graph
+    default_options = {'method': 'unit', 'integer': False, 'multiplier': 1}
+    weight_options = {**default_options, **kwargs}
+    G = code.graph
     # Get and denest the syndrome coordinates.
-    syndrome_coords = [a for b in RHG.RHG_syndrome_coords(CVG.graph) for a in b]
-    error_printed = False
+    syndrome_coords = code.syndrome_coords
     # Blueprint weight assignment dependent on type of neighbour.
-    if method =='blueprint':
+    if weight_options.get('method') == 'blueprint':
         for node in syndrome_coords:
-            neighbors = G.subgraph(G[node]).nodes
+            neighbors = G[node]
             # List and number of p-squeezed states in neighborhood of node.
-            p_list = [neighbors[v]['type'] for v in neighbors if neighbors[v]['type'] == 'p']
+            p_list = [G.nodes[v]['type'] for v in neighbors if G.nodes[v]['type'] == 'p']
             p_count = len(p_list)
-            # If conditional phase error information available, use it; otherwise set
-            # error probability to 0 and print a message.
-            if 'p_phase_cond' in G.nodes[node]:
-                err_prob = G.nodes[node]['p_phase_cond']
+            if p_count in (0, 1):
+                delta_effective = (len(neighbors) + 1) * state._delta
+                hom_val = G.nodes[node]['hom_val_p']
+                err_prob = Z_err_cond([delta_effective], hom_val)[0]
+                # Allow for taking log of 0.
+                # TODO: Is this the best way to do it? Or can I just choose
+                # an arbitrary small number?
+                if err_prob > 0.5:
+                    err_prob = 0.5
+                if err_prob == 0:
+                    err_prob = smallest_number
+                if weight_options.get('integer'):
+                    multiplier = weight_options.get('multiplier')
+                    weight = round(- multiplier * np.log(err_prob))
+                else:
+                    weight = - np.log(err_prob)
+                G.nodes[node]['weight'] = weight
             else:
-                err_prob = 0
-                if not error_printed:
-                    print('Conditional Z error probabilities have not yet been computed. Please '
-                          'use eval_Z_probs_cond() first. Setting error probability in 0 '
-                          'and 1 swap-out case to 0. \n')
-                    error_printed = True
-            # Allow for taking log of 0.
-            # TODO: Is this the best way to do it? Or can I just choose
-            # an arbitrary small number?
-            if err_prob == 0:
-                err_prob = smallest_number
-            # Dictionary of the form number of swapouts: error probability.
-            weight_dict = {0: err_prob, 1: err_prob, 2: 1/4, 3: 1/3, 4: 2/5}
-            # Do we a multiplicative factor here, followed by rounding to get
-            # integral weights?
-            G.nodes[node]['weight'] = - np.log(weight_dict[p_count])
+                # Dictionary of the form number of swapouts: error probability.
+                weight_dict = {2: 1/4, 3: 1/3, 4: 2/5}
+                err_prob = weight_dict[p_count]
+                if weight_options.get('integer'):
+                    multiplier = weight_options.get('multiplier')
+                    weight = round(- multiplier * np.log(err_prob))
+                else:
+                    weight = - np.log(err_prob)
+                G.nodes[node]['weight'] = weight
         return
     # Naive weight assignment, unity weights.
-    if method == 'unit':
+    if weight_options.get('method') == 'unit':
         for node in syndrome_coords:
             G.nodes[node]['weight'] = 1
 
