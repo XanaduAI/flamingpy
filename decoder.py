@@ -28,7 +28,7 @@ smallest_number = sys.float_info.min
 largest_number = sys.float_info.max
 
 
-def graph_drawer(G):
+def graph_drawer(G, label_edges=True):
     """Draw decoding and matching graphs with a color legend."""
     title = G.graph['title']
     plt.figure()
@@ -42,7 +42,11 @@ def graph_drawer(G):
                      font_color='w',
                      font_family='serif')
     # Color edges based on weight, and draw a colobar.
-    weight_list = [edge[2]['weight'] for edge in G.edges.data()]
+    weight_list = [G.edges[edge]['weight'] for edge in G.edges]
+    weight_dict = {edge: '{:.2f}'.format(G.edges[edge]['weight']) for edge in G.edges}
+    if label_edges:
+        nx.draw_networkx_edge_labels(G, nx.circular_layout(G), edge_labels=weight_dict,
+                                     font_size=7)
     r = nx.draw_networkx_edges(G, nx.circular_layout(G), edge_color=weight_list)
     plt.colorbar(r)
 
