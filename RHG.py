@@ -404,30 +404,46 @@ class RHGCube:
 
 
 if __name__ == '__main__':
-    boundaries = 'finite'
-    # # boundaries = 'primal'
-    # # boundaries = 'periodic'
-    # # boundaries = ['primal', 'dual', 'primal']
-    RHG = RHG_graph(2, boundaries=boundaries, polarity=True)
-    ax = RHG.draw(color_nodes=True, color_edges=True, label_indices=True)
+    # Simple tests
+    # Instantiate an RHG latice of a certian distance, with certain
+    # boundaries. Draw the EGraph.
+    d = 2
+    boundaries = 'periodic'
+    # boundaries = 'primal'
+    # boundaries = 'periodic'
+    # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
+    RHG = RHGCode(d, boundaries=boundaries, polarity=True)
+    RHG_lattice = RHG.graph
+    ax = RHG_lattice.draw(color_nodes=False, color_edges=False, label_indices=False)
 
-    # Test dim X dim X dim lattice, with p% p-squeezed states randomly
-    # located, and variance of of delta.
-    dim = 2
-    delta = 0.01
-    # Number of qubits in the lattice.
-    N = RHG.number_of_nodes()
+    # Check edges between boundaries for periodic boundary conditions.
+    all_boundaries = []
+    for plane in ('x', 'y', 'z'):
+        for i in (0, 2 * d - 1):
+            all_boundaries += RHG.slice_coords(plane, i)
+    RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
+    RHG_subgraph.draw(color_edges=True)
+
+    # Check stabilizer coordinates
+    syndrome = RHG.syndrome
+    print('6-body stabilizers :', len(syndrome))
+    for i in range(len(syndrome)):
+        cube = syndrome[i]
+        color = np.random.rand(3)
+        for point in cube.egraph:
+            x, z, y = point
+            ax.scatter(x, z, y, color=color, s=200)
+    ax.set_title(str(boundaries).capitalize() + ' boundaries')
+
+    # Check sampling
+    delta = 0.001
     # Percent p-squeezed states.
-    p = 0.3
-    # p states at random locations.
-    G = CVGraph(RHG, swap_prob=0.1, delta=delta)
-    G.eval_Z_probs()
-    G.measure_p()
-    G.eval_Z_probs_cond()
-    for label in {
-            'var_p',
-            'p_phase',
-            'p_phase_cond',
-            'hom_val'
-            }:
-        G.sketch(label)
+    p_swap = 0
+    for sampling_order in ['initial', 'final', 'two-step']:
+        model = {'noise': 'grn', 'delta': delta, 'sampling_order': sampling_order}
+        CVRHG = CVGraph(RHG_lattice, model=model, p_swap=p_swap)
+        CVRHG.measure_hom('p')
+        outcomes = CVRHG.hom_outcomes()
+        plt.figure(figsize=(16, 9))
+        plt.hist(outcomes, bins=100)
+        # CVRHG.draw('hom_val_p')
