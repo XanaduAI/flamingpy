@@ -291,6 +291,7 @@ def CV_decoder(code, state, translator=basic_translate, sketch=False):
         state.draw('bit_val')
 
 
+def decoding_graph(code, state, draw=False, drawing_opts={}, label_edges=False):
     """Create a decoding graph from the RHG lattice G.
 
     The decoding graph has as its nodes every stabilizer in G and a
@@ -323,7 +324,7 @@ def CV_decoder(code, state, translator=basic_translate, sketch=False):
     """
     # An empty decoding graph.
     G_dec = nx.Graph(title='Decoding Graph')
-    cubes = RHG.RHG_stabilizers(G)
+    cubes = code.stabilizers
     G_dec.add_nodes_from(cubes)
     # For stabilizer cubes sharing a vertex, define an edge between
     # them with weight equal to the weight assigned to the vertex.
@@ -331,20 +332,19 @@ def CV_decoder(code, state, translator=basic_translate, sketch=False):
         common_vertex = set(cube1.coords()).intersection(cube2.coords())
         if common_vertex:
             coordinate = common_vertex.pop()
-            weight = G.graph.nodes[coordinate]['weight']
+            weight = code.graph.nodes[coordinate]['weight']
             G_dec.add_edge(cube1, cube2, weight=weight, common_vertex=coordinate)
 
-    # Include boundary vertices in the case of non-periodic boundary
-    # conditions. (The following list will be empty absent a primal
-    # boundary).
-    # TODO: Deal with dual boundaries.
-    bound_points = RHG.RHG_boundary_coords(G.graph)
+    # Include primal boundary vertices in the case of non-periodic
+    # boundary conditions. (The following list will be empty absent a
+    # primal boundary).
+    bound_points = code.boundary_coords
     # For boundary points sharing a vertex with a stabilizer cube,
     # add an edge between them with weight equal to the weight assigned
     # to the vertex.
     for (cube, point) in it.product(G_dec, bound_points):
         if point in cube.coords():
-            weight = G.graph.nodes[point]['weight']
+            weight = code.graph.nodes[point]['weight']
             G_dec.add_edge(cube, point, weight=weight, common_vertex=point)
 
     # Relabel the nodes of the decoding graph to integers and define
@@ -355,7 +355,7 @@ def CV_decoder(code, state, translator=basic_translate, sketch=False):
     # Indices of odd parity cubes and boundary vertices; add these
     # index lists to the graph attributes dictionary, to be used by the
     # matching graph.
-    odd_parity_cubes = [cube for cube in cubes if cube.parity()]
+    odd_parity_cubes = [cube for cube in cubes if cube.parity]
     odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
     G_relabelled.graph['odd_cubes'] = odd_parity_inds[:]
     bound_inds = [mapping[point] for point in bound_points]
@@ -363,9 +363,10 @@ def CV_decoder(code, state, translator=basic_translate, sketch=False):
 
     # Draw the lattice and the abstract decoding graph.
     if draw:
-        graph_drawer(G_relabelled)
-        syndrome_plot(G_relabelled,
-                      G,
+        graph_drawer(G_relabelled, label_edges=label_edges)
+        syndrome_plot(code,
+                      state,
+                      G_relabelled,
                       index_dict=mapping,
                       drawing_opts=drawing_opts)
     return G_relabelled
