@@ -635,10 +635,10 @@ def check_correction(code, state, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
-def correct(G,
-            inner='basic',
-            outer='MWPM',
-            weights='unit',
+def correct(code,
+            state,
+            decoder,
+            weight_options={},
             draw=False,
             drawing_opts={},
             sanity_check=False):
@@ -648,10 +648,16 @@ def correct(G,
     minimum-weight-perfect matching, recovery, and correctness check.
 
     Args:
-        G (CVGraph): the graph to decode and correct
-        inner (str): the inner decoder; basic_translate by default
-        outer (str): the outer decoder; MWPM by default
-        weights (str): method for weight assignment; unit by default
+        code (code): the code class to decode and correct
+        inner_decoder (str): the CV decoder; basic_translate by default
+        outer_decoder (str): the DV decoder; MWPM by default
+        weight_options (dict): how to assign weights; options are
+
+                'method': 'unit' or 'blueprint'
+                'integer': True (for rounding) or False (for not)
+                'multiplier': integer denoting multiplicative factor
+                    before rounding
+
         draw (bool): if True, draw the decoding graph, matching graph,
             syndrome plot, and minimum-weight matching
         drawing_opts (dict): the drawing options, as in syndrome_plot
@@ -672,16 +678,18 @@ def correct(G,
     inner_dict = {'basic': basic_translate}
     outer_dict = {'MWPM': 'MWPM'}
 
-    if inner:
-        CV_decoder(G, translator=inner_dict[inner])
-
-    if outer_dict[outer] == 'MWPM':
-        assign_weights(G, method=weights)
-        G_dec = decoding_graph(G, draw=draw, drawing_opts=drawing_opts)
+    inner_decoder = decoder.get('inner')
+    outer_decoder = decoder.get('outer')
+    if inner_decoder:
+        CV_decoder(code, state, translator=inner_dict[inner_decoder])
+    if outer_dict[outer_decoder] == 'MWPM':
+        label_edges = drawing_opts.get('label_edges')
+        assign_weights(code, state, **weight_options)
+        G_dec = decoding_graph(code, state, draw=draw, drawing_opts=drawing_opts, label_edges=label_edges)
         G_match = matching_graph(G_dec)
-        matching = MWPM(G_match, G_dec, draw=draw)
-        recovery(G_match, G_dec, G, matching, sanity_check=sanity_check)
-    result = check_correction(G, sanity_check=sanity_check)
+        matching = MWPM(G_match, G_dec, draw=draw, label_edges=label_edges)
+        recovery(code, state, G_match, G_dec, matching, sanity_check=sanity_check)
+    result = check_correction(code, state, sanity_check=sanity_check)
     return result
 
 
