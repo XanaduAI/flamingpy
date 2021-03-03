@@ -311,36 +311,36 @@ class CVGraph:
             self.egraph = EGraph(g)
         self._N = len(g)
 
-        self._states = states
         if states:
+            self._states = states.copy()
             # Non-zero swap-out probability overrides indices specified
             # in states and hybridizes the lattice. Print a message if
             # both supplied.
             # TODO: Raise exception?
             if p_swap:
-                if len(states['p']):
+                if len(self._states['p']):
                     print('Both swap-out probability and indices of p-squeezed states supplied. '
                           'Ignoring the indices.')
                 if p_swap == 1:
-                    states['p'] = np.arange(self._N)
+                    self._states['p'] = np.arange(self._N)
                 else:
                     num_p = rng().binomial(self._N, p_swap)
                     inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
-                    states['p'] = inds
+                    self._states['p'] = inds
 
             # Associate remaining indices with GKP states.
             used_inds = np.empty(0, dtype=int)
-            for psi in states:
-                used_inds = np.concatenate([used_inds, states[psi]])
+            for psi in self._states:
+                used_inds = np.concatenate([used_inds, self._states[psi]])
             remaining_inds = list(set(range(self._N)).difference(set(used_inds)))
-            states['GKP'] = np.array(remaining_inds, dtype=int)
+            self._states['GKP'] = np.array(remaining_inds, dtype=int)
 
             # Generate EGraph indices.
             self.egraph.index_generator()
             self.to_points = self.egraph.to_points
 
-            for psi in states:
-                for ind in states[psi]:
+            for psi in self._states:
+                for ind in self._states[psi]:
                     self.egraph.nodes[self.to_points[ind]]['state'] = psi
 
             # Modelling the states.
