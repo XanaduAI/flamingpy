@@ -317,22 +317,8 @@ class RHGCode:
                     high.append(tuple(m))
         return list(set(low)) + list(set(high))
 
-    def slice_coords(self, plane, number):
-        """Obtain all the coordinates in a slice of RHG lattice G.
-
-        Args:
-            G (EGraph): the RHG lattice
-            plane (str): 'x', 'y', or 'z', denoting the slice direction
-            number (int): the index of the slice
-
-        Returns:
-            list of tuples: the coordinates of the slice.
-        """
-        G = self.graph
-        plane_dict = {'x': 0, 'y': 1, 'z': 2}
-        plane_ind = plane_dict[plane]
-        coords = [point for point in G.nodes if point[plane_ind] == number]
-        return coords
+    # TODO: slice_coords function that constructs rather than iterates,
+    # like the EGraph.
 
 
 class RHGCube:
@@ -420,12 +406,12 @@ if __name__ == '__main__':
     all_boundaries = []
     for plane in ('x', 'y', 'z'):
         for i in (0, 2 * d - 1):
-            all_boundaries += RHG.slice_coords(plane, i)
+            all_boundaries += RHG.graph.slice_coords(plane, i)
     RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
     RHG_subgraph.draw(color_edges=True)
 
     # Check stabilizer coordinates
-    syndrome = RHG.syndrome
+    syndrome = RHG.stabilizers
     print('6-body stabilizers :', len(syndrome))
     for i in range(len(syndrome)):
         cube = syndrome[i]

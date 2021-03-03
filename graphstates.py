@@ -99,6 +99,21 @@ class EGraph(nx.Graph):
         # TODO: Heat map?
         return adj
 
+    def slice_coords(self, plane, number):
+        """Obtain all the coordinates in an x, y, or z slice.
+
+        Args:
+            plane (str): 'x', 'y', or 'z', denoting the slice direction
+            number (int): the index of the slice
+
+        Returns:
+            list of tuples: the coordinates of the slice.
+        """
+        plane_dict = {'x': 0, 'y': 1, 'z': 2}
+        plane_ind = plane_dict[plane]
+        coords = [point for point in self.nodes if point[plane_ind] == number]
+        return coords
+
     def draw(self, color_nodes=False, color_edges=False, label_indices=False, display_axes=True):
         """Draw the graph.
 
