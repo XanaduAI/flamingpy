@@ -266,31 +266,31 @@ def assign_weights(code, state, **kwargs):
             G.nodes[node]['weight'] = 1
 
 
-def CV_decoder(G, translator=basic_translate):
+
+def CV_decoder(code, state, translator=basic_translate, sketch=False):
     """Convert homodyne outcomes to bit values according to translate.
 
     The inner (CV) decoder, aka translator, aka binning function. Set
     converted values to the bit_val attribute for nodes in G.
 
     Args:
-        G: the CVGraph with homodyne outcomes computed.
+        state: the CVGraph with homodyne outcomes computed.
         translator: the choice of binning function; basic_translate
             by default, which is the GKP-sqrt(pi) grid snapper.
     Returns:
         None
     """
-    try:
-        cv_values = G.hom_outcomes
-    except Exception:
-        print('A homodyne measurement has not yet been performed. Please '
-              'use measure_p() first.')
-        return
-    bit_values = translator(cv_values)
-    for i in range(len(bit_values)):
-        G.graph.nodes[G.ind_dict[i]]['bit_val'] = bit_values[i]
+    syndrome = code.syndrome_coords
+    # TODO: Generalize to nonlocal translators
+    # TODO: Vectorize?
+    for point in syndrome:
+        hom_val = code.graph.nodes[point]['hom_val_p']
+        bit_val = translator([hom_val])[0]
+        code.graph.nodes[point]['bit_val'] = bit_val
+    if sketch:
+        state.draw('bit_val')
 
 
-def decoding_graph(G, draw=False, drawing_opts={}):
     """Create a decoding graph from the RHG lattice G.
 
     The decoding graph has as its nodes every stabilizer in G and a
