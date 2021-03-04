@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from scipy.special import erf
 
 
+
 def to_pi_string(x, tex=True):
     """Convert x, a multiple of sqrt(pi)/2, to a string.
 
@@ -37,33 +38,7 @@ def to_pi_string(x, tex=True):
     return str(x)
 
 
-def basic_translate(outcomes):
-    """Naively translate CV outcomes to bit values.
-
-    The function treats values in (-sqrt(pi)/2, sqrt(pi)/2) as 0
-    and those in (sqrt(pi)/2, 3sqrt(pi)/2) as 1. Values on the
-    boundary are assigned a random bit value. The rest of the bins
-    are defined periodically.
-
-    Args:
-        outcomes (array): the values of a p-homodyne measurement
-
-    Retruns:
-        array: the corresponding bit values.
-    """
-    # Bin width
-    alpha = np.sqrt(np.pi)
-    n = len(outcomes)
-    bit_values = np.zeros(n, dtype=int)
-    for i in range(n):
-        div = np.divmod(outcomes[i], alpha)
-        if div[1] < alpha / 2:
-            bit_values[i] = div[0] % 2
-        elif div[1] > alpha / 2:
-            bit_values[i] = (div[0] + 1) % 2
-        else:
-            bit_values[i] = np.random.randint(2)
-    return bit_values
+vec_remainder = np.vectorize(math.remainder)
 
 
 def integer_fractional(x, alpha, draw=False):
@@ -80,9 +55,10 @@ def integer_fractional(x, alpha, draw=False):
             of x.
     """
     # The fractional part.
-    f = np.vectorize(math.remainder)(x, alpha)
-    # The integer part.
-    n = (x - f) / alpha
+    f = vec_remainder(x, alpha)
+    # The integer part. astype(int) used here to prevent unwanted
+    # behaviour during binning (e.g. -6.01 % 2 = 2, while -6 % 2 =0)
+    n = ((x - f) / alpha).astype(int)
     if draw:
         xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
@@ -101,6 +77,41 @@ def integer_fractional(x, alpha, draw=False):
         plt.yticks(newyticks, newylabels)
         plt.show()
     return n, f
+
+
+def GKP_binner(outcomes, return_fraction=False, draw=False):
+    """Naively translate CV outcomes to bit values.
+
+    The function treats values in (-sqrt(pi)/2, sqrt(pi)/2) as 0
+    and those in (sqrt(pi)/2, 3sqrt(pi)/2) as 1. Values on the
+    boundary are binned to 0. The rest of the bins
+    are defined periodically.
+
+    Args:
+        outcomes (array): the values of a p-homodyne measurement.
+        return_fraction (bool): return the fractional part of the
+            outcome as well, if desired.
+        draw (bool): if True, sketch binned values over outcomes.
+
+    Retruns:
+        array: the corresponding bit values.
+    """
+    # Bin width
+    alpha = np.sqrt(np.pi)
+    # np.divmod implementation also possible
+    int_frac = integer_fractional(outcomes, alpha)
+    bit_values = int_frac[0] % 2
+    if draw:
+        xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
+        newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+        newxlabels = [to_pi_string(tick) for tick in newxticks]
+        plt.plot(outcomes, bit_values, ',')
+        plt.title('Binned values')
+        plt.xticks(newxticks, newxlabels, fontsize='small')
+        plt.show()
+    if return_fraction:
+        return bit_values, int_frac[1]
+    return bit_values
 
 
 def Z_err(var, var_num=5):
