@@ -207,8 +207,9 @@ class EGraph(nx.Graph):
                     x, z, y = point
                     # Raise negative sign above node.
                     sign = '^{-}' * (-int(np.sign(value)))
-                    number = r'${}{:.2g}$'.format(sign, np.abs(value))
-                    ax.text(x, y, z, number, color='MediumBlue', backgroundcolor='w', zorder=2)
+                    if type(value) != int:
+                        value = r'${}{:.2g}$'.format(sign, np.abs(value))
+                    ax.text(x, y, z, value, color='MediumBlue', backgroundcolor='w', zorder=2)
                 else:
                     n_uncomputed += 1
 

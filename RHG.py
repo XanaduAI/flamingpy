@@ -512,7 +512,7 @@ if __name__ == '__main__':
     # Instantiate an RHG latice of a certian distance, with certain
     # boundaries. Draw the EGraph.
     d = 2
-    boundaries = 'periodic'
+    boundaries = 'finite'
     # boundaries = 'primal'
     # boundaries = 'periodic'
     # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
