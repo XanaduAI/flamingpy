@@ -238,7 +238,7 @@ def assign_weights(code, **kwargs):
         for node in syndrome_coords:
             neighbors = G[node]
             # List and number of p-squeezed states in neighborhood of node.
-            p_list = [G.nodes[v]['type'] for v in neighbors if G.nodes[v]['type'] == 'p']
+            p_list = [G.nodes[v]['state'] for v in neighbors if G.nodes[v]['state'] == 'p']
             p_count = len(p_list)
             if p_count in (0, 1):
                 delta_effective = (len(neighbors) + 1) * weight_options.get('delta')
@@ -715,7 +715,7 @@ if __name__ == '__main__':
 
     # Decoding options
     decoder = {'inner': 'basic', 'outer': 'MWPM'}
-    weight_options = {'method': 'unit', 'integer': True, 'multiplier': 100, 'delta': delta}
+    weight_options = {'method': 'blueprint', 'integer': True, 'multiplier': 100, 'delta': delta}
 
     # Drawing options
     dw = {'show_nodes': True, 'color_nodes': 'state', 'label': 'bit_val', 'legend': True,
