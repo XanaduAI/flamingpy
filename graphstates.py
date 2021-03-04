@@ -46,8 +46,9 @@ class EGraph(nx.Graph):
     def __init__(self, indexer='default', *args, **kwargs):
         """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
-
         self.indexer = indexer
+        if indexer == 'macronodes':
+            self.macro = nx.Graph()
         self.to_indices = None
         self.to_points = None
         self.adj_mat = None
@@ -66,11 +67,11 @@ class EGraph(nx.Graph):
         if self.indexer == 'default':
             ind_dict = dict(zip(sorted(self.nodes()), range(N)))
         if self.indexer == 'macronodes':
-            self.macro = nx.Graph()
+            macro_graph = self.macro
             for node in self.nodes():
                 rounded = tuple(np.round(node).astype(int))
-                self.macro.nodes[rounded]['micronodes'].append(node)
-            sorted_macro = sorted(self.macro)
+                macro_graph.nodes[rounded]['micronodes'].append(node)
+            sorted_macro = sorted(macro_graph)
             points = []
             for vertex in sorted_macro:
                 points += self.macro.nodes[vertex]['micronodes']
