@@ -51,7 +51,7 @@ def graph_drawer(G, label_edges=True):
     plt.colorbar(r)
 
 
-def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
+def syndrome_plot(code, G_dec, index_dict=None, drawing_opts={}):
     """Draw the syndrome plot for a CVGraph G.
 
     A comprehensive graphing tool for drawing the error syndrome of
@@ -298,7 +298,7 @@ def CV_decoder(code, translator=basic_translate):
         code.graph.nodes[point]['bit_val'] = bit_val
 
 
-def decoding_graph(code, state, draw=False, drawing_opts={}, label_edges=False):
+def decoding_graph(code, draw=False, drawing_opts={}, label_edges=False):
     """Create a decoding graph from the RHG lattice G.
 
     The decoding graph has as its nodes every stabilizer in G and a
@@ -372,7 +372,6 @@ def decoding_graph(code, state, draw=False, drawing_opts={}, label_edges=False):
     if draw:
         graph_drawer(G_relabelled, label_edges=label_edges)
         syndrome_plot(code,
-                      state,
                       G_relabelled,
                       index_dict=mapping,
                       drawing_opts=drawing_opts)
@@ -541,7 +540,7 @@ def MWPM(G_match, G_dec, alg='blossom_nx', draw=False, label_edges=False):
     return matching
 
 
-def recovery(code, state, G_match, G_dec, matching, sanity_check=False):
+def recovery(code, G_match, G_dec, matching, sanity_check=False):
     """Run the recovery operation on graph G.
 
     Fip the bit values of all the vertices in the path connecting each
@@ -570,7 +569,7 @@ def recovery(code, state, G_match, G_dec, matching, sanity_check=False):
                 code.graph.nodes[common_vertex]['bit_val'] ^= 1
 
     if sanity_check:
-        G_dec_new = decoding_graph(code, state, draw=False)
+        G_dec_new = decoding_graph(code, draw=False)
         odd_cubes = G_dec_new.graph['odd_cubes']
         if odd_cubes:
             print('Unsatisfied stabilizers:', odd_cubes)
@@ -587,7 +586,7 @@ def recovery(code, state, G_match, G_dec, matching, sanity_check=False):
     #     return (G, bool(1-parity))
 
 
-def check_correction(code, state, plane=None, sheet=0, sanity_check=False):
+def check_correction(code, plane=None, sheet=0, sanity_check=False):
     """Perform a correlation-surface check.
 
     Check the total parity of a correlation surface specified by
@@ -643,7 +642,6 @@ def check_correction(code, state, plane=None, sheet=0, sanity_check=False):
 
 
 def correct(code,
-            state,
             decoder,
             weight_options={},
             draw=False,
@@ -692,12 +690,12 @@ def correct(code,
     if outer_dict[outer_decoder] == 'MWPM':
         label_edges = drawing_opts.get('label_edges')
         assign_weights(code, **weight_options)
-        G_dec = decoding_graph(code, state, draw=draw,
+        G_dec = decoding_graph(code, draw=draw,
                                drawing_opts=drawing_opts, label_edges=label_edges)
         G_match = matching_graph(G_dec)
         matching = MWPM(G_match, G_dec, draw=draw, label_edges=label_edges)
-        recovery(code, state, G_match, G_dec, matching, sanity_check=sanity_check)
-    result = check_correction(code, state, sanity_check=sanity_check)
+        recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
+    result = check_correction(code, sanity_check=sanity_check)
     return result
 
 
@@ -731,9 +729,8 @@ if __name__ == '__main__':
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
         CVRHG.measure_hom('p', RHG_code.syndrome_inds)
-        c = correct(code=RHG_code, state=CVRHG, decoder=decoder,
-                    weight_options=weight_options, draw=False, drawing_opts=dw,
-                    sanity_check=True)
+        c = correct(code=RHG_code, decoder=decoder, weight_options=weight_options,
+                    draw=True, drawing_opts=dw, sanity_check=True)
         success += c
     error = (trials - success) / trials
     print(error)
