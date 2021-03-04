@@ -139,18 +139,23 @@ def Z_err(var, var_num=5):
     return error
 
 
-def Z_err_cond(var, hom_val, var_num=5):
+def Z_err_cond(var, hom_val, var_num=10, use_hom_val=False):
     """Return the conditional phase error probability for lattice nodes.
 
     Return the phase error probability for a list of variances var
     given homodyne outcomes hom_val, with var_num used to determine
     the number of terms to keep in the summation in the formula.
+    By default, the fractional part of hom_val is used in the summation;
+    if use_hom_val is True, use the entire homodyne value.
 
     Args:
-        var (array): the lattice p variances
-        hom_val (array): the p-homodyne outcomes
+        var (array): the lattice p variances.
+        hom_val (array): the p-homodyne outcomes.
         var_num (float): number of variances away from the origin we
-            include in the integral
+            include in the integral.
+        use_hom_val (bool): if True, use the entire homodyne value
+            hom_val in the expression; otherwise use the fractional
+            part.
     Returns:
         array: probability of Z (phase flip) errors for each variance,
             contioned on the homodyne outcomes.
@@ -160,15 +165,18 @@ def Z_err_cond(var, hom_val, var_num=5):
     # Initiate a list with length same as var
     # TODO replace ex with normal pdf?
     ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
-    error = np.zeros(len(var))
-    z = integer_fractional(hom_val, np.sqrt(np.pi))[1]
-    numerator = np.sum([ex(z, 2 * i + 1) for i in range(-n_max, n_max)], 0)
-    denominator = np.sum([ex(z, i) for i in range(-n_max, n_max)], 0)
+    error = np.zeros(np.shape(var))
+    bit, frac = GKP_binner(hom_val, return_fraction=True)
+    factor = 1 - bit
+    val = hom_val if use_hom_val else frac
+    numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
+    denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
     error = numerator / denominator
     return error
 
 
 if __name__ == '__main__':
     alpha = np.sqrt(np.pi)
-    x = np.arange(-5, 5, 0.01)
+    x = np.arange(-10, 10, 0.01)
     integer_fractional(x, alpha, draw=True)
+    GKP_binner(x, draw=True)
