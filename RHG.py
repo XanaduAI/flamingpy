@@ -124,6 +124,8 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
             planetary_bodies = red_neighbours(point, displace=0.1)
             neighbouring_bodies = red_neighbours(point, displace=0.9)
             macro_graph.add_node(point, micronodes=[])
+            # TODO: Append micronodes to macro_graph so indexer does
+            # not have to be run.
         for i in range(4):
             pol = (-1) ** (polarity * (point[2] + i))
             neighbour = neighbours[i]
@@ -135,8 +137,6 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
                     lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
                     lattice.nodes[body]["color"] = "red"
                     lattice.nodes[nearby_body]["color"] = "green"
-                    # macro_graph.nodes[point]['micronodes'].append(body)
-                    # macro_graph.nodes[neighbour]['micronodes'].append(nearby_body)
                 else:
                     lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
                     lattice.nodes[point]["color"] = "red"
@@ -158,7 +158,6 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
                     lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
                     lattice.nodes[body]["color"] = "green"
                     lattice.nodes[nearby_body]["color"] = "green"
-                    # macro_graph.nodes[point]['micronodes'].append(body)
                 else:
                     lattice.add_edge(point, neighbours[i], weight=pol, color=color(pol))
                     lattice.nodes[point]["color"] = "green"
@@ -187,12 +186,8 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
                 high_green[ind] = 2 * dims[ind] - 1
                 high_green = tuple(high_green)
                 if macronodes:
-                    low_macro = macro_graph.nodes[point]["micronodes"]
-                    high_macro = macro_graph.nodes[high_green]["micronodes"]
                     point = red_neighbours(point, displace=0.1)[1 - ind]
                     high_green = red_neighbours(high_green, displace=0.1)[-1 - ind]
-                    # low_macro.add_node(point)
-                    # high_macro.add_node(high_green)
                 lattice.add_edge(point, high_green, weight=pol, color=color(pol))
                 lattice.nodes[point]["color"] = "red"
                 lattice.nodes[high_green]["color"] = "green"
@@ -203,12 +198,8 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
                 low_green[ind] = 0
                 low_green = tuple(low_green)
                 if macronodes:
-                    high_macro = macro_graph.nodes[point]["micronodes"]
-                    low_macro = macro_graph.nodes[low_green]["micronodes"]
                     point = red_neighbours(point, displace=0.1)[-1 - ind]
                     low_green = red_neighbours(low_green, displace=0.1)[1 - ind]
-                    # high_macro.add_node(point)
-                    # low_macro.add_node(low_green)
                 lattice.add_edge(point, low_green, weight=pol, color=color(pol))
                 lattice.nodes[point]["color"] = "red"
                 lattice.nodes[low_green]["color"] = "green"
@@ -222,12 +213,8 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
                 high_green[ind] = 2 * dims[ind] - 1
                 high_green = tuple(high_green)
                 if macronodes:
-                    low_macro = macro_graph.nodes[point]["micronodes"]
-                    high_macro = macro_graph.nodes[high_green]["micronodes"]
                     point = green_neighbours(point, displace=0.1)[0]
                     high_green = green_neighbours(high_green, displace=0.1)[1]
-                    # low_macro.add_node(point)
-                    # high_macro.add_node(high_green)
                 lattice.add_edge(point, high_green, weight=pol, color=color(pol))
                 lattice.nodes[point]["color"] = "green"
                 lattice.nodes[high_green]["color"] = "green"
@@ -555,8 +542,9 @@ if __name__ == "__main__":
     for plane in ("x", "y", "z"):
         for i in (0, 2 * d - 1):
             all_boundaries += RHG.graph.slice_coords(plane, i)
+        # For macronode lattice, change to (-0.1, 2 * d - 0.9)
     RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
-    RHG_subgraph.draw(color_edges=True)
+    RHG_subgraph.draw()
 
     # Check stabilizer coordinates
     syndrome = RHG.stabilizers
