@@ -53,7 +53,7 @@ def ec_monte_carlo(code, trials, delta, p_swap):
     }
 
     successes = 0
-    for i in range(trials):
+    for _ in range(trials):
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
@@ -101,8 +101,8 @@ if __name__ == "__main__":
         writer = csv.writer(file)
         writer.writerow(["distance", "delta", "p_swap", "errors", "trials", "time"])
     # Open the file for appending if it already exists.
-    except Exception:
-        file = open(file_name, "a")
+    except FileExistsError:
+        file = open(file_name, "a", newline="")
         writer = csv.writer(file)
     # TODO: Do we need to record time?
     current_time = datetime.now().time().strftime("%H:%M:%S")

@@ -13,11 +13,12 @@
 # limitations under the License.
 """Decoders for measurement-based codes."""
 import sys
+import itertools as it
 import numpy as np
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
-import itertools as it
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 from graphstates import CVGraph
 from GKP import GKP_binner, Z_err_cond
@@ -54,7 +55,7 @@ def graph_drawer(G, label_edges=True):
     plt.colorbar(r)
 
 
-def syndrome_plot(code, G_dec, index_dict=None, drawing_opts={}):
+def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
     """Draw the syndrome plot for a CVGraph G.
 
     A comprehensive graphing tool for drawing the error syndrome of
@@ -117,6 +118,8 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts={}):
     }
     # Combine default dictionary with supplied dictionary, duplicates
     # favor supplied dictionary.
+    if drawing_opts is None:
+        drawing_opts = {}
     drawing_opts = {**draw_dict, **drawing_opts}
 
     # Shape and font properties from the original graph.
@@ -229,8 +232,6 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts={}):
             )
 
     # Define a legend for red/green cubes.
-    from matplotlib.patches import Patch
-
     legend_elements = [
         Patch(facecolor="#00FF0050", label="even parity"),
         Patch(facecolor="#FF000050", label="odd parity"),
@@ -340,7 +341,7 @@ def CV_decoder(code, translator=GKP_binner):
         code.graph.nodes[point]["bit_val"] = bit_val
 
 
-def decoding_graph(code, draw=False, drawing_opts={}, label_edges=False):
+def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
     """Create a decoding graph from the RHG lattice G.
 
     The decoding graph has as its nodes every stabilizer in G and a
@@ -620,17 +621,7 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
         odd_cubes = G_dec_new.graph["odd_cubes"]
         if odd_cubes:
             print("Unsatisfied stabilizers:", odd_cubes)
-            return False
-        else:
-            print("Recovery succeeded!")
-            return True
-    # if check:
-    #     parity = 0
-    #     for stabe in G_dec:
-    #         if isinstance(stabe, RHG.RHGCube):
-    #             stabe._parity = None
-    #             parity ^= stabe.parity()
-    #     return (G, bool(1-parity))
+        print("Recovery succeeded - no unsatisfied stabilizers.")
 
 
 def check_correction(code, plane=None, sheet=0, sanity_check=False):
@@ -689,7 +680,12 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
 
 
 def correct(
-    code, decoder, weight_options={}, draw=False, drawing_opts={}, sanity_check=False
+    code,
+    decoder,
+    weight_options=None,
+    draw=False,
+    drawing_opts=None,
+    sanity_check=False,
 ):
     """Run through all the error-correction steps.
 
@@ -732,7 +728,11 @@ def correct(
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == "MWPM":
+        if drawing_opts is None:
+            drawing_opts = {}
         label_edges = drawing_opts.get("label_edges")
+        if weight_options is None:
+            weight_options = {}
         assign_weights(code, **weight_options)
         G_dec = decoding_graph(
             code, draw=draw, drawing_opts=drawing_opts, label_edges=label_edges

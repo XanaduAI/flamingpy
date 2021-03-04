@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Classes for the RHG code and related functions."""
+import itertools as it
 import numpy as np
 from matplotlib import pyplot as plt
-import itertools as it
 from graphstates import EGraph, CVGraph
 
 
@@ -169,13 +169,13 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
         # First and last slices of the lattice in the direction
         # specified by ind.
         if macronodes:
-            integer_vertices = [point for point in macro_graph.nodes]
+            integer_vertices = macro_graph.nodes
         else:
-            integer_vertices = [point for point in lattice.nodes]
-        low_slice = set([point for point in integer_vertices if point[ind] == 0])
-        high_slice = set(
-            [point for point in integer_vertices if point[ind] == 2 * dims[ind] - 1]
-        )
+            integer_vertices = lattice.nodes
+        low_slice = {point for point in integer_vertices if point[ind] == 0}
+        high_slice = {
+            point for point in integer_vertices if point[ind] == 2 * dims[ind] - 1
+        }
         if ind in (0, 1):
             low_reds = all_red & low_slice
             high_reds = all_red & high_slice

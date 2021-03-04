@@ -43,7 +43,7 @@ class EGraph(nx.Graph):
             the adjacency mtrix of the graph.
     """
 
-    def __init__(self, indexer="default", *args, **kwargs):
+    def __init__(self, *args, indexer="default", **kwargs):
         """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
         self.indexer = indexer
@@ -648,8 +648,7 @@ class CVGraph:
         """array: the noise covariance matrix."""
         if self._sampling_order == "final":
             return self._noise_cov
-        else:
-            print('Sampling order must be "final."')
+        print('Sampling order must be "final."')
 
     def draw(self, **kwargs):
         """Draw the underlying graph with state colors.
