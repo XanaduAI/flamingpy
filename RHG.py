@@ -162,8 +162,8 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
         low_slice = set([point for point in integer_vertices if point[ind] == 0])
         high_slice = set([point for point in integer_vertices if point[ind] == 2*dims[ind] - 1])
         if ind in (0, 1):
-            low_reds = all_red.intersection(low_slice)
-            high_reds = all_red.intersection(high_slice)
+            low_reds = all_red & low_slice
+            high_reds = all_red & high_slice
             # Connect red in first slice to greens in last slice.
             for point in low_reds:
                 pol = (-1) ** (polarity * (point[2] + ind + 1))
@@ -199,7 +199,7 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
         # If periodic in z direction, connect greens in first slice with
         # greens in last slice.
         if ind == 2:
-            low_greens = all_green.intersection(low_slice)
+            low_greens = all_green & low_slice
             for point in low_greens:
                 pol = (-1) ** (polarity * (point[1] + 1))
                 high_green = list(point[:])
@@ -317,7 +317,7 @@ class RHGCode:
         periodic_inds = np.where(boundaries == 'periodic')[0]
         dual_inds = np.where(boundaries == 'dual')[0]
         for stabe in all_six_bodies:
-            actual_stabe = list(set(stabe).intersection(set(G)))
+            actual_stabe = list(set(stabe) & set(G))
             if len(actual_stabe) == 6:
                 cube = RHGCube(G.subgraph(actual_stabe))
                 cube.physical = stabe

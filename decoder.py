@@ -337,7 +337,7 @@ def decoding_graph(code, draw=False, drawing_opts={}, label_edges=False):
     # For stabilizer cubes sharing a vertex, define an edge between
     # them with weight equal to the weight assigned to the vertex.
     for (cube1, cube2) in it.combinations(G_dec, 2):
-        common_vertex = set(cube1.coords()).intersection(cube2.coords())
+        common_vertex = set(cube1.coords()) & set(cube2.coords())
         if common_vertex:
             coordinate = common_vertex.pop()
             weight = code.graph.nodes[coordinate]['weight']
@@ -629,7 +629,7 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
         for sheet in range(minimum, maximum, 2):
             slice_verts = code.graph.slice_coords(plane, sheet)
             syndrome_verts = code.syndrome_coords
-            only_primal = set(slice_verts).intersection(set(syndrome_verts))
+            only_primal = set(slice_verts) & set(syndrome_verts)
             parity = 0
             for node in only_primal:
                 parity ^= code.graph.nodes[node]['bit_val']

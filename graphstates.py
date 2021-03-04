@@ -395,7 +395,7 @@ class CVGraph:
             used_inds = np.empty(0, dtype=int)
             for psi in self._states:
                 used_inds = np.concatenate([used_inds, self._states[psi]])
-            remaining_inds = list(set(range(self._N)).difference(set(used_inds)))
+            remaining_inds = list(set(range(self._N)) - set(used_inds))
             self._states['GKP'] = np.array(remaining_inds, dtype=int)
 
             # Generate EGraph indices.
