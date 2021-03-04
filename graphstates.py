@@ -165,6 +165,7 @@ class EGraph(nx.Graph):
                           'weight': 'Weights',
                           'indices': 'Indices'}
             name = title_dict.get(label) if title_dict.get(label) else label
+            n_uncomputed = 0
             if title:
                 ax.set_title(name)
             if label == 'index':
@@ -200,7 +201,6 @@ class EGraph(nx.Graph):
             ax.scatter(x, y, z, c=color, s=plt.rcParams['lines.markersize'] * 5)
 
             if label:
-                n_uncomputed = 0
                 value = self.nodes[point].get(label) if label != 'index' else indices[point]
                 if value is not None:
                     x, z, y = point
@@ -210,9 +210,10 @@ class EGraph(nx.Graph):
                     ax.text(x, y, z, number, color='MediumBlue', backgroundcolor='w', zorder=2)
                 else:
                     n_uncomputed += 1
-                if n_uncomputed > 0:
-                    message = '{} at {} node(s) have not yet been computed.'
-                    print(message.format(name.lower(), n_uncomputed))
+
+        if label and n_uncomputed > 0:
+            message = '{} at {} node(s) have not yet been computed.'
+            print(message.format(name.lower(), n_uncomputed))
 
         # Plotting edges.
         for edge in self.edges:
