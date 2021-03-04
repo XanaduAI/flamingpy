@@ -12,84 +12,87 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
-
-import numpy as np
-import pandas as pd
-import itertools as it
-from matplotlib import pyplot as plt
-from datetime import date, datetime
+import argparse
 import csv
-
+from datetime import datetime
 from decoder import correct
 from graphstates import CVGraph
-from RHG import RHG_graph
+from RHG import RHGCode
 
 
-def monte_carlo(code_lattice, trials, delta, swap_prob):
-    """Run Monte Carlo simulations of error-correction on code_lattice.
+def ec_monte_carlo(code, trials, delta, p_swap):
+    """Run Monte Carlo simulations of error-correction on code code.
 
-    Given a code_lattice EGraph, a noise parameter delta, and a
-    swap-out probably swap_prob, run a number of Monte Carlo
+    Given a code object code, a noise parameter delta, and a
+    swap-out probably p_swap, run a number of Monte Carlo
     simulations equal to trials of the complete error-corection
     procedure.
 
     Args:
-        code_lattice (EGraph): the abstract code lattice
-        trials (int): the number of trials
-        delta (float): the noise/squeezing/width parameter
-        swap_prob (float): the probability of replacing a GKP state
-            with a p-squeezed state in the lattice
+        code (code object): the abstract code.
+        trials (int): the number of trials.
+        delta (float): the noise/squeezing/width parameter.
+        p_swap (float): the probability of replacing a GKP state
+            with a p-squeezed state in the lattice.
 
     Returns:
-        float, float: the failure probability and the associated error.
+        float: the failure probability.
     """
+    # TODO: Noise model input.
+    code_lattice = code.graph
+    # Noise model
+    CVRHG = CVGraph(code_lattice, p_swap=p_swap)
+    cv_noise = {'noise': 'grn', 'delta': delta, 'sampling_order': 'initial'}
+    # Decoding options
+    decoder = {'inner': 'basic', 'outer': 'MWPM'}
+    weight_options = {'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': delta}
+
     successes = 0
     for i in range(trials):
-        G = CVGraph(code_lattice, model='grn', swap_prob=swap_prob, delta=delta)
-        G.measure_p()
-        G.eval_Z_probs_cond()
-        result = correct(G, inner='basic', outer='MWPM')
+        # Apply noise
+        CVRHG.apply_noise(cv_noise)
+        # Measure syndrome
+        CVRHG.measure_hom('p', code.syndrome_inds)
+        result = correct(code=code, decoder=decoder, weight_options=weight_options)
         successes += result
-        # successes += np.random.randint(2)
-    p_fail = (trials - successes) / trials
-    err = np.sqrt((p_fail * (1 - p_fail)) / trials)
-    return p_fail, err
+        errors = trials - successes
+
+    return errors
 
 
 if __name__ == '__main__':
-    # File stored in data/ with today's date.
-    todays_date = date.today().strftime("%d-%m-%Y")
-    file_name = 'data/' + todays_date + '.csv'
+    # TODO: Intention of below is to allow not to use the command line
+    # if desired. Is this appropriate?
+    try:
+        # Parsing input parameters
+        parser = argparse.ArgumentParser(description='Arguments for Monte Carlo FT simulations.')
+        parser.add_argument('distance', type=int)
+        parser.add_argument('delta', type=float)
+        parser.add_argument('p_swap', type=float)
+        parser.add_argument('trials', type=int)
+        args = parser.parse_args()
+        distance, delta, p_swap, trials = args.distance, args.delta, args.p_swap, args.trials
+    except SystemExit:
+        # User-specified values, if not using command line.
+        distance, delta, p_swap, trials = 2, 0.1, 0, 10
+
+    # The Monte Carlo simulations
+    boundaries = 'finite'
+    RHG_code = RHGCode(distance, boundaries=boundaries, polarity=True)
+    errors = ec_monte_carlo(RHG_code, trials, delta, p_swap)
+
+    # Store results in the data directory in the file results.csv.
+    file_name = './data/results.csv'
     # Create a CSV file if it doesn't already exist.
     try:
         file = open(file_name, 'x')
         writer = csv.writer(file)
-        writer.writerow(['time', 'distance', 'delta', 'p_swap', 'p_fail', 'error', 'trials'])
-
+        writer.writerow(['distance', 'delta', 'p_swap', 'errors', 'trials', 'time'])
     # Open the file for appending if it already exists.
     except Exception:
         file = open(file_name, 'a')
         writer = csv.writer(file)
-
-    # The Monte Carlo simulations
-    trials = 1
-    distances = [2]
-    deltas = [0.01, 0.1]
-    probs = [0, 0.25]
-    for distance in distances:
-        L = distance
-        boundaries = ['primal', 'dual', 'primal']
-        RHG_lattice = RHG_graph(L, boundaries=boundaries, polarity=1)
-        for (d, p) in it.product(deltas, probs):
-            p_fail, err = monte_carlo(RHG_lattice, trials, d, p)
-            current_time = datetime.now().time().strftime("%H:%M:%S")
-            writer.writerow([current_time, distance, d, p, p_fail, err, trials])
+    # TODO: Do we need to record time?
+    current_time = datetime.now().time().strftime("%H:%M:%S")
+    writer.writerow([distance, delta, p_swap, errors, trials, current_time])
     file.close()
-
-    # Read the file and plot.
-    table = pd.read_csv(file_name)
-    fig, ax = plt.subplots()
-    table.plot.scatter(x='delta', y='p_fail', ax=ax)
-    ax.set_xlabel(r'$\delta$')
-    ax.set_ylabel('$p_{fail}$')
-    plt.show()
