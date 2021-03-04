@@ -18,7 +18,7 @@ import itertools as it
 from graphstates import EGraph, CVGraph
 
 
-def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
+def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
     """Create an EGraph of a dims-dimensional RHG lattice.
 
     Generate an RHG lattice with dimensions given by dims (an integer
@@ -53,36 +53,50 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
         dims = (dims, dims, dims)
     nx, ny, nz = dims
     # Dealing with boundaries
-    if boundaries == 'finite':
-        boundaries = ['primal', 'dual', 'dual']
+    if boundaries == "finite":
+        boundaries = ["primal", "dual", "dual"]
     elif type(boundaries) == str:
         boundaries = [boundaries] * 3
     # Define the EGraph of the lattice
     if macronodes:
-        indexer = 'macronodes'
+        indexer = "macronodes"
     else:
-        indexer = 'default'
+        indexer = "default"
     lattice = EGraph(dims=dims, boundaries=boundaries, indexer=indexer)
 
     # Constrain the ranges of the coordinates depending on the type
     # of boundaries.
-    min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
-    max_dict = {'primal': 1, 'dual': 0, 'periodic': 0}
+    min_dict = {"primal": 0, "dual": 1, "periodic": 0}
+    max_dict = {"primal": 1, "dual": 0, "periodic": 0}
     x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
     x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
     # Coordinates of red qubits in even and odd vertical slices.
-    even_red = [(2*i + 1, 2*j + 1, 2*k) for (i, j, k) in
-                it.product(range(nx), range(ny), range(z_min, nz+z_max))]
-    odd_red = [(2*i, 2*j, 2*k + 1) for (i, j, k) in
-               it.product(range(x_min, nx+x_max), range(y_min, ny+y_max), range(nz))]
+    even_red = [
+        (2 * i + 1, 2 * j + 1, 2 * k)
+        for (i, j, k) in it.product(range(nx), range(ny), range(z_min, nz + z_max))
+    ]
+    odd_red = [
+        (2 * i, 2 * j, 2 * k + 1)
+        for (i, j, k) in it.product(
+            range(x_min, nx + x_max), range(y_min, ny + y_max), range(nz)
+        )
+    ]
     all_red = set(even_red + odd_red)
 
     # Coordinates of green qubits in even and odd horizontal slices.
-    even_green = [(2*i + 1, 2*j, k) for (i, j, k) in
-                  it.product(range(nx), range(y_min, ny + y_max), range(z_min, 2*nz + z_max))]
-    odd_green = [(2*i, 2*j + 1, k) for (i, j, k) in
-                 it.product(range(x_min, nx + x_max), range(ny), range(z_min, 2*nz + z_max))]
+    even_green = [
+        (2 * i + 1, 2 * j, k)
+        for (i, j, k) in it.product(
+            range(nx), range(y_min, ny + y_max), range(z_min, 2 * nz + z_max)
+        )
+    ]
+    odd_green = [
+        (2 * i, 2 * j + 1, k)
+        for (i, j, k) in it.product(
+            range(x_min, nx + x_max), range(ny), range(z_min, 2 * nz + z_max)
+        )
+    ]
     all_green = set(even_green + odd_green)
 
     def red_neighbours(p, displace=1):
@@ -98,7 +112,7 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
         return [(p[0], p[1], p[2] - displace), (p[0], p[1], p[2] + displace)]
 
     # Polarity-dependent color function: blue for +1, red for -1.
-    color = lambda pol: ((pol + 1) // 2) * 'b' + abs((pol - 1) // 2) * 'r'
+    color = lambda pol: ((pol + 1) // 2) * "b" + abs((pol - 1) // 2) * "r"
 
     if macronodes:
         macro_graph = lattice.macro
@@ -119,13 +133,13 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
                     nearby_body = neighbouring_bodies[i]
                     nearby_body = tuple([round(num, 1) for num in nearby_body])
                     lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
-                    lattice.nodes[body]['color'] = 'red'
-                    lattice.nodes[nearby_body]['color'] = 'green'
+                    lattice.nodes[body]["color"] = "red"
+                    lattice.nodes[nearby_body]["color"] = "green"
                     # macro_graph.nodes[point]['micronodes'].append(body)
                     # macro_graph.nodes[neighbour]['micronodes'].append(nearby_body)
                 else:
                     lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
-                    lattice.nodes[point]['color'] = 'red'
+                    lattice.nodes[point]["color"] = "red"
 
     # Add edges between green points and all their neighbours.
     for point in all_green:
@@ -142,16 +156,16 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
                     nearby_body = neighbouring_bodies[i]
                     nearby_body = tuple([round(num, 1) for num in nearby_body])
                     lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
-                    lattice.nodes[body]['color'] = 'green'
-                    lattice.nodes[nearby_body]['color'] = 'green'
+                    lattice.nodes[body]["color"] = "green"
+                    lattice.nodes[nearby_body]["color"] = "green"
                     # macro_graph.nodes[point]['micronodes'].append(body)
                 else:
                     lattice.add_edge(point, neighbours[i], weight=pol, color=color(pol))
-                    lattice.nodes[point]['color'] = 'green'
+                    lattice.nodes[point]["color"] = "green"
 
     # Dealing with periodic boundary conditions.
     bound_arr = np.array(boundaries)
-    periodic_inds = np.where(bound_arr == 'periodic')[0]
+    periodic_inds = np.where(bound_arr == "periodic")[0]
     for ind in periodic_inds:
         # First and last slices of the lattice in the direction
         # specified by ind.
@@ -160,7 +174,9 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
         else:
             integer_vertices = [point for point in lattice.nodes]
         low_slice = set([point for point in integer_vertices if point[ind] == 0])
-        high_slice = set([point for point in integer_vertices if point[ind] == 2*dims[ind] - 1])
+        high_slice = set(
+            [point for point in integer_vertices if point[ind] == 2 * dims[ind] - 1]
+        )
         if ind in (0, 1):
             low_reds = all_red & low_slice
             high_reds = all_red & high_slice
@@ -171,15 +187,15 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
                 high_green[ind] = 2 * dims[ind] - 1
                 high_green = tuple(high_green)
                 if macronodes:
-                    low_macro = macro_graph.nodes[point]['micronodes']
-                    high_macro = macro_graph.nodes[high_green]['micronodes']
+                    low_macro = macro_graph.nodes[point]["micronodes"]
+                    high_macro = macro_graph.nodes[high_green]["micronodes"]
                     point = red_neighbours(point, displace=0.1)[1 - ind]
                     high_green = red_neighbours(high_green, displace=0.1)[-1 - ind]
                     # low_macro.add_node(point)
                     # high_macro.add_node(high_green)
                 lattice.add_edge(point, high_green, weight=pol, color=color(pol))
-                lattice.nodes[point]['color'] = 'red'
-                lattice.nodes[high_green]['color'] = 'green'
+                lattice.nodes[point]["color"] = "red"
+                lattice.nodes[high_green]["color"] = "green"
             # Connect reds in last slice to greens in first slice.
             for point in high_reds:
                 pol = (-1) ** (polarity * (point[2] + ind + 1))
@@ -187,15 +203,15 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
                 low_green[ind] = 0
                 low_green = tuple(low_green)
                 if macronodes:
-                    high_macro = macro_graph.nodes[point]['micronodes']
-                    low_macro = macro_graph.nodes[low_green]['micronodes']
+                    high_macro = macro_graph.nodes[point]["micronodes"]
+                    low_macro = macro_graph.nodes[low_green]["micronodes"]
                     point = red_neighbours(point, displace=0.1)[-1 - ind]
                     low_green = red_neighbours(low_green, displace=0.1)[1 - ind]
                     # high_macro.add_node(point)
                     # low_macro.add_node(low_green)
                 lattice.add_edge(point, low_green, weight=pol, color=color(pol))
-                lattice.nodes[point]['color'] = 'red'
-                lattice.nodes[low_green]['color'] = 'green'
+                lattice.nodes[point]["color"] = "red"
+                lattice.nodes[low_green]["color"] = "green"
         # If periodic in z direction, connect greens in first slice with
         # greens in last slice.
         if ind == 2:
@@ -206,15 +222,15 @@ def RHG_graph(dims, boundaries='finite', macronodes=False, polarity=False):
                 high_green[ind] = 2 * dims[ind] - 1
                 high_green = tuple(high_green)
                 if macronodes:
-                    low_macro = macro_graph.nodes[point]['micronodes']
-                    high_macro = macro_graph.nodes[high_green]['micronodes']
+                    low_macro = macro_graph.nodes[point]["micronodes"]
+                    high_macro = macro_graph.nodes[high_green]["micronodes"]
                     point = green_neighbours(point, displace=0.1)[0]
                     high_green = green_neighbours(high_green, displace=0.1)[1]
                     # low_macro.add_node(point)
                     # high_macro.add_node(high_green)
                 lattice.add_edge(point, high_green, weight=pol, color=color(pol))
-                lattice.nodes[point]['color'] = 'green'
-                lattice.nodes[high_green]['color'] = 'green'
+                lattice.nodes[point]["color"] = "green"
+                lattice.nodes[high_green]["color"] = "green"
 
     return lattice
 
@@ -256,18 +272,16 @@ class RHGCode:
             according to the error complex.
     """
 
-    def __init__(self,
-                 distance,
-                 error_complex='primal',
-                 boundaries='finite',
-                 polarity=False):
+    def __init__(
+        self, distance, error_complex="primal", boundaries="finite", polarity=False
+    ):
         """Initialize the RHG code."""
         # TODO: Check code distance convention.
         self.distance = distance
         self.dims = (distance, distance, distance)
         self.complex = error_complex
-        if boundaries == 'finite':
-            self.boundaries = ['primal', 'dual', 'dual']
+        if boundaries == "finite":
+            self.boundaries = ["primal", "dual", "dual"]
         elif type(boundaries) == str:
             self.boundaries = [boundaries] * 3
         self._polarity = polarity
@@ -277,10 +291,12 @@ class RHGCode:
         # The following line also defines the self.syndrome_coords
         # attribute.
         self.stabilizers = self.identify_stabilizers(self.complex)
-        self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
+        self.syndrome_inds = [
+            self.graph.to_indices[point] for point in self.syndrome_coords
+        ]
         self.boundary_coords = self.identify_boundary(self.complex)
 
-    def identify_stabilizers(self, error_complex='primal'):
+    def identify_stabilizers(self, error_complex="primal"):
         """Return the syndrome coordinates for the RHG lattice G.
 
         Generate a list of RHGCube objects containing coordinates of
@@ -292,7 +308,7 @@ class RHGCode:
         # Dimensions, boundary types, max and min ranges.
         dims = list(self.dims)
         boundaries = np.array(self.boundaries)
-        min_dict = {'primal': 0, 'dual': 1, 'periodic': 0}
+        min_dict = {"primal": 0, "dual": 1, "periodic": 0}
         mins = [min_dict[typ] for typ in boundaries]
         maxes = np.array([2 * dims[i] - 1 for i in (0, 1, 2)])
 
@@ -301,21 +317,25 @@ class RHGCode:
         inds = it.product(*ranges)
 
         # TODO: Implement dual error complex.
-        if error_complex == 'primal':
+        if error_complex == "primal":
             # All potential six-body stabilizers
-            all_six_bodies = [[
-                (2*i, 2*j + 1, 2*k + 1),
-                (2*i + 1, 2*j, 2*k + 1),
-                (2*i + 1, 2*j + 1, 2*k),
-                (2*i + 2, 2*j + 1, 2*k + 1),
-                (2*i + 1, 2*j + 2, 2*k + 1),
-                (2*i + 1, 2*j + 1, 2*k + 2)] for (i, j, k) in inds]
+            all_six_bodies = [
+                [
+                    (2 * i, 2 * j + 1, 2 * k + 1),
+                    (2 * i + 1, 2 * j, 2 * k + 1),
+                    (2 * i + 1, 2 * j + 1, 2 * k),
+                    (2 * i + 2, 2 * j + 1, 2 * k + 1),
+                    (2 * i + 1, 2 * j + 2, 2 * k + 1),
+                    (2 * i + 1, 2 * j + 1, 2 * k + 2),
+                ]
+                for (i, j, k) in inds
+            ]
 
         all_cubes = []
         syndrome_coords = []
 
-        periodic_inds = np.where(boundaries == 'periodic')[0]
-        dual_inds = np.where(boundaries == 'dual')[0]
+        periodic_inds = np.where(boundaries == "periodic")[0]
+        dual_inds = np.where(boundaries == "dual")[0]
         for stabe in all_six_bodies:
             actual_stabe = list(set(stabe) & set(G))
             if len(actual_stabe) == 6:
@@ -347,7 +367,9 @@ class RHGCode:
                         syndrome_coords += actual_stabe
                         all_cubes.append(cube)
             if len(actual_stabe) == 4:
-                average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
+                average_point = [
+                    sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)
+                ]
                 rounded_avs = np.array([round(av) for av in average_point])
                 high_inds = np.where(maxes == rounded_avs)[0]
                 low_inds = np.where(mins == rounded_avs)[0]
@@ -408,7 +430,7 @@ class RHGCode:
         self.syndrome_coords = syndrome_coords
         return all_cubes
 
-    def identify_boundary(self, error_complex='primal'):
+    def identify_boundary(self, error_complex="primal"):
         """Obtain coordinates of syndrome qubits on the boundary.
 
         The relevant boundary is determined by the error_complex string.
@@ -416,11 +438,13 @@ class RHGCode:
         # TODO: Dual boundaries.
         dims = self.dims
         boundaries = np.array(self.boundaries)
-        if error_complex == 'primal':
+        if error_complex == "primal":
             # Odd indices, which is where primal syndrome qubits are located.
-            odds = [range(1, 2 * dims[0], 2),
-                    range(1, 2 * dims[1], 2),
-                    range(1, 2 * dims[2], 2)]
+            odds = [
+                range(1, 2 * dims[0], 2),
+                range(1, 2 * dims[1], 2),
+                range(1, 2 * dims[2], 2),
+            ]
         low = []
         high = []
         bound_inds = np.where(boundaries == error_complex)[0]
@@ -470,7 +494,7 @@ class RHGCube:
             int: the total parity
         """
         G = self.egraph
-        bit_vals = [G.nodes[node]['bit_val'] for node in G]
+        bit_vals = [G.nodes[node]["bit_val"] for node in G]
         # TODO: Option for processing the homodyne outcomes first, as
         # below.
         # hom_vals = [G.graph.nodes[node]['hom_val'] for node in G.graph]
@@ -504,15 +528,19 @@ class RHGCube:
         """Return the midpoint of the cube."""
         # TODO: Perhaps choose a different point for a five-body
         # X stabilizer, for plotting purposes.
-        return (np.average(self.xlims()), np.average(self.ylims()), np.average(self.zlims()))
+        return (
+            np.average(self.xlims()),
+            np.average(self.ylims()),
+            np.average(self.zlims()),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Simple tests
     # Instantiate an RHG latice of a certian distance, with certain
     # boundaries. Draw the EGraph.
     d = 2
-    boundaries = 'finite'
+    boundaries = "finite"
     # boundaries = 'primal'
     # boundaries = 'periodic'
     # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
@@ -520,11 +548,11 @@ if __name__ == '__main__':
     RHG_lattice = RHG.graph
     # Check maronode lattice
     # RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
-    ax = RHG_lattice.draw(color_nodes=False, color_edges=False, label='index')
+    ax = RHG_lattice.draw(color_nodes=False, color_edges=False, label="index")
 
     # Check edges between boundaries for periodic boundary conditions.
     all_boundaries = []
-    for plane in ('x', 'y', 'z'):
+    for plane in ("x", "y", "z"):
         for i in (0, 2 * d - 1):
             all_boundaries += RHG.graph.slice_coords(plane, i)
     RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
@@ -532,25 +560,25 @@ if __name__ == '__main__':
 
     # Check stabilizer coordinates
     syndrome = RHG.stabilizers
-    print('6-body stabilizers :', len(syndrome))
+    print("6-body stabilizers :", len(syndrome))
     for i in range(len(syndrome)):
         cube = syndrome[i]
         color = np.random.rand(3)
         for point in cube.egraph:
             x, z, y = point
             ax.scatter(x, z, y, color=color, s=200)
-    ax.set_title(str(boundaries).capitalize() + ' boundaries')
+    ax.set_title(str(boundaries).capitalize() + " boundaries")
 
     # Check sampling
     delta = 0.001
     # Percent p-squeezed states.
     p_swap = 0
     CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
-    for sampling_order in ['initial', 'final', 'two-step']:
-        model = {'noise': 'grn', 'delta': delta, 'sampling_order': sampling_order}
+    for sampling_order in ["initial", "final", "two-step"]:
+        model = {"noise": "grn", "delta": delta, "sampling_order": sampling_order}
         CVRHG.apply_noise(model)
-        CVRHG.measure_hom('p')
+        CVRHG.measure_hom("p")
         outcomes = CVRHG.hom_outcomes()
         plt.figure(figsize=(16, 9))
         plt.hist(outcomes, bins=100)
-        CVRHG.draw(label='hom_val_p')
+        CVRHG.draw(label="hom_val_p")

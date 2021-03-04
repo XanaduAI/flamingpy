@@ -42,17 +42,22 @@ def ec_monte_carlo(code, trials, delta, p_swap):
     code_lattice = code.graph
     # Noise model
     CVRHG = CVGraph(code_lattice, p_swap=p_swap)
-    cv_noise = {'noise': 'grn', 'delta': delta, 'sampling_order': 'initial'}
+    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     # Decoding options
-    decoder = {'inner': 'basic', 'outer': 'MWPM'}
-    weight_options = {'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': delta}
+    decoder = {"inner": "basic", "outer": "MWPM"}
+    weight_options = {
+        "method": "blueprint",
+        "integer": False,
+        "multiplier": 1,
+        "delta": delta,
+    }
 
     successes = 0
     for i in range(trials):
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
-        CVRHG.measure_hom('p', code.syndrome_inds)
+        CVRHG.measure_hom("p", code.syndrome_inds)
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
         successes += result
         errors = trials - successes
@@ -60,37 +65,44 @@ def ec_monte_carlo(code, trials, delta, p_swap):
     return errors
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # TODO: Intention of below is to allow not to use the command line
     # if desired. Is this appropriate?
     try:
         # Parsing input parameters
-        parser = argparse.ArgumentParser(description='Arguments for Monte Carlo FT simulations.')
-        parser.add_argument('distance', type=int)
-        parser.add_argument('delta', type=float)
-        parser.add_argument('p_swap', type=float)
-        parser.add_argument('trials', type=int)
+        parser = argparse.ArgumentParser(
+            description="Arguments for Monte Carlo FT simulations."
+        )
+        parser.add_argument("distance", type=int)
+        parser.add_argument("delta", type=float)
+        parser.add_argument("p_swap", type=float)
+        parser.add_argument("trials", type=int)
         args = parser.parse_args()
-        distance, delta, p_swap, trials = args.distance, args.delta, args.p_swap, args.trials
+        distance, delta, p_swap, trials = (
+            args.distance,
+            args.delta,
+            args.p_swap,
+            args.trials,
+        )
     except SystemExit:
         # User-specified values, if not using command line.
         distance, delta, p_swap, trials = 2, 0.1, 0, 10
 
     # The Monte Carlo simulations
-    boundaries = 'finite'
+    boundaries = "finite"
     RHG_code = RHGCode(distance, boundaries=boundaries, polarity=True)
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap)
 
     # Store results in the data directory in the file results.csv.
-    file_name = './data/results.csv'
+    file_name = "./data/results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
-        file = open(file_name, 'x')
+        file = open(file_name, "x")
         writer = csv.writer(file)
-        writer.writerow(['distance', 'delta', 'p_swap', 'errors', 'trials', 'time'])
+        writer.writerow(["distance", "delta", "p_swap", "errors", "trials", "time"])
     # Open the file for appending if it already exists.
     except Exception:
-        file = open(file_name, 'a')
+        file = open(file_name, "a")
         writer = csv.writer(file)
     # TODO: Do we need to record time?
     current_time = datetime.now().time().strftime("%H:%M:%S")

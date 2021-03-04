@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 from scipy.special import erf
 
 
-
 def to_pi_string(x, tex=True):
     """Convert x, a multiple of sqrt(pi)/2, to a string.
 
@@ -28,12 +27,14 @@ def to_pi_string(x, tex=True):
     if not round(remainder):
         integer = round(x / (np.sqrt(np.pi) / 2))
         pref = int(integer * ((1 - integer % 2) / 2 + integer % 2))
-        x_str = (
-            not bool(round(x))) * '0' + bool(round(x)) * (
-            bool(tex) * '$' + (not bool(1 + pref)) * '-' +
-            bool(1 - abs(pref)) * str(pref) + r'\sqrt{\pi}' + (integer % 2) * '/2' +
-            bool(tex) * '$'
-                )
+        x_str = (not bool(round(x))) * "0" + bool(round(x)) * (
+            bool(tex) * "$"
+            + (not bool(1 + pref)) * "-"
+            + bool(1 - abs(pref)) * str(pref)
+            + r"\sqrt{\pi}"
+            + (integer % 2) * "/2"
+            + bool(tex) * "$"
+        )
         return x_str
     return str(x)
 
@@ -63,17 +64,17 @@ def integer_fractional(x, alpha, draw=False):
         xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
         newxlabels = [to_pi_string(tick) for tick in newxticks]
-        plt.plot(x, n, ',')
-        plt.title('Integer Part')
-        plt.xticks(newxticks, newxlabels, fontsize='small')
+        plt.plot(x, n, ",")
+        plt.title("Integer Part")
+        plt.xticks(newxticks, newxlabels, fontsize="small")
         plt.show()
 
-        plt.title('Fractional Part')
-        plt.plot(x, f, ',')
+        plt.title("Fractional Part")
+        plt.plot(x, f, ",")
         newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
-        newylabels = ['{:.3f}'.format(tick) for tick in newyticks[1:-1]]
+        newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
         newylabels = [to_pi_string(-alpha / 2)] + newylabels + [to_pi_string(alpha / 2)]
-        plt.xticks(newxticks, newxlabels, fontsize='small')
+        plt.xticks(newxticks, newxlabels, fontsize="small")
         plt.yticks(newyticks, newylabels)
         plt.show()
     return n, f
@@ -105,9 +106,9 @@ def GKP_binner(outcomes, return_fraction=False, draw=False):
         xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
         newxlabels = [to_pi_string(tick) for tick in newxticks]
-        plt.plot(outcomes, bit_values, ',')
-        plt.title('Binned values')
-        plt.xticks(newxticks, newxlabels, fontsize='small')
+        plt.plot(outcomes, bit_values, ",")
+        plt.title("Binned values")
+        plt.xticks(newxticks, newxlabels, fontsize="small")
         plt.show()
     if return_fraction:
         return bit_values, int_frac[1]
@@ -134,8 +135,10 @@ def Z_err(var, var_num=5):
     # Integral over 0 bins that fell within var_num*var_max away from
     # origin
     for i in range(-n_max, n_max, 4):
-        error -= 0.5 * (erf((i + 2) * np.sqrt(np.pi) / (2 * var))
-                      - erf(i * np.sqrt(np.pi) / (2 * var)))
+        error -= 0.5 * (
+            erf((i + 2) * np.sqrt(np.pi) / (2 * var))
+            - erf(i * np.sqrt(np.pi) / (2 * var))
+        )
     return error
 
 
@@ -164,7 +167,7 @@ def Z_err_cond(var, hom_val, var_num=10, use_hom_val=False):
     n_max = var_num
     # Initiate a list with length same as var
     # TODO replace ex with normal pdf?
-    ex = lambda z, n: np.exp(-(z - n * np.sqrt(np.pi)) ** 2 / var)
+    ex = lambda z, n: np.exp(-((z - n * np.sqrt(np.pi)) ** 2) / var)
     error = np.zeros(np.shape(var))
     bit, frac = GKP_binner(hom_val, return_fraction=True)
     factor = 1 - bit
@@ -175,7 +178,7 @@ def Z_err_cond(var, hom_val, var_num=10, use_hom_val=False):
     return error
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     alpha = np.sqrt(np.pi)
     x = np.arange(-10, 10, 0.01)
     integer_fractional(x, alpha, draw=True)

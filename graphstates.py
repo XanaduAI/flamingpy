@@ -43,11 +43,11 @@ class EGraph(nx.Graph):
             the adjacency mtrix of the graph.
     """
 
-    def __init__(self, indexer='default', *args, **kwargs):
+    def __init__(self, indexer="default", *args, **kwargs):
         """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
         self.indexer = indexer
-        if indexer == 'macronodes':
+        if indexer == "macronodes":
             self.macro = nx.Graph()
         self.to_indices = None
         self.to_points = None
@@ -64,17 +64,17 @@ class EGraph(nx.Graph):
         N = self.order()
         if self.to_indices is not None:
             return self.to_indices
-        if self.indexer == 'default':
+        if self.indexer == "default":
             ind_dict = dict(zip(sorted(self.nodes()), range(N)))
-        if self.indexer == 'macronodes':
+        if self.indexer == "macronodes":
             macro_graph = self.macro
             for node in self.nodes():
                 rounded = tuple(np.round(node).astype(int))
-                macro_graph.nodes[rounded]['micronodes'].append(node)
+                macro_graph.nodes[rounded]["micronodes"].append(node)
             sorted_macro = sorted(macro_graph)
             points = []
             for vertex in sorted_macro:
-                points += self.macro.nodes[vertex]['micronodes']
+                points += self.macro.nodes[vertex]["micronodes"]
             ind_dict = {points[i]: i for i in range(N)}
         self.to_indices = ind_dict
         self.to_points = {index: point for point, index in ind_dict.items()}
@@ -110,15 +110,21 @@ class EGraph(nx.Graph):
         Returns:
             list of tuples: the coordinates of the slice.
         """
-        plane_dict = {'x': 0, 'y': 1, 'z': 2}
+        plane_dict = {"x": 0, "y": 1, "z": 2}
         plane_ind = plane_dict[plane]
         coords = [point for point in self.nodes if point[plane_ind] == number]
         return coords
 
-    def draw(self,
-             color_nodes=False, color_edges=False, state_colors={},
-             label=None, title=False, legend=False,
-             display_axes=True):
+    def draw(
+        self,
+        color_nodes=False,
+        color_edges=False,
+        state_colors={},
+        label=None,
+        title=False,
+        legend=False,
+        display_axes=True,
+    ):
         """Draw the graph.
 
         Args:
@@ -134,7 +140,7 @@ class EGraph(nx.Graph):
         """
         # Recommended to be viewed with IPython.
         # Font properties
-        dims = self.graph.get('dims')
+        dims = self.graph.get("dims")
         if dims:
             # TODO: Store dims as EGraph attributes, rather than a graph
             # attribute?
@@ -147,40 +153,48 @@ class EGraph(nx.Graph):
             font_size = 14
         xmax, ymax, zmax = dims
         # Set plotting options
-        plot_params = {'font.size': font_size, 'font.family': 'serif',
-                       'axes.labelsize': font_size, 'axes.titlesize': font_size,
-                       'xtick.labelsize': font_size, 'ytick.labelsize': font_size,
-                       'legend.fontsize': font_size, 'grid.color': 'lightgray',
-                       'lines.markersize': font_size}
+        plot_params = {
+            "font.size": font_size,
+            "font.family": "serif",
+            "axes.labelsize": font_size,
+            "axes.titlesize": font_size,
+            "xtick.labelsize": font_size,
+            "ytick.labelsize": font_size,
+            "legend.fontsize": font_size,
+            "grid.color": "lightgray",
+            "lines.markersize": font_size,
+        }
         plt.rcParams.update(plot_params)
 
         fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
-        ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111, projection="3d")
 
         if label:
-            title_dict = {'p_phase': 'Phase error probabilities',
-                          'p_phase_cond': 'Conditional phase error probabilities',
-                          'hom_val_p': 'p-homodyne outcomes',
-                          'hom_val_q': 'q-homodyne outcomes',
-                          'bit_val': 'Bit values',
-                          'weight': 'Weights',
-                          'indices': 'Indices'}
+            title_dict = {
+                "p_phase": "Phase error probabilities",
+                "p_phase_cond": "Conditional phase error probabilities",
+                "hom_val_p": "p-homodyne outcomes",
+                "hom_val_q": "q-homodyne outcomes",
+                "bit_val": "Bit values",
+                "weight": "Weights",
+                "indices": "Indices",
+            }
             name = title_dict.get(label) if title_dict.get(label) else label
             n_uncomputed = 0
             if title:
                 ax.set_title(name)
-            if label == 'index':
+            if label == "index":
                 indices = self.index_generator()
 
-        if color_nodes == 'state':
+        if color_nodes == "state":
             handles = []
-            color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
+            color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
             i = 0
             for state in state_colors.keys():
                 color = state_colors.get(state)
                 if not color:
                     color = color_cycle[i]
-                line = mlines.Line2D([], [], color=color, marker='.', label=state)
+                line = mlines.Line2D([], [], color=color, marker=".", label=state)
                 handles += [line]
                 state_colors[state] = color
                 i += 1
@@ -192,29 +206,39 @@ class EGraph(nx.Graph):
 
             # Color nodes based on color_nodes if string, or based on
             # color attribute if True; black otherwise.
-            if color_nodes == 'state':
-                color = state_colors.get(self.nodes[point].get('state'))
+            if color_nodes == "state":
+                color = state_colors.get(self.nodes[point].get("state"))
             elif type(color_nodes) == str:
                 color = color_nodes
             else:
-                color = self.nodes[point].get('color') if color_nodes else 'k'
+                color = self.nodes[point].get("color") if color_nodes else "k"
 
-            ax.scatter(x, y, z, c=color, s=plt.rcParams['lines.markersize'] * 5)
+            ax.scatter(x, y, z, c=color, s=plt.rcParams["lines.markersize"] * 5)
 
             if label:
-                value = self.nodes[point].get(label) if label != 'index' else indices[point]
+                value = (
+                    self.nodes[point].get(label) if label != "index" else indices[point]
+                )
                 if value is not None:
                     x, z, y = point
                     # Raise negative sign above node.
-                    sign = '^{-}' * (-int(np.sign(value)))
+                    sign = "^{-}" * (-int(np.sign(value)))
                     if type(value) != int:
-                        value = r'${}{:.2g}$'.format(sign, np.abs(value))
-                    ax.text(x, y, z, value, color='MediumBlue', backgroundcolor='w', zorder=2)
+                        value = r"${}{:.2g}$".format(sign, np.abs(value))
+                    ax.text(
+                        x,
+                        y,
+                        z,
+                        value,
+                        color="MediumBlue",
+                        backgroundcolor="w",
+                        zorder=2,
+                    )
                 else:
                     n_uncomputed += 1
 
         if label and n_uncomputed > 0:
-            message = '{} at {} node(s) have not yet been computed.'
+            message = "{} at {} node(s) have not yet been computed."
             print(message.format(name.lower(), n_uncomputed))
 
         # Plotting edges.
@@ -225,23 +249,23 @@ class EGraph(nx.Graph):
             if type(color_edges) == str:
                 color = color_edges
             else:
-                color = self.edges[edge].get('color') if color_edges else 'k'
+                color = self.edges[edge].get("color") if color_edges else "k"
 
             x1, z1, y1 = edge[0]
             x2, z2, y2 = edge[1]
             plt.plot([x1, x2], [y1, y2], [z1, z2], color=color)
 
-        if color_nodes == 'state' and legend:
+        if color_nodes == "state" and legend:
             ax.legend(handles=handles)
 
         plt.xticks(range(0, 2 * xmax + 1))
         plt.yticks(range(0, 2 * zmax + 1))
         ax.set_zticks(range(0, 2 * ymax + 1))
-        ax.set_xlabel('x', labelpad=15)
-        ax.set_ylabel('z', labelpad=15)
-        ax.set_zlabel('y', labelpad=15)
+        ax.set_xlabel("x", labelpad=15)
+        ax.set_ylabel("z", labelpad=15)
+        ax.set_zlabel("y", labelpad=15)
         if not display_axes:
-            ax.axis('off')
+            ax.axis("off")
         plt.tight_layout(pad=5)
         plt.draw()
         return ax
@@ -274,11 +298,9 @@ def SCZ_mat(adj, heat_map=False):
         zeros = sp.csr_matrix((N, N), dtype=np.int8)
         block_func = sp.bmat
     # Construct symplectic
-    symplectic = block_func([
-        [identity, zeros],
-        [adj, identity]])
+    symplectic = block_func([[identity, zeros], [adj, identity]])
     if heat_map:
-        print('The symplectic CZ matrix (dark spots 0, bright spots 1):')
+        print("The symplectic CZ matrix (dark spots 0, bright spots 1):")
         plt.figure()
         if type(symplectic) != np.ndarray:
             symplectic = symplectic.toarray()
@@ -314,9 +336,7 @@ def SCZ_apply(adj, quads, one_shot=True):
             block2 = (adj.dot(c1.T)).T + c2
             block3 = adj.dot(c1) + c3
             block4 = c4 + adj.dot(c2) + (adj.dot(c3.T)).T + adj.dot(adj.dot(c1).T).T
-            new_quads = np.block([
-                [c1, block2],
-                [block3, block4]])
+            new_quads = np.block([[c1, block2], [block3, block4]])
     return new_quads
 
 
@@ -366,7 +386,7 @@ class CVGraph:
             dictionary from indices to coordinates.
     """
 
-    def __init__(self, g, states={'p': np.empty(0, dtype=int)}, p_swap=0):
+    def __init__(self, g, states={"p": np.empty(0, dtype=int)}, p_swap=0):
         """Initialize the CVGraph."""
         if isinstance(g, EGraph):
             self.egraph = g
@@ -381,22 +401,26 @@ class CVGraph:
             # both supplied.
             # TODO: Raise exception?
             if p_swap:
-                if len(self._states['p']):
-                    print('Both swap-out probability and indices of p-squeezed states supplied. '
-                          'Ignoring the indices.')
+                if len(self._states["p"]):
+                    print(
+                        "Both swap-out probability and indices of p-squeezed states supplied. "
+                        "Ignoring the indices."
+                    )
                 if p_swap == 1:
-                    self._states['p'] = np.arange(self._N)
+                    self._states["p"] = np.arange(self._N)
                 else:
                     num_p = rng().binomial(self._N, p_swap)
-                    inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
-                    self._states['p'] = inds
+                    inds = rng().choice(
+                        range(self._N), size=int(np.floor(num_p)), replace=False
+                    )
+                    self._states["p"] = inds
 
             # Associate remaining indices with GKP states.
             used_inds = np.empty(0, dtype=int)
             for psi in self._states:
                 used_inds = np.concatenate([used_inds, self._states[psi]])
             remaining_inds = list(set(range(self._N)) - set(used_inds))
-            self._states['GKP'] = np.array(remaining_inds, dtype=int)
+            self._states["GKP"] = np.array(remaining_inds, dtype=int)
 
             # Generate EGraph indices.
             self.egraph.index_generator()
@@ -404,21 +428,21 @@ class CVGraph:
 
             for psi in self._states:
                 for ind in self._states[psi]:
-                    self.egraph.nodes[self.to_points[ind]]['state'] = psi
+                    self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
     def apply_noise(self, model={}, delta=None):
         """Apply noise model given in model."""
         # Modelling the states.
         # If both delta and delta in model specified, print a
         # message that the former will be used.
-        if delta and model.get('delta'):
-            print('Delta supplied twice. Using the delta given by the delta argument.')
-            model['delta'] = delta
-        default_model = {'noise': 'grn', 'delta': 0.01, 'sampling_order': 'initial'}
+        if delta and model.get("delta"):
+            print("Delta supplied twice. Using the delta given by the delta argument.")
+            model["delta"] = delta
+        default_model = {"noise": "grn", "delta": 0.01, "sampling_order": "initial"}
         model = {**default_model, **model}
-        self._delta = model['delta']
-        self._sampling_order = model['sampling_order']
-        if model['noise'] == 'grn':
+        self._delta = model["delta"]
+        self._sampling_order = model["sampling_order"]
+        if model["noise"] == "grn":
             self.grn_model()
 
     def grn_model(self):
@@ -432,41 +456,43 @@ class CVGraph:
 
         # For initial and final sampling, generate a sparse adjacency
         # matrix in the EGraph and state-dependent noise vectors.
-        if self._sampling_order in ('initial', 'final'):
+        if self._sampling_order in ("initial", "final"):
             self._adj = self.egraph.adj_generator(sparse=True)
             init_noise = np.empty(2 * N, dtype=np.float32)
             for state in self._states:
                 indices = self._states[state]
-                if state == 'GKP':
+                if state == "GKP":
                     init_noise[indices] = delta / 2
                     init_noise[indices + N] = delta / 2
-                if state == 'p':
+                if state == "p":
                     init_noise[indices] = delta / 2
                     init_noise[indices + N] = 1 / (2 * delta)
 
-        if self._sampling_order == 'initial':
+        if self._sampling_order == "initial":
             self._init_noise = init_noise
 
         # For final sampling, apply a symplectic CZ matrix to the
         # initial noise covariance.
-        if self._sampling_order == 'final':
+        if self._sampling_order == "final":
             noise_cov_init = sp.diags(init_noise)
             self._noise_cov = SCZ_apply(self._adj, noise_cov_init)
             # TODO: Save var_p and var_q?
 
         # For two-step sampling, sample for initial (ideal)
         # state-dependent quadrature values.
-        if self._sampling_order == 'two-step':
+        if self._sampling_order == "two-step":
             self._init_quads = np.zeros(2 * N, dtype=np.float32)
             for state in self._states:
                 indices = self._states[state]
                 for ind in indices:
-                    if state == 'p':
+                    if state == "p":
                         self._init_quads[ind] = rng().random() * (2 * np.sqrt(np.pi))
-                    if state == 'GKP':
+                    if state == "GKP":
                         self._init_quads[ind] = rng().integers(0, 2) * np.sqrt(np.pi)
 
-    def measure_hom(self, quad='p', inds=[], method='cholesky', dim='single', updated_quads=[]):
+    def measure_hom(
+        self, quad="p", inds=[], method="cholesky", dim="single", updated_quads=[]
+    ):
         """Conduct a homodyne measurement on the lattice.
 
         Simulate a homodyne measurement of quadrature quad of states
@@ -483,50 +509,54 @@ class CVGraph:
         if not len(inds):
             inds = range(N)
         N_inds = len(inds)
-        if self._sampling_order == 'initial':
+        if self._sampling_order == "initial":
             means = np.zeros(2 * N, dtype=bool)
             covs = self._init_noise
-            if dim == 'single':
+            if dim == "single":
                 initial = np.empty(2 * N, dtype=np.float32)
                 for i in range(2 * N):
                     initial[i] = rng().normal(means[i], np.sqrt(covs[i]))
                 outcomes = SCZ_apply(self._adj, initial)
-            if dim == 'multi':
-                initial = rng().multivariate_normal(mean=means, cov=np.diag(covs), method=method)
+            if dim == "multi":
+                initial = rng().multivariate_normal(
+                    mean=means, cov=np.diag(covs), method=method
+                )
                 outcomes = SCZ_apply(self._adj, initial)
-            if quad == 'q':
+            if quad == "q":
                 outcomes = outcomes[:N][inds]
-            elif quad == 'p':
+            elif quad == "p":
                 outcomes = outcomes[N:][inds]
-        if self._sampling_order == 'two-step':
+        if self._sampling_order == "two-step":
             if len(updated_quads):
                 updated = updated_quads
             else:
                 means = self._init_quads
                 adj = self.egraph.adj_generator(sparse=True)
                 updated = SCZ_apply(adj, means)
-            if quad == 'q':
+            if quad == "q":
                 means = updated[:N][inds]
-            elif quad == 'p':
+            elif quad == "p":
                 means = updated[N:][inds]
-            if dim == 'single':
+            if dim == "single":
                 outcomes = np.empty(N_inds, dtype=np.float32)
                 sigma = np.sqrt(self._delta / 2)
                 for i in range(N_inds):
                     outcomes[i] = rng().normal(means[i], sigma)
-            elif dim == 'multi':
+            elif dim == "multi":
                 covs = np.eye(N_inds, dtype=np.float32) * (self._delta / 2)
-                outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
-        if self._sampling_order == 'final':
+                outcomes = rng().multivariate_normal(
+                    mean=means, cov=covs, method=method
+                )
+        if self._sampling_order == "final":
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]
-            cov_dict = {'q': cov_q, 'p': cov_p}
+            cov_dict = {"q": cov_q, "p": cov_p}
             means = np.zeros(N_inds, dtype=np.bool)
             # TODO: Is below correct?
             covs = cov_dict[quad][inds, :][:, inds].toarray()
             outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
         for i in range(N_inds):
-            self.egraph.nodes[self.to_points[inds[i]]]['hom_val_' + quad] = outcomes[i]
+            self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
     def eval_Z_probs(self, inds=[], exact=True, cond=False):
         """Evaluate the probability of phase errors at nodes inds.
@@ -538,7 +568,7 @@ class CVGraph:
             inds = range(N)
         N_inds = len(inds)
         if exact:
-            if self._sampling_order != 'final':
+            if self._sampling_order != "final":
                 print('Sampling order must be "final"')
                 raise Exception
             var_p = self._noise_cov[N:, N:][inds, :][:, inds].toarray()
@@ -551,7 +581,7 @@ class CVGraph:
 
             else:
                 errs = Z_err(var_p)
-            p_string = 'p_phase' + '_cond' * cond
+            p_string = "p_phase" + "_cond" * cond
             for i in range(N_inds):
                 self.egraph.nodes[self.to_points[inds[i]]][p_string] = errs[i]
         # TODO: Fix the following to account for p-squeezed states in
@@ -581,16 +611,18 @@ class CVGraph:
         N = self._N
         if not len(inds):
             inds = range(N)
-        p_string = 'p_phase' + '_cond' * bool(cond)
+        p_string = "p_phase" + "_cond" * bool(cond)
         phase_errs = [self.egraph.nodes[self.to_points[i]].get(p_string) for i in inds]
         return phase_errs
 
-    def hom_outcomes(self, inds=[], quad='p'):
+    def hom_outcomes(self, inds=[], quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
         N = self._N
         if not len(inds):
             inds = range(N)
-        outcomes = [self.egraph.nodes[self.to_points[i]].get('hom_val_' + quad) for i in inds]
+        outcomes = [
+            self.egraph.nodes[self.to_points[i]].get("hom_val_" + quad) for i in inds
+        ]
         return outcomes
 
     def bit_values(self, inds=[]):
@@ -598,23 +630,23 @@ class CVGraph:
         N = self._N
         if not len(inds):
             inds = range(N)
-        bits = [self.egraph.nodes[self.to_points[i]].get('bit_val') for i in inds]
+        bits = [self.egraph.nodes[self.to_points[i]].get("bit_val") for i in inds]
         return bits
 
     @property
     def p_inds(self):
         """array: the indices of the p-squeezed states."""
-        return self._states.get('p')
+        return self._states.get("p")
 
     @property
     def GKP_inds(self):
         """array: the indices of the GKP states."""
-        return self._states.get('GKP')
+        return self._states.get("GKP")
 
     @property
     def noise_cov(self):
         """array: the noise covariance matrix."""
-        if self._sampling_order == 'final':
+        if self._sampling_order == "final":
             return self._noise_cov
         else:
             print('Sampling order must be "final."')
@@ -626,36 +658,39 @@ class CVGraph:
         supplied using state_colors argument; otherwise they are
         determined by the default color cycle.
         """
-        default_args = {'color_nodes': 'state', 'legend': True, 'title': True,
-                        'state_colors': {state: None for state in self._states}
-                        }
+        default_args = {
+            "color_nodes": "state",
+            "legend": True,
+            "title": True,
+            "state_colors": {state: None for state in self._states},
+        }
         kwargs = {**default_args, **kwargs}
         self.egraph.draw(**kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Bell state EGraph
     edge = [(0, 0, 0), (1, 1, 1)]
     dims = (1, 1, 1)
     bell_state = EGraph(dims=dims)
-    bell_state.add_edge(*edge, color='MidnightBlue')
+    bell_state.add_edge(*edge, color="MidnightBlue")
     # Plot the bell state
-    bell_state.draw(color_nodes='magenta', label='index')
+    bell_state.draw(color_nodes="magenta", label="index")
     bell_state.adj_generator(sparse=True)
-    print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
+    print("Adjacency matrix: \n", bell_state.adj_mat, "\n")
 
     CVbell = CVGraph(bell_state, p_swap=0.5)
     # Noise model for CVGraph
-    model = {'noise': 'grn', 'delta': 1, 'sampling_order': 'final'}
+    model = {"noise": "grn", "delta": 1, "sampling_order": "final"}
     CVbell.apply_noise(model)
-    CVbell.measure_hom('p', [0])
-    CVbell.measure_hom('q', [1])
+    CVbell.measure_hom("p", [0])
+    CVbell.measure_hom("q", [1])
     CVbell.eval_Z_probs(cond=False)
-    CVbell.draw(label='hom_val_p')
-    CVbell.draw(label='hom_val_q')
-    CVbell.draw(label='p_phase')
-    print('Nodes :', bell_state.nodes.data())
-    print('Edges :', bell_state.edges.data())
-    print('p indices: ', CVbell.p_inds, '\n')
-    print('GKP indices: ', CVbell.GKP_inds, '\n')
-    print('Symplectic CZ matrix: \n', CVbell.SCZ(heat_map=True), '\n')
+    CVbell.draw(label="hom_val_p")
+    CVbell.draw(label="hom_val_q")
+    CVbell.draw(label="p_phase")
+    print("Nodes :", bell_state.nodes.data())
+    print("Edges :", bell_state.edges.data())
+    print("p indices: ", CVbell.p_inds, "\n")
+    print("GKP indices: ", CVbell.GKP_inds, "\n")
+    print("Symplectic CZ matrix: \n", CVbell.SCZ(heat_map=True), "\n")
