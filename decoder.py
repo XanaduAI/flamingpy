@@ -700,13 +700,13 @@ def correct(code,
 
 
 if __name__ == '__main__':
-    # DV (inner) code
-    distance = 3
+    # DV (outer) code
+    distance = 2
     boundaries = 'periodic'
     RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=True)
     RHG_lattice = RHG_code.graph
-    # CV (outer) code/state
-    p_swap = 0
+    # CV (inner) code/state
+    p_swap = 0.8
     CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
 
     # Noise model
@@ -722,7 +722,7 @@ if __name__ == '__main__':
           'title': True, 'display_axes': True, 'label_edges': True, 'label_cubes': True,
           'label_boundary': False}
 
-    trials = 100
+    trials = 1
     success = 0
     for trial in range(trials):
         # Apply noise

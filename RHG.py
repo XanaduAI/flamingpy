@@ -446,7 +446,7 @@ if __name__ == '__main__':
     # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
     RHG = RHGCode(d, boundaries=boundaries, polarity=True)
     RHG_lattice = RHG.graph
-    ax = RHG_lattice.draw(color_nodes=False, color_edges=False, label_indices=False)
+    ax = RHG_lattice.draw(color_nodes=False, color_edges=False, label='index')
 
     # Check edges between boundaries for periodic boundary conditions.
     all_boundaries = []
