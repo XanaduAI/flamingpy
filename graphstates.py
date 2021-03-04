@@ -114,7 +114,10 @@ class EGraph(nx.Graph):
         coords = [point for point in self.nodes if point[plane_ind] == number]
         return coords
 
-    def draw(self, color_nodes=False, color_edges=False, label_indices=False, display_axes=True):
+    def draw(self,
+             color_nodes=False, color_edges=False, state_colors={},
+             label=None, title=False, legend=False,
+             display_axes=True):
         """Draw the graph.
 
         Args:
@@ -122,8 +125,7 @@ class EGraph(nx.Graph):
                 attributes attached to the node. Black by default.
             color_edges (bool): If True, color edges based on 'color'
                 attributes attached to the node. Grey by default.
-            label_indices (bool): if True, label the indices as per
-                self.index_generator; unlabelled by default.
+            label (NoneType): ...
             display_axes (bool): if False, turn off the axes.
 
         Returns:
@@ -154,6 +156,33 @@ class EGraph(nx.Graph):
         fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
         ax = fig.add_subplot(111, projection='3d')
 
+        if label:
+            title_dict = {'p_phase': 'Phase error probabilities',
+                          'p_phase_cond': 'Conditional phase error probabilities',
+                          'hom_val_p': 'p-homodyne outcomes',
+                          'hom_val_q': 'q-homodyne outcomes',
+                          'bit_val': 'Bit values',
+                          'weight': 'Weights',
+                          'indices': 'Indices'}
+            name = title_dict.get(label) if title_dict.get(label) else label
+            if title:
+                ax.set_title(name)
+            if label == 'index':
+                indices = self.index_generator()
+
+        if color_nodes == 'state':
+            handles = []
+            color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
+            i = 0
+            for state in state_colors.keys():
+                color = state_colors.get(state)
+                if not color:
+                    color = color_cycle[i]
+                line = mlines.Line2D([], [], color=color, marker='.', label=state)
+                handles += [line]
+                state_colors[state] = color
+                i += 1
+
         # Plotting points. y and z are swapped in the loops so that
         # z goes into the page; however, the axes labels are correct.
         for point in self.nodes:
@@ -161,15 +190,29 @@ class EGraph(nx.Graph):
 
             # Color nodes based on color_nodes if string, or based on
             # color attribute if True; black otherwise.
-            if type(color_nodes) == str:
+            if color_nodes == 'state':
+                color = state_colors.get(self.nodes[point].get('state'))
+            elif type(color_nodes) == str:
                 color = color_nodes
             else:
                 color = self.nodes[point].get('color') if color_nodes else 'k'
 
             ax.scatter(x, y, z, c=color, s=plt.rcParams['lines.markersize'] * 5)
-            if label_indices:
-                indices = self.index_generator()
-                ax.text(x, y, z, str(indices[point]), backgroundcolor='w', zorder=2)
+
+            if label:
+                n_uncomputed = 0
+                value = self.nodes[point].get(label) if label != 'index' else indices[point]
+                if value is not None:
+                    x, z, y = point
+                    # Raise negative sign above node.
+                    sign = '^{-}' * (-int(np.sign(value)))
+                    number = r'${}{:.2g}$'.format(sign, np.abs(value))
+                    ax.text(x, y, z, number, color='MediumBlue', backgroundcolor='w', zorder=2)
+                else:
+                    n_uncomputed += 1
+                if n_uncomputed > 0:
+                    message = '{} at {} node(s) have not yet been computed.'
+                    print(message.format(name.lower(), n_uncomputed))
 
         # Plotting edges.
         for edge in self.edges:
@@ -184,6 +227,9 @@ class EGraph(nx.Graph):
             x1, z1, y1 = edge[0]
             x2, z2, y2 = edge[1]
             plt.plot([x1, x2], [y1, y2], [z1, z2], color=color)
+
+        if color_nodes == 'state' and legend:
+            ax.legend(handles=handles)
 
         plt.xticks(range(0, 2 * xmax + 1))
         plt.yticks(range(0, 2 * zmax + 1))
@@ -358,6 +404,7 @@ class CVGraph:
                     self.egraph.nodes[self.to_points[ind]]['state'] = psi
 
     def apply_noise(self, model={}, delta=None):
+        """Apply noise model given in model."""
         # Modelling the states.
         # If both delta and delta in model specified, print a
         # message that the former will be used.
@@ -569,80 +616,18 @@ class CVGraph:
         else:
             print('Sampling order must be "final."')
 
-    def draw(self, label=None, title=True, legend=True, state_colors={}, **kwargs):
-        """Draw the underlying graph with CV labels.
+    def draw(self, **kwargs):
+        """Draw the underlying graph with state colors.
 
-        Args:
-            label (str, optional): next to each node, plot the value of
-                the node attribute label if it exists and has been
-                computed. Some possible options:
-
-                {'p_phase': 'Phase error probabilities',
-                 'p_phase_cond': 'Conditional phase error probabilities',
-                 'hom_val_p': 'p-homodyne outcomes',
-                 'hom_val_q': 'q-homodyne outcomes',
-                 'bit_val': 'Bit values',
-                 'weight': 'Weights'}
-
-            title (bool, optional): if True, display a title
-                corresponding to the label
-            legend (bool, optional): if True, display a legend for
-                the states
-            state_color (dict, optional): dictionary of the form
-                {state_name: color}; if supplied overrides the
-                default color cycle for state colors.
-            **kwargs: The EGraph.draw arguments. Except for color_edges,
-                overwritten by the CVGraph.draw arguments.
-        Returns:
-            A matplotib Axes object.
+        Run EGraph.draw with state information. State colors optionally
+        supplied using state_colors argument; otherwise they are
+        determined by the default color cycle.
         """
-        ax = self.egraph.draw(**kwargs)
-        handles = []
-        color_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
-        i = 0
-        for state in self._states:
-            coords = [self.to_points[ind] for ind in self._states[state]]
-            color = state_colors.get(state)
-            if not color:
-                color = color_cycle[i]
-            for point in coords:
-                x, z, y = point
-                ax.scatter(x, y, z, s=plt.rcParams['lines.markersize'] * 5, c=color)
-            line = mlines.Line2D([], [], color=color, marker='.', label=state)
-            handles += [line]
-            i += 1
-
-        if legend:
-            ax.legend(handles=handles)
-
-        title_dict = {'p_phase': 'Phase error probabilities',
-                      'p_phase_cond': 'Conditional phase error probabilities',
-                      'hom_val_p': 'p-homodyne outcomes',
-                      'hom_val_q': 'q-homodyne outcomes',
-                      'bit_val': 'Bit values',
-                      'weight': 'Weights'}
-        if label:
-            name = title_dict.get(label) if title_dict.get(label) else label
-
-            if title:
-                ax.set_title(name)
-
-            n_uncomputed = 0
-            for node in self.egraph:
-                value = self.egraph.nodes[node].get(label)
-                if value is not None:
-                    x, z, y = node
-                    # Raise negative sign above node.
-                    sign = '^{-}' * (-int(np.sign(value)))
-                    number = r'${}{:.2g}$'.format(sign, np.abs(value))
-                    ax.text(x, y, z, number, color='MediumBlue', backgroundcolor='w')
-                else:
-                    n_uncomputed += 1
-            if n_uncomputed > 0:
-                message = '{} at {} node(s) have not yet been computed.'
-                print(message.format(name.lower(), n_uncomputed))
-        plt.draw()
-        return ax
+        default_args = {'color_nodes': 'state', 'legend': True, 'title': True,
+                        'state_colors': {state: None for state in self._states}
+                        }
+        kwargs = {**default_args, **kwargs}
+        self.egraph.draw(**kwargs)
 
 
 if __name__ == '__main__':
@@ -652,20 +637,20 @@ if __name__ == '__main__':
     bell_state = EGraph(dims=dims)
     bell_state.add_edge(*edge, color='MidnightBlue')
     # Plot the bell state
-    bell_state.draw(color_nodes='magenta', color_edges=True, label_indices=True)
+    bell_state.draw(color_nodes='magenta', label='index')
     bell_state.adj_generator(sparse=True)
     print('Adjacency matrix: \n', bell_state.adj_mat, '\n')
 
-    CVbell = CVGraph(bell_state, p_swap=0)
+    CVbell = CVGraph(bell_state, p_swap=0.5)
     # Noise model for CVGraph
     model = {'noise': 'grn', 'delta': 1, 'sampling_order': 'final'}
     CVbell.apply_noise(model)
     CVbell.measure_hom('p', [0])
     CVbell.measure_hom('q', [1])
     CVbell.eval_Z_probs(cond=False)
-    CVbell.draw('hom_val_p')
-    CVbell.draw('hom_val_q')
-    CVbell.draw('p_phase')
+    CVbell.draw(label='hom_val_p')
+    CVbell.draw(label='hom_val_q')
+    CVbell.draw(label='p_phase')
     print('Nodes :', bell_state.nodes.data())
     print('Edges :', bell_state.edges.data())
     print('p indices: ', CVbell.p_inds, '\n')
