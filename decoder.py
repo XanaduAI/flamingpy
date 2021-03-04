@@ -20,7 +20,7 @@ import itertools as it
 import matplotlib.pyplot as plt
 
 from graphstates import CVGraph
-from GKP import basic_translate, Z_err_cond
+from GKP import GKP_binner, Z_err_cond
 from RHG import RHGCube, RHGCode
 
 # Smallest and largest numbers representable.
@@ -243,7 +243,7 @@ def assign_weights(code, **kwargs):
             if p_count in (0, 1):
                 delta_effective = (len(neighbors) + 1) * weight_options.get('delta')
                 hom_val = G.nodes[node]['hom_val_p']
-                err_prob = Z_err_cond([delta_effective], hom_val)[0]
+                err_prob = Z_err_cond(delta_effective, hom_val)
                 # Allow for taking log of 0.
                 # TODO: Is this the best way to do it? Or can I just choose
                 # an arbitrary small number?
@@ -276,7 +276,7 @@ def assign_weights(code, **kwargs):
 # TODO: General functions for applying noise and measuring syndrome.
 
 
-def CV_decoder(code, translator=basic_translate):
+def CV_decoder(code, translator=GKP_binner):
     """Convert homodyne outcomes to bit values according to translate.
 
     The inner (CV) decoder, aka translator, aka binning function. Set
@@ -284,8 +284,9 @@ def CV_decoder(code, translator=basic_translate):
 
     Args:
         state: the CVGraph with homodyne outcomes computed.
-        translator: the choice of binning function; basic_translate
-            by default, which is the GKP-sqrt(pi) grid snapper.
+        translator: the choice of binning function; by default, the
+            standard GKP binning function that snaps to the closest
+            integer multiple of sqrt(pi).
     Returns:
         None
     """
@@ -654,7 +655,7 @@ def correct(code,
 
     Args:
         code (code): the code class to decode and correct
-        inner_decoder (str): the CV decoder; basic_translate by default
+        inner_decoder (str): the CV decoder; GKP_binner by default
         outer_decoder (str): the DV decoder; MWPM by default
         weight_options (dict): how to assign weights; options are
 
@@ -680,7 +681,7 @@ def correct(code,
     Returns:
         bool: True if error correction succeeded, False if not.
     """
-    inner_dict = {'basic': basic_translate}
+    inner_dict = {'basic': GKP_binner}
     outer_dict = {'MWPM': 'MWPM'}
 
     inner_decoder = decoder.get('inner')
