@@ -96,10 +96,14 @@ def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
     cubes = code.stabilizers
     # Default drawing options.
     draw_dict = {'show_nodes': False,
-                 'label_nodes': None,
+                 'color_nodes': 'state',
+                 'label': None,
+                 'legend': True,
+                 'title': True,
+                 'state_colors': {'p': None, 'GKP': None},
+                 'display_axes': True,
                  'label_cubes': True,
-                 'label_boundary': False,
-                 'legend': True}
+                 'label_boundary': False}
     # Combine default dictionary with supplied dictionary, duplicates
     # favor supplied dictionary.
     drawing_opts = {**draw_dict, **drawing_opts}
@@ -112,7 +116,9 @@ def syndrome_plot(code, state, G_dec, index_dict=None, drawing_opts={}):
     if drawing_opts['show_nodes']:
         # TODO: If draw method moved out of CVGraph and into EGraph,
         # the state argument would be unnecessary here.
-        ax = state.draw(label=drawing_opts['label_nodes'])
+        egraph_args = ['color_nodes', 'label', 'legend', 'title', 'state_colors', 'display_axes']
+        egraph_opts = {k: drawing_opts[k] for k in egraph_args}
+        ax = code.graph.draw(**egraph_opts)
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
@@ -714,8 +720,9 @@ if __name__ == '__main__':
     weight_options = {'method': 'unit', 'integer': True, 'multiplier': 100, 'delta': delta}
 
     # Drawing options
-    dw = {'show_nodes': False, 'label_nodes': '', 'label_cubes': True,
-          'label_boundary': False, 'legend': True, 'label_edges': True}
+    dw = {'show_nodes': True, 'color_nodes': 'state', 'label': 'bit_val', 'legend': True,
+          'title': True, 'display_axes': True, 'label_edges': True, 'label_cubes': True,
+          'label_boundary': False}
 
     trials = 100
     success = 0
