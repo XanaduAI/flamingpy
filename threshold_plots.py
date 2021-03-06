@@ -68,13 +68,29 @@ def process_results(file_name, unit=None, save=True):
 
 
 def plot_results(
-    data, p_swap=0, file_name=None, unit=None, show=False, rescale=None, threshold=None
+    data, p_swap=0, unit=None, threshold=None, rescale=None, show=False, file_name=None
 ):
     """Plot processed threshold estimation data.
 
-    Create a plate for swap-out probability p_swap. If save_file
-    specified, save to a file with this file name. If unit is dB,
-    adjust x-axis label accordingly. If show, display the plot.
+    Create a plot of error rate vs. delta for a given swap-out
+    probability p_swap.
+
+    Args:
+        data (pd.DataFrame): the simulations data with columns
+            ['p_swap', 'distance', 'delta', 'p_fail', 'error_bar']
+            (not necessarily in this order).
+        p_swap (float, optional): the swap-out probability.
+        unit (str, optional): 'dB' for dBs
+        threshold (float, float): the error threshold and logical
+            error rate and threshold. If supplied, identifies and
+            labels the threshold on the plot.
+        rescale (tup): threshold and fitting parameter mu for plots
+            with rescaled physical errors (see find_threshold).
+        show (bool): if True, display the plot.
+        file_name (str): if supplied, where to save the plot.
+
+    Returns:
+        mpl.Axes: the Matplotlib axes object.
     """
     df = data[data.p_swap == p_swap]
     ds = set(df.distance)
@@ -84,7 +100,9 @@ def plot_results(
     else:
         y_err, logy = "error_bar", True
 
-    axs = plt.subplot()
+    fig, axs = plt.subplots(
+        # figsize=(4,3)
+    )
     for distance in ds:
         new = df[df.distance == distance].copy()
         if rescale:
@@ -127,8 +145,9 @@ def plot_results(
     axs.annotate(p_str, (0.5, 0.15), xycoords="figure fraction", bbox=box_props)
     plt.style.use("default")
     plt.tight_layout()
+    # fig.patch.set_alpha(0)
     if file_name:
-        plt.savefig(file_name)
+        plt.savefig(file_name, dpi=300)
     if show:
         plt.show()
     return axs
@@ -137,9 +156,11 @@ def plot_results(
 def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
     """Estimate the threshold from processed data data.
 
-    Estimate the fault-tolerant threshold from processed data data,
+    Estimate the fault-tolerant threshold from processed data data
     for swap probability set by p_swap. Optionally, plot the quadratic
-    fit for the failure probability over the rescaled delta.
+    fit for the failure probability over the rescaled delta. Uses the
+    fitting procedure from https://doi.org/10.7907/AHMQ-EG82
+    (Harrington 2014).
     """
     df = data[data.p_swap == p_swap][data.p_fail < 0.5].copy()
     df = df[df.p_fail > 0.01]
@@ -189,6 +210,47 @@ def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
     return delta_t, a0
 
 
+def plot_swap_tol(data, unit=None, inset=True, show=False, file_name=None):
+    """Plot the swap-out tolerance from delta-p_swap data.
+
+    Assume data is a list of tuples of the form (d_t, p_swap), where
+    d_t is the threshold for the given swap-out probability. Plot
+    the data and the correctable region.
+    """
+    zipped = list(zip(*data))
+    deltas, ps = zipped[0], zipped[1]
+    delta_min = min(zipped[0])
+    _, ax = plt.subplots(figsize=(5, 3))
+    plt.plot(deltas, ps, ".-", markersize=15)
+    plt.fill_between(deltas, ps, color="gainsboro")
+    plt.text(delta_min * 2, 0.01, "correctable region")
+    delta_str = r"\Delta_{\mathrm{dB}}" * bool(unit) + r"\delta" * (1 - bool(unit))
+    x_str = r"${}{}$".format(delta_str, bool(unit) * r"=-10\log_{{10}}\delta")
+    plt.xlabel(x_str)
+    plt.ylabel(r"$p_\mathrm{swap}$")
+    if inset:
+        axins = ax.inset_axes([0.5, 0.1, 0.7, 0.7])
+        img = plt.imread(options["save_file"])
+        axins.imshow(img)
+        axins.patch.set_alpha(0.5)
+        axins.axis("off")
+        # ax.indicate_inset_zoom(axins)
+    plt.tight_layout()
+    if show:
+        plt.show()
+    if file_name:
+        split_dir = file_name.split("/")
+        split_file_name = split_dir[-1].split(".")
+        new_file_name = (
+            "/".join(split_dir[:-1])
+            + "/"
+            + split_file_name[0]
+            + "_swapout_tol."
+            + split_file_name[1]
+        )
+        plt.savefig(new_file_name, dpi=300)
+
+
 if __name__ == "__main__":
     # Change options here.
     options = {
@@ -214,4 +276,14 @@ if __name__ == "__main__":
     results = process_results(args.i, args.u, save=True)
     # Find the threshold and plot the results
     d_p_t = find_threshold(results, args.p, args.u, file_name=args.s)
-    plot_results(results, args.p, args.s, args.u, threshold=d_p_t)
+    plot_results(
+        results,
+        p_swap=args.p,
+        unit=args.u,
+        threshold=d_p_t,
+        file_name=args.s,
+        show=False,
+    )
+
+    data = [(10, 0), (15, 0.1), (100, 0.24)]
+    plot_swap_tol(data, inset=True, file_name=args.s)
