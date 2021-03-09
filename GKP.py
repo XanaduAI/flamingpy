@@ -102,6 +102,8 @@ def GKP_binner(outcomes, return_fraction=False, draw=False):
     alpha = np.sqrt(np.pi)
     # np.divmod implementation also possible
     int_frac = integer_fractional(outcomes, alpha)
+    # CAUTION: % has weird behaviour that seems to only show up for
+    # large (n ~ 100) multiples of sqrt(pi). Check!
     bit_values = int_frac[0] % 2
     if draw:
         xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
@@ -143,7 +145,7 @@ def Z_err(var, var_num=5):
     return error
 
 
-def Z_err_cond(var, hom_val, var_num=10, use_hom_val=False):
+def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False):
     """Return the conditional phase error probability for lattice nodes.
 
     Return the phase error probability for a list of variances var
@@ -157,6 +159,9 @@ def Z_err_cond(var, hom_val, var_num=10, use_hom_val=False):
         hom_val (array): the p-homodyne outcomes.
         var_num (float): number of variances away from the origin we
             include in the integral.
+        replace_undefined (float): how to handle 0 denominators.
+            Set probability to the replaced_undefined value.
+            By default, 0.
         use_hom_val (bool): if True, use the entire homodyne value
             hom_val in the expression; otherwise use the fractional
             part.
@@ -175,7 +180,15 @@ def Z_err_cond(var, hom_val, var_num=10, use_hom_val=False):
     val = hom_val if use_hom_val else frac
     numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
     denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
-    error = numerator / denominator
+    # Dealing with 0 denonimators
+    where_0 = np.where(denominator == 0)[0]
+    the_rest = np.delete(np.arange(len(var)), where_0)
+    error = np.empty(len(var))
+    # For 0 denominator, return poor-man's probability that ranges from
+    # 0 in the centre of a bin to 0.5 halfway between bins.
+    # TODO: More options for the following ine.
+    error[where_0] = replace_undefined
+    error[the_rest] = numerator[the_rest] / denominator[the_rest]
     return error
 
 
