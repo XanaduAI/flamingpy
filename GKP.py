@@ -19,12 +19,13 @@ from scipy.special import erf
 
 
 def to_pi_string(x, tex=True):
-    """Convert x, a multiple of sqrt(pi)/2, to a string.
+    """Convert x, a multiple of sqrt(pi)/2, to a pretty string.
 
-    If tex is True, convert to LaTeX.
+    If x is not a multiple of sqrt(pi)/2, return the unmodified string
+    of x. If tex is True, add LaTeX $ signs.
     """
     remainder = math.remainder(x, np.sqrt(np.pi) / 2)
-    if not round(remainder):
+    if np.isclose(remainder, 0):
         integer = round(x / (np.sqrt(np.pi) / 2))
         pref = int(integer * ((1 - integer % 2) / 2 + integer % 2))
         x_str = (not bool(round(x))) * "0" + bool(round(x)) * (
