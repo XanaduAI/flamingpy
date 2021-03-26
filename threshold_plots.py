@@ -78,6 +78,7 @@ def plot_results(
     file_name=None,
     swap_tol_plot=None,
     inset=False,
+    break_axis=True,
 ):
     """Plot processed threshold estimation data.
 
@@ -108,10 +109,47 @@ def plot_results(
         swap_tol_data = swap_tol_plot
         zipped = list(zip(*swap_tol_data))
         deltas, ps = zipped[0], zipped[1]
-        _, main_axs = plt.subplots(figsize=(6, 4.5))
-        main_axs.plot(deltas, ps, ".-", markersize=12)
-        main_axs.fill_between(deltas, ps, color="azure")
-        main_axs.annotate("correctable region", (0.6, 0.8), xycoords="axes fraction")
+        if break_axis:
+            factor = 15
+            fig, (main_axs, main_axs2) = plt.subplots(1, 2, sharey=True, figsize=(6, 4.5),
+                                                      gridspec_kw={'width_ratios': [factor, 1]})
+            main_axs2.plot(deltas, ps, ".-", markersize=12, color='xkcd:navy')
+            main_axs2.fill_between(deltas, ps, color="whitesmoke")
+            main_axs2.set_xlim(59, 62)
+            main_axs2.spines['left'].set_visible(False)
+            main_axs.spines['right'].set_visible(False)
+            main_axs2.yaxis.tick_right()
+            main_axs2.tick_params(right=False, labelright='off')
+        else:
+            _, main_axs = plt.subplots(figsize=(6, 4.5))
+
+        main_axs.plot(deltas, ps, ".-", markersize=12, color='xkcd:navy')
+        main_axs.fill_between(deltas, ps, color="whitesmoke")
+
+        main_axs.annotate("correctable region", (0.6, 0.7), xycoords="axes fraction")
+
+        if break_axis:
+            main_axs.set_xlim(10, 25)
+            xticks = main_axs2.get_xticks()
+            updated = [''] * (len(xticks) - 2) + [r'$\infty$'] + ['']
+            main_axs2.set_xticks(xticks)
+            main_axs2.set_xticklabels(updated)
+            fig.subplots_adjust(wspace=0)
+
+            d = .015
+            kwargs = dict(transform=main_axs.transAxes, color='k', clip_on=False)
+            main_axs.plot((1 - d, 1 + d), (-d, d), **kwargs)
+            main_axs.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)
+
+            kwargs.update(transform=main_axs2.transAxes)  # switch to the bottom axes
+            main_axs2.plot((-d * factor, d * factor), (1 - d, 1 + d), **kwargs)
+            main_axs2.plot((-d * factor, d * factor), (-d, d), **kwargs)
+        else:
+            xticks = main_axs.get_xticks()[1:-1]
+            updated = ['{:.2g}'.format(i) for i in xticks[:-1]] + [r'$\infty$']
+            # updated = ['{:.2g}'.format(i) for i in xticks[:-1]] + ['1']
+            plt.xticks(xticks, updated)
+
 
     if (swap_tol_plot and inset) or (not swap_tol_plot):
         df = data[data.p_swap == p_swap][data.delta < 10.5]
@@ -178,26 +216,26 @@ def plot_results(
         if not swap_tol_plot:
             p_str = r"$p_{{\mathrm{{swap}}}} = {:.2g}$".format(p_swap)
             axs.annotate(p_str, (0.5, 0.15), xycoords="figure fraction", bbox=box_props)
+            axs.set_ylabel(r"$p_{\mathrm{fail}}$")
 
     if rescale:
         x_str = r"$({0} - {0}^t)L^{{-\mu}}$".format(delta_str)
     else:
         x_str = r"${}{}$".format(delta_str, bool(unit) * r"=-10\log_{{10}}\delta")
     y_str = r"$p_\mathrm{swap}$" if swap_tol_plot else r"$p_\mathrm{fail}$"
-    plt.xlabel(x_str)
-    plt.ylabel(y_str)
-    plt.style.use("default")
+    if swap_tol_plot:
+        ax = main_axs
+    else:
+        ax = axs
+    ax.set_xlabel(x_str, fontsize=13)
+    ax.set_ylabel(y_str, fontsize=13)
     plt.tight_layout()
-
     # fig.patch.set_alpha(0)
     if file_name:
         plt.savefig(file_name, dpi=300)
     if show:
         plt.show()
-    if swap_tol_plot:
-        return main_axs
-    else:
-        return axs
+    return ax
 
 
 def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
