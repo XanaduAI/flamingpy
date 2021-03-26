@@ -73,6 +73,7 @@ def process_results(file_name, unit=None, save=True):
 def plot_results(
     data,
     p_swap=0,
+    distances='all',
     unit=None,
     threshold=None,
     rescale=None,
@@ -156,8 +157,8 @@ def plot_results(
 
 
     if (swap_tol_plot and inset) or (not swap_tol_plot):
-        df = data[data.p_swap == p_swap][data.delta < 10.5]
-        ds = set(df.distance)
+        df = data[data.p_swap == p_swap][data.delta < 14.2][data.delta > 12.5]
+        ds = set(df.distance) if distances == 'all' else distances
         if rescale:
             sigma_t, mu = rescale
             y_err, logy = None, False
