@@ -50,6 +50,8 @@ def process_results(file_name, unit=None, save=True):
                     error_bar = np.sqrt(p_fail * (1 - p_fail) / total_trials)
                     if unit == "dB":
                         delta = -10 * np.log10(delta)
+                    elif unit == "loss":
+                        delta = 1 / (1 + delta)
                     row = [p_swap, distance, delta, p_fail, error_bar]
                     list_of_rows += [row]
     columns = ["p_swap", "distance", "delta", "p_fail", "error_bar"]
@@ -103,6 +105,7 @@ def plot_results(
         mpl.Axes: the Matplotlib axes object.
     """
     delta_str = r"\Delta_{\mathrm{dB}}" * bool(unit) + r"\delta" * (1 - bool(unit))
+    # delta_str = r"\eta"
     box_props = dict(boxstyle="square", facecolor="w")
 
     if swap_tol_plot:
@@ -127,6 +130,7 @@ def plot_results(
         main_axs.fill_between(deltas, ps, color="whitesmoke")
 
         main_axs.annotate("correctable region", (0.6, 0.7), xycoords="axes fraction")
+        # main_axs.annotate("correctable region", (0.6, 0.65), xycoords="axes fraction")
 
         if break_axis:
             main_axs.set_xlim(10, 25)
@@ -162,6 +166,7 @@ def plot_results(
 
         if inset:
             inset_x, inset_y = 0.45, 0.2
+            # inset_x, inset_y = 0.45, 0.1
             axs = main_axs.inset_axes([inset_x, inset_y, 0.45, 0.45])
             plt.rcParams["font.size"] = 8
             if threshold:
@@ -172,6 +177,7 @@ def plot_results(
             main_axs.annotate(
                 "",
                 xy=(delta_inset + 0.1, p_swap + 0.005),
+                # xy=(0.915, p_swap),
                 xytext=(inset_x, inset_y),
                 textcoords="axes fraction",
                 arrowprops=dict(arrowstyle="->"),
@@ -222,6 +228,7 @@ def plot_results(
         x_str = r"$({0} - {0}^t)L^{{-\mu}}$".format(delta_str)
     else:
         x_str = r"${}{}$".format(delta_str, bool(unit) * r"=-10\log_{{10}}\delta")
+        # x_str = r"${} \quad (\mathrm{{transmissivity}})$".format(delta_str)
     y_str = r"$p_\mathrm{swap}$" if swap_tol_plot else r"$p_\mathrm{fail}$"
     if swap_tol_plot:
         ax = main_axs
