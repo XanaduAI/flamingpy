@@ -18,8 +18,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
-plt.rcParams["font.family"] = "sans_serif"
-plt.rcParams["font.size"] = 10
+plt.rcParams["font.family"] = "serif"
+plt.rcParams['font.serif'] = "DejaVu Serif"
+plt.rcParams["font.size"] = 11
 
 
 def process_results(file_name, unit=None, save=True):
