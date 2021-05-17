@@ -188,11 +188,12 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     error = np.empty(np.size(var))
 
     # For 0 denominator, populate error according to replace_undefined
-    if replace_undefined == 'bin_location':
-        zero_dem_result = np.abs(val) / np.sqrt(np.pi)
-    else:
-        zero_dem_result = replace_undefined
-    error[where_0] = np.full(np.len(where_0), zero_dem_result)
+    if len(where_0):
+        if replace_undefined == 'bin_location':
+            zero_dem_result = np.abs(val) / np.sqrt(np.pi)
+        else:
+            zero_dem_result = replace_undefined
+        error[where_0] = np.full(len(where_0), zero_dem_result)
 
     if np.size(var) == 1:
         numerator = np.array([numerator])
