@@ -160,8 +160,10 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
         var_num (float): number of variances away from the origin we
             include in the integral.
         replace_undefined (float): how to handle 0 denominators.
-            Set probability to the replaced_undefined value.
-            By default, 0.
+            If 'bin_location', return poor-man's probability that ranges
+            from 0 in the centre of a bin to 0.5 halfway between bins.
+            Otherwise, sets it to the replace_undefined value (0 by
+            default).
         use_hom_val (bool): if True, use the entire homodyne value
             hom_val in the expression; otherwise use the fractional
             part.
@@ -182,13 +184,22 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
     # Dealing with 0 denonimators
     where_0 = np.where(denominator == 0)[0]
-    the_rest = np.delete(np.arange(len(var)), where_0)
-    error = np.empty(len(var))
-    # For 0 denominator, return poor-man's probability that ranges from
-    # 0 in the centre of a bin to 0.5 halfway between bins.
-    # TODO: More options for the following ine.
-    error[where_0] = replace_undefined
+    the_rest = np.delete(np.arange(np.size(var)), where_0)
+    error = np.empty(np.size(var))
+
+    # For 0 denominator, populate error according to replace_undefined
+    if replace_undefined == 'bin_location':
+        zero_dem_result = np.abs(val) / np.sqrt(np.pi)
+    else:
+        zero_dem_result = replace_undefined
+    error[where_0] = np.full(np.len(where_0), zero_dem_result)
+
+    if np.size(var) == 1:
+        numerator = np.array([numerator])
+        denominator = np.array([denominator])
     error[the_rest] = numerator[the_rest] / denominator[the_rest]
+    if np.size(var) == 1:
+        return error[0]
     return error
 
 
