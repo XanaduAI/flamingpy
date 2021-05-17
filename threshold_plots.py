@@ -105,7 +105,7 @@ def plot_results(
     Returns:
         mpl.Axes: the Matplotlib axes object.
     """
-    delta_str = r"\Delta_{\mathrm{dB}}" * bool(unit) + r"\delta" * (1 - bool(unit))
+    delta_str = r"\epsilon_{\mathrm{dB}}" * bool(unit) + r"\delta" * (1 - bool(unit))
     # delta_str = r"\eta"
     box_props = dict(boxstyle="square", facecolor="w")
 
@@ -119,7 +119,7 @@ def plot_results(
                                                       gridspec_kw={'width_ratios': [factor, 1]})
             main_axs2.plot(deltas, ps, ".-", markersize=12, color='xkcd:navy')
             main_axs2.fill_between(deltas, ps, color="whitesmoke")
-            main_axs2.set_xlim(59, 62)
+            main_axs2.set_xlim(58, 62)
             main_axs2.spines['left'].set_visible(False)
             main_axs.spines['right'].set_visible(False)
             main_axs2.yaxis.tick_right()
@@ -130,8 +130,7 @@ def plot_results(
         main_axs.plot(deltas, ps, ".-", markersize=12, color='xkcd:navy')
         main_axs.fill_between(deltas, ps, color="whitesmoke")
 
-        main_axs.annotate("correctable region", (0.6, 0.7), xycoords="axes fraction")
-        # main_axs.annotate("correctable region", (0.6, 0.65), xycoords="axes fraction")
+        main_axs.annotate("correctable region", (0.6, 0.75), xycoords="axes fraction")
 
         if break_axis:
             main_axs.set_xlim(10, 25)
@@ -155,9 +154,8 @@ def plot_results(
             # updated = ['{:.2g}'.format(i) for i in xticks[:-1]] + ['1']
             plt.xticks(xticks, updated)
 
-
     if (swap_tol_plot and inset) or (not swap_tol_plot):
-        df = data[data.p_swap == p_swap][data.delta < 14.2][data.delta > 12.5]
+        df = data[data.p_swap == p_swap][data.delta < 10.5]
         ds = set(df.distance) if distances == 'all' else distances
         if rescale:
             sigma_t, mu = rescale
@@ -167,8 +165,7 @@ def plot_results(
 
         if inset:
             inset_x, inset_y = 0.45, 0.2
-            # inset_x, inset_y = 0.45, 0.1
-            axs = main_axs.inset_axes([inset_x, inset_y, 0.45, 0.45])
+            axs = main_axs.inset_axes([inset_x, inset_y, 0.48, 0.48])
             plt.rcParams["font.size"] = 8
             if threshold:
                 delta_inset = threshold[0]
@@ -213,23 +210,22 @@ def plot_results(
                 axs.annotate(
                     text,
                     (threshold[0], threshold[1]),
-                    xytext=(x_offset, 12),
+                    xytext=(x_offset - 75, 12 - 30),
                     textcoords="offset points",
                     bbox=box_props,
                 )
 
         if inset:
             axs.set_xlabel("")
-        if not swap_tol_plot:
-            p_str = r"$p_{{\mathrm{{swap}}}} = {:.2g}$".format(p_swap)
-            axs.annotate(p_str, (0.5, 0.15), xycoords="figure fraction", bbox=box_props)
             axs.set_ylabel(r"$p_{\mathrm{fail}}$")
+        # if not swap_tol_plot:
+        #     p_str = r"$p_{{\mathrm{{swap}}}} = {:.2g}$".format(p_swap)
+        #     axs.annotate(p_str, (0.5, 0.15), xycoords="figure fraction", bbox=box_props)
 
     if rescale:
         x_str = r"$({0} - {0}^t)L^{{-\mu}}$".format(delta_str)
     else:
-        x_str = r"${}{}$".format(delta_str, bool(unit) * r"=-10\log_{{10}}\delta")
-        # x_str = r"${} \quad (\mathrm{{transmissivity}})$".format(delta_str)
+        x_str = r"${}{}$".format(delta_str, bool(unit) * r"=-10\log_{{10}}2\epsilon")
     y_str = r"$p_\mathrm{swap}$" if swap_tol_plot else r"$p_\mathrm{fail}$"
     if swap_tol_plot:
         ax = main_axs
@@ -237,6 +233,7 @@ def plot_results(
         ax = axs
     ax.set_xlabel(x_str, fontsize=13)
     ax.set_ylabel(y_str, fontsize=13)
+    # plt.style.use("default")
     plt.tight_layout()
     # fig.patch.set_alpha(0)
     if file_name:
@@ -279,7 +276,7 @@ def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
         if unit == "dB":
             x = np.arange(-3.5, 4.5, 0.01)
         else:
-            x = np.arange(-0.1, 0.08, 0.001)
+            x = np.arange(-0.04, 0.04, 0.001)
         plt.plot(x, quad_fit(x, a0, a1, a2), ":", c="dimgrey")
         if file_name:
             split_dir = file_name.split("/")
@@ -295,62 +292,18 @@ def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
         plt.show()
     print_str = (
         "The threshold is estimated at delta = {:.3g}{}. "
-        "Here, the failure probability is {:.2g}.".format(
+        "Here, the failure probability is {:.3g}.".format(
             delta_t, " dB" * bool(unit), a0
         )
     )
     print(print_str)
-    return delta_t, a0
-
-
-# def plot_swap_tol(data, unit=None, inset=True, show=False, file_name=None):
-#     """Plot the swap-out tolerance from delta-p_swap data.
-
-#     Assume data is a list of tuples of the form (d_t, p_swap), where
-#     d_t is the threshold for the given swap-out probability. Plot
-#     the data and the correctable region.
-#     """
-#     zipped = list(zip(*data))
-#     deltas, ps = zipped[0], zipped[1]
-#     delta_min = min(zipped[0])
-#     _, ax = plt.subplots(
-#         # figsize=(5, 3)
-#         )
-#     plt.plot(deltas, ps, ".-", markersize=12)
-#     plt.fill_between(deltas, ps, color="gainsboro")
-#     plt.text(delta_min * 2, 0.01, "correctable region")
-#     delta_str = r"\Delta_{\mathrm{dB}}" * bool(unit) + r"\delta" * (1 - bool(unit))
-#     x_str = r"${}{}$".format(delta_str, bool(unit) * r"=-10\log_{{10}}\delta")
-#     plt.xlabel(x_str)
-#     plt.ylabel(r"$p_\mathrm{swap}$")
-#     if inset:
-#         axins = ax.inset_axes([0.5, 0.1, 0.7, 0.7])
-#         # img = plt.imread(options["save_file"])
-#         # axins.imshow(img)
-#         axins.plot(inset)
-#         # axins.patch.set_alpha(0.5)
-#         # axins.axis("off")
-#         # ax.indicate_inset_zoom(axins)
-#     plt.tight_layout()
-#     if show:
-#         plt.show()
-#     if file_name:
-#         split_dir = file_name.split("/")
-#         split_file_name = split_dir[-1].split(".")
-#         new_file_name = (
-#             "/".join(split_dir[:-1])
-#             + "/"
-#             + split_file_name[0]
-#             + "_swapout_tol."
-#             + split_file_name[1]
-#         )
-#         plt.savefig(new_file_name, dpi=300)
+    return delta_t - 0.02, a0
 
 
 if __name__ == "__main__":
     # Change options here.
     options = {
-        "input_file": "./data/test.csv",
+        "input_file": "./data/test_processed.csv",
         "save_file": "./data/results.pdf",
         "p_swap": 0,
         "unit": "dB",
@@ -369,19 +322,29 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Read and process simulation results, and save collected
-    results = process_results(args.i, args.u, save=True)
+    # results = process_results(args.i, args.u, save=True)
+    results = pd.read_csv(args.i)
     # Find the threshold and plot the results
     d_p_t = find_threshold(results, args.p, args.u, file_name=args.s)
 
-    swap_tol_data = [(10, 0), (15, 0.1), (100, 0.24)]
+    p_swap = np.array(
+        [0, 0.06, 0.12, 0.18, 0.24, 0.30, 0.36, 0.42, 0.48, 0.54, 0.6, 0.66, 0.70, 0.71]
+    )
+    sqz = np.array(
+        [10.1, 10.4, 10.7, 11.1, 11.5, 11.8, 12.4, 12.9, 13.7, 14.9, 17, 24, 35, 60]
+    )
+
+    swap_tol_data = zip(sqz, p_swap)
     plot = plot_results(
         results,
         p_swap=args.p,
+        distances=[7, 9, 11, 13],
         unit=args.u,
         threshold=d_p_t,
         file_name=args.s,
         show=False,
         swap_tol_plot=swap_tol_data,
         inset=True,
+        break_axis=True
     )
-    # plot_swap_tol(data, unit=args.u, inset=plot, file_name=args.s)
+
