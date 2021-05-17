@@ -66,20 +66,16 @@ odd_homs = np.array([(2*i+1)*sqrt(pi) for i in range(-N//2, N//2)])
 middle_homs = np.array([(2*i+1)*sqrt(pi) / 2 for i in range(-N//2, N//2)])
 
 low_delta = 0.01 * (rng().random(N) + 1)
-high_delta = np.array([1 for i in range(N)])
-
+high_delta = rng().random(N) + 4
 
 class TestPhaseProbs:
     """Test the phase error proability functions."""
 
     def test_Z_err(self):
         low_probs = Z_err(low_delta)
+        high_probs = Z_err(high_delta)
         assert np.allclose(low_probs, 0)
-        # high_probs = Z_err(high_delta)
-        # 0.5?
-        # assert np.allclose(high_probs, 1)
-        # assert np.all(high_probs >= 0) and np.all(high_probs < 1)
-        # assert np.all(low_probs >= 0) and np.all(high_probs < 1)
+        assert np.allclose(high_probs, 0.5)
 
     def test_Z_err_cond(self):
         # Test high-squeezing (low delta) regime.
@@ -89,4 +85,5 @@ class TestPhaseProbs:
         assert np.allclose(even_probs, 0)
         assert np.allclose(mid_probs, 0.5)
         assert np.allclose(odd_probs, 1)
-        # TODO: Test use_hom_val argument, 0 behaviour
+        # TODO: Test use_hom_val argument, changing summation limit,
+        # 0-denominator behaviour
