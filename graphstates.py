@@ -460,8 +460,8 @@ class CVGraph:
                     init_noise[indices] = delta / 2
                     init_noise[indices + N] = delta / 2
                 if state == "p":
-                    init_noise[indices] = delta / 2
-                    init_noise[indices + N] = 1 / (2 * delta)
+                    init_noise[indices] = 1 / (2 * delta)
+                    init_noise[indices + N] = delta / 2
 
         if self._sampling_order == "initial":
             self._init_noise = init_noise
