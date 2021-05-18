@@ -430,14 +430,9 @@ class CVGraph:
                 for ind in self._states[psi]:
                     self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
-    def apply_noise(self, model={}, delta=None):
+    def apply_noise(self, model={}):
         """Apply noise model given in model."""
         # Modelling the states.
-        # If both delta and delta in model specified, print a
-        # message that the former will be used.
-        if delta and model.get("delta"):
-            print("Delta supplied twice. Using the delta given by the delta argument.")
-            model["delta"] = delta
         default_model = {"noise": "grn", "delta": 0.01, "sampling_order": "initial"}
         model = {**default_model, **model}
         self._delta = model["delta"]
