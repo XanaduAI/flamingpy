@@ -104,7 +104,7 @@ class TestCVGraph:
         for node in G.egraph:
             assert G.egraph.nodes[node]['state'] == 'p'
         assert len(G._states['GKP']) == 0
-        assert np.array_equal(G._states['p'], np.arange(10))
+        assert np.array_equal(G._states['p'], np.arange(n))
         p_list = []
         p_swap = 0.2
         for i in range(1000):
@@ -112,6 +112,15 @@ class TestCVGraph:
             p_list += [len(G._states['p']) / n]
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
+
+    def test_state_indices(self):
+        p_inds = np.arange(0, n,  2)
+        gkp_inds = np.arange(1, n+1, 2)
+        G = CVGraph(G_complete, states={"p": p_inds})
+        assert np.array_equal(G._states.get("p"), p_inds)
+        assert np.array_equal(G._states.get("GKP"), gkp_inds)
+        assert np.array_equal(G.p_inds, p_inds)
+        assert np.array_equal(G.GKP_inds, gkp_inds)
 
     def test_apply_noise(self):
         G = CVGraph(G_complete)
