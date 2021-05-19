@@ -14,12 +14,17 @@
 """"Unit tests for RHG classes and methods in RHG.py."""
 
 from RHG import RHG_graph, RHGCode, RHGCube
+import itertools as it
 
 d = 3
 
 
 class TestRHGGraph:
     """Test the RHG_graph function."""
+
+    def test_boundary_combinations(self):
+        for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
+            assert RHG_graph(d, boundaries)
 
     def test_periodic_boundaries(self):
         RHG_lattice = RHG_graph(d, "periodic")
@@ -33,11 +38,28 @@ class TestRHGGraph:
         for point in all_boundaries:
             assert len(RHG_lattice[point]) == 4
 
+    def test_macronodes(self):
+        for boundaries in {"finite", "periodic"}:
+            macronode_lattice = RHG_graph(d, boundaries, macronodes=True)
+            RHG_macronodes = macronode_lattice.macro
+            RHG_reduced = RHG_graph(d, boundaries)
+            assert not set(RHG_macronodes) - set(RHG_reduced)
+            if boundaries == "periodic":
+                assert len(macronode_lattice) == 4 * len(RHG_reduced)
+
 
 class TestRHGCode:
     """"Test the RHGCode class."""
-    pass
 
+    def test_stabilizers(self):
+        for boundaries in ("finite", "periodic"):
+            RHG_code = RHGCode(d, error_complex="primal", boundaries=boundaries)
+            cubes = RHG_code.stabilizers
+            assert len(cubes) == d ** 3
+            for cube in cubes:
+                assert len(cube.physical) == 6
+            if boundaries == "periodic":
+                assert len(cube.egraph) == 6
 
 class TestRHGCube:
     """Test the RHGCube class."""
