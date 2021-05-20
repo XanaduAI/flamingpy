@@ -15,18 +15,24 @@
 
 from RHG import RHG_graph, RHGCode, RHGCube
 import itertools as it
+import pytest
 
-d = 3
+code_params = it.product(range(2, 5), ["finite", "periodic"])
 
+@pytest.fixture(scope="module", params=code_params)
+def RHG_code(request):
+    distance, boundaries = request.param
+    return RHGCode(distance, error_complex='primal', boundaries=boundaries)
 
+@pytest.mark.parametrize('d', range(2, 5))
 class TestRHGGraph:
     """Test the RHG_graph function."""
 
-    def test_boundary_combinations(self):
+    def test_boundary_combinations(self, d):
         for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
             assert RHG_graph(d, boundaries)
 
-    def test_periodic_boundaries(self):
+    def test_periodic_boundaries(self, d):
         RHG_lattice = RHG_graph(d, "periodic")
         assert len(RHG_lattice) == 6 * (d ** 3)
 
@@ -38,7 +44,7 @@ class TestRHGGraph:
         for point in all_boundaries:
             assert len(RHG_lattice[point]) == 4
 
-    def test_macronodes(self):
+    def test_macronodes(self, d):
         for boundaries in {"finite", "periodic"}:
             macronode_lattice = RHG_graph(d, boundaries, macronodes=True)
             RHG_macronodes = macronode_lattice.macro
@@ -51,15 +57,13 @@ class TestRHGGraph:
 class TestRHGCode:
     """"Test the RHGCode class."""
 
-    def test_stabilizers(self):
-        for boundaries in ("finite", "periodic"):
-            RHG_code = RHGCode(d, error_complex="primal", boundaries=boundaries)
-            cubes = RHG_code.stabilizers
-            assert len(cubes) == d ** 3
-            for cube in cubes:
-                assert len(cube.physical) == 6
-            if boundaries == "periodic":
-                assert len(cube.egraph) == 6
+    def test_stabilizers(self, RHG_code):
+        cubes = RHG_code.stabilizers
+        assert len(cubes) == RHG_code.distance ** 3
+        for cube in cubes:
+            assert len(cube.physical) == 6
+        if RHG_code.boundaries == ["periodic"] * 3:
+            assert len(cube.egraph) == 6
 
 class TestRHGCube:
     """Test the RHGCube class."""
