@@ -14,6 +14,7 @@
 """Monte Carlo simulations for estimating FT thresholds."""
 import argparse
 import csv
+import sys
 from datetime import datetime
 from decoder import correct
 from graphstates import CVGraph
@@ -68,7 +69,8 @@ def ec_monte_carlo(code, trials, delta, p_swap):
 if __name__ == "__main__":
     # TODO: Intention of below is to allow not to use the command line
     # if desired. Is this appropriate?
-    try:
+    if len(sys.argv) != 1:
+        print(sys.argv)
         # Parsing input parameters
         parser = argparse.ArgumentParser(
             description="Arguments for Monte Carlo FT simulations."
@@ -77,6 +79,8 @@ if __name__ == "__main__":
         parser.add_argument("delta", type=float)
         parser.add_argument("p_swap", type=float)
         parser.add_argument("trials", type=int)
+        parser.add_argument("passive", type=bool)
+
         args = parser.parse_args()
         distance, delta, p_swap, trials = (
             args.distance,
@@ -84,9 +88,10 @@ if __name__ == "__main__":
             args.p_swap,
             args.trials,
         )
-    except SystemExit:
+
+    else:
         # User-specified values, if not using command line.
-        distance, delta, p_swap, trials = 2, 0.1, 0, 10
+        distance, delta, p_swap, trials, passive = 2, 0.01, 0.5, 100, False
 
     # The Monte Carlo simulations
     boundaries = "finite"

@@ -105,7 +105,6 @@ def reduce_macro_and_simulate(
             CVRHG_reduced._states["p"] += [RHG_reduced.to_indices[centre_point]]
         # Set type of node in the reduced lattice as a p-squeezed
         # state if all micronodes are p, else GKP.
-        print(reduced_state)
         RHG_reduced.nodes[centre_point]["state"] = reduced_state
         # Old and permuted indices of all micronodes in macronode i.
         old_inds = [i, i + 1, i + 2, i + 3]
@@ -282,6 +281,7 @@ if __name__ == "__main__":
     RHG_code = RHG.RHGCode(d, boundaries=boundaries)
     RHG_reduced = RHG_code.graph
     RHG_reduced.index_generator()
+    # The empty CV state, uninitiated with any error model.
     CVRHG_reduced = CVGraph(RHG_reduced)
     # Define the 4X4 beamsplitter network for a given macronode.
     # star at index 0, planets at indices 1-3.
