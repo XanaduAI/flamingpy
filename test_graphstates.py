@@ -17,31 +17,35 @@ import scipy.sparse as sp
 import numpy.random as rand
 import networkx as nx
 import string
+import pytest
+from numpy.random import default_rng as rng
 
 from graphstates import EGraph, CVGraph, SCZ_mat, SCZ_apply
 
-# Some abstract graphs.
-n = 10
-G_complete = nx.complete_graph(n)
-G_c_adj = nx.to_numpy_array(G_complete)
-G_c_adj_sparse = nx.to_scipy_sparse_matrix(G_complete)
 
-# Some noise models
-delta = 0.01
-model_init = {'noise': 'grn', 'delta': delta, 'sampling_order': 'initial'}
-model_fin = {'noise': 'grn', 'delta': delta, 'sampling_order': 'final'}
-model_two_step = {'noise': 'grn', 'delta': delta, 'sampling_order': 'two-step'}
+@pytest.fixture(scope="module", params=[10, 20])
+def G_complete(request):
+    n = request.param
+    G_c = nx.complete_graph(n)
+    G_c_adj = nx.to_numpy_array(G_c)
+    G_c_adj_sparse = nx.to_scipy_sparse_matrix(G_c)
+    return G_c, G_c_adj, G_c_adj_sparse
+
+
+def noise_model(delta, order):
+    return {'noise': 'grn', 'delta': delta, 'sampling_order': order}
 
 
 class TestEGraph:
     """Tests for EGraphs."""
 
-    def test_init(self):
-        E = EGraph(G_complete)
+    def test_init(self, G_complete):
+        print(G_complete[0])
+        E = EGraph(G_complete[0])
         E_array = nx.to_numpy_array(E)
-        assert np.all(G_c_adj == E_array)
+        assert np.all(G_complete[1] == E_array)
 
-    def test_index(self):
+    def test_index(self, G_complete):
         """Test consistency of the indexing function."""
         alph = list(string.ascii_lowercase)
         rand.shuffle(alph)
@@ -52,7 +56,7 @@ class TestEGraph:
         E.adj_generator()
         ordered_nodes = [E.to_points[i] for i in range(len(E))]
 
-        G_adj = nx.to_numpy_array(G_complete, nodelist=ordered_nodes)
+        G_adj = nx.to_numpy_array(G_complete[0], nodelist=ordered_nodes)
         E_adj = E.adj_mat
         assert np.all(G_adj == E_adj)
 
@@ -66,10 +70,10 @@ class TestEGraph:
 class TestCVHelpers:
     """Test for CVGraph helper functions."""
 
-    def test_SCZ_mat(self):
+    def test_SCZ_mat(self, G_complete):
         """Test for the SCZ_mat function."""
-        SCZ = SCZ_mat(G_c_adj)
-        SCZ_sparse = SCZ_mat(G_c_adj_sparse)
+        SCZ = SCZ_mat(G_complete[1])
+        SCZ_sparse = SCZ_mat(G_complete[2])
         assert type(SCZ) == np.ndarray
         assert type(SCZ_sparse) == sp.coo_matrix
 
@@ -81,17 +85,18 @@ class TestCVHelpers:
 class TestCVGraph:
     """Tests for the CVGraph class."""
 
-    def test_init(self):
-        G = CVGraph(G_complete, states=None)
+    def test_init(self, G_complete):
+        G = CVGraph(G_complete[0], states=None)
         G_array = nx.to_numpy_array(G.egraph)
-        H = CVGraph(EGraph(G_complete), states=None)
+        H = CVGraph(EGraph(G_complete[0]), states=None)
         H_array = nx.to_numpy_array(H.egraph)
-        assert G._N == n
-        assert np.all(G_c_adj == H_array)
-        assert np.all(G_c_adj == G_array)
+        assert G._N == len(G_complete[0])
+        assert np.all(G_complete[1] == H_array)
+        assert np.all(G_complete[1] == G_array)
 
-    def test_states_init(self):
-        G = CVGraph(G_complete)
+    def test_states_init(self, G_complete):
+        G = CVGraph(G_complete[0])
+        n = len(G_complete[0])
         for node in G.egraph:
             assert G.egraph.nodes[node]['state'] == 'GKP'
         assert len(G._states['p']) == 0
@@ -99,42 +104,55 @@ class TestCVGraph:
         assert np.array_equal(G._states['GKP'], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
-    def test_hybridize(self):
-        G = CVGraph(G_complete, p_swap=1)
+    @pytest.mark.parametrize("p_swap", [0, rng().random(), 1])
+    def test_hybridize(self, G_complete, p_swap):
+        n = len(G_complete[0])
+        G = CVGraph(G_complete[0], p_swap=1)
         for node in G.egraph:
             assert G.egraph.nodes[node]['state'] == 'p'
         assert len(G._states['GKP']) == 0
         assert np.array_equal(G._states['p'], np.arange(n))
         p_list = []
-        p_swap = 0.2
         for i in range(1000):
-            G = CVGraph(G_complete, p_swap=p_swap)
+            G = CVGraph(G_complete[0], p_swap=p_swap)
             p_list += [len(G._states['p']) / n]
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
 
-    def test_state_indices(self):
-        p_inds = np.arange(0, n,  2)
-        gkp_inds = np.arange(1, n+1, 2)
-        G = CVGraph(G_complete, states={"p": p_inds})
+    def test_state_indices(self, G_complete):
+        n = len(G_complete[0])
+        num_ps = rng().integers(n)
+        p_inds = rng().choice(n, num_ps, replace=False)
+        gkp_inds = list(set(np.arange(n)) - set(p_inds))
+        G = CVGraph(G_complete[0], states={"p": p_inds})
         assert np.array_equal(G._states.get("p"), p_inds)
         assert np.array_equal(G._states.get("GKP"), gkp_inds)
         assert np.array_equal(G.p_inds, p_inds)
         assert np.array_equal(G.GKP_inds, gkp_inds)
 
-    def test_apply_noise(self):
-        G = CVGraph(G_complete)
+    @pytest.mark.parametrize("order", ["initial", "final", "two-step"])
+    def test_apply_noise(self, G_complete, order):
+        # Check default noise model
+        G = CVGraph(G_complete[0])
         G.apply_noise()
         assert G._delta == 0.01
         assert G._sampling_order == 'initial'
-        H = CVGraph(G_complete)
-        H.apply_noise(model={'noise': 'grn', 'delta': 0.8, 'sampling_order': 'final'})
-        assert H._delta == 0.8
-        assert H._sampling_order == 'final'
+        # Check supplied noise model
+        H = CVGraph(G_complete[0])
+        delta = rng().random()
+        H.apply_noise(noise_model(delta=delta, order=order))
+        assert H._delta == delta
+        assert H._sampling_order == order
 
-    def test_grn_model(self):
-        G = CVGraph(G_complete)
-        H = CVGraph(G_complete, p_swap=1)
+    def test_grn_model(self, G_complete):
+        delta = rng().random()
+        model_init = noise_model(delta, "initial")
+        model_fin = noise_model(delta, "final")
+        model_two_step = noise_model(delta, "two-step")
+
+        n = len(G_complete[0])
+        G = CVGraph(G_complete[0])
+        H = CVGraph(G_complete[0], p_swap=1)
         G.apply_noise(model_init)
         H.apply_noise(model_init)
         init_noise_all_GKP = np.full(2 * n, delta / 2, dtype=np.float32)
@@ -157,10 +175,12 @@ class TestCVGraph:
         assert np.isclose(np.max(G._init_quads[:n]), np.sqrt(np.pi))
         assert np.isclose(np.min(G._init_quads[:n]), 0)
 
-    def test_measure_hom(self):
-        G = CVGraph(G_complete)
+    @pytest.mark.parametrize("order", ["initial", "final"])
+    def test_measure_hom(self, G_complete, order):
+        n = len(G_complete[0])
+        G = CVGraph(G_complete[0])
         delta = 0.0001
-        G.apply_noise({'noise': 'grn', 'delta': delta, 'sampling_order': 'initial'})
+        G.apply_noise(noise_model(delta=delta, order=order))
         G.measure_hom("p")
         G.measure_hom("q")
         outcomes_p = []
@@ -170,10 +190,11 @@ class TestCVGraph:
             outcomes_q += [G.egraph.nodes[node]["hom_val_q"]]
         assert np.isclose(sum(outcomes_p) / n, 0, atol=1e-1)
         assert np.isclose(sum(outcomes_q) / n, 0, atol=1e-1)
+        # TODO: test two-step sampling
 
-    def test_eval_Z_probs(self):
-        G = CVGraph(G_complete)
-        G.apply_noise(model_fin)
+    def test_eval_Z_probs(self, G_complete):
+        G = CVGraph(G_complete[0])
+        G.apply_noise(noise_model(delta=rng().random(), order="final"))
         G.measure_hom("p")
         G.eval_Z_probs()
         G.eval_Z_probs(cond=True)
