@@ -282,9 +282,12 @@ def assign_weights(code, **kwargs):
             ]
             p_count = len(p_list)
             if p_count in (0, 1):
-                delta_effective = (len(neighbors) + 1) * weight_options.get("delta")
-                hom_val = G.nodes[node]["hom_val_p"]
-                err_prob = Z_err_cond(delta_effective, hom_val)
+                if weight_options.get("prob_precomputed"):
+                    err_prob = G.nodes[node]["p_phase_cond"]
+                else:
+                    delta_effective = (len(neighbors) + 1) * weight_options.get("delta")
+                    hom_val = G.nodes[node]["hom_val_p"]
+                    err_prob = Z_err_cond(delta_effective, hom_val)
                 # Allow for taking log of 0.
                 # TODO: Is this the best way to do it? Or can I just choose
                 # an arbitrary small number?
