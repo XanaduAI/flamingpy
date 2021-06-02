@@ -145,7 +145,9 @@ def Z_err(var, var_num=5):
     return error
 
 
-def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False):
+def Z_err_cond(
+    var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False, draw=False
+):
     """Return the conditional phase error probability for lattice nodes.
 
     Return the phase error probability for a list of variances var
@@ -178,7 +180,7 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     ex = lambda z, n: np.exp(-((z - n * np.sqrt(np.pi)) ** 2) / var)
     error = np.zeros(np.shape(var))
     bit, frac = GKP_binner(hom_val, return_fraction=True)
-    factor = 1 - bit
+    factor = 1 - bit if use_hom_val else 1
     val = hom_val if use_hom_val else frac
     numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
     denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
@@ -199,7 +201,16 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     if the_rest.size > 0:
         error[the_rest] = numerator[the_rest] / denominator[the_rest]
     if np.size(var) == 1:
-        return error[0]
+        error = error[0]
+    if draw:
+        xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
+        print(xmin, xmax, min(val), max(val))
+        newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+        newxlabels = [to_pi_string(tick) for tick in newxticks]
+        plt.plot(val, error, ",")
+        plt.title("Conditional phase probabilities")
+        plt.xticks(newxticks, newxlabels, fontsize="small")
+        plt.show()
     return error
 
 
@@ -208,3 +219,6 @@ if __name__ == "__main__":
     x = np.arange(-10, 10, 0.01)
     integer_fractional(x, alpha, draw=True)
     GKP_binner(x, draw=True)
+    delta = 0.01
+    Z_err_cond([delta] * len(x), x, use_hom_val=True, draw=True)
+    Z_err_cond([delta] * len(x), x, draw=True)
