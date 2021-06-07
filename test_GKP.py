@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for GKP-specific functions in GKP.py."""
+import pytest
 import math
 import numpy as np
 from numpy import sqrt, pi
@@ -24,17 +25,21 @@ N = 50
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
     # Test +- sqrt(pi) and sqrt(pi)/2.
-    assert to_pi_string(np.sqrt(np.pi)) == '$\\sqrt{\\pi}$'
-    assert to_pi_string(-np.sqrt(np.pi)) == '$-\\sqrt{\\pi}$'
-    assert to_pi_string(np.sqrt(np.pi)/2) == '$\\sqrt{\\pi}/2$'
-    assert to_pi_string(-np.sqrt(np.pi)/2) == '$-\\sqrt{\\pi}/2$'
+    assert to_pi_string(np.sqrt(np.pi)) == "$\\sqrt{\\pi}$"
+    assert to_pi_string(-np.sqrt(np.pi)) == "$-\\sqrt{\\pi}$"
+    assert to_pi_string(np.sqrt(np.pi) / 2) == "$\\sqrt{\\pi}/2$"
+    assert to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
     # Test random odd integer multiples of sqrt(pi)/2.
     odd_int = 2 * rng().integers(-25, 25) - 1
-    odd_int_label = '' if odd_int in (-1, 1) else odd_int
-    assert to_pi_string(odd_int * np.sqrt(np.pi)/2) == '${}\\sqrt{{\\pi}}/2$'.format(odd_int_label)
+    odd_int_label = "" if odd_int in (-1, 1) else odd_int
+    assert to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(
+        odd_int_label
+    )
     #  Test random even multiples of sqrt(pi).
     even_int = odd_int + 1
-    assert to_pi_string(even_int * np.sqrt(np.pi)) == '${}\\sqrt{{\\pi}}$'.format(even_int)
+    assert to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(
+        even_int
+    )
     # Check everything else converted into a str.
     rand_numb = rng().random()
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
@@ -61,12 +66,14 @@ class TestGKPBinning:
         assert np.allclose(GKP_binner(numbers, return_fraction=True)[1], fractions)
 
 
-even_homs = np.array([2*i*sqrt(pi) for i in range(-N//2, N//2)])
-odd_homs = np.array([(2*i+1)*sqrt(pi) for i in range(-N//2, N//2)])
-middle_homs = np.array([(2*i+1)*sqrt(pi) / 2 for i in range(-N//2, N//2)])
+even_homs = np.array([2 * i * sqrt(pi) for i in range(-N // 2, N // 2)])
+odd_homs = np.array([(2 * i + 1) * sqrt(pi) for i in range(-N // 2, N // 2)])
+middle_homs = np.array([(2 * i + 1) * sqrt(pi) / 2 for i in range(-N // 2, N // 2)])
+lim = int(2 * N * np.sqrt(np.pi))
 
-low_delta = 0.01 * (rng().random(N) + 1)
-high_delta = rng().random(N) + 4
+low_delta = 0.0001 * (rng().random(N) + 1)
+high_delta = np.full(N, 10)
+
 
 class TestPhaseProbs:
     """Test the phase error proability functions."""
@@ -77,13 +84,28 @@ class TestPhaseProbs:
         assert np.allclose(low_probs, 0)
         assert np.allclose(high_probs, 0.5)
 
-    def test_Z_err_cond(self):
+    @pytest.mark.parametrize("use_hom_val", [False, True])
+    def test_Z_err_cond(self, use_hom_val):
         # Test high-squeezing (low delta) regime.
-        even_probs = Z_err_cond(low_delta, even_homs)
-        odd_probs = Z_err_cond(low_delta, odd_homs)
-        mid_probs = Z_err_cond(low_delta, middle_homs)
-        assert np.allclose(even_probs, 0)
-        assert np.allclose(mid_probs, 0.5)
-        assert np.allclose(odd_probs, 1)
+        for delta in (high_delta, low_delta):
+            even_probs = Z_err_cond(
+                delta, even_homs, var_num=lim, use_hom_val=use_hom_val
+            )
+            odd_probs = Z_err_cond(
+                delta, odd_homs, var_num=lim, use_hom_val=use_hom_val
+            )
+            mid_probs = Z_err_cond(
+                delta, middle_homs, var_num=lim, use_hom_val=use_hom_val
+            )
+            print(delta)
+            if np.array_equal(delta, high_delta):
+                ref_prob = 0.5
+            else:
+                ref_prob = 0
+            print(ref_prob, even_probs)
+            assert np.allclose(even_probs, ref_prob, rtol=0.001)
+            assert np.allclose(odd_probs, ref_prob, rtol=0.001)
+            assert np.allclose(mid_probs, ref_prob, rtol=0.001)
+
         # TODO: Test use_hom_val argument, changing summation limit,
         # 0-denominator behaviour
