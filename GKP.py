@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""GKP-state-specific functions."""
+"""Functions useful for GKP encodings."""
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,11 +66,11 @@ def integer_fractional(x, alpha, draw=False):
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
         newxlabels = [to_pi_string(tick) for tick in newxticks]
         plt.plot(x, n, ",")
-        plt.title("Integer Part")
+        plt.title("Integer Part", fontsize="medium")
         plt.xticks(newxticks, newxlabels, fontsize="small")
         plt.show()
 
-        plt.title("Fractional Part")
+        plt.title("Fractional Part", fontsize="medium")
         plt.plot(x, f, ",")
         newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
         newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
@@ -93,7 +93,7 @@ def GKP_binner(outcomes, return_fraction=False, draw=False):
         outcomes (array): the values of a p-homodyne measurement.
         return_fraction (bool): return the fractional part of the
             outcome as well, if desired.
-        draw (bool): if True, sketch binned values over outcomes.
+        draw (bool): if True, plot binned values over outcomes.
 
     Retruns:
         array: the corresponding bit values.
@@ -110,8 +110,9 @@ def GKP_binner(outcomes, return_fraction=False, draw=False):
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
         newxlabels = [to_pi_string(tick) for tick in newxticks]
         plt.plot(outcomes, bit_values, ",")
-        plt.title("Binned values")
+        plt.title("Binned values", fontsize="medium")
         plt.xticks(newxticks, newxlabels, fontsize="small")
+        plt.yticks([0, 1], [0, 1])
         plt.show()
     if return_fraction:
         return bit_values, int_frac[1]
@@ -208,7 +209,8 @@ def Z_err_cond(
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
         newxlabels = [to_pi_string(tick) for tick in newxticks]
         plt.plot(val, error, ",")
-        plt.title("Conditional phase probabilities")
+        addendum = "Full homodyne value" if use_hom_val else "Central peak"
+        plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
         plt.xticks(newxticks, newxlabels, fontsize="small")
         plt.show()
     return error
@@ -219,6 +221,6 @@ if __name__ == "__main__":
     x = np.arange(-10, 10, 0.01)
     integer_fractional(x, alpha, draw=True)
     GKP_binner(x, draw=True)
-    delta = 0.01
+    delta = 0.1
     Z_err_cond([delta] * len(x), x, use_hom_val=True, draw=True)
     Z_err_cond([delta] * len(x), x, draw=True)
