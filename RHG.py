@@ -14,6 +14,7 @@
 """Classes for the RHG code and related functions."""
 import itertools as it
 import numpy as np
+
 from matplotlib import pyplot as plt
 from graphstates import EGraph, CVGraph
 
@@ -46,7 +47,8 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
     Returns:
         EGraph: the RHG lattice.
     """
-    # TODO: Compactify construction by identifying syndrome qubits
+    # TODO: Compactify construction by identifying syndrome qubits;
+    # potentially use NetworkX lattice generators.
     # first.
     # Dimensions of the lattice.
     if np.size(dims) == 1:
@@ -71,6 +73,7 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
     x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
     x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
+    # TODO: Change notation to data / ancillae notation
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [
         (2 * i + 1, 2 * j + 1, 2 * k)
@@ -271,6 +274,8 @@ class RHGCode:
             self.boundaries = ["primal", "dual", "dual"]
         elif type(boundaries) == str:
             self.boundaries = [boundaries] * 3
+        else:
+            self.boundaries = boundaries
         self._polarity = polarity
 
         self.graph = RHG_graph(self.dims, boundaries=self.boundaries, polarity=polarity)
@@ -527,46 +532,50 @@ if __name__ == "__main__":
     # Instantiate an RHG latice of a certian distance, with certain
     # boundaries. Draw the EGraph.
     d = 2
-    boundaries = "finite"
-    # boundaries = 'primal'
-    # boundaries = 'periodic'
+    # boundaries = "finite"
+    # boundaries = "primal"
+    boundaries = "periodic"
+    # boundaries = ["primal", "dual", "periodic"]
+    # For iterating through boundaries
     # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
+
     RHG = RHGCode(d, boundaries=boundaries, polarity=True)
     RHG_lattice = RHG.graph
     # Check maronode lattice
     # RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
-    ax = RHG_lattice.draw(color_nodes=False, color_edges=False, label="index")
+    ax = RHG_lattice.draw(color_nodes="MidnightBlue", color_edges=False, label="index")
 
-    # Check edges between boundaries for periodic boundary conditions.
-    all_boundaries = []
-    for plane in ("x", "y", "z"):
-        for i in (0, 2 * d - 1):
-            all_boundaries += RHG.graph.slice_coords(plane, i)
-        # For macronode lattice, change to (-0.1, 2 * d - 0.9)
-    RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
-    RHG_subgraph.draw()
+    # # Check edges between boundaries for periodic boundary conditions.
+    # all_boundaries = []
+    # for plane in ("x", "y", "z"):
+    #     for i in (0, 2 * d - 1):
+    #         all_boundaries += RHG.graph.slice_coords(plane, i)
+    #     # For macronode lattice, change to (-0.1, 2 * d - 0.9)
+    # RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
+    # RHG_subgraph.draw()
 
-    # Check stabilizer coordinates
-    syndrome = RHG.stabilizers
-    print("6-body stabilizers :", len(syndrome))
-    for i in range(len(syndrome)):
-        cube = syndrome[i]
-        color = np.random.rand(3)
-        for point in cube.egraph:
-            x, z, y = point
-            ax.scatter(x, z, y, color=color, s=200)
-    ax.set_title(str(boundaries).capitalize() + " boundaries")
+    # # Check stabilizer coordinates
+    # syndrome = RHG.stabilizers
+    # print("Number of six-body stabilizers :", len(syndrome))
+    # for i in range(len(syndrome)):
+    #     cube = syndrome[i]
+    #     color = np.random.rand(3)
+    #     for point in cube.egraph:
+    #         x, z, y = point
+    #         ax.scatter(x, z, y, color=color, s=200)
+    # ax.set_title(str(boundaries).capitalize() + " boundaries")
 
-    # Check sampling
-    delta = 0.001
-    # Percent p-squeezed states.
-    p_swap = 0
-    CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
-    for sampling_order in ["initial", "final", "two-step"]:
-        model = {"noise": "grn", "delta": delta, "sampling_order": sampling_order}
-        CVRHG.apply_noise(model)
-        CVRHG.measure_hom("p")
-        outcomes = CVRHG.hom_outcomes()
-        plt.figure(figsize=(16, 9))
-        plt.hist(outcomes, bins=100)
-        CVRHG.draw(label="hom_val_p")
+    # # Check sampling
+    # delta = 0.001
+    # # Percent p-squeezed states.
+    # p_swap = 0
+    # CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
+    # for sampling_order in ["initial", "final", "two-step"]:
+    #     model = {"noise": "grn", "delta": delta, "sampling_order": sampling_order}
+    #     CVRHG.apply_noise(model)
+    #     CVRHG.measure_hom("p")
+    #     outcomes = CVRHG.hom_outcomes()
+    #     plt.figure(figsize=(16, 9))
+    #     plt.hist(outcomes, bins=100)
+    #     CVRHG.draw(label="hom_val_p")
+    #     CVRHG.draw(label="hom_val_p")
