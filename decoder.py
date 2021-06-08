@@ -627,6 +627,8 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
         print("Recovery succeeded - no unsatisfied stabilizers.")
 
 
+# TODO: Rename to logical_error_check or someting like that. Clarify
+# what correlation surface is, per RHG paper.
 def check_correction(code, plane=None, sheet=0, sanity_check=False):
     """Perform a correlation-surface check.
 
@@ -783,7 +785,7 @@ if __name__ == "__main__":
         "label_boundary": False,
     }
 
-    trials = 100
+    trials = 1
     success = 0
     for trial in range(trials):
         # Apply noise
@@ -794,7 +796,7 @@ if __name__ == "__main__":
             code=RHG_code,
             decoder=decoder,
             weight_options=weight_options,
-            draw=False,
+            draw=True,
             drawing_opts=dw,
             sanity_check=True,
         )
