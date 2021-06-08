@@ -46,39 +46,49 @@ def test_to_pi_string():
         assert to_pi_string(rand_numb) == str(rand_numb)
 
 
+# Construct random numbers from an integer and fractional part.
 alpha = np.sqrt(np.pi)
-integers = rng().integers(-25, 25, N)
+integers = rng().integers(-N // 2, N // 2, N)
 fractions = rng().random(N) * (alpha / 2)
 numbers = integers * alpha + fractions
 
 
 class TestGKPBinning:
-    """Tests GKP binning functions."""
+    """Tests for GKP binning functions."""
 
     def test_integer_fractional(self):
+        # Test that the integer and fractional part as obtained by
+        # integer_fractional matches that of the constructed numbers/
         int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(int_part == integers)
         assert np.allclose(frac_part, fractions)
 
     def test_gkp_binner(self):
+        # Tests that GKP_binner gives the integer part mod 2, and
+        # returns the fractional part if asked.
         bits = integers % 2
         assert np.all(GKP_binner(numbers) == bits)
         assert np.allclose(GKP_binner(numbers, return_fraction=True)[1], fractions)
 
 
+# Even and odd homodyne outcomes mod sqrt(pi), and outcomes in the middle.
 even_homs = np.array([2 * i * sqrt(pi) for i in range(-N // 2, N // 2)])
 odd_homs = np.array([(2 * i + 1) * sqrt(pi) for i in range(-N // 2, N // 2)])
 middle_homs = np.array([(2 * i + 1) * sqrt(pi) / 2 for i in range(-N // 2, N // 2)])
+# Limit for summations.
 lim = int(2 * N * np.sqrt(np.pi))
 
-low_delta = 0.0001 * (rng().random(N) + 1)
-high_delta = np.full(N, 10)
+# Random low and high delta values
+low_delta = rng().uniform(0.0001, 0.001, N)
+high_delta = rng().uniform(10, 15, N)
 
 
 class TestPhaseProbs:
     """Test the phase error proability functions."""
 
     def test_Z_err(self):
+        # Ensure phase errors are 0 for low deltas and 0.5 for high
+        # deltas.
         low_probs = Z_err(low_delta)
         high_probs = Z_err(high_delta)
         assert np.allclose(low_probs, 0)
@@ -97,12 +107,12 @@ class TestPhaseProbs:
             mid_probs = Z_err_cond(
                 delta, middle_homs, var_num=lim, use_hom_val=use_hom_val
             )
-            print(delta)
+            # Ensure that conditional phase error probabilities are close
+            # to 0 for low delta values and 0.5 for high delta values.
             if np.array_equal(delta, high_delta):
                 ref_prob = 0.5
             else:
                 ref_prob = 0
-            print(ref_prob, even_probs)
             assert np.allclose(even_probs, ref_prob, rtol=0.001)
             assert np.allclose(odd_probs, ref_prob, rtol=0.001)
             assert np.allclose(mid_probs, ref_prob, rtol=0.001)
