@@ -14,6 +14,9 @@
 """Classes for representing graph states."""
 import networkx as nx
 import numpy as np
+
+# TODO: Avoid Niagara errors associated with Matplotlib; e.g.:
+# if __name__ != "__main__":
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from numpy.random import default_rng as rng
@@ -391,6 +394,8 @@ class CVGraph:
         if isinstance(g, EGraph):
             self.egraph = g
         else:
+            # TODO: Make sure not to confuse subsequent references to g
+            # vs those to CV.egraph.
             self.egraph = EGraph(g)
         self._N = len(g)
 
@@ -546,7 +551,7 @@ class CVGraph:
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]
             cov_dict = {"q": cov_q, "p": cov_p}
-            means = np.zeros(N_inds, dtype=np.bool)
+            means = np.zeros(N_inds, dtype=bool)
             # TODO: Is below correct?
             covs = cov_dict[quad][inds, :][:, inds].toarray()
             outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
@@ -683,8 +688,8 @@ if __name__ == "__main__":
     CVbell.draw(label="hom_val_p")
     CVbell.draw(label="hom_val_q")
     CVbell.draw(label="p_phase")
-    print("Nodes :", bell_state.nodes.data())
+    print("\nNodes :", bell_state.nodes.data())
     print("Edges :", bell_state.edges.data())
     print("p indices: ", CVbell.p_inds, "\n")
     print("GKP indices: ", CVbell.GKP_inds, "\n")
-    print("Symplectic CZ matrix: \n", CVbell.SCZ(heat_map=True), "\n")
+    print("\nSymplectic CZ matrix: \n", CVbell.SCZ(heat_map=True), "\n")
