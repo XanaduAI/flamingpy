@@ -22,43 +22,54 @@ from numpy.random import default_rng as rng
 
 from graphstates import EGraph, CVGraph, SCZ_mat, SCZ_apply
 
+# A NetworkX random graph of size N for use in this module.
+N = 20
 
-@pytest.fixture(scope="module", params=[10, 20])
-def G_complete(request):
+
+@pytest.fixture(scope="module", params=[N])
+def random_graph(request):
     n = request.param
-    G_c = nx.complete_graph(n)
-    G_c_adj = nx.to_numpy_array(G_c)
-    G_c_adj_sparse = nx.to_scipy_sparse_matrix(G_c)
-    return G_c, G_c_adj, G_c_adj_sparse
+    G = nx.fast_gnp_random_graph(n, 0.5)
+    G_adj = nx.to_numpy_array(G)
+    G_adj_sparse = nx.to_scipy_sparse_matrix(G)
+    return G, G_adj, G_adj_sparse
 
 
+# Convenience function for outputing a noise model dictionary.
 def noise_model(delta, order):
-    return {'noise': 'grn', 'delta': delta, 'sampling_order': order}
+    return {"noise": "grn", "delta": delta, "sampling_order": order}
 
 
 class TestEGraph:
     """Tests for EGraphs."""
 
-    def test_init(self, G_complete):
-        print(G_complete[0])
-        E = EGraph(G_complete[0])
+    def test_init(self, random_graph):
+        # Check that the adjacency matrix of the random graph matches
+        # the adjancency matrix of the EGraph.
+        E = EGraph(random_graph[0])
         E_array = nx.to_numpy_array(E)
-        assert np.all(G_complete[1] == E_array)
+        assert np.all(random_graph[1] == E_array)
 
-    def test_index(self, G_complete):
-        """Test consistency of the indexing function."""
+    def test_index(self, random_graph):
+        # A graph with nodes from a shuffled alphabet
         alph = list(string.ascii_lowercase)
         rand.shuffle(alph)
-
-        E = EGraph()
-        E.add_nodes_from(alph)
+        reduced_alph = alph[:N]
+        label_dict = dict(zip(range(N), reduced_alph))
+        H = nx.relabel_nodes(random_graph[0], label_dict)
+        E = EGraph(H)
         E.index_generator()
-        E.adj_generator()
-        ordered_nodes = [E.to_points[i] for i in range(len(E))]
-
-        G_adj = nx.to_numpy_array(G_complete[0], nodelist=ordered_nodes)
+        # assert list(E.to_indices.keys()) == sorted(reduced_alph)
+        # Adjacency matrix of H with rows/columns arranged according
+        # to the sorted alphabet should equal to the adjacency matrix
+        # of E.
+        H_adj = nx.to_numpy_array(H, nodelist=sorted(reduced_alph))
+        E.adj_generator(sparse=False)
         E_adj = E.adj_mat
-        assert np.all(G_adj == E_adj)
+        assert np.array_equal(H_adj, E_adj)
+
+    def test_macronode(self):
+        pass
 
     def test_slice_coords(self):
         pass
@@ -68,95 +79,117 @@ class TestEGraph:
 
 
 class TestCVHelpers:
-    """Test for CVGraph helper functions."""
+    """Tests for CVGraph helper functions."""
 
-    def test_SCZ_mat(self, G_complete):
-        """Test for the SCZ_mat function."""
-        SCZ = SCZ_mat(G_complete[1])
-        SCZ_sparse = SCZ_mat(G_complete[2])
+    def test_SCZ_mat(self, random_graph):
+        SCZ = SCZ_mat(random_graph[1])
+        SCZ_sparse = SCZ_mat(random_graph[2])
+        # Check if SCZ_mat adjusts type of output matrix based on
+        # type of input.
         assert type(SCZ) == np.ndarray
         assert type(SCZ_sparse) == sp.coo_matrix
+        # Check that structure of SCZ matrix is correct.
+        for mat in (SCZ, SCZ_sparse.toarray()):
+            assert np.array_equal(mat[:N, :N], np.identity(N))
+            assert np.array_equal(mat[:N, N:], np.zeros((N, N)))
+            assert np.array_equal(mat[N:, :N], random_graph[1])
+            assert np.array_equal(mat[N:, N:], np.identity(N))
 
     def test_SCZ_apply(self):
-        """Test for SCZ_apply function."""
         pass
 
 
 class TestCVGraph:
     """Tests for the CVGraph class."""
 
-    def test_init(self, G_complete):
-        G = CVGraph(G_complete[0], states=None)
+    def test_empty_init(self, random_graph):
+        G = CVGraph(random_graph[0], states=None)
         G_array = nx.to_numpy_array(G.egraph)
-        H = CVGraph(EGraph(G_complete[0]), states=None)
+        H = CVGraph(EGraph(random_graph[0]), states=None)
         H_array = nx.to_numpy_array(H.egraph)
-        assert G._N == len(G_complete[0])
-        assert np.all(G_complete[1] == H_array)
-        assert np.all(G_complete[1] == G_array)
+        # Check that the _N attribute is populated with the number
+        # of nodes in the random graph.
+        assert G._N == len(random_graph[0])
+        # Check that instantiating a CVGraph with an EGraph or with
+        # a regular NetworkX graph has the same effect.
+        assert np.array_equal(random_graph[1], H_array)
+        assert np.array_equal(random_graph[1], G_array)
 
-    def test_states_init(self, G_complete):
-        G = CVGraph(G_complete[0])
-        n = len(G_complete[0])
+    def test_all_GKP_init(self, random_graph):
+        # Test all-GKP initialization.
+        G = CVGraph(random_graph[0])
+        n = len(random_graph[0])
         for node in G.egraph:
-            assert G.egraph.nodes[node]['state'] == 'GKP'
-        assert len(G._states['p']) == 0
+            assert G.egraph.nodes[node]["state"] == "GKP"
+        assert len(G._states["p"]) == 0
         assert len(G.p_inds) == 0
-        assert np.array_equal(G._states['GKP'], np.arange(n))
+        assert np.array_equal(G._states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
     @pytest.mark.parametrize("p_swap", [0, rng().random(), 1])
-    def test_hybridize(self, G_complete, p_swap):
-        n = len(G_complete[0])
-        G = CVGraph(G_complete[0], p_swap=1)
+    def test_hybridize(self, random_graph, p_swap):
+        n = len(random_graph[0])
+        # Test all-p case
+        G = CVGraph(random_graph[0], p_swap=1)
         for node in G.egraph:
-            assert G.egraph.nodes[node]['state'] == 'p'
-        assert len(G._states['GKP']) == 0
-        assert np.array_equal(G._states['p'], np.arange(n))
+            assert G.egraph.nodes[node]["state"] == "p"
+        assert len(G._states["GKP"]) == 0
+        assert np.array_equal(G._states["p"], np.arange(n))
+        # Test various swap-out probabilities; mean p population
+        # should be close to p_swap parameter, within tolerance.
         p_list = []
         for i in range(1000):
-            G = CVGraph(G_complete[0], p_swap=p_swap)
-            p_list += [len(G._states['p']) / n]
+            G = CVGraph(random_graph[0], p_swap=p_swap)
+            p_list += [len(G._states["p"]) / n]
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
 
-    def test_state_indices(self, G_complete):
-        n = len(G_complete[0])
+    def test_state_indices(self, random_graph):
+        n = len(random_graph[0])
         num_ps = rng().integers(n)
         p_inds = rng().choice(n, num_ps, replace=False)
         gkp_inds = list(set(np.arange(n)) - set(p_inds))
-        G = CVGraph(G_complete[0], states={"p": p_inds})
+        G = CVGraph(random_graph[0], states={"p": p_inds})
+        # Test that _states, p_inds, and GKP_inds are populated
+        # with the correct indices.
         assert np.array_equal(G._states.get("p"), p_inds)
         assert np.array_equal(G._states.get("GKP"), gkp_inds)
         assert np.array_equal(G.p_inds, p_inds)
         assert np.array_equal(G.GKP_inds, gkp_inds)
 
     @pytest.mark.parametrize("order", ["initial", "final", "two-step"])
-    def test_apply_noise(self, G_complete, order):
-        # Check default noise model
-        G = CVGraph(G_complete[0])
+    def test_apply_noise(self, random_graph, order):
+        # Check _delta, _sampling_order attributes with
+        # default noise model.
+        G = CVGraph(random_graph[0])
         G.apply_noise()
         assert G._delta == 0.01
-        assert G._sampling_order == 'initial'
+        assert G._sampling_order == "initial"
         # Check supplied noise model
-        H = CVGraph(G_complete[0])
+        H = CVGraph(random_graph[0])
         delta = rng().random()
         H.apply_noise(noise_model(delta=delta, order=order))
         assert H._delta == delta
         assert H._sampling_order == order
 
-    def test_grn_model(self, G_complete):
+    def test_grn_model(self, random_graph):
+        # Compare expected noise objects (quadratures, covariance
+        # matrix) with those obtained through supplying the grn_model
+        # dictionary with different parameters.
         delta = rng().random()
         model_init = noise_model(delta, "initial")
         model_fin = noise_model(delta, "final")
         model_two_step = noise_model(delta, "two-step")
 
-        n = len(G_complete[0])
-        G = CVGraph(G_complete[0])
-        H = CVGraph(G_complete[0], p_swap=1)
+        n = len(random_graph[0])
+        G = CVGraph(random_graph[0])
+        H = CVGraph(random_graph[0], p_swap=1)
         G.apply_noise(model_init)
         H.apply_noise(model_init)
         init_noise_all_GKP = np.full(2 * n, delta / 2, dtype=np.float32)
-        init_noise_all_p = np.array([1 / (2 * delta)] * n + [delta / 2] * n, dtype=np.float32)
+        init_noise_all_p = np.array(
+            [1 / (2 * delta)] * n + [delta / 2] * n, dtype=np.float32
+        )
         assert np.array_equal(G._init_noise, init_noise_all_GKP)
         assert np.array_equal(H._init_noise, init_noise_all_p)
 
@@ -176,9 +209,9 @@ class TestCVGraph:
         assert np.isclose(np.min(G._init_quads[:n]), 0)
 
     @pytest.mark.parametrize("order", ["initial", "final"])
-    def test_measure_hom(self, G_complete, order):
-        n = len(G_complete[0])
-        G = CVGraph(G_complete[0])
+    def test_measure_hom(self, random_graph, order):
+        n = len(random_graph[0])
+        G = CVGraph(random_graph[0])
         delta = 0.0001
         G.apply_noise(noise_model(delta=delta, order=order))
         G.measure_hom("p")
@@ -188,16 +221,20 @@ class TestCVGraph:
         for node in G.egraph:
             outcomes_p += [G.egraph.nodes[node]["hom_val_p"]]
             outcomes_q += [G.egraph.nodes[node]["hom_val_q"]]
+        # Test closeness of average homodyne outcomes value to 0 in the
+        # all-GKP high-squeezing limit.
         assert np.isclose(sum(outcomes_p) / n, 0, atol=1e-1)
         assert np.isclose(sum(outcomes_q) / n, 0, atol=1e-1)
         # TODO: test two-step sampling
 
-    def test_eval_Z_probs(self, G_complete):
-        G = CVGraph(G_complete[0])
+    def test_eval_Z_probs(self, random_graph):
+        G = CVGraph(random_graph[0])
         G.apply_noise(noise_model(delta=rng().random(), order="final"))
         G.measure_hom("p")
         G.eval_Z_probs()
         G.eval_Z_probs(cond=True)
+        # Test that p_phase and p_phase_cond attribute get populated
+        # when phase error probabilities are evaluated.
         for node in G.egraph:
-            assert 'p_phase' in G.egraph.nodes[node]
-            assert 'p_phase_cond' in G.egraph.nodes[node]
+            assert "p_phase" in G.egraph.nodes[node]
+            assert "p_phase_cond" in G.egraph.nodes[node]
