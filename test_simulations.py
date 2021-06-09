@@ -30,6 +30,7 @@ class TestBlueprint:
         trials = 10
         RHG_code = RHGCode(distance, boundaries=boundaries, polarity=True)
         errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=None)
+        # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
 
 
@@ -60,4 +61,9 @@ class TestPassive:
         errors = ec_monte_carlo(
             RHG_code, trials, delta, p_swap, passive_objects=passive_objects
         )
+        # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
+
+
+# TODO: Tests that cross-check published results for blueprint and
+# passive architecture.
