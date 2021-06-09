@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from passive_construct import invert_permutation, BS_network, reduce_macro_and_simulate
-from graphstates import CVGraph, SCZ_apply
-from GKP import GKP_binner, Z_err_cond
+from graphstates import CVGraph
 import RHG
-from decoder import correct
 import itertools as it
 import pytest
+import numpy as np
+from numpy.random import shuffle, default_rng as rng
 
-code_params = it.product([2], [0.0001], [0])
+code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1])
 
 
+# A macronode RHG lattice, the reduced lattice, and the delta/p-swap
+# paramaters for use in this module.
 @pytest.fixture(scope="module", params=code_params)
 def macro_RHG(request):
     d, delta, p_swap = request.param
@@ -38,14 +40,26 @@ def macro_RHG(request):
 
 
 class TestHelpers:
+    """Test helper functions for macronode reduction."""
+
     def test_invert_permutation(self):
-        pass
+        N = rng().integers(1, 100)
+        random_array = rng().integers(0, 100, N)
+        random_p = np.arange(N)
+        shuffle(random_p)
+        inverted = invert_permutation(random_p)
+        presumed_unchanged_array = random_array[random_p][inverted]
+        # Check that permuting and then unpermuting a random array
+        # leaves it unchanged.
+        assert np.array_equal(random_array, presumed_unchanged_array)
 
     def test_BS_network(self):
         pass
 
 
 class TestReduction:
+    """Test reduction of the macronode to the canonical RHG lattice."""
+
     def test_reduce_macro_and_simulate(self, macro_RHG):
         delta, p_swap, RHG_macro, RHG_reduced = macro_RHG
         # The empty CV state, uninitiated with any error model.
@@ -57,8 +71,13 @@ class TestReduction:
         reduce_macro_and_simulate(
             RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta
         )
-        for node in RHG_reduced:
-            if p_swap == 0:
-                assert RHG_reduced.nodes[node]["state"] == "GKP"
-            elif p_swap == 1:
-                assert RHG_reduced.nodes[node]["state"] == "p"
+        # Check proper reduction to effective node type.
+        for central_node in RHG_macro.macro.nodes:
+            micronodes = RHG_macro.macro.nodes[central_node]["micronodes"]
+            effective_type = RHG_reduced.nodes[central_node]["state"]
+            p_count = 0
+            for micronode in micronodes:
+                if RHG_macro.nodes[micronode]["state"] == "p":
+                    p_count += 1
+            expected_type = "p" if p_count == 4 else "GKP"
+            assert effective_type == expected_type
