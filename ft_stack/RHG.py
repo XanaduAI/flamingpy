@@ -16,7 +16,7 @@ import itertools as it
 import numpy as np
 
 from matplotlib import pyplot as plt
-from graphstates import EGraph, CVGraph
+from .graphstates import EGraph, CVGraph
 
 
 def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):

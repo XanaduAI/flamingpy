@@ -18,8 +18,8 @@ import sys
 import io
 from ast import literal_eval
 import numpy as np
-from graphstates import CVGraph
-from decoder import (
+from ft_stack.graphstates import CVGraph
+from ft_stack.decoder import (
     assign_weights,
     CV_decoder,
     decoding_graph,
@@ -29,7 +29,7 @@ from decoder import (
     check_correction,
     correct,
 )
-from RHG import RHGCode, RHGCube
+from ft_stack.RHG import RHGCode, RHGCube
 import networkx as nx
 import itertools as it
 
