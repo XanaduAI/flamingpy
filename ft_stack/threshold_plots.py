@@ -19,7 +19,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 plt.rcParams["font.family"] = "serif"
-plt.rcParams['font.serif'] = "DejaVu Serif"
+plt.rcParams["font.serif"] = "DejaVu Serif"
 plt.rcParams["font.size"] = 11
 
 
@@ -73,7 +73,7 @@ def process_results(file_name, unit=None, save=True):
 def plot_results(
     data,
     p_swap=0,
-    distances='all',
+    distances="all",
     unit=None,
     threshold=None,
     rescale=None,
@@ -115,19 +115,24 @@ def plot_results(
         deltas, ps = zipped[0], zipped[1]
         if break_axis:
             factor = 15
-            fig, (main_axs, main_axs2) = plt.subplots(1, 2, sharey=True, figsize=(6, 4.5),
-                                                      gridspec_kw={'width_ratios': [factor, 1]})
-            main_axs2.plot(deltas, ps, ".-", markersize=12, color='xkcd:navy')
+            fig, (main_axs, main_axs2) = plt.subplots(
+                1,
+                2,
+                sharey=True,
+                figsize=(6, 4.5),
+                gridspec_kw={"width_ratios": [factor, 1]},
+            )
+            main_axs2.plot(deltas, ps, ".-", markersize=12, color="xkcd:navy")
             main_axs2.fill_between(deltas, ps, color="whitesmoke")
             main_axs2.set_xlim(58, 62)
-            main_axs2.spines['left'].set_visible(False)
-            main_axs.spines['right'].set_visible(False)
+            main_axs2.spines["left"].set_visible(False)
+            main_axs.spines["right"].set_visible(False)
             main_axs2.yaxis.tick_right()
-            main_axs2.tick_params(right=False, labelright='off')
+            main_axs2.tick_params(right=False, labelright="off")
         else:
             _, main_axs = plt.subplots(figsize=(6, 4.5))
 
-        main_axs.plot(deltas, ps, ".-", markersize=12, color='xkcd:navy')
+        main_axs.plot(deltas, ps, ".-", markersize=12, color="xkcd:navy")
         main_axs.fill_between(deltas, ps, color="whitesmoke")
 
         main_axs.annotate("correctable region", (0.6, 0.75), xycoords="axes fraction")
@@ -135,13 +140,13 @@ def plot_results(
         if break_axis:
             main_axs.set_xlim(10, 25)
             xticks = main_axs2.get_xticks()
-            updated = [''] * (len(xticks) - 2) + [r'$\infty$'] + ['']
+            updated = [""] * (len(xticks) - 2) + [r"$\infty$"] + [""]
             main_axs2.set_xticks(xticks)
             main_axs2.set_xticklabels(updated)
             fig.subplots_adjust(wspace=0)
 
-            d = .015
-            kwargs = dict(transform=main_axs.transAxes, color='k', clip_on=False)
+            d = 0.015
+            kwargs = dict(transform=main_axs.transAxes, color="k", clip_on=False)
             main_axs.plot((1 - d, 1 + d), (-d, d), **kwargs)
             main_axs.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)
 
@@ -150,13 +155,13 @@ def plot_results(
             main_axs2.plot((-d * factor, d * factor), (-d, d), **kwargs)
         else:
             xticks = main_axs.get_xticks()[1:-1]
-            updated = ['{:.2g}'.format(i) for i in xticks[:-1]] + [r'$\infty$']
+            updated = ["{:.2g}".format(i) for i in xticks[:-1]] + [r"$\infty$"]
             # updated = ['{:.2g}'.format(i) for i in xticks[:-1]] + ['1']
             plt.xticks(xticks, updated)
 
     if (swap_tol_plot and inset) or (not swap_tol_plot):
         df = data[data.p_swap == p_swap][data.delta < 10.5]
-        ds = set(df.distance) if distances == 'all' else distances
+        ds = set(df.distance) if distances == "all" else distances
         if rescale:
             sigma_t, mu = rescale
             y_err, logy = None, False
@@ -345,6 +350,5 @@ if __name__ == "__main__":
         show=False,
         swap_tol_plot=swap_tol_data,
         inset=True,
-        break_axis=True
+        break_axis=True,
     )
-

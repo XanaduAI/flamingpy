@@ -16,10 +16,10 @@ import numpy as np
 from scipy.linalg import block_diag
 import thewalrus.symplectic as symp
 
-from graphstates import CVGraph, SCZ_apply
-from GKP import GKP_binner, Z_err_cond
-import RHG
-from decoder import correct
+from .graphstates import CVGraph, SCZ_apply
+from .GKP import GKP_binner, Z_err_cond
+from . import RHG
+from .decoder import correct
 
 import time
 

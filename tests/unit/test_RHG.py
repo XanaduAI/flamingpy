@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for RHG classes and methods in RHG.py."""
 
-from RHG import RHG_graph, RHGCode, RHGCube
+from ft_stack.RHG import RHG_graph, RHGCode, RHGCube
 from numpy.random import default_rng as rng
 from networkx import fast_gnp_random_graph
 import itertools as it
@@ -73,7 +73,7 @@ def RHG_code(request):
 
 
 class TestRHGCode:
-    """"Test the RHGCode class."""
+    """ "Test the RHGCode class."""
 
     def test_init(self, RHG_code):
         # Check proper initialization

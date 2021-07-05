@@ -16,10 +16,10 @@ import argparse
 import csv
 import sys
 from datetime import datetime
-from decoder import correct
-from graphstates import CVGraph
-from RHG import RHG_graph, RHGCode
-from passive_construct import BS_network, reduce_macro_and_simulate
+from .decoder import correct
+from .graphstates import CVGraph
+from .RHG import RHG_graph, RHGCode
+from .passive_construct import BS_network, reduce_macro_and_simulate
 
 
 def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):

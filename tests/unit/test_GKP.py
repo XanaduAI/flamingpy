@@ -17,7 +17,7 @@ import math
 import numpy as np
 from numpy import sqrt, pi
 from numpy.random import default_rng as rng
-from GKP import to_pi_string, integer_fractional, GKP_binner, Z_err, Z_err_cond
+from ft_stack.GKP import to_pi_string, integer_fractional, GKP_binner, Z_err, Z_err_cond
 
 N = 50
 

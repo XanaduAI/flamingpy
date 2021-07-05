@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from passive_construct import invert_permutation, BS_network, reduce_macro_and_simulate
-from graphstates import CVGraph
-import RHG
+from ft_stack.passive_construct import invert_permutation, BS_network, reduce_macro_and_simulate
+from ft_stack.graphstates import CVGraph
+import ft_stack.RHG as RHG
 import itertools as it
 import pytest
 import numpy as np
