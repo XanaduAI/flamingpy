@@ -1,0 +1,30 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install pip
+        run: python3 -m pip install --upgrade pip
+
+      - name: Install ft-stack
+        run: pip install .
+        
+      - name: Run tests
+        run: python3 -m pytest tests --cov=ft_stack --cov-report=xml --cov-report=term-missing -p no:warnings
+        
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
