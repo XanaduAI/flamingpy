@@ -308,8 +308,8 @@ def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
 if __name__ == "__main__":
     # Change options here.
     options = {
-        "input_file": "./data/test_processed.csv",
-        "save_file": "./data/results.pdf",
+        "input_file": "../data/test_processed.csv",
+        "save_file": "../data/results.pdf",
         "p_swap": 0,
         "unit": "dB",
     }
