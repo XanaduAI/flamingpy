@@ -130,7 +130,7 @@ if __name__ == "__main__":
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
     # Store results in the data directory in the file results.csv.
-    file_name = "../data/results.csv"
+    file_name = "data/results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
         file = open(file_name, "x")
