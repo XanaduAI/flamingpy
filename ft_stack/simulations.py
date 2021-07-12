@@ -16,10 +16,10 @@ import argparse
 import csv
 import sys
 from datetime import datetime
-from .decoder import correct
-from .graphstates import CVGraph
-from .RHG import RHG_graph, RHGCode
-from .passive_construct import BS_network, reduce_macro_and_simulate
+from ft_stack.decoder import correct
+from ft_stack.graphstates import CVGraph
+from ft_stack.RHG import RHG_graph, RHGCode
+from ft_stack.passive_construct import BS_network, reduce_macro_and_simulate
 
 
 def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
     # Store results in the data directory in the file results.csv.
-    file_name = "./data/results.csv"
+    file_name = "data/results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
         file = open(file_name, "x")

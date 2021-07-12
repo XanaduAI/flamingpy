@@ -20,7 +20,7 @@ setup(
     description="Threshold estimations for concatenated quantum codes",
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages(),
-    package_data={"ft_stack":["../data/*"]},
+    package_data={"ft_stack":["data/*"]},
     install_requires=[
         "certifi==2020.12.5",
         "cycler==0.10.0",

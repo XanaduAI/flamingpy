@@ -22,7 +22,7 @@ import matplotlib.lines as mlines
 from numpy.random import default_rng as rng
 
 import scipy.sparse as sp
-from .GKP import Z_err, Z_err_cond
+from ft_stack.GKP import Z_err, Z_err_cond
 
 
 class EGraph(nx.Graph):
