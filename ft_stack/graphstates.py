@@ -46,11 +46,12 @@ class EGraph(nx.Graph):
             the adjacency mtrix of the graph.
     """
 
-    def __init__(self, *args, indexer="default", **kwargs):
+    def __init__(self, *args, indexer="default", macronodes=False, **kwargs):
         """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
         self.indexer = indexer
-        if indexer == "macronodes":
+        self._macronodes = macronodes
+        if macronodes:
             self.macro = nx.Graph()
         self.to_indices = None
         self.to_points = None
@@ -67,9 +68,9 @@ class EGraph(nx.Graph):
         N = self.order()
         if self.to_indices is not None:
             return self.to_indices
-        if self.indexer == "default":
+        if self.indexer == "default" and not self._macronodes:
             ind_dict = dict(zip(sorted(self.nodes()), range(N)))
-        if self.indexer == "macronodes":
+        elif self._macronodes:
             macro_graph = self.macro
             for node in self.nodes():
                 rounded = tuple(np.round(node).astype(int))
@@ -219,9 +220,7 @@ class EGraph(nx.Graph):
             ax.scatter(x, y, z, c=color, s=plt.rcParams["lines.markersize"] * 5)
 
             if label:
-                value = (
-                    self.nodes[point].get(label) if label != "index" else indices[point]
-                )
+                value = self.nodes[point].get(label) if label != "index" else indices[point]
                 if value is not None:
                     x, z, y = point
                     # Raise negative sign above node.
@@ -229,13 +228,7 @@ class EGraph(nx.Graph):
                     if type(value) != int:
                         value = r"${}{:.2g}$".format(sign, np.abs(value))
                     ax.text(
-                        x,
-                        y,
-                        z,
-                        value,
-                        color="MediumBlue",
-                        backgroundcolor="w",
-                        zorder=2,
+                        x, y, z, value, color="MediumBlue", backgroundcolor="w", zorder=2,
                     )
                 else:
                     n_uncomputed += 1
@@ -415,9 +408,7 @@ class CVGraph:
                     self._states["p"] = np.arange(self._N)
                 else:
                     num_p = rng().binomial(self._N, p_swap)
-                    inds = rng().choice(
-                        range(self._N), size=int(np.floor(num_p)), replace=False
-                    )
+                    inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
                     self._states["p"] = inds
 
             # Associate remaining indices with GKP states.
@@ -490,9 +481,7 @@ class CVGraph:
                     if state == "GKP":
                         self._init_quads[ind] = rng().integers(0, 2) * np.sqrt(np.pi)
 
-    def measure_hom(
-        self, quad="p", inds=[], method="cholesky", dim="single", updated_quads=[]
-    ):
+    def measure_hom(self, quad="p", inds=[], method="cholesky", dim="single", updated_quads=[]):
         """Conduct a homodyne measurement on the lattice.
 
         Simulate a homodyne measurement of quadrature quad of states
@@ -518,9 +507,7 @@ class CVGraph:
                     initial[i] = rng().normal(means[i], np.sqrt(covs[i]))
                 outcomes = SCZ_apply(self._adj, initial)
             if dim == "multi":
-                initial = rng().multivariate_normal(
-                    mean=means, cov=np.diag(covs), method=method
-                )
+                initial = rng().multivariate_normal(mean=means, cov=np.diag(covs), method=method)
                 outcomes = SCZ_apply(self._adj, initial)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
@@ -544,9 +531,7 @@ class CVGraph:
                     outcomes[i] = rng().normal(means[i], sigma)
             elif dim == "multi":
                 covs = np.eye(N_inds, dtype=np.float32) * (self._delta / 2)
-                outcomes = rng().multivariate_normal(
-                    mean=means, cov=covs, method=method
-                )
+                outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
         if self._sampling_order == "final":
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]
@@ -620,9 +605,7 @@ class CVGraph:
         N = self._N
         if not len(inds):
             inds = range(N)
-        outcomes = [
-            self.egraph.nodes[self.to_points[i]].get("hom_val_" + quad) for i in inds
-        ]
+        outcomes = [self.egraph.nodes[self.to_points[i]].get("hom_val_" + quad) for i in inds]
         return outcomes
 
     def bit_values(self, inds=[]):
