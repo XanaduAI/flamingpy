@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
-from ft_stack.RHG import RHG_graph, RHGCode
+from ft_stack.RHG import alternating_polarity, RHG_graph, RHGCode
 from ft_stack.graphstates import CVGraph
 from ft_stack.passive_construct import BS_network
 import pytest
@@ -28,7 +28,7 @@ class TestBlueprint:
         p_swap = 0
         delta = 0.001
         trials = 10
-        RHG_code = RHGCode(distance, boundaries=boundaries, polarity=True)
+        RHG_code = RHGCode(distance, boundaries=boundaries, polarity=alternating_polarity)
         errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=None)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
@@ -42,9 +42,7 @@ class TestPassive:
         trials = 10
 
         # The lattice with macronodes.
-        RHG_macro = RHG_graph(
-            distance, boundaries="periodic", macronodes=True, polarity=False
-        )
+        RHG_macro = RHG_graph(distance, boundaries="periodic", macronodes=True, polarity=False)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
         # The reduced lattice.
@@ -58,9 +56,7 @@ class TestPassive:
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
-        errors = ec_monte_carlo(
-            RHG_code, trials, delta, p_swap, passive_objects=passive_objects
-        )
+        errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
 

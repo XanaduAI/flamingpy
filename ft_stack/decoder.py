@@ -22,7 +22,7 @@ from matplotlib.patches import Patch
 
 from ft_stack.graphstates import CVGraph
 from ft_stack.GKP import GKP_binner, Z_err_cond
-from ft_stack.RHG import RHGCube, RHGCode
+from ft_stack.RHG import alternating_polarity, RHGCube, RHGCode
 
 # Smallest and largest numbers representable.
 smallest_number = sys.float_info.min
@@ -48,9 +48,7 @@ def graph_drawer(G, label_edges=True):
     weight_list = [G.edges[edge]["weight"] for edge in G.edges]
     weight_dict = {edge: "{:.2f}".format(G.edges[edge]["weight"]) for edge in G.edges}
     if label_edges:
-        nx.draw_networkx_edge_labels(
-            G, nx.circular_layout(G), edge_labels=weight_dict, font_size=7
-        )
+        nx.draw_networkx_edge_labels(G, nx.circular_layout(G), edge_labels=weight_dict, font_size=7)
     r = nx.draw_networkx_edges(G, nx.circular_layout(G), edge_color=weight_list)
     plt.colorbar(r)
 
@@ -277,9 +275,7 @@ def assign_weights(code, **kwargs):
         for node in syndrome_coords:
             neighbors = G[node]
             # List and number of p-squeezed states in neighborhood of node.
-            p_list = [
-                G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"
-            ]
+            p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
             p_count = len(p_list)
             if p_count in (0, 1):
                 if weight_options.get("prob_precomputed"):
@@ -402,9 +398,7 @@ def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
 
     # Relabel the nodes of the decoding graph to integers and define
     # the mapping between nodes and indices.
-    G_relabelled = nx.convert_node_labels_to_integers(
-        G_dec, label_attribute="stabilizer"
-    )
+    G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute="stabilizer")
     mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
 
     # Indices of odd parity cubes and boundary vertices; add these
@@ -478,9 +472,7 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             # equal to the length of the shortest path.
             # TODO: Is the behavior correct for negative weights, or do I
             # want 1/weight or max_num - weight?
-            G_match.add_edge(
-                cube1, cube2, weight=length, inverse_weight=-length, path=path
-            )
+            G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
 
     # For non-periodic boundary conditions, include boundary vertices.
     # Get the indices of the boundary vertices from the decoding
@@ -519,9 +511,7 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             # the virtual excitation corresponding to the boundary
             # vertex, with weight equal to the length of the shortest
             # path.
-            G_match.add_edge(
-                cube, virtual_point, weight=length, inverse_weight=-length, path=path
-            )
+            G_match.add_edge(cube, virtual_point, weight=length, inverse_weight=-length, path=path)
             i += 1
             virtual_points += [virtual_point]
         # Add edge with weight 0 between any two virtual excitations.
@@ -584,9 +574,7 @@ def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
                     ylist += [y]
                     zlist += [z]
                 plt.title("Minimum-weight perfect matching", family="serif", size=20)
-                plt.plot(
-                    xlist, ylist, zlist, "o-k", ms=20, linewidth=5, c=np.random.rand(3)
-                )
+                plt.plot(xlist, ylist, zlist, "o-k", ms=20, linewidth=5, c=np.random.rand(3))
         graph_drawer(G_match, label_edges=label_edges)
     return matching
 
@@ -685,12 +673,7 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
 
 
 def correct(
-    code,
-    decoder,
-    weight_options=None,
-    draw=False,
-    drawing_opts=None,
-    sanity_check=False,
+    code, decoder, weight_options=None, draw=False, drawing_opts=None, sanity_check=False,
 ):
     """Run through all the error-correction steps.
 
@@ -739,9 +722,7 @@ def correct(
         if weight_options is None:
             weight_options = {}
         assign_weights(code, **weight_options)
-        G_dec = decoding_graph(
-            code, draw=draw, drawing_opts=drawing_opts, label_edges=label_edges
-        )
+        G_dec = decoding_graph(code, draw=draw, drawing_opts=drawing_opts, label_edges=label_edges)
         G_match = matching_graph(G_dec)
         matching = MWPM(G_match, G_dec, draw=draw, label_edges=label_edges)
         recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
@@ -753,7 +734,7 @@ if __name__ == "__main__":
     # DV (outer) code
     distance = 3
     boundaries = "periodic"
-    RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=True)
+    RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
     RHG_lattice = RHG_code.graph
     # CV (inner) code/state
     p_swap = 0
