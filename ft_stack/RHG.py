@@ -41,8 +41,11 @@ def alternating_polarity(edge):
         pol = (-1) ** point1[1]
     elif direction == 1:
         pol = (-1) ** point1[2]
-    else:
+    elif direction == 2:
         pol = (-1) ** point1[0]
+    else:
+        print("Vertices must be separated by one unit on the integer lattice.")
+        return 1
     return pol
 
 
@@ -55,7 +58,7 @@ def dual_neighbours(p, displace=1):
 
     Args:
         p (tuple): the coordinates of the primal vertex.
-        dispalce (float): how much to displace the neighbour by. Useful
+        displace (float): how much to displace the neighbour by. Useful
             to change when creating maronodes.
 
     Returns:
