@@ -29,7 +29,7 @@ from ft_stack.decoder import (
     check_correction,
     correct,
 )
-from ft_stack.RHG import RHGCode, RHGCube
+from ft_stack.RHG import alternating_polarity, RHGCode, RHGCube
 import networkx as nx
 import itertools as it
 
@@ -40,7 +40,7 @@ code_params = it.product([2, 3, 4], ["finite", "periodic"], [1, 0.1, 0.01], [0, 
 @pytest.fixture(scope="module", params=code_params)
 def enc_state(request):
     distance, boundaries, delta, p_swap = request.param
-    DVRHG = RHGCode(distance=distance, boundaries=boundaries, polarity=True)
+    DVRHG = RHGCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
     RHG_lattice = DVRHG.graph
     # CV (inner) code/state
     CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)

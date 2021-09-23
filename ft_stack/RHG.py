@@ -19,14 +19,83 @@ from matplotlib import pyplot as plt
 from ft_stack.graphstates import EGraph, CVGraph
 
 
-def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
-    """Create an EGraph of a dims-dimensional RHG lattice.
+def alternating_polarity(edge):
+    """Return +1 or -1 depending on the vertices that form edge edge.
 
+    Help with the assignment of edge weights (i.e. polarity) for 
+    the RHG graph. This particular alternating pattern ensures that 
+    every vertex has two +1 and two -1 weight edges incident on it. The 
+    precise combination depends on the direction of the edge and the 
+    coordinates of the vertices. This pattern may be helpful to reduce 
+    CV-level noise.
+    
+    Args:
+        edge (list-type): a pair of tuples, denoting lattice vertices.
+    
+    Returns:
+        int: +1 or -1.    
+    """
+    point1, point2 = np.array(edge[0]), np.array(edge[1])
+    direction = np.where(point2 - point1)[0][0]
+    if direction == 0:
+        pol = (-1) ** point1[1]
+    elif direction == 1:
+        pol = (-1) ** point1[2]
+    elif direction == 2:
+        pol = (-1) ** point1[0]
+    else:
+        print("Vertices must be separated by one unit on the integer lattice.")
+        return 1
+    return pol
+
+
+def dual_neighbours(p, displace=1):
+    """All the dual neighbours of primal vertex p in the RHG lattice.
+
+    A helper function for RHG_graph. Given a primal vertex p, returns
+    the coordinates of all the dual neighbours. Assumes each neighbour
+    is 1 unit away by default.
+
+    Args:
+        p (tuple): the coordinates of the primal vertex.
+        displace (float): how much to displace the neighbour by. Useful
+            to change when creating maronodes.
+
+    Returns:
+        list of tuple: the coordinates of the four neighbours.
+    """
+    x, y, z = p[0], p[1], p[2]
+    top = (x, y + displace, z)
+    bottom = (x, y - displace, z)
+    left = (x - displace, y, z)
+    right = (x + displace, y, z)
+    if z % 2:
+        front = (x, y, z + displace)
+        back = (x, y, z - displace)
+        if x % 2:
+            return [back, left, front, right]
+        else:
+            return [back, top, front, bottom]
+    else:
+        return [bottom, left, top, right]
+
+
+def RHG_graph(
+    dims,
+    boundaries="finite",
+    macronodes=False,
+    polarity=None,
+    node_color={"primal": "k", "dual": "grey"},
+    edge_color={1: "b", -1: "r"},
+    memory_saver=False,
+):
+    """Create an EGraph of a dims-dimensional RHG lattice.
+    
     Generate an RHG lattice with dimensions given by dims (an integer
-    denoting the number of stabilizer cubes in each direciton,
+    denoting the number of stabilizer cubes in each direction,
     or a tuple specifying all three dimensions). By default, a useful
-    set of finite boundary conditions assumed, but any combination can
-    be specified.
+    set of finite boundary conditions is assumed, but any combination 
+    can be specified.
 
     Args:
         dims (int or list): the dimensions of the lattice (the
@@ -37,192 +106,147 @@ def RHG_graph(dims, boundaries="finite", macronodes=False, polarity=False):
             interchangeably. If a string, 'primal', 'dual', 'periodic',
             assumes those boundaries in all three directions; or,
             accepts a list that specifies which boundary in which
-            direction. Set  to 'finite' or ['primal', 'dual', 'dual']
+            direction. Set  to 'finite' == ['primal', 'dual', 'dual']
             by default.
-        polarity (bool): if True, make some edges have weight -1 to be
-            helpful for some noise models, e.g. in the CV context. Set
-            edge 'color' attribute to blue/red for -1/+1 weights. By
-            default, all edges have weight +1.
-
+        macronodes (bool): if True, generates a macronode version of 
+            the lattice, where each pair of vertices connected by
+            an edge is replaced with a dumbbell .-., causing each
+            vertex to be replaced by four (in bulk).
+        polarity (func): a function that specifies edge weights. The
+            input to the function should be an edge (i.e. list of two
+            vertices) and the output should be the edge weight.
+        node_color (dict): a dictionary of the form 
+            {vertex_attribute: color}, where vertex_attribute can
+            be 'primal' or 'dual'.
+        edge_color (dict): a dictionary of the form {weight: color}
+        memory_saver (bool): if True, omits string attributes in nodes 
+            and edges.
+            
     Returns:
         EGraph: the RHG lattice.
     """
-    # TODO: Compactify construction by identifying syndrome qubits;
-    # potentially use NetworkX lattice generators.
-    # first.
-    # Dimensions of the lattice.
     if np.size(dims) == 1:
         dims = (dims, dims, dims)
-    nx, ny, nz = dims
+    G = EGraph(dims=dims, macronodes=macronodes)
     # Dealing with boundaries
     if boundaries == "finite":
         boundaries = ["primal", "dual", "dual"]
     elif type(boundaries) == str:
         boundaries = [boundaries] * 3
-    # Define the EGraph of the lattice
-    if macronodes:
-        indexer = "macronodes"
-    else:
-        indexer = "default"
-    lattice = EGraph(dims=dims, boundaries=boundaries, indexer=indexer)
-
-    # Constrain the ranges of the coordinates depending on the type
-    # of boundaries.
-    min_dict = {"primal": 0, "dual": 1, "periodic": 0}
-    max_dict = {"primal": 1, "dual": 0, "periodic": 0}
-    x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
-    x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
-
-    # TODO: Change notation to data / ancillae notation
-    # Coordinates of red qubits in even and odd vertical slices.
-    even_red = [
-        (2 * i + 1, 2 * j + 1, 2 * k)
-        for (i, j, k) in it.product(range(nx), range(ny), range(z_min, nz + z_max))
+    # Locations of all primal vertices.
+    inds = it.product(range(dims[0]), range(dims[1]), range(dims[2]))
+    # Primal vertices are combined into lists of six to be later usable
+    # by the syndrome indentification in the RHGCode.
+    all_six_bodies = [
+        [
+            (2 * i, 2 * j + 1, 2 * k + 1),
+            (2 * i + 1, 2 * j, 2 * k + 1),
+            (2 * i + 1, 2 * j + 1, 2 * k),
+            (2 * i + 2, 2 * j + 1, 2 * k + 1),
+            (2 * i + 1, 2 * j + 2, 2 * k + 1),
+            (2 * i + 1, 2 * j + 1, 2 * k + 2),
+        ]
+        for (i, j, k) in inds
     ]
-    odd_red = [
-        (2 * i, 2 * j, 2 * k + 1)
-        for (i, j, k) in it.product(
-            range(x_min, nx + x_max), range(y_min, ny + y_max), range(nz)
-        )
-    ]
-    all_red = set(even_red + odd_red)
+    denested_six_bodies = set([a for b in all_six_bodies for a in b])
 
-    # Coordinates of green qubits in even and odd horizontal slices.
-    even_green = [
-        (2 * i + 1, 2 * j, k)
-        for (i, j, k) in it.product(
-            range(nx), range(y_min, ny + y_max), range(z_min, 2 * nz + z_max)
-        )
-    ]
-    odd_green = [
-        (2 * i, 2 * j + 1, k)
-        for (i, j, k) in it.product(
-            range(x_min, nx + x_max), range(ny), range(z_min, 2 * nz + z_max)
-        )
-    ]
-    all_green = set(even_green + odd_green)
+    dual_inds = set(np.where(np.array(boundaries) == "dual")[0])
+    periodic_inds = set(np.where(np.array(boundaries) == "periodic")[0])
+    for vertex in denested_six_bodies:
+        where_vertex_0, where_vertex_max = set(), set()
+        # Ensure no vertices are included if they extend beyond
+        # requested boundary conditions. Note this can also be achieved
+        # by changing 'inds'.
+        for i in range(3):
+            if vertex[i] == 0:
+                where_vertex_0 ^= {i}
+            elif vertex[i] == 2 * dims[i]:
+                where_vertex_max ^= {i}
+        if not (
+            where_vertex_max & dual_inds
+            or where_vertex_0 & dual_inds
+            or where_vertex_max & periodic_inds
+        ):
+            if macronodes:
+                G.macro.add_node(vertex, micronodes=[])
+            for neighbor in dual_neighbours(vertex):
+                # Ensure no neighbours are included if they extend beyond
+                # requested boundary conditions.
+                where_neighbor_0, where_neighbor_max = set(), set()
+                for i in range(3):
+                    if neighbor[i] == 0:
+                        where_neighbor_0 ^= {i}
+                    elif neighbor[i] == 2 * dims[i]:
+                        where_neighbor_max ^= {i}
+                if not (
+                    where_neighbor_max & dual_inds
+                    or where_neighbor_0 & dual_inds
+                    or where_neighbor_max & periodic_inds
+                ):
+                    edge = (vertex, neighbor)
+                    weight = polarity(edge) if polarity else 1
+                    color = edge_color.get(weight)
+                    if macronodes:
+                        central_vertex, central_neighbor = (
+                            np.array(vertex),
+                            np.array(neighbor),
+                        )
+                        direction_vec = 0.1 * (central_neighbor - central_vertex)
+                        displaced_vertex = np.round(central_vertex + direction_vec, 1)
+                        displaced_vertex = tuple(displaced_vertex)
+                        displaced_neighbor = np.round(central_neighbor - direction_vec, 1)
+                        displaced_neighbor = tuple(displaced_neighbor)
+                        G.add_edge(
+                            displaced_vertex, displaced_neighbor, weight=weight, color=color,
+                        )
+                        G.macro.add_node(neighbor, micronodes=[])
+                    else:
+                        if memory_saver:
+                            G.add_edge(vertex, neighbor, weight=weight)
+                        else:
+                            G.add_node(vertex, type="primal", color=node_color["primal"])
+                            G.add_node(neighbor, type="dual", color=node_color["dual"])
+                            G.add_edge(vertex, neighbor, color=color, weight=weight)
 
-    def red_neighbours(p, displace=1):
-        """Coordinates of all potential neighbours of red vertices."""
-        right = (p[0] + displace, p[1], p[2])
-        top = (p[0], p[1] + displace, p[2])
-        left = (p[0] - displace, p[1], p[2])
-        bottom = (p[0], p[1] - displace, p[2])
-        return [bottom, left, top, right]
+                    # Additional edges for periodic boundaries.
+                    for ind in where_neighbor_0 & periodic_inds:
+                        max_coord = 2 * dims[ind] - 1
+                        high_primal_vertex = list(neighbor)
+                        high_primal_vertex[ind] = max_coord
+                        neighbor_other_side = tuple(high_primal_vertex)
+                        edge = (neighbor, neighbor_other_side)
+                        weight = polarity(edge) if polarity else 1
+                        color = edge_color.get(weight)
+                        if macronodes:
+                            central_neighbor, other_side = (
+                                np.array(neighbor),
+                                high_primal_vertex,
+                            )
+                            direction_vec = other_side - central_neighbor
+                            shortened_vec = -0.1 * direction_vec / np.linalg.norm(direction_vec)
+                            displaced_neighbor = np.round(central_neighbor + shortened_vec, 1)
+                            displaced_neighbor = tuple(displaced_neighbor)
+                            displaced_other_side = np.round(other_side - shortened_vec, 1)
+                            displaced_other_side = tuple(displaced_other_side)
+                            G.add_edge(
+                                displaced_neighbor,
+                                displaced_other_side,
+                                weight=weight,
+                                color=color,
+                            )
+                        else:
+                            if memory_saver:
+                                G.add_edge(neighbor, neighbor_other_side, weight=weight)
+                            else:
+                                G.add_node(
+                                    neighbor_other_side, type="primal", color=node_color["primal"],
+                                )
+                                G.add_edge(
+                                    neighbor, neighbor_other_side, color=color, weight=weight,
+                                )
 
-    def green_neighbours(p, displace=1):
-        """Coordinates of all potential neighbours of green vertices."""
-        return [(p[0], p[1], p[2] - displace), (p[0], p[1], p[2] + displace)]
-
-    # Polarity-dependent color function: blue for +1, red for -1.
-    color = lambda pol: ((pol + 1) // 2) * "b" + abs((pol - 1) // 2) * "r"
-
-    if macronodes:
-        macro_graph = lattice.macro
-
-    # Add edges between red points and all their neighbours.
-    for point in all_red:
-        neighbours = red_neighbours(point)
-        if macronodes:
-            planetary_bodies = red_neighbours(point, displace=0.1)
-            neighbouring_bodies = red_neighbours(point, displace=0.9)
-            macro_graph.add_node(point, micronodes=[])
-            # TODO: Append micronodes to macro_graph so indexer does
-            # not have to be run.
-        for i in range(4):
-            pol = (-1) ** (polarity * (point[2] + i))
-            neighbour = neighbours[i]
-            if neighbour in all_green:
-                if macronodes:
-                    body = planetary_bodies[i]
-                    nearby_body = neighbouring_bodies[i]
-                    nearby_body = tuple([round(num, 1) for num in nearby_body])
-                    lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
-                    lattice.nodes[body]["color"] = "red"
-                    lattice.nodes[nearby_body]["color"] = "green"
-                else:
-                    lattice.add_edge(point, neighbour, weight=pol, color=color(pol))
-                    lattice.nodes[point]["color"] = "red"
-
-    # Add edges between green points and all their neighbours.
-    for point in all_green:
-        neighbours = green_neighbours(point)
-        if macronodes:
-            planetary_bodies = green_neighbours(point, displace=0.1)
-            neighbouring_bodies = green_neighbours(point, displace=0.9)
-            macro_graph.add_node(point, micronodes=[])
-        pol = (-1) ** (polarity * (point[1] + 1))
-        for i in (0, 1):
-            if neighbours[i] in all_green:
-                if macronodes:
-                    body = planetary_bodies[i]
-                    nearby_body = neighbouring_bodies[i]
-                    nearby_body = tuple([round(num, 1) for num in nearby_body])
-                    lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
-                    lattice.nodes[body]["color"] = "green"
-                    lattice.nodes[nearby_body]["color"] = "green"
-                else:
-                    lattice.add_edge(point, neighbours[i], weight=pol, color=color(pol))
-                    lattice.nodes[point]["color"] = "green"
-
-    # Dealing with periodic boundary conditions.
-    bound_arr = np.array(boundaries)
-    periodic_inds = np.where(bound_arr == "periodic")[0]
-    for ind in periodic_inds:
-        # First and last slices of the lattice in the direction
-        # specified by ind.
-        if macronodes:
-            integer_vertices = macro_graph.nodes
-        else:
-            integer_vertices = lattice.nodes
-        low_slice = {point for point in integer_vertices if point[ind] == 0}
-        high_slice = {
-            point for point in integer_vertices if point[ind] == 2 * dims[ind] - 1
-        }
-        if ind in (0, 1):
-            low_reds = all_red & low_slice
-            high_reds = all_red & high_slice
-            # Connect red in first slice to greens in last slice.
-            for point in low_reds:
-                pol = (-1) ** (polarity * (point[2] + ind + 1))
-                high_green = list(point)
-                high_green[ind] = 2 * dims[ind] - 1
-                high_green = tuple(high_green)
-                if macronodes:
-                    point = red_neighbours(point, displace=0.1)[1 - ind]
-                    high_green = red_neighbours(high_green, displace=0.1)[-1 - ind]
-                lattice.add_edge(point, high_green, weight=pol, color=color(pol))
-                lattice.nodes[point]["color"] = "red"
-                lattice.nodes[high_green]["color"] = "green"
-            # Connect reds in last slice to greens in first slice.
-            for point in high_reds:
-                pol = (-1) ** (polarity * (point[2] + ind + 1))
-                low_green = list(point)
-                low_green[ind] = 0
-                low_green = tuple(low_green)
-                if macronodes:
-                    point = red_neighbours(point, displace=0.1)[-1 - ind]
-                    low_green = red_neighbours(low_green, displace=0.1)[1 - ind]
-                lattice.add_edge(point, low_green, weight=pol, color=color(pol))
-                lattice.nodes[point]["color"] = "red"
-                lattice.nodes[low_green]["color"] = "green"
-        # If periodic in z direction, connect greens in first slice with
-        # greens in last slice.
-        if ind == 2:
-            low_greens = all_green & low_slice
-            for point in low_greens:
-                pol = (-1) ** (polarity * (point[1] + 1))
-                high_green = list(point[:])
-                high_green[ind] = 2 * dims[ind] - 1
-                high_green = tuple(high_green)
-                if macronodes:
-                    point = green_neighbours(point, displace=0.1)[0]
-                    high_green = green_neighbours(high_green, displace=0.1)[1]
-                lattice.add_edge(point, high_green, weight=pol, color=color(pol))
-                lattice.nodes[point]["color"] = "green"
-                lattice.nodes[high_green]["color"] = "green"
-
-    return lattice
+    G.graph["primal_cubes"] = all_six_bodies
+    return G
 
 
 class RHGCode:
@@ -262,9 +286,7 @@ class RHGCode:
             according to the error complex.
     """
 
-    def __init__(
-        self, distance, error_complex="primal", boundaries="finite", polarity=False
-    ):
+    def __init__(self, distance, error_complex="primal", boundaries="finite", polarity=None):
         """Initialize the RHG code."""
         # TODO: Check code distance convention.
         self.distance = distance
@@ -283,9 +305,7 @@ class RHGCode:
         # The following line also defines the self.syndrome_coords
         # attribute.
         self.stabilizers = self.identify_stabilizers(self.complex)
-        self.syndrome_inds = [
-            self.graph.to_indices[point] for point in self.syndrome_coords
-        ]
+        self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
         self.boundary_coords = self.identify_boundary(self.complex)
 
     def identify_stabilizers(self, error_complex="primal"):
@@ -359,9 +379,7 @@ class RHGCode:
                         syndrome_coords += actual_stabe
                         all_cubes.append(cube)
             if len(actual_stabe) == 4:
-                average_point = [
-                    sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)
-                ]
+                average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
                 rounded_avs = np.array([round(av) for av in average_point])
                 high_inds = np.where(maxes == rounded_avs)[0]
                 low_inds = np.where(mins == rounded_avs)[0]
@@ -539,7 +557,7 @@ if __name__ == "__main__":
     # For iterating through boundaries
     # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
 
-    RHG = RHGCode(d, boundaries=boundaries, polarity=True)
+    RHG = RHGCode(d, boundaries=boundaries, polarity=alternating_polarity)
     RHG_lattice = RHG.graph
     # Check maronode lattice
     # RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
