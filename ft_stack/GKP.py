@@ -54,7 +54,7 @@ def integer_fractional(x, alpha, draw=False):
             of x.
     """
     # The fractional part.
-    f = x - alpha*np.round(x/alpha)
+    f = x - alpha * np.round(x / alpha)
     # The integer part. astype(int) used here to prevent unwanted
     # behaviour during binning (e.g. -6.01 % 2 = 2, while -6 % 2 =0)
     n = ((x - f) / alpha).astype(int)
@@ -137,15 +137,12 @@ def Z_err(var, var_num=5):
     # origin
     for i in range(-n_max, n_max, 4):
         error -= 0.5 * (
-            erf((i + 2) * np.sqrt(np.pi) / (2 * var))
-            - erf(i * np.sqrt(np.pi) / (2 * var))
+            erf((i + 2) * np.sqrt(np.pi) / (2 * var)) - erf(i * np.sqrt(np.pi) / (2 * var))
         )
     return error
 
 
-def Z_err_cond(
-    var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False, draw=False
-):
+def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False, draw=False):
     """Return the conditional phase error probability for lattice nodes.
 
     Return the phase error probability for a list of variances var
@@ -173,18 +170,20 @@ def Z_err_cond(
     """
     # TODO: Make the following line smarter.
     n_max = var_num
-    
+
     bit, frac = GKP_binner(hom_val, return_fraction=True)
     factor = 1 - bit if use_hom_val else 1
     val = hom_val if use_hom_val else frac
-    
+
     if val.shape == () and np.isscalar(var):
+
         def ex_val(n):
             return np.exp(-((val - n * np.sqrt(np.pi)) ** 2) / var)
+
         numerator = np.sum(ex_val(2 * np.arange(-n_max, n_max) + factor))
         denominator = np.sum(ex_val(np.arange(-n_max, n_max)))
-        if denominator !=0:
-            return numerator/denominator
+        if denominator != 0:
+            return numerator / denominator
         else:
             return replace_undefined
     else:
