@@ -17,6 +17,7 @@ import numpy as np
 
 from matplotlib import pyplot as plt
 from ft_stack.graphstates import EGraph, CVGraph
+import networkx as nx
 
 
 def alternating_polarity(edge):
@@ -284,6 +285,10 @@ class RHGCode:
             vertices, according to the error complex.
         boundary_coords (list of tup): the coordinates of the boundary
             according to the error complex.
+        decoder_graph (Graph): decoding graph constructed from the stabilizers
+            without edge weights populated
+        _decoder_mapping (dict): mapping between nodes and indices for the
+            decoding graph
     """
 
     def __init__(self, distance, error_complex="primal", boundaries="finite", polarity=None):
@@ -307,6 +312,7 @@ class RHGCode:
         self.stabilizers = self.identify_stabilizers(self.complex)
         self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
         self.boundary_coords = self.identify_boundary(self.complex)
+        self.decoding_graph()
 
     def identify_stabilizers(self, error_complex="primal"):
         """Return the syndrome coordinates for the RHG lattice G.
@@ -471,6 +477,49 @@ class RHGCode:
 
     # TODO: slice_coords function that constructs rather than iterates,
     # like the EGraph.
+    
+    def decoding_graph(self):
+        """Create a decoding graph from the RHG lattice G.
+
+        The decoding graph has as its nodes every stabilizer in G and a
+        every boundary point (for now coming uniquely from a primal
+        boundary). The output graph has stabilizer nodes relabelled to 
+        integer indices, but still points to the original stabilizer with 
+        the help of the 'stabilizer' attribute. Common vertices are stored 
+        under the 'common_vertex' edge attribute.
+        """
+        # An empty decoding graph.
+        G_dec = nx.Graph(title="Decoding Graph")
+        cubes = self.stabilizers
+        G_dec.add_nodes_from(cubes)
+        # For stabilizer cubes sharing a vertex, define an edge between
+        # them with weight equal to the weight assigned to the vertex.
+        for (cube1, cube2) in it.combinations(G_dec, 2):
+            common_vertex = set(cube1.coords()) & set(cube2.coords())
+            if common_vertex:
+                coordinate = common_vertex.pop()
+                G_dec.add_edge(cube1, cube2, common_vertex=coordinate)
+        
+    
+        # Include primal boundary vertices in the case of non-periodic
+        # boundary conditions. (The following list will be empty absent a
+        # primal boundary).
+        bound_points = self.boundary_coords
+        # For boundary points sharing a vertex with a stabilizer cube,
+        # add an edge between them with weight equal to the weight assigned
+        # to the vertex.
+        for (cube, point) in it.product(G_dec, bound_points):
+            if point in cube.coords():
+                G_dec.add_edge(cube, point, common_vertex=point)
+    
+        # Relabel the nodes of the decoding graph to integers and define
+        # the mapping between nodes and indices.
+        G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute="stabilizer")
+        mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
+        
+        self.decoder_graph = G_relabelled
+        self._decoder_mapping = mapping
+
 
 
 class RHGCube:
