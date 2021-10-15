@@ -523,9 +523,6 @@ class CVGraph:
             covs = self._init_noise
             if dim == "single":
                 outcomes = SCZ_apply(self._adj, means + self._init_vals)
-            if dim == "multi":
-                initial = self._random_gen.multivariate_normal(mean=means, cov=np.diag(covs), method=method)
-                outcomes = SCZ_apply(self._adj, initial)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
@@ -546,9 +543,6 @@ class CVGraph:
                 sigma = np.sqrt(self._delta / 2)
                 for i in range(N_inds):
                     outcomes[i] = self._random_gen.normal(means[i], sigma)
-            elif dim == "multi":
-                covs = np.eye(N_inds, dtype=np.float32) * (self._delta / 2)
-                outcomes = self._random_gen.multivariate_normal(mean=means, cov=covs, method=method)
         if self._sampling_order == "final":
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]

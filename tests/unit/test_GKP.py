@@ -47,18 +47,19 @@ def test_to_pi_string():
 
 
 # Construct random numbers from an integer and fractional part.
-alpha = np.sqrt(np.pi)
-integers = rng().integers(-N // 2, N // 2, N)
-fractions = rng().random(N) * (alpha / 2)
-numbers = integers * alpha + fractions
+ALPHA_VALS = np.array([np.sqrt(np.pi),0.3,0.5,0.7,np.exp(1)])
 
 
 class TestGKPBinning:
     """Tests for GKP binning functions."""
-
-    def test_integer_fractional(self):
+    
+    @pytest.mark.parametrize("alpha", ALPHA_VALS)
+    def test_integer_fractional(self, alpha):
         # Test that the integer and fractional part as obtained by
         # integer_fractional matches that of the constructed numbers/
+        integers = rng().integers(-N // 2, N // 2, N)
+        fractions = rng().random(N) * (alpha / 2)
+        numbers = integers * alpha + fractions
         int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(int_part == integers)
         assert np.allclose(frac_part, fractions)
@@ -66,7 +67,13 @@ class TestGKPBinning:
     def test_gkp_binner(self):
         # Tests that GKP_binner gives the integer part mod 2, and
         # returns the fractional part if asked.
+        alpha = np.sqrt(np.pi)
+        integers = rng().integers(-N // 2, N // 2, N)
+        fractions = rng().random(N) * (alpha / 2)
+        numbers = integers * alpha + fractions
+        
         bits = integers % 2
+        int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(GKP_binner(numbers) == bits)
         assert np.allclose(GKP_binner(numbers, return_fraction=True)[1], fractions)
 
