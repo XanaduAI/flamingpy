@@ -376,11 +376,11 @@ class CVGraph:
             # vs those to CV.egraph.
             self.egraph = EGraph(g)
         self._N = len(g)
-        
-        #Instantiate the adjacency matrix
+
+        # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
-        
-        #Create a generator for random numbers to be used throughout
+
+        # Create a generator for random numbers to be used throughout
         self._random_gen = rng()
 
         if states:
@@ -399,7 +399,9 @@ class CVGraph:
                     self._states["p"] = np.arange(self._N)
                 else:
                     num_p = self._random_gen.binomial(self._N, p_swap)
-                    inds = self._random_gen.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
+                    inds = self._random_gen.choice(
+                        range(self._N), size=int(np.floor(num_p)), replace=False
+                    )
                     self._states["p"] = inds
 
             # Associate remaining indices with GKP states.
@@ -467,7 +469,7 @@ class CVGraph:
                 if state == "p":
                     init_noise[indices] = 1 / (2 * delta)
                     init_noise[indices + N] = delta / 2
-                    init_vals[indices] = self._random_gen.normal(0,  1 / (2 * delta), len(indices))
+                    init_vals[indices] = self._random_gen.normal(0, 1 / (2 * delta), len(indices))
                     init_vals[indices + N] = self._random_gen.normal(0, delta / 2, len(indices))
             self._init_noise = init_noise
             self._init_vals = init_vals
@@ -507,10 +509,7 @@ class CVGraph:
         Simulate a homodyne measurement of quadrature quad of states
         at indices inds according to sampling order specified by
         self._sampling_order. Use the Numpy random sampling method
-        method; by default, do many single-variable samplings where
-        appropriate, otherwise set dim = 'multi' for sampling once
-        from a multivariate distribution. (This might affect the speed
-        of implementation). If updated_quads is supplied, use those
+        method. If updated_quads is supplied, use those
         instead of applying an SCZ matrix to the initial quads in
         the two-step sampling.
         """

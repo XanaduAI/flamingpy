@@ -52,13 +52,13 @@ def integer_fractional(x, alpha, draw=False):
         alpha (float): alpha from above
         draw (bool): if True, plot the fractional and integer parts
             of x.
-    """  
+    """
     int_frac = np.divmod(x, alpha)
-    large_frac = np.greater(int_frac[1], alpha/2).astype(int)
+    large_frac = np.greater(int_frac[1], alpha / 2).astype(int)
 
-    f = int_frac[1] - (alpha/2) * large_frac
+    f = int_frac[1] - (alpha / 2) * large_frac
     n = int_frac[0].astype(int) + large_frac
-    
+
     if draw:
         xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
