@@ -373,29 +373,28 @@ def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
         networkx.Graph: the decoding graph.
     """
     cubes = code.stabilizers
-    bound_points = code.boundary_coords
 
-    G_relabelled = code.decoder_graph.copy()
+    decoding_graph = code.decoding_graph
     mapping = code._decoder_mapping
 
     # Assign edge weights based on the common vertices between stabilizers
-    for edge in G_relabelled.edges:
-        G_relabelled.edges[edge]["weight"] = code.graph.nodes[G_relabelled.edges[edge]["common_vertex"]]["weight"]
-    
+    for edge in decoding_graph.edges:
+        if "common_vertex" in decoding_graph.edges[edge]:
+            common = decoding_graph.edges[edge]["common_vertex"]
+            decoding_graph.edges[edge]["weight"] = code.graph.nodes[common]["weight"]
+
     # Indices of odd parity cubes and boundary vertices; add these
     # index lists to the graph attributes dictionary, to be used by the
     # matching graph.
     odd_parity_cubes = [cube for cube in cubes if cube.parity]
     odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
-    G_relabelled.graph["odd_cubes"] = odd_parity_inds[:]
-    bound_inds = [mapping[point] for point in bound_points]
-    G_relabelled.graph["boundary_points"] = bound_inds[:]
+    decoding_graph.graph["odd_cubes"] = odd_parity_inds[:]
 
     # Draw the lattice and the abstract decoding graph.
     if draw:
-        graph_drawer(G_relabelled, label_edges=label_edges)
-        syndrome_plot(code, G_relabelled, index_dict=mapping, drawing_opts=drawing_opts)
-    return G_relabelled
+        graph_drawer(decoding_graph, label_edges=label_edges)
+        syndrome_plot(code, decoding_graph, index_dict=mapping, drawing_opts=drawing_opts)
+    return decoding_graph
 
 
 def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
@@ -454,21 +453,6 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             # TODO: Is the behavior correct for negative weights, or do I
             # want 1/weight or max_num - weight?
             G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
-
-    # For non-periodic boundary conditions, include boundary vertices.
-    # Get the indices of the boundary vertices from the decoding
-    # graph.
-    bound_points = G_dec.graph["boundary_points"]
-    # Connect two helper points, one per primal boundary, with weight 0
-    # to all the boundary points. This will speed up Dijkstra.
-    n_b = len(bound_points) // 2
-    low_bound_points, high_bound_points = bound_points[:n_b], bound_points[n_b:]
-    v_low = "low"
-    v_high = "high"
-    for point in low_bound_points:
-        G_dec.add_edge(v_low, point, weight=0)
-    for point in high_bound_points:
-        G_dec.add_edge(v_high, point, weight=0)
 
     virtual_points = []
     if G_dec.graph["boundary_points"]:
@@ -585,8 +569,9 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
             path = G_match.edges[pair]["path"]
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:
-                common_vertex = G_dec.edges[pair]["common_vertex"]
-                code.graph.nodes[common_vertex]["bit_val"] ^= 1
+                if "common_vertex" in G_dec.edges[pair]:
+                    common_vertex = G_dec.edges[pair]["common_vertex"]
+                    code.graph.nodes[common_vertex]["bit_val"] ^= 1
 
     if sanity_check:
         G_dec_new = decoding_graph(code, draw=False)

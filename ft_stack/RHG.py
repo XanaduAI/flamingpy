@@ -507,23 +507,41 @@ class RHGCode:
             common_vertex = set(cube1.coords()) & set(cube2.coords())
             if common_vertex:
                 coordinate = common_vertex.pop()
-                G_dec.add_edge(cube1, cube2, common_vertex=coordinate)
+                G_dec.add_edge(cube1, cube2, common_vertex=coordinate, weight=None)
 
         # Include primal boundary vertices in the case of non-periodic
         # boundary conditions. (The following list will be empty absent a
         # primal boundary).
         bound_points = self.boundary_coords
+
         # For boundary points sharing a vertex with a stabilizer cube,
         # add an edge between them with weight equal to the weight assigned
         # to the vertex.
         for (cube, point) in it.product(G_dec, bound_points):
             if point in cube.coords():
-                G_dec.add_edge(cube, point, common_vertex=point)
+                G_dec.add_edge(cube, point, common_vertex=point, weight=None)
 
         # Relabel the nodes of the decoding graph to integers and define
         # the mapping between nodes and indices.
         G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute="stabilizer")
         mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
+
+        # For non-periodic boundary conditions, include boundary vertices.
+        # Get the indices of the boundary vertices from the decoding
+        # graph.
+        bound_inds = [mapping[point] for point in bound_points]
+        G_relabelled.graph["boundary_points"] = bound_inds[:]
+        bound_points = G_relabelled.graph["boundary_points"]
+        # Connect two helper points, one per primal boundary, with weight 0
+        # to all the boundary points. This will speed up Dijkstra.
+        n_b = len(bound_points) // 2
+        low_bound_points, high_bound_points = bound_points[:n_b], bound_points[n_b:]
+        v_low = "low"
+        v_high = "high"
+        for point in low_bound_points:
+            G_relabelled.add_edge(v_low, point, weight=0)
+        for point in high_bound_points:
+            G_relabelled.add_edge(v_high, point, weight=0)
 
         return G_relabelled, mapping
 
