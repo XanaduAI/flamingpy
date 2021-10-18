@@ -37,9 +37,7 @@ def test_to_pi_string():
     )
     #  Test random even multiples of sqrt(pi).
     even_int = odd_int + 1
-    assert to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(
-        even_int
-    )
+    assert to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(even_int)
     # Check everything else converted into a str.
     rand_numb = rng().random()
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
@@ -47,13 +45,13 @@ def test_to_pi_string():
 
 
 # Construct random numbers from an integer and fractional part.
-ALPHA_VALS = np.array([np.sqrt(np.pi),0.3,0.5,0.7,np.exp(1)])
+alpha_vals = np.append(np.random.rand(5) * 5, np.sqrt(np.pi))
 
 
 class TestGKPBinning:
     """Tests for GKP binning functions."""
-    
-    @pytest.mark.parametrize("alpha", ALPHA_VALS)
+
+    @pytest.mark.parametrize("alpha", alpha_vals)
     def test_integer_fractional(self, alpha):
         # Test that the integer and fractional part as obtained by
         # integer_fractional matches that of the constructed numbers/
@@ -71,7 +69,7 @@ class TestGKPBinning:
         integers = rng().integers(-N // 2, N // 2, N)
         fractions = rng().random(N) * (alpha / 2)
         numbers = integers * alpha + fractions
-        
+
         bits = integers % 2
         int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(GKP_binner(numbers) == bits)
@@ -105,15 +103,9 @@ class TestPhaseProbs:
     def test_Z_err_cond(self, use_hom_val):
         # Test high-squeezing (low delta) regime.
         for delta in (high_delta, low_delta):
-            even_probs = Z_err_cond(
-                delta, even_homs, var_num=lim, use_hom_val=use_hom_val
-            )
-            odd_probs = Z_err_cond(
-                delta, odd_homs, var_num=lim, use_hom_val=use_hom_val
-            )
-            mid_probs = Z_err_cond(
-                delta, middle_homs, var_num=lim, use_hom_val=use_hom_val
-            )
+            even_probs = Z_err_cond(delta, even_homs, var_num=lim, use_hom_val=use_hom_val)
+            odd_probs = Z_err_cond(delta, odd_homs, var_num=lim, use_hom_val=use_hom_val)
+            mid_probs = Z_err_cond(delta, middle_homs, var_num=lim, use_hom_val=use_hom_val)
             # Ensure that conditional phase error probabilities are close
             # to 0 for low delta values and 0.5 for high delta values.
             if np.array_equal(delta, high_delta):

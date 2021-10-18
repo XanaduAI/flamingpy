@@ -176,7 +176,7 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False,
     factor = 1 - bit if use_hom_val else 1
     val = hom_val if use_hom_val else frac
 
-    if val.shape == () and np.isscalar(var):
+    if np.isscalar(val) and np.isscalar(var):
 
         def ex_val(n):
             return np.exp(-((val - n * np.sqrt(np.pi)) ** 2) / var)
