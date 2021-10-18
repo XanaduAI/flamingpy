@@ -18,7 +18,7 @@ import sys
 from datetime import datetime
 from ft_stack.decoder import correct
 from ft_stack.graphstates import CVGraph
-from ft_stack.RHG import RHG_graph, RHGCode
+from ft_stack.RHG import RHG_graph, RHGCode, alternating_polarity
 from ft_stack.passive_construct import BS_network, reduce_macro_and_simulate
 
 
@@ -82,9 +82,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 1:
         print(sys.argv)
         # Parsing input parameters
-        parser = argparse.ArgumentParser(
-            description="Arguments for Monte Carlo FT simulations."
-        )
+        parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
         parser.add_argument("distance", type=int)
         parser.add_argument("delta", type=float)
         parser.add_argument("p_swap", type=float)
@@ -106,9 +104,7 @@ if __name__ == "__main__":
     # The Monte Carlo simulations
     if passive:
         # The lattice with macronodes.
-        RHG_macro = RHG_graph(
-            distance, boundaries="periodic", macronodes=True, polarity=False
-        )
+        RHG_macro = RHG_graph(distance, boundaries="periodic", macronodes=True, polarity=False)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
         # The reduced lattice.
@@ -124,7 +120,7 @@ if __name__ == "__main__":
         passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
     else:
         boundaries = "finite"
-        RHG_code = RHGCode(distance, boundaries=boundaries, polarity=True)
+        RHG_code = RHGCode(distance, boundaries=boundaries, polarity=alternating_polarity)
         passive_objects = None
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)

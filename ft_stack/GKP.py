@@ -40,9 +40,6 @@ def to_pi_string(x, tex=True):
     return str(x)
 
 
-vec_remainder = np.vectorize(math.remainder)
-
-
 def integer_fractional(x, alpha, draw=False):
     """Obtain the integer and fractional part of x with respect to alpha.
 
@@ -56,11 +53,12 @@ def integer_fractional(x, alpha, draw=False):
         draw (bool): if True, plot the fractional and integer parts
             of x.
     """
-    # The fractional part.
-    f = vec_remainder(x, alpha)
-    # The integer part. astype(int) used here to prevent unwanted
-    # behaviour during binning (e.g. -6.01 % 2 = 2, while -6 % 2 =0)
-    n = ((x - f) / alpha).astype(int)
+    int_frac = np.divmod(x, alpha)
+    large_frac = np.greater(int_frac[1], alpha / 2).astype(int)
+
+    f = int_frac[1] - (alpha / 2) * large_frac
+    n = int_frac[0].astype(int) + large_frac
+
     if draw:
         xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
         newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
@@ -140,15 +138,12 @@ def Z_err(var, var_num=5):
     # origin
     for i in range(-n_max, n_max, 4):
         error -= 0.5 * (
-            erf((i + 2) * np.sqrt(np.pi) / (2 * var))
-            - erf(i * np.sqrt(np.pi) / (2 * var))
+            erf((i + 2) * np.sqrt(np.pi) / (2 * var)) - erf(i * np.sqrt(np.pi) / (2 * var))
         )
     return error
 
 
-def Z_err_cond(
-    var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False, draw=False
-):
+def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False, draw=False):
     """Return the conditional phase error probability for lattice nodes.
 
     Return the phase error probability for a list of variances var
@@ -176,44 +171,58 @@ def Z_err_cond(
     """
     # TODO: Make the following line smarter.
     n_max = var_num
-    # Initiate a list with length same as var
-    # TODO replace ex with normal pdf?
-    ex = lambda z, n: np.exp(-((z - n * np.sqrt(np.pi)) ** 2) / var)
-    error = np.zeros(np.shape(var))
+
     bit, frac = GKP_binner(hom_val, return_fraction=True)
     factor = 1 - bit if use_hom_val else 1
     val = hom_val if use_hom_val else frac
-    numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
-    denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
-    # Dealing with 0 denonimators
-    where_0 = np.where(denominator == 0)[0]
-    the_rest = np.delete(np.arange(np.size(var)), where_0)
-    error = np.empty(np.size(var))
-    # For 0 denominator, populate error according to replace_undefined
-    if len(where_0):
-        if replace_undefined == "bin_location":
-            zero_dem_result = np.abs(val) / np.sqrt(np.pi)
+
+    if np.isscalar(val) and np.isscalar(var):
+
+        def ex_val(n):
+            return np.exp(-((val - n * np.sqrt(np.pi)) ** 2) / var)
+
+        numerator = np.sum(ex_val(2 * np.arange(-n_max, n_max) + factor))
+        denominator = np.sum(ex_val(np.arange(-n_max, n_max)))
+        if denominator != 0:
+            return numerator / denominator
         else:
-            zero_dem_result = replace_undefined
-        error[where_0] = np.full(len(where_0), zero_dem_result)
-    if np.size(var) == 1:
-        numerator = np.array([numerator])
-        denominator = np.array([denominator])
-    if the_rest.size > 0:
-        error[the_rest] = numerator[the_rest] / denominator[the_rest]
-    if np.size(var) == 1:
-        error = error[0]
-    if draw:
-        xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
-        print(xmin, xmax, min(val), max(val))
-        newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-        newxlabels = [to_pi_string(tick) for tick in newxticks]
-        plt.plot(val, error, ",")
-        addendum = "Full homodyne value" if use_hom_val else "Central peak"
-        plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
-        plt.xticks(newxticks, newxlabels, fontsize="small")
-        plt.show()
-    return error
+            return replace_undefined
+    else:
+        # Initiate a list with length same as var
+        error = np.zeros(np.shape(var))
+        # TODO replace ex with normal pdf?
+        ex = lambda z, n: np.exp(-((z - n * np.sqrt(np.pi)) ** 2) / var)
+        numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
+        denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
+        # Dealing with 0 denonimators
+        where_0 = np.where(denominator == 0)[0]
+        the_rest = np.delete(np.arange(np.size(var)), where_0)
+        error = np.empty(np.size(var))
+        # For 0 denominator, populate error according to replace_undefined
+        if len(where_0):
+            if replace_undefined == "bin_location":
+                zero_dem_result = np.abs(val) / np.sqrt(np.pi)
+            else:
+                zero_dem_result = replace_undefined
+            error[where_0] = np.full(len(where_0), zero_dem_result)
+        if np.size(var) == 1:
+            numerator = np.array([numerator])
+            denominator = np.array([denominator])
+        if the_rest.size > 0:
+            error[the_rest] = numerator[the_rest] / denominator[the_rest]
+        if np.size(var) == 1:
+            error = error[0]
+        if draw:
+            xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
+            print(xmin, xmax, min(val), max(val))
+            newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+            newxlabels = [to_pi_string(tick) for tick in newxticks]
+            plt.plot(val, error, ",")
+            addendum = "Full homodyne value" if use_hom_val else "Central peak"
+            plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
+            plt.xticks(newxticks, newxlabels, fontsize="small")
+            plt.show()
+        return error
 
 
 if __name__ == "__main__":
