@@ -285,7 +285,7 @@ class RHGCode:
             vertices, according to the error complex.
         boundary_coords (list of tup): the coordinates of the boundary
             according to the error complex.
-        decoder_graph (Graph): decoding graph constructed from the stabilizers
+        decoding_graph (Graph): decoding graph constructed from the stabilizers
             without edge weights populated
         _decoder_mapping (dict): mapping between nodes and indices for the
             decoding graph
@@ -297,7 +297,7 @@ class RHGCode:
         error_complex="primal",
         boundaries="finite",
         polarity=None,
-        decoder_graph=True,
+        decoding_graph=True,
     ):
         """Initialize the RHG code."""
         # TODO: Check code distance convention.
@@ -320,8 +320,8 @@ class RHGCode:
         self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
         self.boundary_coords = self.identify_boundary(self.complex)
 
-        if decoder_graph:
-            self.decoder_graph, self._decoder_mapping = self.construct_decoder_graph()
+        if decoding_graph:
+            self.decoding_graph, self._decoder_mapping = self.construct_decoding_graph()
 
     def identify_stabilizers(self, error_complex="primal"):
         """Return the syndrome coordinates for the RHG lattice G.
@@ -487,7 +487,7 @@ class RHGCode:
     # TODO: slice_coords function that constructs rather than iterates,
     # like the EGraph.
 
-    def construct_decoder_graph(self):
+    def construct_decoding_graph(self):
         """Create a decoding graph from the RHG lattice G.
 
         The decoding graph has as its nodes every stabilizer in G and a
