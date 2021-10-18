@@ -351,26 +351,9 @@ class CVGraph:
         state (dict, optional): the dictionary of all non-GKP states
             and their indices, of the form {'state': []}. By default,
             all states are GKP states.
-        model (dict, optional): the noise model dictionary of the form
-            (default values displayed):
-
-            {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01}
-
-            grn stands for Gaussian Random Noise; sampling_order
-            dictates how to simulate measurement outcomes: sample from
-            an uncorrelated noise matrix initially ('initial'), a
-            correlated noise matrix finally ('final'), or for ideal
-            homodyne outcomes initially and from a separable noise
-            covariance matrix finally ('two-step'); 'delta' is the
-            noise parameter, explained below.
-
-        swap_prob (float, optional): if supplied, the probability of a
+        p_swap (float, optional): if supplied, the probability of a
             node being a p-squeezed state. Overrides the indices given
             in state.
-        delta (float, optional): the quadrature blurring parameter,
-            related to the squeezing of the GKP states and the
-            momentum-quadrature variance of the p-squeezed states;
-            0.01 by default. Overrides the delta given in 'model'.
 
     Attributes:
         egraph (EGraph): the unerlying graph representation.
@@ -378,6 +361,8 @@ class CVGraph:
         _states (dict): states along with their indices.
         _delta (float): the delta from the Args above.
         _sampling_order (str): the sampling order from the Args above.
+        _adj (array): adjancency matrix of the underlying graph.
+        _random_gen (Generator): numpy random number generator.
         to_points (dict): pointer to self.egraph.to_points, the
             dictionary from indices to coordinates.
     """
@@ -391,6 +376,12 @@ class CVGraph:
             # vs those to CV.egraph.
             self.egraph = EGraph(g)
         self._N = len(g)
+
+        # Instantiate the adjacency matrix
+        self._adj = self.egraph.adj_generator(sparse=True)
+
+        # Create a generator for random numbers to be used throughout
+        self._random_gen = rng()
 
         if states:
             self._states = states.copy()
@@ -407,8 +398,10 @@ class CVGraph:
                 if p_swap == 1:
                     self._states["p"] = np.arange(self._N)
                 else:
-                    num_p = rng().binomial(self._N, p_swap)
-                    inds = rng().choice(range(self._N), size=int(np.floor(num_p)), replace=False)
+                    num_p = self._random_gen.binomial(self._N, p_swap)
+                    inds = self._random_gen.choice(
+                        range(self._N), size=int(np.floor(num_p)), replace=False
+                    )
                     self._states["p"] = inds
 
             # Associate remaining indices with GKP states.
@@ -427,7 +420,25 @@ class CVGraph:
                     self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
     def apply_noise(self, model={}):
-        """Apply noise model given in model."""
+        """Apply noise model given in model.
+        
+        Args:
+            model (dict, optional): the noise model dictionary of the form
+                (default values displayed):
+    
+                {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01}
+    
+                grn stands for Gaussian Random Noise; sampling_order
+                dictates how to simulate measurement outcomes: sample from
+                an uncorrelated noise matrix initially ('initial'), a
+                correlated noise matrix finally ('final'), or for ideal
+                homodyne outcomes initially and from a separable noise
+                covariance matrix finally ('two-step'); 'delta' is the
+                quadrature blurring parameter, related to the squeezing 
+                of the GKP states and the momentum-quadrature variance of 
+                the p-squeezed states.
+
+        """
         # Modelling the states.
         default_model = {"noise": "grn", "delta": 0.01, "sampling_order": "initial"}
         model = {**default_model, **model}
@@ -445,11 +456,29 @@ class CVGraph:
         N = self._N
         delta = self._delta
 
-        # For initial and final sampling, generate a sparse adjacency
-        # matrix in the EGraph and state-dependent noise vectors.
-        if self._sampling_order in ("initial", "final"):
-            self._adj = self.egraph.adj_generator(sparse=True)
+        if self._sampling_order == "initial":
             init_noise = np.empty(2 * N, dtype=np.float32)
+            init_vals = np.empty(2 * N, dtype=np.float32)
+            for state in self._states:
+                indices = self._states[state]
+                if state == "GKP":
+                    init_noise[indices] = delta / 2
+                    init_noise[indices + N] = delta / 2
+                    init_vals[indices] = self._random_gen.normal(0, delta / 2, len(indices))
+                    init_vals[indices + N] = self._random_gen.normal(0, delta / 2, len(indices))
+                if state == "p":
+                    init_noise[indices] = 1 / (2 * delta)
+                    init_noise[indices + N] = delta / 2
+                    init_vals[indices] = self._random_gen.normal(0, 1 / (2 * delta), len(indices))
+                    init_vals[indices + N] = self._random_gen.normal(0, delta / 2, len(indices))
+            self._init_noise = init_noise
+            self._init_vals = init_vals
+
+        # For final sampling, apply a symplectic CZ matrix to the
+        # initial noise covariance.
+        if self._sampling_order == "final":
+            init_noise = np.empty(2 * N, dtype=np.float32)
+            init_vals = np.empty(2 * N, dtype=np.float32)
             for state in self._states:
                 indices = self._states[state]
                 if state == "GKP":
@@ -458,13 +487,6 @@ class CVGraph:
                 if state == "p":
                     init_noise[indices] = 1 / (2 * delta)
                     init_noise[indices + N] = delta / 2
-
-        if self._sampling_order == "initial":
-            self._init_noise = init_noise
-
-        # For final sampling, apply a symplectic CZ matrix to the
-        # initial noise covariance.
-        if self._sampling_order == "final":
             noise_cov_init = sp.diags(init_noise)
             self._noise_cov = SCZ_apply(self._adj, noise_cov_init)
             # TODO: Save var_p and var_q?
@@ -477,9 +499,9 @@ class CVGraph:
                 indices = self._states[state]
                 for ind in indices:
                     if state == "p":
-                        self._init_quads[ind] = rng().random() * (2 * np.sqrt(np.pi))
+                        self._init_quads[ind] = self._random_gen.random() * (2 * np.sqrt(np.pi))
                     if state == "GKP":
-                        self._init_quads[ind] = rng().integers(0, 2) * np.sqrt(np.pi)
+                        self._init_quads[ind] = self._random_gen.integers(0, 2) * np.sqrt(np.pi)
 
     def measure_hom(self, quad="p", inds=[], method="cholesky", dim="single", updated_quads=[]):
         """Conduct a homodyne measurement on the lattice.
@@ -487,10 +509,7 @@ class CVGraph:
         Simulate a homodyne measurement of quadrature quad of states
         at indices inds according to sampling order specified by
         self._sampling_order. Use the Numpy random sampling method
-        method; by default, do many single-variable samplings where
-        appropriate, otherwise set dim = 'multi' for sampling once
-        from a multivariate distribution. (This might affect the speed
-        of implementation). If updated_quads is supplied, use those
+        method. If updated_quads is supplied, use those
         instead of applying an SCZ matrix to the initial quads in
         the two-step sampling.
         """
@@ -502,13 +521,7 @@ class CVGraph:
             means = np.zeros(2 * N, dtype=bool)
             covs = self._init_noise
             if dim == "single":
-                initial = np.empty(2 * N, dtype=np.float32)
-                for i in range(2 * N):
-                    initial[i] = rng().normal(means[i], np.sqrt(covs[i]))
-                outcomes = SCZ_apply(self._adj, initial)
-            if dim == "multi":
-                initial = rng().multivariate_normal(mean=means, cov=np.diag(covs), method=method)
-                outcomes = SCZ_apply(self._adj, initial)
+                outcomes = SCZ_apply(self._adj, means + self._init_vals)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
@@ -528,10 +541,7 @@ class CVGraph:
                 outcomes = np.empty(N_inds, dtype=np.float32)
                 sigma = np.sqrt(self._delta / 2)
                 for i in range(N_inds):
-                    outcomes[i] = rng().normal(means[i], sigma)
-            elif dim == "multi":
-                covs = np.eye(N_inds, dtype=np.float32) * (self._delta / 2)
-                outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
+                    outcomes[i] = self._random_gen.normal(means[i], sigma)
         if self._sampling_order == "final":
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]
@@ -539,7 +549,7 @@ class CVGraph:
             means = np.zeros(N_inds, dtype=bool)
             # TODO: Is below correct?
             covs = cov_dict[quad][inds, :][:, inds].toarray()
-            outcomes = rng().multivariate_normal(mean=means, cov=covs, method=method)
+            outcomes = self._random_gen.multivariate_normal(mean=means, cov=covs, method=method)
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
@@ -588,7 +598,7 @@ class CVGraph:
         Returns:
             array: the symplectic matrix.
         """
-        adj = self.egraph.adj_generator(sparse=sparse)
+        adj = self._adj
         return SCZ_mat(adj, heat_map=heat_map)
 
     def Z_probs(self, inds=[], cond=False):
