@@ -56,7 +56,7 @@ def integer_fractional(x, alpha, draw=False):
     int_frac = np.divmod(x, alpha)
     large_frac = np.greater(int_frac[1], alpha / 2).astype(int)
 
-    f = int_frac[1] - (alpha / 2) * large_frac
+    f = int_frac[1] - alpha * large_frac
     n = int_frac[0].astype(int) + large_frac
 
     if draw:

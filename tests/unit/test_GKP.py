@@ -56,7 +56,7 @@ class TestGKPBinning:
         # Test that the integer and fractional part as obtained by
         # integer_fractional matches that of the constructed numbers/
         integers = rng().integers(-N // 2, N // 2, N)
-        fractions = rng().random(N) * (alpha / 2)
+        fractions = (rng().random(N) - 0.5) * alpha
         numbers = integers * alpha + fractions
         int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(int_part == integers)
