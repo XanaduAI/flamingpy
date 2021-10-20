@@ -437,8 +437,8 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
     # Give shorter names to the Dijkstra shortest path algorithms.
     if alg == "dijkstra":
         alg = sp.single_source_dijkstra
-    
-    #Run the matching algorithm first without the 'high' and 'low points
+
+    # Run the matching algorithm first without the 'high' and 'low points
     real_points = G_dec.graph["real_points"]
 
     # Combinations of odd-parity cubes.
