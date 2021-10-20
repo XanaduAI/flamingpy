@@ -341,7 +341,8 @@ def CV_decoder(code, translator=GKP_binner):
 
 
 def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
-    """Create a decoding graph from the RHG lattice G.
+    """Populate the edge weights of the decoding graph from the RHG lattice G,
+    and determine the parity of the stabilizer cubes.
 
     The decoding graph has as its nodes every stabilizer in G and a
     every boundary point (for now coming uniquely from a primal
@@ -371,50 +372,30 @@ def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
     Returns:
         networkx.Graph: the decoding graph.
     """
-    # An empty decoding graph.
-    G_dec = nx.Graph(title="Decoding Graph")
     cubes = code.stabilizers
-    G_dec.add_nodes_from(cubes)
-    # For stabilizer cubes sharing a vertex, define an edge between
-    # them with weight equal to the weight assigned to the vertex.
-    for (cube1, cube2) in it.combinations(G_dec, 2):
-        common_vertex = set(cube1.coords()) & set(cube2.coords())
-        if common_vertex:
-            coordinate = common_vertex.pop()
-            weight = code.graph.nodes[coordinate]["weight"]
-            G_dec.add_edge(cube1, cube2, weight=weight, common_vertex=coordinate)
 
-    # Include primal boundary vertices in the case of non-periodic
-    # boundary conditions. (The following list will be empty absent a
-    # primal boundary).
-    bound_points = code.boundary_coords
-    # For boundary points sharing a vertex with a stabilizer cube,
-    # add an edge between them with weight equal to the weight assigned
-    # to the vertex.
-    for (cube, point) in it.product(G_dec, bound_points):
-        if point in cube.coords():
-            weight = code.graph.nodes[point]["weight"]
-            G_dec.add_edge(cube, point, weight=weight, common_vertex=point)
+    decoding_graph = code.decoding_graph
+    mapping = code._decoder_mapping
 
-    # Relabel the nodes of the decoding graph to integers and define
-    # the mapping between nodes and indices.
-    G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute="stabilizer")
-    mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
+    # Assign edge weights based on the common vertices between stabilizers,
+    # and not to edges with the 'high' and 'low points
+    real_points = decoding_graph.graph["real_points"]
+    for edge in decoding_graph.subgraph(real_points).edges:
+        common = decoding_graph.edges[edge]["common_vertex"]
+        decoding_graph.edges[edge]["weight"] = code.graph.nodes[common]["weight"]
 
     # Indices of odd parity cubes and boundary vertices; add these
     # index lists to the graph attributes dictionary, to be used by the
     # matching graph.
     odd_parity_cubes = [cube for cube in cubes if cube.parity]
     odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
-    G_relabelled.graph["odd_cubes"] = odd_parity_inds[:]
-    bound_inds = [mapping[point] for point in bound_points]
-    G_relabelled.graph["boundary_points"] = bound_inds[:]
+    decoding_graph.graph["odd_cubes"] = odd_parity_inds[:]
 
     # Draw the lattice and the abstract decoding graph.
     if draw:
-        graph_drawer(G_relabelled, label_edges=label_edges)
-        syndrome_plot(code, G_relabelled, index_dict=mapping, drawing_opts=drawing_opts)
-    return G_relabelled
+        graph_drawer(decoding_graph, label_edges=label_edges)
+        syndrome_plot(code, decoding_graph, index_dict=mapping, drawing_opts=drawing_opts)
+    return decoding_graph
 
 
 def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
@@ -450,12 +431,15 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
     # An empty matching graph.
     G_match = nx.Graph(title="Matching Graph")
 
-    # Get the indices of the odd parity cubes from teh decoding graph.
+    # Get the indices of the odd parity cubes from the decoding graph.
     odd_parity_inds = G_dec.graph["odd_cubes"]
 
     # Give shorter names to the Dijkstra shortest path algorithms.
     if alg == "dijkstra":
         alg = sp.single_source_dijkstra
+
+    # Run the matching algorithm first without the 'high' and 'low points
+    real_points = G_dec.graph["real_points"]
 
     # Combinations of odd-parity cubes.
     odd_ind_dict = {i: [] for i in odd_parity_inds[:-1]}
@@ -464,7 +448,7 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
         odd_ind_dict[pair[0]] += [pair[1]]
     # Find the shortest paths between odd-parity cubes.
     for cube1 in odd_parity_inds[:-1]:
-        lengths, paths = alg(G_dec, cube1)
+        lengths, paths = alg(G_dec.subgraph(real_points), cube1)
         for cube2 in odd_ind_dict[cube1]:
             length = lengths[cube2]
             path = paths[cube2]
@@ -473,21 +457,6 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             # TODO: Is the behavior correct for negative weights, or do I
             # want 1/weight or max_num - weight?
             G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
-
-    # For non-periodic boundary conditions, include boundary vertices.
-    # Get the indices of the boundary vertices from the decoding
-    # graph.
-    bound_points = G_dec.graph["boundary_points"]
-    # Connect two helper points, one per primal boundary, with weight 0
-    # to all the boundary points. This will speed up Dijkstra.
-    n_b = len(bound_points) // 2
-    low_bound_points, high_bound_points = bound_points[:n_b], bound_points[n_b:]
-    v_low = "low"
-    v_high = "high"
-    for point in low_bound_points:
-        G_dec.add_edge(v_low, point, weight=0)
-    for point in high_bound_points:
-        G_dec.add_edge(v_high, point, weight=0)
 
     virtual_points = []
     if G_dec.graph["boundary_points"]:

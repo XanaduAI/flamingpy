@@ -464,13 +464,21 @@ class CVGraph:
                 if state == "GKP":
                     init_noise[indices] = delta / 2
                     init_noise[indices + N] = delta / 2
-                    init_vals[indices] = self._random_gen.normal(0, delta / 2, len(indices))
-                    init_vals[indices + N] = self._random_gen.normal(0, delta / 2, len(indices))
+                    init_vals[indices] = self._random_gen.normal(
+                        0, np.sqrt(delta / 2), len(indices)
+                    )
+                    init_vals[indices + N] = self._random_gen.normal(
+                        0, np.sqrt(delta / 2), len(indices)
+                    )
                 if state == "p":
                     init_noise[indices] = 1 / (2 * delta)
                     init_noise[indices + N] = delta / 2
-                    init_vals[indices] = self._random_gen.normal(0, 1 / (2 * delta), len(indices))
-                    init_vals[indices + N] = self._random_gen.normal(0, delta / 2, len(indices))
+                    init_vals[indices] = self._random_gen.normal(
+                        0, np.sqrt(1 / (2 * delta)), len(indices)
+                    )
+                    init_vals[indices + N] = self._random_gen.normal(
+                        0, np.sqrt(delta / 2), len(indices)
+                    )
             self._init_noise = init_noise
             self._init_vals = init_vals
 
