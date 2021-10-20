@@ -542,7 +542,11 @@ class RHGCode:
             G_relabelled.add_edge(v_low, point, weight=0)
         for point in high_bound_points:
             G_relabelled.add_edge(v_high, point, weight=0)
-
+        
+        # Identify the real points so "high" and "low" can be skipped in some of 
+        # the decoding functions down the line
+        G_relabelled.graph["real_points"] = set(G_relabelled.nodes)-set(('high','low'))
+        
         return G_relabelled, mapping
 
 

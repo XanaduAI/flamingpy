@@ -377,11 +377,12 @@ def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
     decoding_graph = code.decoding_graph
     mapping = code._decoder_mapping
 
-    # Assign edge weights based on the common vertices between stabilizers
-    for edge in decoding_graph.edges:
-        if "common_vertex" in decoding_graph.edges[edge]:
-            common = decoding_graph.edges[edge]["common_vertex"]
-            decoding_graph.edges[edge]["weight"] = code.graph.nodes[common]["weight"]
+    # Assign edge weights based on the common vertices between stabilizers,
+    # and not to edges with the 'high' and 'low points
+    real_points = decoding_graph.graph["real_points"]
+    for edge in decoding_graph.subgraph(real_points).edges:
+        common = decoding_graph.edges[edge]["common_vertex"]
+        decoding_graph.edges[edge]["weight"] = code.graph.nodes[common]["weight"]
 
     # Indices of odd parity cubes and boundary vertices; add these
     # index lists to the graph attributes dictionary, to be used by the
@@ -430,12 +431,15 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
     # An empty matching graph.
     G_match = nx.Graph(title="Matching Graph")
 
-    # Get the indices of the odd parity cubes from teh decoding graph.
+    # Get the indices of the odd parity cubes from the decoding graph.
     odd_parity_inds = G_dec.graph["odd_cubes"]
 
     # Give shorter names to the Dijkstra shortest path algorithms.
     if alg == "dijkstra":
         alg = sp.single_source_dijkstra
+    
+    #Run the matching algorithm first without the 'high' and 'low points
+    real_points = G_dec.graph["real_points"]
 
     # Combinations of odd-parity cubes.
     odd_ind_dict = {i: [] for i in odd_parity_inds[:-1]}
@@ -444,7 +448,7 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
         odd_ind_dict[pair[0]] += [pair[1]]
     # Find the shortest paths between odd-parity cubes.
     for cube1 in odd_parity_inds[:-1]:
-        lengths, paths = alg(G_dec, cube1)
+        lengths, paths = alg(G_dec.subgraph(real_points), cube1)
         for cube2 in odd_ind_dict[cube1]:
             length = lengths[cube2]
             path = paths[cube2]
@@ -569,9 +573,8 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
             path = G_match.edges[pair]["path"]
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:
-                if "common_vertex" in G_dec.edges[pair]:
-                    common_vertex = G_dec.edges[pair]["common_vertex"]
-                    code.graph.nodes[common_vertex]["bit_val"] ^= 1
+                common_vertex = G_dec.edges[pair]["common_vertex"]
+                code.graph.nodes[common_vertex]["bit_val"] ^= 1
 
     if sanity_check:
         G_dec_new = decoding_graph(code, draw=False)
