@@ -28,7 +28,5 @@ setup(
         "pandas==1.2.1",
         "scipy==1.6.0",
         "thewalrus==0.15.0",
-        "pytest>=6.2.4",
-        "pytest-cov>=2.12.1",
     ]
 )
