@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
 import ft_stack.GKP as GKP
+import copy
 
 
 def plot_integer_fractional(xs, ns, fs, alpha):
@@ -247,3 +248,16 @@ def plot_SCZ_mat_heat_map(symplectic):
         symplectic = symplectic.toarray()
     plt.matshow(symplectic, 0)
     plt.show()
+
+
+def draw_RHG_graph(
+    graph,
+    node_color={"primal": "k", "dual": "grey"},
+    edge_color={1: "b", -1: "r"},
+):
+    graph = copy.deepcopy(graph)
+    for (_, attr) in graph.nodes.items():
+        attr["color"] = node_color[attr["type"]]
+    for (_, attr) in graph.edges.items():
+        attr["color"] = edge_color[attr["weight"]]
+    draw_EGraph(graph, color_nodes=True, color_edges=True)

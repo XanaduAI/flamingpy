@@ -15,8 +15,7 @@
 import itertools as it
 import numpy as np
 
-from matplotlib import pyplot as plt
-from ft_stack.graphstates import EGraph, CVGraph
+from ft_stack.graphstates import EGraph
 import networkx as nx
 
 
@@ -86,8 +85,6 @@ def RHG_graph(
     boundaries="finite",
     macronodes=False,
     polarity=None,
-    node_color={"primal": "k", "dual": "grey"},
-    edge_color={1: "b", -1: "r"},
     memory_saver=False,
 ):
     """Create an EGraph of a dims-dimensional RHG lattice.
@@ -116,10 +113,6 @@ def RHG_graph(
         polarity (func): a function that specifies edge weights. The
             input to the function should be an edge (i.e. list of two
             vertices) and the output should be the edge weight.
-        node_color (dict): a dictionary of the form 
-            {vertex_attribute: color}, where vertex_attribute can
-            be 'primal' or 'dual'.
-        edge_color (dict): a dictionary of the form {weight: color}
         memory_saver (bool): if True, omits string attributes in nodes 
             and edges.
             
@@ -186,7 +179,6 @@ def RHG_graph(
                 ):
                     edge = (vertex, neighbor)
                     weight = polarity(edge) if polarity else 1
-                    color = edge_color.get(weight)
                     if macronodes:
                         central_vertex, central_neighbor = (
                             np.array(vertex),
@@ -197,17 +189,15 @@ def RHG_graph(
                         displaced_vertex = tuple(displaced_vertex)
                         displaced_neighbor = np.round(central_neighbor - direction_vec, 1)
                         displaced_neighbor = tuple(displaced_neighbor)
-                        G.add_edge(
-                            displaced_vertex, displaced_neighbor, weight=weight, color=color,
-                        )
+                        G.add_edge(displaced_vertex, displaced_neighbor, weight=weight)
                         G.macro.add_node(neighbor, micronodes=[])
                     else:
                         if memory_saver:
                             G.add_edge(vertex, neighbor, weight=weight)
                         else:
-                            G.add_node(vertex, type="primal", color=node_color["primal"])
-                            G.add_node(neighbor, type="dual", color=node_color["dual"])
-                            G.add_edge(vertex, neighbor, color=color, weight=weight)
+                            G.add_node(vertex, type="primal")
+                            G.add_node(neighbor, type="dual")
+                            G.add_edge(vertex, neighbor, weight=weight)
 
                     # Additional edges for periodic boundaries.
                     for ind in where_neighbor_0 & periodic_inds:
@@ -217,7 +207,6 @@ def RHG_graph(
                         neighbor_other_side = tuple(high_primal_vertex)
                         edge = (neighbor, neighbor_other_side)
                         weight = polarity(edge) if polarity else 1
-                        color = edge_color.get(weight)
                         if macronodes:
                             central_neighbor, other_side = (
                                 np.array(neighbor),
@@ -233,18 +222,13 @@ def RHG_graph(
                                 displaced_neighbor,
                                 displaced_other_side,
                                 weight=weight,
-                                color=color,
                             )
                         else:
                             if memory_saver:
                                 G.add_edge(neighbor, neighbor_other_side, weight=weight)
                             else:
-                                G.add_node(
-                                    neighbor_other_side, type="primal", color=node_color["primal"],
-                                )
-                                G.add_edge(
-                                    neighbor, neighbor_other_side, color=color, weight=weight,
-                                )
+                                G.add_node(neighbor_other_side, type="primal")
+                                G.add_edge(neighbor, neighbor_other_side, weight=weight)
 
     G.graph["primal_cubes"] = all_six_bodies
     return G
@@ -620,57 +604,3 @@ class RHGCube:
             np.average(self.ylims()),
             np.average(self.zlims()),
         )
-
-
-if __name__ == "__main__":
-    # Simple tests
-    # Instantiate an RHG latice of a certian distance, with certain
-    # boundaries. Draw the EGraph.
-    d = 2
-    # boundaries = "finite"
-    # boundaries = "primal"
-    boundaries = "periodic"
-    # boundaries = ["primal", "dual", "periodic"]
-    # For iterating through boundaries
-    # for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
-
-    RHG = RHGCode(d, boundaries=boundaries, polarity=alternating_polarity)
-    RHG_lattice = RHG.graph
-    # Check maronode lattice
-    # RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
-    ax = RHG_lattice.draw(color_nodes="MidnightBlue", color_edges=False, label="index")
-
-    # # Check edges between boundaries for periodic boundary conditions.
-    # all_boundaries = []
-    # for plane in ("x", "y", "z"):
-    #     for i in (0, 2 * d - 1):
-    #         all_boundaries += RHG.graph.slice_coords(plane, i)
-    #     # For macronode lattice, change to (-0.1, 2 * d - 0.9)
-    # RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
-    # RHG_subgraph.draw()
-
-    # # Check stabilizer coordinates
-    # syndrome = RHG.stabilizers
-    # print("Number of six-body stabilizers :", len(syndrome))
-    # for i in range(len(syndrome)):
-    #     cube = syndrome[i]
-    #     color = np.random.rand(3)
-    #     for point in cube.egraph:
-    #         x, z, y = point
-    #         ax.scatter(x, z, y, color=color, s=200)
-    # ax.set_title(str(boundaries).capitalize() + " boundaries")
-
-    # # Check sampling
-    # delta = 0.001
-    # # Percent p-squeezed states.
-    # p_swap = 0
-    # CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
-    # for sampling_order in ["initial", "final", "two-step"]:
-    #     model = {"noise": "grn", "delta": delta, "sampling_order": sampling_order}
-    #     CVRHG.apply_noise(model)
-    #     CVRHG.measure_hom("p")
-    #     outcomes = CVRHG.hom_outcomes()
-    #     plt.figure(figsize=(16, 9))
-    #     plt.hist(outcomes, bins=100)
-    #     CVRHG.draw(label="hom_val_p")
-    #     CVRHG.draw(label="hom_val_p")
