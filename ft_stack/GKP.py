@@ -14,7 +14,6 @@
 """Functions useful for GKP encodings."""
 import math
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.special import erf
 
 
@@ -40,7 +39,7 @@ def to_pi_string(x, tex=True):
     return str(x)
 
 
-def integer_fractional(x, alpha, draw=False):
+def integer_fractional(x, alpha):
     """Obtain the integer and fractional part of x with respect to alpha.
 
     Any real number x can be expressed as n * alpha + f, where n is an
@@ -48,38 +47,17 @@ def integer_fractional(x, alpha, draw=False):
     |f| <= alpha / 2. This function returns n and f.
 
     Args:
-        x (float): a real number
+        x (float or array): real numbers
         alpha (float): alpha from above
-        draw (bool): if True, plot the fractional and integer parts
-            of x.
     """
     int_frac = np.divmod(x, alpha)
     large_frac = np.greater(int_frac[1], alpha / 2).astype(int)
-
     f = int_frac[1] - alpha * large_frac
     n = int_frac[0].astype(int) + large_frac
-
-    if draw:
-        xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
-        newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-        newxlabels = [to_pi_string(tick) for tick in newxticks]
-        plt.plot(x, n, ",")
-        plt.title("Integer Part", fontsize="medium")
-        plt.xticks(newxticks, newxlabels, fontsize="small")
-        plt.show()
-
-        plt.title("Fractional Part", fontsize="medium")
-        plt.plot(x, f, ",")
-        newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
-        newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
-        newylabels = [to_pi_string(-alpha / 2)] + newylabels + [to_pi_string(alpha / 2)]
-        plt.xticks(newxticks, newxlabels, fontsize="small")
-        plt.yticks(newyticks, newylabels)
-        plt.show()
     return n, f
 
 
-def GKP_binner(outcomes, return_fraction=False, draw=False):
+def GKP_binner(outcomes, return_fraction=False):
     """Naively translate CV outcomes to bit values.
 
     The function treats values in (-sqrt(pi)/2, sqrt(pi)/2) as 0
@@ -91,9 +69,8 @@ def GKP_binner(outcomes, return_fraction=False, draw=False):
         outcomes (array): the values of a p-homodyne measurement.
         return_fraction (bool): return the fractional part of the
             outcome as well, if desired.
-        draw (bool): if True, plot binned values over outcomes.
 
-    Retruns:
+    Returns:
         array: the corresponding bit values.
     """
     # Bin width
@@ -103,15 +80,6 @@ def GKP_binner(outcomes, return_fraction=False, draw=False):
     # CAUTION: % has weird behaviour that seems to only show up for
     # large (n ~ 100) multiples of sqrt(pi). Check!
     bit_values = int_frac[0] % 2
-    if draw:
-        xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
-        newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-        newxlabels = [to_pi_string(tick) for tick in newxticks]
-        plt.plot(outcomes, bit_values, ",")
-        plt.title("Binned values", fontsize="medium")
-        plt.xticks(newxticks, newxlabels, fontsize="small")
-        plt.yticks([0, 1], [0, 1])
-        plt.show()
     if return_fraction:
         return bit_values, int_frac[1]
     return bit_values
@@ -143,7 +111,7 @@ def Z_err(var, var_num=5):
     return error
 
 
-def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False, draw=False):
+def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False):
     """Return the conditional phase error probability for lattice nodes.
 
     Return the phase error probability for a list of variances var
@@ -168,8 +136,7 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False,
     Returns:
         array: probability of Z (phase flip) errors for each variance,
             contioned on the homodyne outcomes.
-    """
-    # TODO: Make the following line smarter.
+    """ # TODO: Make the following line smarter.
     n_max = var_num
 
     bit, frac = GKP_binner(hom_val, return_fraction=True)
@@ -212,24 +179,6 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False,
             error[the_rest] = numerator[the_rest] / denominator[the_rest]
         if np.size(var) == 1:
             error = error[0]
-        if draw:
-            xmin, xmax = alpha * (x[0] // alpha), alpha * (x[-1] // alpha) + alpha
-            print(xmin, xmax, min(val), max(val))
-            newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-            newxlabels = [to_pi_string(tick) for tick in newxticks]
-            plt.plot(val, error, ",")
-            addendum = "Full homodyne value" if use_hom_val else "Central peak"
-            plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
-            plt.xticks(newxticks, newxlabels, fontsize="small")
-            plt.show()
         return error
 
 
-if __name__ == "__main__":
-    alpha = np.sqrt(np.pi)
-    x = np.arange(-10, 10, 0.01)
-    integer_fractional(x, alpha, draw=True)
-    GKP_binner(x, draw=True)
-    delta = 0.1
-    Z_err_cond([delta] * len(x), x, use_hom_val=True, draw=True)
-    Z_err_cond([delta] * len(x), x, draw=True)
