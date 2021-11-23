@@ -14,6 +14,8 @@ pip install -r dev-requirements.txt
 ```
 The first command installs the dependencies of `ft_stack`
 while the second installs extra dependencies for testing.
+Notice that you sometime need to add the `-e` flag to `pip install .` 
+when you are adding new modules.
 
 Depending on your Operating System,
 you may need to install an extra backend for `matplotlib`.
