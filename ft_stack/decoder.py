@@ -19,7 +19,6 @@ import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 
 from ft_stack.GKP import GKP_binner, Z_err_cond
-from ft_stack.RHG import RHGCube
 
 # Smallest and largest numbers representable.
 smallest_number = sys.float_info.min
