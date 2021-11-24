@@ -161,7 +161,7 @@ class TestDecoder:
 class TestRecovery:
     def test_recovery(self, enc_state, dec_graphs):
         recovery(enc_state[0], dec_graphs[1], dec_graphs[0], dec_graphs[2])
-        G_dec_new = decoding_graph(enc_state[0], draw=False)
+        G_dec_new = decoding_graph(enc_state[0])
         odd_cubes = G_dec_new.graph["odd_cubes"]
         # Check that there remain no unsatisfied stabilizers after the
         # recovery operation.
