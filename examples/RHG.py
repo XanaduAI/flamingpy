@@ -17,7 +17,7 @@ RHG = RHGCode(d, boundaries=boundaries, polarity=alternating_polarity)
 RHG_lattice = RHG.graph
 # Check maronode lattice
 # RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
-ax = viz.draw_RHG_graph(RHG_lattice)
+ax = viz.draw_code_lattice(RHG_lattice)
 plt.show()
 
 # # Check edges between boundaries for periodic boundary conditions.

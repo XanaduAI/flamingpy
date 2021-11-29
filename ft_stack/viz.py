@@ -237,7 +237,7 @@ def plot_binary_mat_heat_map(symplectic):
     plt.show()
 
 
-def draw_RHG_graph(
+def draw_code_lattice(
     graph,
     node_color={"primal": "k", "dual": "grey"},
     edge_color={1: "b", -1: "r"},
