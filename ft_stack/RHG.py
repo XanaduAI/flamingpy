@@ -85,7 +85,6 @@ def RHG_graph(
     boundaries="finite",
     macronodes=False,
     polarity=None,
-    memory_saver=False,
 ):
     """Create an EGraph of a dims-dimensional RHG lattice.
     
@@ -113,8 +112,6 @@ def RHG_graph(
         polarity (func): a function that specifies edge weights. The
             input to the function should be an edge (i.e. list of two
             vertices) and the output should be the edge weight.
-        memory_saver (bool): if True, omits string attributes in nodes 
-            and edges.
             
     Returns:
         EGraph: the RHG lattice.
@@ -192,12 +189,9 @@ def RHG_graph(
                         G.add_edge(displaced_vertex, displaced_neighbor, weight=weight)
                         G.macro.add_node(neighbor, micronodes=[])
                     else:
-                        if memory_saver:
-                            G.add_edge(vertex, neighbor, weight=weight)
-                        else:
-                            G.add_node(vertex, type="primal")
-                            G.add_node(neighbor, type="dual")
-                            G.add_edge(vertex, neighbor, weight=weight)
+                        G.add_node(vertex, type="primal")
+                        G.add_node(neighbor, type="dual")
+                        G.add_edge(vertex, neighbor, weight=weight)
 
                     # Additional edges for periodic boundaries.
                     for ind in where_neighbor_0 & periodic_inds:
