@@ -59,7 +59,7 @@ def plot_GKP_bins(outcomes, bit_values, alpha):
     plt.show()
 
 
-def plt_Z_err_cond(hom_val, error, alpha, use_hom_val):
+def plot_Z_err_cond(hom_val, error, alpha, use_hom_val):
     _, frac = GKP.GKP_binner(hom_val, return_fraction=True)
     val = hom_val if use_hom_val else frac
     xmin, xmax = alpha * (hom_val[0] // alpha), alpha * (hom_val[-1] // alpha) + alpha
