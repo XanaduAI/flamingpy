@@ -218,11 +218,8 @@ def RHG_graph(
                                 weight=weight,
                             )
                         else:
-                            if memory_saver:
-                                G.add_edge(neighbor, neighbor_other_side, weight=weight)
-                            else:
-                                G.add_node(neighbor_other_side, type="primal")
-                                G.add_edge(neighbor, neighbor_other_side, weight=weight)
+                            G.add_node(neighbor_other_side, type="primal")
+                            G.add_edge(neighbor, neighbor_other_side, weight=weight)
 
     G.graph["primal_cubes"] = all_six_bodies
     return G
