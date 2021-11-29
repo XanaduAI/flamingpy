@@ -17,234 +17,12 @@ import itertools as it
 import numpy as np
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
 
-from ft_stack.graphstates import CVGraph
 from ft_stack.GKP import GKP_binner, Z_err_cond
-from ft_stack.RHG import alternating_polarity, RHGCube, RHGCode
 
 # Smallest and largest numbers representable.
 smallest_number = sys.float_info.min
 largest_number = sys.float_info.max
-
-
-def graph_drawer(G, label_edges=True):
-    """Draw decoding and matching graphs G with a color legend."""
-    title = G.graph["title"]
-    plt.figure()
-    plt.title(title, family="serif", size=10)
-    # NetworkX drawing function for circular embedding of graphs.
-    nx.draw_circular(
-        G,
-        edgelist=[],
-        with_labels=True,
-        node_color="k",
-        font_size=7,
-        font_color="w",
-        font_family="serif",
-    )
-    # Color edges based on weight, and draw a colobar.
-    weight_list = [G.edges[edge]["weight"] for edge in G.edges]
-    weight_dict = {edge: "{:.2f}".format(G.edges[edge]["weight"]) for edge in G.edges}
-    if label_edges:
-        nx.draw_networkx_edge_labels(G, nx.circular_layout(G), edge_labels=weight_dict, font_size=7)
-    r = nx.draw_networkx_edges(G, nx.circular_layout(G), edge_color=weight_list)
-    plt.colorbar(r)
-
-
-def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
-    """Draw the syndrome plot for a CVGraph G.
-
-    A comprehensive graphing tool for drawing the error syndrome of
-    a CVGraph G. Labelling options are specified with the help of
-    drawing_opts, and can include:
-
-                'show_nodes' -> the underlying graph displayed
-                'label_nodes' -> node labels, as per CVGraph.draw
-                'label_cubes' -> indices of the stabilizers
-                'label_boundary'-> indices of the boundary points
-                'legend' -> legends for the nodes and cubes
-
-    Cubes are shown as transparent voxels, green for even parity and
-    red for odd. For now, cubes on periodic boundaries are not shown,
-    and stabilizers on dual boundaries occupy are shown to occupy
-    the full space of a six-body cube.
-
-    Args:
-        G_dec (networkx.Graph): the decoding graph
-        G (CVGraph): the encoded CVGraph
-        index_dict (dict): the stabiizer-to-index mapping
-        drawing_opts (dict): a dictionary of drawing options, with
-            all possibilities described above.
-
-    Returns:
-        matplotlib.pyplot.axes: the 'axes' object
-    """
-    # Font properties
-    # TODO: Make consistent with EGraph fontprops
-    font_size = 10 * sum(code.dims) ** (1 / 2)
-    # Set plotting options
-    plot_params = {
-        "font.size": font_size,
-        "font.family": "serif",
-        "axes.labelsize": font_size,
-        "axes.titlesize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "legend.fontsize": font_size,
-        "grid.color": "lightgray",
-        "lines.markersize": font_size,
-    }
-    plt.rcParams.update(plot_params)
-
-    bound_inds = G_dec.graph["boundary_points"]
-    points = [G_dec.nodes[i]["stabilizer"] for i in bound_inds]
-
-    cubes = code.stabilizers
-    # Default drawing options.
-    draw_dict = {
-        "show_nodes": False,
-        "color_nodes": "state",
-        "label": None,
-        "legend": True,
-        "title": True,
-        "state_colors": {"p": None, "GKP": None},
-        "display_axes": True,
-        "label_cubes": True,
-        "label_boundary": False,
-    }
-    # Combine default dictionary with supplied dictionary, duplicates
-    # favor supplied dictionary.
-    if drawing_opts is None:
-        drawing_opts = {}
-    drawing_opts = {**draw_dict, **drawing_opts}
-
-    # Shape and font properties from the original graph.
-    shape = np.array(code.dims)
-    # font_props = state.font_props
-    # If show_nodes is True, get the axes object and legend from
-    # CVGraph.sketch (this also plots the graph in the console).
-    if drawing_opts["show_nodes"]:
-        # TODO: If draw method moved out of CVGraph and into EGraph,
-        # the state argument would be unnecessary here.
-        egraph_args = [
-            "color_nodes",
-            "label",
-            "legend",
-            "title",
-            "state_colors",
-            "display_axes",
-        ]
-        egraph_opts = {k: drawing_opts[k] for k in egraph_args}
-        ax = code.graph.draw(**egraph_opts)
-        leg = ax.get_legend()
-    # If show_nodes is False, create a new figure with size
-    # determined by the dimensions of the lattice.
-    else:
-        # TODO: Initialize axes based on empty ax object from state.draw()
-        # but prevent from state.draw() from plotting.
-        fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
-        ax = fig.gca(projection="3d")
-        # ax.tick_params(labelsize=font_props['size'])
-        plt.xticks(range(0, 2 * shape[0] + 1))
-        plt.yticks(range(0, 2 * shape[1] + 1))
-        ax.set_zticks(range(0, 2 * shape[2] + 1))
-        ax.set_xlabel(
-            "x",
-            # fontdict=font_props,
-            labelpad=20,
-        )
-        ax.set_ylabel(
-            "z",
-            # fontdict=font_props,
-            labelpad=20,
-        )
-        ax.set_zlabel(
-            "y",
-            # fontdict=font_props,
-            labelpad=20,
-        )
-        plt.rcParams["grid.color"] = "lightgray"
-        leg = None
-    # Illustrate stabilizers with voxels colored green for even
-    # parity and red for odd pariy.
-    filled = np.zeros(shape, dtype=object)
-    for cube in cubes:
-
-        # TODO: Deal appropriately with cubes on periodic and dual
-        # boundaries.
-
-        # Obtain smallest, largest, and middle coordinates for each
-        # cube. Divided by 2 becaues voxels are 1X1X1.
-        xmin, xmax = np.array(cube.xlims(), dtype=int) // 2
-        ymin, ymax = np.array(cube.ylims(), dtype=int) // 2
-        zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
-        xmid, ymid, zmid = np.array(cube.midpoint())
-        # Fill in the color arrays depending on parity.
-        if cube.parity:
-            filled[xmin:xmax, ymin:ymax, zmin:zmax] = "#FF000015"
-        else:
-            filled[xmin:xmax, ymin:ymax, zmin:zmax] = "#00FF0015"
-        if drawing_opts["label_cubes"] and index_dict:
-            if cube in index_dict:
-                ax.text(
-                    xmid,
-                    ymid,
-                    zmid,
-                    index_dict[cube],
-                    # fontdict=font_props
-                )
-
-    # This portion adapted from a Matplotlib official example to fix
-    # an issue with filling in the insides of voxels: the code
-    # expands the indices and creates small gaps between the voxels.
-
-    def explode(data):
-        size = np.array(data.shape) * 2
-        data_e = np.zeros(size - 1, dtype=data.dtype)
-        data_e[::2, ::2, ::2] = data
-        return data_e
-
-    # upscale the above voxel image, leaving gaps
-    filled_e = explode(filled)
-    # Shrink the gaps
-    x, y, z = np.indices(np.array(filled_e.shape) + 1, dtype=float)
-    x[0::2, :, :] += 0.05
-    y[:, 0::2, :] += 0.05
-    z[:, :, 0::2] += 0.05
-    x[1::2, :, :] += 0.95
-    y[:, 1::2, :] += 0.95
-    z[:, :, 1::2] += 0.95
-    ax.voxels(x, y, z, filled_e, facecolors=filled_e)
-
-    if drawing_opts["label_boundary"]:
-        for point in points:
-            ax.scatter(point[0], point[1], point[2], s=70, c="k")
-            ax.text(
-                point[0],
-                point[1],
-                point[2],
-                index_dict[point],
-                # fontdict=font_props
-            )
-
-    # Define a legend for red/green cubes.
-    legend_elements = [
-        Patch(facecolor="#00FF0050", label="even parity"),
-        Patch(facecolor="#FF000050", label="odd parity"),
-    ]
-    if drawing_opts["legend"]:
-        ax.legend(
-            handles=legend_elements,
-            # prop=font_props,
-            loc="upper left",
-        )
-    # Since CVGraph.sketch() legend has been overwritten, readd
-    # it to the plot.
-    if leg:
-        ax.add_artist(leg)
-    return ax
 
 
 def assign_weights(code, **kwargs):
@@ -275,7 +53,9 @@ def assign_weights(code, **kwargs):
         for node in syndrome_coords:
             neighbors = G[node]
             # List and number of p-squeezed states in neighborhood of node.
-            p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
+            p_list = [
+                G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"
+            ]
             p_count = len(p_list)
             if p_count in (0, 1):
                 if weight_options.get("prob_precomputed"):
@@ -340,7 +120,7 @@ def CV_decoder(code, translator=GKP_binner):
         code.graph.nodes[point]["bit_val"] = bit_val
 
 
-def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
+def decoding_graph(code):
     """Populate the edge weights of the decoding graph from the RHG lattice G,
     and determine the parity of the stabilizer cubes.
 
@@ -360,15 +140,6 @@ def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
 
     Args:
         G (CVGraph): the CVGraph to decode
-        draw (bool): if True, draw the decoding graph and syndrome plot
-        drawing_opts (dict): the drawing options, as in syndrome_plot:
-
-                'show_nodes' -> the underlying graph displayed
-                'label_nodes' -> node labels, as per CVGraph.draw
-                'label_cubes' -> indices of the stabilizers
-                'label_boundary'-> indices of the boundary points
-                'legend' -> legends for the nodes and cubes
-
     Returns:
         networkx.Graph: the decoding graph.
     """
@@ -391,14 +162,10 @@ def decoding_graph(code, draw=False, drawing_opts=None, label_edges=False):
     odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
     decoding_graph.graph["odd_cubes"] = odd_parity_inds[:]
 
-    # Draw the lattice and the abstract decoding graph.
-    if draw:
-        graph_drawer(decoding_graph, label_edges=label_edges)
-        syndrome_plot(code, decoding_graph, index_dict=mapping, drawing_opts=drawing_opts)
     return decoding_graph
 
 
-def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
+def matching_graph(G_dec, alg="dijkstra"):
     """Create a matching graph from the decoding graph G.
 
     Generate a matching graph from the decoding graph G according to
@@ -423,8 +190,6 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             attribute) and boundary points (under 'boundary_points').
         alg (str): the algorithm for shortest-path finding. By default,
             uses variations of Dijkstra functions from NetworkX
-        draw (bool): if True, draws the matching graph
-
     Returns:
         networkx.Graph: the matching graph.
     """
@@ -456,7 +221,9 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             # equal to the length of the shortest path.
             # TODO: Is the behavior correct for negative weights, or do I
             # want 1/weight or max_num - weight?
-            G_match.add_edge(cube1, cube2, weight=length, inverse_weight=-length, path=path)
+            G_match.add_edge(
+                cube1, cube2, weight=length, inverse_weight=-length, path=path
+            )
 
     virtual_points = []
     if G_dec.graph["boundary_points"]:
@@ -480,7 +247,9 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
             # the virtual excitation corresponding to the boundary
             # vertex, with weight equal to the length of the shortest
             # path.
-            G_match.add_edge(cube, virtual_point, weight=length, inverse_weight=-length, path=path)
+            G_match.add_edge(
+                cube, virtual_point, weight=length, inverse_weight=-length, path=path
+            )
             i += 1
             virtual_points += [virtual_point]
         # Add edge with weight 0 between any two virtual excitations.
@@ -489,13 +258,10 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
 
     G_match.graph["virtual_points"] = virtual_points
 
-    if draw:
-        graph_drawer(G_match, label_edges=label_edges)
-
     return G_match
 
 
-def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
+def MWPM(G_match, G_dec, alg="blossom_nx"):
     """Run minimum-weight-perfect matching on matching graph G_match.
 
     Run a minimum-weight-perfect-matching (MWPM) algorithm (the
@@ -514,9 +280,6 @@ def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
             stabilizer cubes under the 'stabilizer' node attribute
         alg (string): the matching algorithm; by default, NetworkX
             implementation of BlossomV/Edmunds maximum-weight matching
-        draw (bool): if True, visualize the matching on top of the
-            syndrome plot (for now requires the syndrome plot from the
-            decoding graph to be drawn immediately prior)
 
     Return:
         set of tuples: pairs of all matched nodes.
@@ -524,27 +287,6 @@ def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
     if alg == "blossom_nx":
         alg = nx.max_weight_matching
     matching = alg(G_match, maxcardinality=True, weight="inverse_weight")
-    # TODO: Drop the requirement of the syndrome plot from having
-    # to be plotted immediately prior to the matching.
-    if draw:
-        virtual_points = G_match.graph["virtual_points"]
-        for pair in matching:
-            if pair not in it.product(virtual_points, virtual_points):
-                xlist, ylist, zlist = [], [], []
-                path = G_match.edges[pair]["path"]
-                for node in path:
-                    stabe = G_dec.nodes[node]["stabilizer"]
-                    if isinstance(stabe, RHGCube):
-                        x, y, z = stabe.midpoint()
-                    else:
-                        x, y, z = stabe
-                        plt.plot(x, y, z, marker="2", ms=50, c="k")
-                    xlist += [x]
-                    ylist += [y]
-                    zlist += [z]
-                plt.title("Minimum-weight perfect matching", family="serif", size=20)
-                plt.plot(xlist, ylist, zlist, "o-k", ms=20, linewidth=5, c=np.random.rand(3))
-        graph_drawer(G_match, label_edges=label_edges)
     return matching
 
 
@@ -577,7 +319,7 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
                 code.graph.nodes[common_vertex]["bit_val"] ^= 1
 
     if sanity_check:
-        G_dec_new = decoding_graph(code, draw=False)
+        G_dec_new = decoding_graph(code)
         odd_cubes = G_dec_new.graph["odd_cubes"]
         if odd_cubes:
             print("Unsatisfied stabilizers:", odd_cubes)
@@ -641,8 +383,35 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
+def build_dec_and_match_graphs(code, weight_options):
+    """Build the decoding and matching graphs.
+
+    Combines weight assignment, decoding and matching graph creation.
+
+    Args:
+        code (code): the code class to decode and correct
+        weight_options (dict): how to assign weights; options are
+
+                'method': 'unit' or 'blueprint'
+                'integer': True (for rounding) or False (for not)
+                'multiplier': integer denoting multiplicative factor
+                    before rounding
+    Returns:
+        (EGraph, EGraph): The decoding and matching graphs.
+    """
+    if weight_options is None:
+        weight_options = {}
+    assign_weights(code, **weight_options)
+    G_dec = decoding_graph(code)
+    G_match = matching_graph(G_dec)
+    return G_dec, G_match
+
+
 def correct(
-    code, decoder, weight_options=None, draw=False, drawing_opts=None, sanity_check=False,
+    code,
+    decoder,
+    weight_options=None,
+    sanity_check=False,
 ):
     """Run through all the error-correction steps.
 
@@ -659,18 +428,6 @@ def correct(
                 'integer': True (for rounding) or False (for not)
                 'multiplier': integer denoting multiplicative factor
                     before rounding
-
-        draw (bool): if True, draw the decoding graph, matching graph,
-            syndrome plot, and minimum-weight matching
-        drawing_opts (dict): the drawing options, as in syndrome_plot
-            and decoding_graph
-
-                'show_nodes' -> the underlying graph displayed
-                'label_nodes' -> node labels, as per CVGraph.draw
-                'label_cubes' -> indices of the stabilizers
-                'label_boundary'-> indices of the boundary points
-                'legend' -> legends for the nodes and cubes
-
         sanity_check (bool): if True, check that the recovery
             operation succeeded and verify that parity is conserved
             among all correlation surfaces.
@@ -685,71 +442,8 @@ def correct(
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == "MWPM":
-        if drawing_opts is None:
-            drawing_opts = {}
-        label_edges = drawing_opts.get("label_edges")
-        if weight_options is None:
-            weight_options = {}
-        assign_weights(code, **weight_options)
-        G_dec = decoding_graph(code, draw=draw, drawing_opts=drawing_opts, label_edges=label_edges)
-        G_match = matching_graph(G_dec)
-        matching = MWPM(G_match, G_dec, draw=draw, label_edges=label_edges)
+        G_dec, G_match = build_dec_and_match_graphs(code, weight_options)
+        matching = MWPM(G_match, G_dec)
         recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
     return result
-
-
-if __name__ == "__main__":
-    # DV (outer) code
-    distance = 3
-    boundaries = "periodic"
-    RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
-    RHG_lattice = RHG_code.graph
-    # CV (inner) code/state
-    p_swap = 0
-    CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
-
-    # Noise model
-    delta = 0.1
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
-
-    # Decoding options
-    decoder = {"inner": "basic", "outer": "MWPM"}
-    weight_options = {
-        "method": "blueprint",
-        "integer": True,
-        "multiplier": 100,
-        "delta": delta,
-    }
-
-    # Drawing options
-    dw = {
-        "show_nodes": True,
-        "color_nodes": "state",
-        "label": "bit_val",
-        "legend": True,
-        "title": True,
-        "display_axes": True,
-        "label_edges": True,
-        "label_cubes": True,
-        "label_boundary": False,
-    }
-
-    trials = 1
-    success = 0
-    for trial in range(trials):
-        # Apply noise
-        CVRHG.apply_noise(cv_noise)
-        # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.syndrome_inds)
-        c = correct(
-            code=RHG_code,
-            decoder=decoder,
-            weight_options=weight_options,
-            draw=True,
-            drawing_opts=dw,
-            sanity_check=True,
-        )
-        success += c
-    error = (trials - success) / trials
-    print(error)
