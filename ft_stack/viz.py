@@ -229,8 +229,7 @@ def draw_EGraph(
     return ax
 
 
-def plot_SCZ_mat_heat_map(symplectic):
-    print("The symplectic CZ matrix (dark spots 0, bright spots 1):")
+def plot_binary_mat_heat_map(symplectic):
     plt.figure()
     if type(symplectic) != np.ndarray:
         symplectic = symplectic.toarray()

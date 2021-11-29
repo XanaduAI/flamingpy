@@ -42,4 +42,4 @@ print("p indices: ", CVbell.p_inds, "\n")
 print("GKP indices: ", CVbell.GKP_inds, "\n")
 print("\nSymplectic CZ matrix: \n", CVbell.SCZ(), "\n")
 
-viz.plot_SCZ_mat_heat_map(CVbell.SCZ())
+viz.plot_binary_mat_heat_map(CVbell.SCZ())
