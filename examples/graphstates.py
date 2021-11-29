@@ -23,9 +23,17 @@ CVbell.measure_hom("p", [0])
 CVbell.measure_hom("q", [1])
 CVbell.eval_Z_probs(cond=False)
 
-viz.draw_CVGraph(CVbell, label="hom_val_p")
-viz.draw_CVGraph(CVbell, label="hom_val_q")
-viz.draw_CVGraph(CVbell, label="p_phase")
+# Some parameters to make the graph of CVbell.
+CV_graph_params = {
+    "color_nodes": "state",
+    "legend": True,
+    "title": True,
+    "state_colors": {state: None for state in CVbell._states},
+}
+
+viz.draw_EGraph(CVbell.egraph, label="hom_val_p", **CV_graph_params)
+viz.draw_EGraph(CVbell.egraph, label="hom_val_q", **CV_graph_params)
+viz.draw_EGraph(CVbell.egraph, label="p_phase", **CV_graph_params)
 plt.show()
 
 print("\nNodes :", bell_state.nodes.data())

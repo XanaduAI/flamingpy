@@ -229,23 +229,6 @@ def draw_EGraph(
     return ax
 
 
-def draw_CVGraph(self, **kwargs):
-    """Draw the underlying graph with state colors.
-
-    Run draw_EGraph with state information. State colors optionally
-    supplied using state_colors argument; otherwise they are
-    determined by the default color cycle.
-    """
-    default_args = {
-        "color_nodes": "state",
-        "legend": True,
-        "title": True,
-        "state_colors": {state: None for state in self._states},
-    }
-    kwargs = {**default_args, **kwargs}
-    draw_EGraph(self.egraph, **kwargs)
-
-
 def plot_SCZ_mat_heat_map(symplectic):
     print("The symplectic CZ matrix (dark spots 0, bright spots 1):")
     plt.figure()
