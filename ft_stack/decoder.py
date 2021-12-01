@@ -20,6 +20,7 @@ import networkx.algorithms.shortest_paths as sp
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
+import lemonpy
 from ft_stack.graphstates import CVGraph
 from ft_stack.GKP import GKP_binner, Z_err_cond
 from ft_stack.RHG import alternating_polarity, RHGCube, RHGCode
@@ -522,8 +523,16 @@ def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
         set of tuples: pairs of all matched nodes.
     """
     if alg == "blossom_nx":
-        alg = nx.max_weight_matching
-    matching = alg(G_match, maxcardinality=True, weight="inverse_weight")
+        matching = nx.max_weight_matching(G_match, maxcardinality=True, weight="inverse_weight")
+    elif alg == "lemon":
+        adjacency = nx.to_numpy_matrix(G_match, weight="inverse_weight")
+        lemon_matching = lemonpy.mwpm(adjacency)
+        print(lemon_matching)
+        matching = nx.max_weight_matching(G_match, maxcardinality=True, weight="inverse_weight")
+        print(matching)
+        print("Currently lemon is not supported")
+        sys.exit(1)
+        
     # TODO: Drop the requirement of the syndrome plot from having
     # to be plotted immediately prior to the matching.
     if draw:
