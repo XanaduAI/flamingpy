@@ -496,7 +496,7 @@ def matching_graph(G_dec, alg="dijkstra", draw=False, label_edges=False):
     return G_match
 
 
-def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
+def MWPM(G_match, G_dec, alg="lemon", draw=False, label_edges=False):
     """Run minimum-weight-perfect matching on matching graph G_match.
 
     Run a minimum-weight-perfect-matching (MWPM) algorithm (the
@@ -527,11 +527,10 @@ def MWPM(G_match, G_dec, alg="blossom_nx", draw=False, label_edges=False):
     elif alg == "lemon":
         adjacency = nx.to_numpy_matrix(G_match, weight="inverse_weight")
         lemon_matching = lemonpy.mwpm(adjacency)
-        print(lemon_matching)
-        matching = nx.max_weight_matching(G_match, maxcardinality=True, weight="inverse_weight")
-        print(matching)
-        print("Currently lemon is not supported")
-        sys.exit(1)
+        nx_map = list(G_match.nodes())
+        matching = set()
+        for i in lemon_matching:
+            matching.add((nx_map[i[0]],nx_map[i[1]]))
         
     # TODO: Drop the requirement of the syndrome plot from having
     # to be plotted immediately prior to the matching.
