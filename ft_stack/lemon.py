@@ -29,7 +29,7 @@ if __name__ == "__main__":
     time_nx = []
     matrix_size = []
     
-    for N in range(50,500,50):
+    for N in range(50,550,50):
 
         matrix_size.append(N)
         b = np.random.random_integers(0,2000,size=(N,N))
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     
     plt.plot(matrix_size, time_lemon,label="lemon")
     plt.plot(matrix_size, time_nx, label="networkx")
-    plt.xlabel("Matrix Size")
+    plt.xlabel("Nodes")
     plt.ylabel("Time")
     plt.yscale("log")
     plt.legend(loc="best")
