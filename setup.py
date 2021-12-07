@@ -10,7 +10,7 @@ from setuptools.command.build_ext import build_ext
 # https://github.com/pybind/python_example/blob/master/setup.py
 
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir="ft_stack"):
+    def __init__(self, name, sourcedir="ft_stack/lemonpy"):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
@@ -55,6 +55,7 @@ setup(
         "pandas==1.2.1",
         "scipy==1.6.0",
         "thewalrus==0.15.0",
+        "cmake",
     ]
 )
 
