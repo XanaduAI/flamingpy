@@ -19,7 +19,6 @@ import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 
 import ft_stack.lemon as lemon
-from ft_stack.graphstates import CVGraph
 from ft_stack.GKP import GKP_binner, Z_err_cond
 
 # Smallest and largest numbers representable.
