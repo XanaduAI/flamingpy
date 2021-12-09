@@ -64,8 +64,6 @@ c = dec.correct(
     code=RHG_code,
     decoder=decoder,
     weight_options=weight_options,
-    draw=True,
-    drawing_opts=dw,
     sanity_check=True,
 )
 print(f"Success: {c}")

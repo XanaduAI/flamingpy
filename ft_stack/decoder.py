@@ -18,6 +18,7 @@ import numpy as np
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 
+import ft_stack.lemon as lemon
 from ft_stack.GKP import GKP_binner, Z_err_cond
 
 # Smallest and largest numbers representable.
@@ -285,8 +286,9 @@ def MWPM(G_match, G_dec, alg="blossom_nx"):
         set of tuples: pairs of all matched nodes.
     """
     if alg == "blossom_nx":
-        alg = nx.max_weight_matching
-    matching = alg(G_match, maxcardinality=True, weight="inverse_weight")
+        matching = nx.max_weight_matching(G_match, maxcardinality=True, weight="inverse_weight")
+    elif alg == "lemon":
+        matching = lemon.max_weight_matching(G_match, weight="inverse_weight")
     return matching
 
 
