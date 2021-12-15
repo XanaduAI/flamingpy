@@ -32,7 +32,7 @@ num_nodes = range(4, 24, 4)
 @pytest.fixture(scope="module", params=it.product(matching_graph_types, num_nodes))
 def matching_graphs(request):
     """
-    Return an instance of the given matching graph type with random weight
+    Return an instance of the given matching graph type with random weights
     and an edge between each of the num_nodes nodes.
     Also return the same graph as a NxMatchingGraph for comparison.
     """
@@ -48,6 +48,7 @@ def matching_graphs(request):
 
 
 class TestMatching:
+    """Test that different backend return matching similar to networkx."""
     def test_matching_has_same_weight(self, matching_graphs):
         graph, nx_graph = matching_graphs
         matching = graph.min_weight_perfect_matching()
