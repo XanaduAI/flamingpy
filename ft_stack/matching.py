@@ -156,7 +156,6 @@ class NxMatchingGraph(MatchingGraph):
     """A matching graph backed by networkx.
 
     The edge weights can be either of type int or float.
-
     See the MatchingGraph class for more details.
     """
 
@@ -200,7 +199,6 @@ class RxMatchingGraph(MatchingGraph):
     """A matching graph backed by retworkx.
 
     The edge weights must be of type int.
-
     See the MatchingGraph class for more details.
     """
 
