@@ -8,6 +8,9 @@ from ft_stack import matching as mt
 from ft_stack.graphstates import CVGraph
 from ft_stack.RHG import RHGCode, alternating_polarity
 
+# How many simulations to do for each algorithm.
+num_trials = 100
+
 # DV (outer) code
 distance = 7
 boundaries = "periodic"
@@ -45,7 +48,7 @@ matching_graph = {
 }
 
 
-for i in range(100):
+for i in range(num_trials):
     print(f"-- {i} --")
     for alg in ["networkx", "lemon", "retworkx"]:
         print(f"* {alg}")
@@ -72,5 +75,5 @@ plt.legend()
 plt.xscale("log")
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
-plt.title("Matching for code distance 7")
-plt.savefig("benchmark_matching_distance_7.pdf")
+plt.title(f"Matching for code distance {distance}")
+plt.savefig("benchmark_matching_distance_{distance}.pdf")
