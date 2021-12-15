@@ -38,7 +38,8 @@ class MatchingGraph(ABC):
         Args:
             edge: the extremal nodes of the edges.
             weight: a positive weight for the edge.
-            path: an optional list of nodes connecting the two extremal nodes."""
+            path: an optional list of nodes connecting the two extremal nodes.
+        """
         raise NotImplementedError
 
     def edge_weight(self, edge: Edge) -> Weight:
