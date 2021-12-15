@@ -42,27 +42,27 @@ class MatchingGraph(ABC):
         raise NotImplementedError
 
     def edge_weight(self, edge: Edge) -> Weight:
-        """Returns the weight of the given edge or raise an exception
+        """Return the weight of the given edge or raise an exception
         if the edge is not part of the graph.
         """
         raise NotImplementedError
 
     def edge_path(self, edge: Edge) -> List[Node]:
-        """Returns the path for the given edge or raise an exception
+        """Return the path for the given edge or raise an exception
         if the edge is not part of the graph.
         """
         raise NotImplementedError
 
     def min_weight_perfect_matching(self) -> List[Edge]:
-        """Computes a minimum weight perfect matching for the graph.
+        """Compute a minimum weight perfect matching for the graph.
 
         Returns:
-            The list of edge in the matching.
+            The list of edges in the matching.
         """
         raise NotImplementedError
 
     def total_weight_of(self, matching: Iterable[Edge]) -> Weight:
-        """Returns the sum of the weight of each edge in a matching.
+        """Return the sum of the weight of each edge in a matching.
 
         Args:
             The pairs of nodes in the matching.
@@ -73,17 +73,13 @@ class MatchingGraph(ABC):
         return sum(self.edge_weight(edge) for edge in matching)
 
     def with_edges_from_dec_graph(self, dec_graph: nx.Graph):
-        """Create a matching graph from the decoding graph G.
+        """Update the matching graph from the decoding graph G.
 
-        Generate a matching graph from the decoding graph G according to
-        algorithm alg. By default, this is the NetworkX Dijkstra shortest-
-        path algorithm. This graph will be fed into a subsequent minimum-
-        weight-perfect-matching algorithm. The matching graph has as half
-        of its nodes the odd-parity stabilizers. The edge connecting two
-        nodes corresponds to the weight of the minimum-weight-path between
-        the nodes in the decoding graph. Additionally, each unsatisfied
-        stabilizer is connected to a unique boundary point (for now from
-        a primal bundary) located at the shortest weighted distance from
+        The matching graph has as half of its nodes the odd-parity stabilizers. 
+        The edge connecting two nodes corresponds to the weight of the 
+        minimum-weight-path between the nodes in the decoding graph. 
+        Additionally, each unsatisfied stabilizer is connected to a unique boundary point
+        (for now from a primal bundary) located at the shortest weighted distance from
         the stabilizer. Between each other, the boundary points are
         connected by an edge of weight 0. The output graph stores the
         indices of the used boundary points under the 'used_boundary_point'
@@ -92,13 +88,11 @@ class MatchingGraph(ABC):
         weight-matching algorithms
 
         Args:
-            G (networkx.Graph): the decoding graph, storing information
+            dec_graph (networkx.Graph): the decoding graph, storing information
                 about indices of odd-parity-cubes (under 'odd_cubes' graph
                 attribute) and boundary points (under 'boundary_points').
-            alg (str): the algorithm for shortest-path finding. By default,
-                uses variations of Dijkstra functions from NetworkX
         Returns:
-            networkx.Graph: the matching graph.
+            networkx.Graph: the updated matching graph.
         """
         # Get the indices of the odd parity cubes from the decoding graph.
         odd_parity_inds = dec_graph.graph["odd_cubes"]
