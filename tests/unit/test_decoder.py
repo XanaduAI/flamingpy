@@ -131,7 +131,6 @@ class TestDecoder:
 
     def test_matching_graph(self, dec_graphs):
         G_match = dec_graphs[1]
-        # assert G_match.graph["title"] == "Matching Graph"
         virtual_points = G_match.virtual_points
         remaining_points = G_match.graph.nodes - virtual_points
         n_virt = len(virtual_points)
