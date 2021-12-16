@@ -76,9 +76,9 @@ class MatchingGraph(ABC):
     def with_edges_from_dec_graph(self, dec_graph: nx.Graph):
         """Update the matching graph from the decoding graph G.
 
-        The matching graph has as half of its nodes the odd-parity stabilizers. 
-        The edge connecting two nodes corresponds to the weight of the 
-        minimum-weight-path between the nodes in the decoding graph. 
+        The matching graph has as half of its nodes the odd-parity stabilizers.
+        The edge connecting two nodes corresponds to the weight of the
+        minimum-weight-path between the nodes in the decoding graph.
         Additionally, each unsatisfied stabilizer is connected to a unique boundary point
         (for now from a primal bundary) located at the shortest weighted distance from
         the stabilizer. Between each other, the boundary points are
@@ -186,6 +186,16 @@ class LemonMatchingGraph(NxMatchingGraph):
     def min_weight_perfect_matching(self) -> List[Edge]:
         return lemon.max_weight_matching(self.graph, weight="inverse_weight")
 
+    def to_nx(self):
+        """Return the same graph wrapped into a NxMatchingGraph.
+
+        This is basically free since this class already use networkx
+        to represent a graph.
+        """
+        nx = NxMatchingGraph()
+        nx.graph = self.graph
+        return nx
+
 
 @dataclass
 class RxEdgePayload:
@@ -247,3 +257,15 @@ class RxMatchingGraph(MatchingGraph):
                 weight_fn=lambda edge: -1 * edge.weight,
             )
         )
+
+    def to_nx(self):
+        """Convert the same graph into a NxMatchingGraph.
+
+        This involves converting the retworkx graph representation
+        to a networkx graph representation.
+        """
+        nx_graph = NxMatchingGraph()
+        for (idx0, idx1) in iter(self.graph.edge_list()):
+            edge = (self.graph.nodes()[idx0], self.graph.nodes()[idx1])
+            nx_graph.add_edge(edge, self.edge_weight(edge), self.edge_path(edge))
+        return nx_graph
