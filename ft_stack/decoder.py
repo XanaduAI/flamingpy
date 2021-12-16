@@ -257,7 +257,7 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
-def build_dec_and_match_graphs(code, weight_options, MatchingGraphType):
+def build_dec_and_match_graphs(code, weight_options, MatchingGraphType=NxMatchingGraph):
     """Build the decoding and matching graphs.
 
     Combines weight assignment, decoding and matching graph creation.
