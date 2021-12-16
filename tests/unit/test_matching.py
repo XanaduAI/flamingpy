@@ -19,9 +19,9 @@ import itertools as it
 
 import numpy as np
 import pytest
+import networkx as nx
 
-from ft_stack.matching import (LemonMatchingGraph, NxMatchingGraph,
-                               RxMatchingGraph)
+from ft_stack.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 
 # Test parameters
 
@@ -47,10 +47,16 @@ def matching_graphs(request):
     return graph, nx_graph
 
 
-class TestMatching:
-    """Test that different backend return matching similar to networkx."""
-    def test_matching_has_same_weight(self, matching_graphs):
-        graph, nx_graph = matching_graphs
-        matching = graph.min_weight_perfect_matching()
-        nx_matching = graph.min_weight_perfect_matching()
-        assert graph.total_weight_of(matching) == nx_graph.total_weight_of(nx_matching)
+def test_conversion(matching_graphs):
+    """Test that different backends return the same graph as networkx."""
+    graph, nx_graph = matching_graphs
+    assert nx.is_isomorphic(graph.to_nx().graph, nx_graph.graph)
+
+
+def test_matching_has_same_weight(matching_graphs):
+    """Test that different backends return matching similar to networkx."""
+    graph, nx_graph = matching_graphs
+    matching = graph.min_weight_perfect_matching()
+    nx_matching = graph.min_weight_perfect_matching()
+    assert graph.total_weight_of(matching) == nx_graph.total_weight_of(nx_matching)
+    assert len(matching) == len(nx_matching)
