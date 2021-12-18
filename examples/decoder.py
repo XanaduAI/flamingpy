@@ -55,7 +55,7 @@ ax = viz.syndrome_plot(
     RHG_code, G_dec, index_dict=RHG_code._decoder_mapping, drawing_opts=dw
 )
 viz.draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, dw.get("label_edges"))
-# This function requires a network graph object. Must backend implement
+# This function requires a network graph object. Most backends implement
 # the to_nx() method to perform the conversion if needed.
 viz.draw_dec_graph(G_match.graph, title="Matching graph")
 plt.show()
