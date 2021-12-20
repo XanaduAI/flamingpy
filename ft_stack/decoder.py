@@ -257,27 +257,41 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
-def build_dec_and_match_graphs(code, weight_options, MatchingGraphType=NxMatchingGraph):
-    """Build the decoding and matching graphs.
+def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"):
+    """
+    Build the decoding and matching graphs.
 
     Combines weight assignment, decoding and matching graph creation.
 
     Args:
         code (code): the code class to decode and correct
         weight_options (dict): how to assign weights; options are
-
                 'method': 'unit' or 'blueprint'
                 'integer': True (for rounding) or False (for not)
                 'multiplier': integer denoting multiplicative factor
                     before rounding
+        MatchingGraphType (str or ft_stack.matching.MatchingGraph, optional):
+            The type of matching graph to build. If providing a string,
+            it most be either "networkx", "retworkx" or "lemon" to pick one 
+            of the already implemented backends. Else, the provided type should
+            inherit from the MatchingGraph abstract base class and have an empty init.
+            The default is the networkx backend since it is the reference implementation. 
+            However, both retworkx and lemon and orders of magnitude faster.
     Returns:
-        (EGraph, EGraph): The decoding and matching graphs.
+        (EGraph, MatchingGraph): The decoding and matching graphs.
     """
     if weight_options is None:
         weight_options = {}
     assign_weights(code, **weight_options)
+
+    default_backends = {
+        "networkx": NxMatchingGraph, "retworkx": RxMatchingGraph, "lemon": LemonMatchingGraph
+    }
+    if matching_backend in default_backends:
+        matching_backend = default_backends[matching_backend]
+
     G_dec = decoding_graph(code)
-    G_match = MatchingGraphType().with_edges_from_dec_graph(G_dec)
+    G_match = matching_backend().with_edges_from_dec_graph(G_dec)
     return G_dec, G_match
 
 
@@ -286,7 +300,7 @@ def correct(
     decoder,
     weight_options=None,
     sanity_check=False,
-    backend=NxMatchingGraph,
+    matching_backend="networkx",
 ):
     """Run through all the error-correction steps.
 
@@ -306,14 +320,12 @@ def correct(
         sanity_check (bool): if True, check that the recovery
             operation succeeded and verify that parity is conserved
             among all correlation surfaces.
+        matching_backend (str or ft_stack.matching.MatchingGraph, optional):
+            The backend to generate the matching graph. See build_dec_and_match_graphs
+            for more details.
     Returns:
         bool: True if error correction succeeded, False if not.
     """
-    default_backends = {
-        "networkx": NxMatchingGraph, "retworkx": RxMatchingGraph, "lemon": LemonMatchingGraph
-    }
-    if backend in default_backends:
-        backend = default_backends[backend]
 
     inner_dict = {"basic": GKP_binner}
     outer_dict = {"MWPM": "MWPM"}
@@ -323,7 +335,7 @@ def correct(
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == "MWPM":
-        G_dec, G_match = build_dec_and_match_graphs(code, weight_options, backend)
+        G_dec, G_match = build_dec_and_match_graphs(code, weight_options, matching_backend)
         matching = G_match.min_weight_perfect_matching()
         recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)

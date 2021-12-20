@@ -22,8 +22,9 @@ Edge = Tuple[Node, Node]
 class MatchingGraph(ABC):
     """The matching graph base class.
 
-    To be used to compute a minimum weight perfect matching
-    while decoding, a class most implement this protocol.
+    This represents a graph for which we can compute a minimum weight perfect matching.
+    See ft_stack.matching.NxMatchingGraph for a reference implementation using the networkx
+    library as a backend.
     """
 
     # The type representing the weight of an edge.
@@ -199,7 +200,12 @@ class LemonMatchingGraph(NxMatchingGraph):
 
 @dataclass
 class RxEdgePayload:
-    """The edge payload for the RxMatchingGraph."""
+    """The edge payload for the RxMatchingGraph.
+
+    Args:
+        weight:  the minimum-weight-path in the decoding graph between the extremal nodes.
+        path : the nodes in the decoding graph along the minimum-weight-path.
+    """
 
     weight: int
     path: List[Node]
