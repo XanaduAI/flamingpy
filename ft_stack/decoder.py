@@ -16,7 +16,7 @@ import sys
 import itertools as it
 import numpy as np
 
-from ft_stack.matching import NxMatchingGraph
+from ft_stack.matching import NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
 from ft_stack.GKP import GKP_binner, Z_err_cond
 
 # Smallest and largest numbers representable.
@@ -286,7 +286,7 @@ def correct(
     decoder,
     weight_options=None,
     sanity_check=False,
-    MatchingGraphType=NxMatchingGraph,
+    backend=NxMatchingGraph,
 ):
     """Run through all the error-correction steps.
 
@@ -309,6 +309,12 @@ def correct(
     Returns:
         bool: True if error correction succeeded, False if not.
     """
+    default_backends = {
+        "networkx": NxMatchingGraph, "retworkx": RxMatchingGraph, "lemon": LemonMatchingGraph
+    }
+    if backend in default_backends:
+        backend = default_backends[backend]
+
     inner_dict = {"basic": GKP_binner}
     outer_dict = {"MWPM": "MWPM"}
 
@@ -317,7 +323,7 @@ def correct(
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == "MWPM":
-        G_dec, G_match = build_dec_and_match_graphs(code, weight_options, MatchingGraphType)
+        G_dec, G_match = build_dec_and_match_graphs(code, weight_options, backend)
         matching = G_match.min_weight_perfect_matching()
         recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
