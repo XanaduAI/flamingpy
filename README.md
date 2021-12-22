@@ -5,7 +5,9 @@
 FT-Stack simulates all the error-correction steps (encoding, decoding, recovery, success check) for concatenated measurement-based quantum-error-correcting codes. Among these are CV-DV codes, whose inner encoding can be GKP states uniquely, or hybrid variations consisting of both Gaussian states and GKP states. The package is conveniently modularized, allowing the user to easily swap encodings, decoders, and other features, and provides a host of visual tools for ease of verifying correctness.
 
 ## Installation  
-To run FT-Stack you will need C/C++ compilers and Python virtual env appropriately set up. Follow these recommended steps for a full installation (skip Steps 1-5 if you have already set up your env):
+To run FT-Stack you will need C/C++ compilers and Python virtual env, which have been appropriately set up. Follow these recommended steps for a full installation: 
+
+> If you have already set up a virtual env and C/C++ compilers, you can skip Steps 1-4 below.
 
 1. Clone `ft-stack` through the Code tab above.
 2. If never done before, you will need to download and install C/C++ compilers. Windows users should install minimally Visual Studio C/C++ compilers and toolset -- 2019 version and above are recommended. Go to this [link](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) to set up a minimal Visual Studio 2022 installation -- downloading IDEs and other tools are optional. Non-Windows users can install GNU compilers.
@@ -22,4 +24,4 @@ To run FT-Stack you will need C/C++ compilers and Python virtual env appropriate
     ```
     If you are a developer, you also need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
 
-You can now switch to your Python IDE, set `ft-stack` as the interpreter, and enjoy using FT-Stack. Note in some cases, you need to name your environment `venv` or `env` or add its name to `.gitignore`.
+You can now switch to your Python IDE, set `ft-stack` as the interpreter, and enjoy using FT-Stack. Note in some cases, you need to name your environment `venv` or `env` and/or add its name to `.gitignore`.
