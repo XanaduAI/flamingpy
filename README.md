@@ -1,16 +1,16 @@
 # FT-Stack
-![Tests](https://github.com/XanaduAI/ft-stack/actions/workflows/tests.yaml/badge.svg?branch=main)
+![tests](https://github.com/XanaduAI/ft-stack/actions/workflows/tests.yaml/badge.svg?branch=main)
 
 ## Threshold estimations for concatenated quantum codes
 FT-Stack simulates all the error-correction steps (encoding, decoding, recovery, success check) for concatenated measurement-based quantum-error-correcting codes in fault-tolerant bosonic systems. Among these are CV-DV codes, whose inner encoding can be GKP states uniquely, or hybrid variations consisting of both Gaussian and GKP states. The package is conveniently modularized, allowing the user to easily swap encodings, decoders, and other features, and provides a host of visual tools for ease of verifying correctness.
 
-## Quick installation 
-(pre-compiled libraries)
+## Installation 
+
+### Quick installation (pre-compiled binaries)
 
 > Coming soon ...
 
-## Installation from source
-(advanced users)  
+### Installation from source (advanced users)  
 
 To manipulate and run FT-Stack you will need appropriately configured C/C++ compilers and Python virtual environments. Follow these recommended steps for a full installation: 
 
@@ -39,3 +39,36 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
    If you are a developer, you also need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
 
 6. You can now switch to your Python IDE, set `ft-stack` as the interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual envs natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so easily using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`. Note also, in some cases, you need to name your environment `venv` or `env` and/or add its name to `.gitignore`.
+
+## Usage
+
+> Coming soon ...
+
+## Performance and benchmarks
+
+> Coming soon ...
+
+## Contribution and support
+
+We welcome all constructive contributions — simply fork the FT-Stack repository, and then make a pull request (PR) containing your contribution. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, new functionality, etc.) may be listed on the existing and upcoming FT-Stack arXiv paper.
+
+While FT-Stack is distributed with NO GUARANTEE, we welcome all issue reports. If you are having any type of issues or have found bugs, please let us know by posting them on our [GitHub issue tracker](https://github.com/XanaduAI/ft-stack/issues).
+
+## Attribution
+
+If you are using FT-Stack for research purposes, please cite the reference below:
+
+```bash
+@misc{tzitrin2021faulttolerant,
+      title={Fault-tolerant quantum computation with static linear optics}, 
+      author={Ilan Tzitrin and Takaya Matsuura and Rafael N. Alexander and Guillaume Dauphinais and J. Eli Bourassa and Krishna K. Sabapathy and Nicolas C. Menicucci and Ish Dhand},
+      year={2021},
+      eprint={2104.03241},
+      archivePrefix={arXiv},
+      primaryClass={quant-ph}
+}
+```
+
+## License
+
+> Coming soon ...
