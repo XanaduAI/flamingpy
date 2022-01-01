@@ -16,7 +16,7 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
 
 1. Clone `ft-stack` through the Code tab above.
 
-2. Clean installation and configuration of compilers and Python envs are achievable through command line interfaces. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ BASH for concreteness and to avoid some known path setting and compilation issues. BASH is natively available for non-Windows users -- they can now **open a terminal** and skip the rest of this installation step. 
+2. Clean installation and configuration of compilers and Python envs are achievable through command line interfaces. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ **BASH** for concreteness and to avoid some known path setting and compilation issues. BASH is natively available for non-Windows users -- they can now open a terminal and skip the rest of this installation step. 
 
     We recommend Windows 10 users use WSL 2. If you never used WSL, first, make sure Windows is updated. Open **Turn Windows feature on or off** from Start and mark **Virtual Machine Platform** and **Windows Subsystem for Linux**. Click OK and await instructions to restart your machine. Now from the **Microsoft Store** find and install **Ubuntu** app (you may choose other Linux distros if you wish). Open a **Windows PowerShell** as an administrator and issue `wsl --set-version Ubuntu 2` (replacing Ubuntu with distro you have previously selected). You can now open and enjoy a native BASH through WSL 2.        
 
