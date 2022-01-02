@@ -10,7 +10,7 @@ FT-Stack simulates all the error-correction steps (encoding, decoding, recovery,
 
 > Coming soon ...
 
-### Installation from source (advanced users)  
+### Installation from Source (advanced users)  
 
 To manipulate and run FT-Stack you will need appropriately configured C/C++ compilers and Python virtual environments. Follow these recommended steps for a full installation: 
 
