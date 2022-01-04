@@ -15,10 +15,8 @@
 import sys
 import itertools as it
 import numpy as np
-import networkx as nx
-import networkx.algorithms.shortest_paths as sp
 
-import ft_stack.lemon as lemon
+from ft_stack.matching import NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
 from ft_stack.GKP import GKP_binner, Z_err_cond
 
 # Smallest and largest numbers representable.
@@ -166,132 +164,6 @@ def decoding_graph(code):
     return decoding_graph
 
 
-def matching_graph(G_dec, alg="dijkstra"):
-    """Create a matching graph from the decoding graph G.
-
-    Generate a matching graph from the decoding graph G according to
-    algorithm alg. By default, this is the NetworkX Dijkstra shortest-
-    path algorithm. This graph will be fed into a subsequent minimum-
-    weight-perfect-matching algorithm. The matching graph has as half
-    of its nodes the odd-parity stabilizers. The edge connecting two
-    nodes corresponds to the weight of the minimum-weight-path between
-    the nodes in the decoding graph. Additionally, each unsatisfied
-    stabilizer is connected to a unique boundary point (for now from
-    a primal bundary) located at the shortest weighted distance from
-    the stabilizer. Between each other, the boundary points are
-    connected by an edge of weight 0. The output graph stores the
-    indices of the used boundary points under the 'used_boundary_point'
-    attribute. Paths are stored under the 'paths' attribute of edges,
-    and 'inverse_weights' are also stored, for the benefit of maximum-
-    weight-matching algorithms
-
-    Args:
-        G (networkx.Graph): the decoding graph, storing information
-            about indices of odd-parity-cubes (under 'odd_cubes' graph
-            attribute) and boundary points (under 'boundary_points').
-        alg (str): the algorithm for shortest-path finding. By default,
-            uses variations of Dijkstra functions from NetworkX
-    Returns:
-        networkx.Graph: the matching graph.
-    """
-    # An empty matching graph.
-    G_match = nx.Graph(title="Matching Graph")
-
-    # Get the indices of the odd parity cubes from the decoding graph.
-    odd_parity_inds = G_dec.graph["odd_cubes"]
-
-    # Give shorter names to the Dijkstra shortest path algorithms.
-    if alg == "dijkstra":
-        alg = sp.single_source_dijkstra
-
-    # Run the matching algorithm first without the 'high' and 'low points
-    real_points = G_dec.graph["real_points"]
-
-    # Combinations of odd-parity cubes.
-    odd_ind_dict = {i: [] for i in odd_parity_inds[:-1]}
-    odd_combs = it.combinations(odd_parity_inds, 2)
-    for pair in odd_combs:
-        odd_ind_dict[pair[0]] += [pair[1]]
-    # Find the shortest paths between odd-parity cubes.
-    for cube1 in odd_parity_inds[:-1]:
-        lengths, paths = alg(G_dec.subgraph(real_points), cube1)
-        for cube2 in odd_ind_dict[cube1]:
-            length = lengths[cube2]
-            path = paths[cube2]
-            # Add edge to the matching graph between the cubes, with weight
-            # equal to the length of the shortest path.
-            # TODO: Is the behavior correct for negative weights, or do I
-            # want 1/weight or max_num - weight?
-            G_match.add_edge(
-                cube1, cube2, weight=length, inverse_weight=-length, path=path
-            )
-
-    virtual_points = []
-    if G_dec.graph["boundary_points"]:
-
-        i = 0
-        low_lengths, low_paths = alg(G_dec, "low")
-        high_lengths, high_paths = alg(G_dec, "high")
-        for cube in odd_parity_inds:
-            distances = (low_lengths[cube], high_lengths[cube])
-            where_shortest = np.argmin(distances)
-            if where_shortest == 0:
-                length = low_lengths[cube]
-                full_path = low_paths[cube]
-            if where_shortest == 1:
-                length = high_lengths[cube]
-                full_path = high_paths[cube]
-            point = full_path[1]
-            virtual_point = (point, i)
-            path = full_path[1:]
-            # Add edge to the matching graph between the cube and
-            # the virtual excitation corresponding to the boundary
-            # vertex, with weight equal to the length of the shortest
-            # path.
-            G_match.add_edge(
-                cube, virtual_point, weight=length, inverse_weight=-length, path=path
-            )
-            i += 1
-            virtual_points += [virtual_point]
-        # Add edge with weight 0 between any two virtual excitations.
-        for (point1, point2) in it.combinations(virtual_points, 2):
-            G_match.add_edge(point1, point2, weight=0, inverse_weight=0)
-
-    G_match.graph["virtual_points"] = virtual_points
-
-    return G_match
-
-
-def MWPM(G_match, G_dec, alg="blossom_nx"):
-    """Run minimum-weight-perfect matching on matching graph G_match.
-
-    Run a minimum-weight-perfect-matching (MWPM) algorithm (the
-    BlossomV/Edmunds aglorithm as implemented in NetworkX by default)
-    on the matching graph G_match. Under the hood, runs maximum weight
-    matching with maximum cardinality on inverse weights. The matching
-    combines pairs of nodes in the matching graph in a way that
-    minimizes the total weight. Perfect matching combine all pairs of
-    nodes.
-
-    Args:
-        G_match (networkx.Graph): the matching graph, storing inverse
-            weights under the 'inverse_weight' edge attribute ad paths
-            under 'path'
-        G_dec (networkx.Graph): the decoding graph, pointing to the
-            stabilizer cubes under the 'stabilizer' node attribute
-        alg (string): the matching algorithm; by default, NetworkX
-            implementation of BlossomV/Edmunds maximum-weight matching
-
-    Return:
-        set of tuples: pairs of all matched nodes.
-    """
-    if alg == "blossom_nx":
-        matching = nx.max_weight_matching(G_match, maxcardinality=True, weight="inverse_weight")
-    elif alg == "lemon":
-        matching = lemon.max_weight_matching(G_match, weight="inverse_weight")
-    return matching
-
-
 def recovery(code, G_match, G_dec, matching, sanity_check=False):
     """Run the recovery operation on graph G.
 
@@ -311,10 +183,10 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
         None or bool: if check, False if the recovery failed, True if
             it succeeded. Otherwise None.
     """
-    virtual_points = G_match.graph["virtual_points"]
+    virtual_points = G_match.virtual_points
     for pair in matching:
         if pair not in it.product(virtual_points, virtual_points):
-            path = G_match.edges[pair]["path"]
+            path = G_match.edge_path(pair)
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:
                 common_vertex = G_dec.edges[pair]["common_vertex"]
@@ -385,27 +257,41 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
-def build_dec_and_match_graphs(code, weight_options):
-    """Build the decoding and matching graphs.
+def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"):
+    """
+    Build the decoding and matching graphs.
 
     Combines weight assignment, decoding and matching graph creation.
 
     Args:
         code (code): the code class to decode and correct
         weight_options (dict): how to assign weights; options are
-
                 'method': 'unit' or 'blueprint'
                 'integer': True (for rounding) or False (for not)
                 'multiplier': integer denoting multiplicative factor
                     before rounding
+        MatchingGraphType (str or ft_stack.matching.MatchingGraph, optional):
+            The type of matching graph to build. If providing a string,
+            it most be either "networkx", "retworkx" or "lemon" to pick one 
+            of the already implemented backends. Else, the provided type should
+            inherit from the MatchingGraph abstract base class and have an empty init.
+            The default is the networkx backend since it is the reference implementation. 
+            However, both retworkx and lemon and orders of magnitude faster.
     Returns:
-        (EGraph, EGraph): The decoding and matching graphs.
+        (EGraph, MatchingGraph): The decoding and matching graphs.
     """
     if weight_options is None:
         weight_options = {}
     assign_weights(code, **weight_options)
+
+    default_backends = {
+        "networkx": NxMatchingGraph, "retworkx": RxMatchingGraph, "lemon": LemonMatchingGraph
+    }
+    if matching_backend in default_backends:
+        matching_backend = default_backends[matching_backend]
+
     G_dec = decoding_graph(code)
-    G_match = matching_graph(G_dec)
+    G_match = matching_backend().with_edges_from_dec_graph(G_dec)
     return G_dec, G_match
 
 
@@ -414,6 +300,7 @@ def correct(
     decoder,
     weight_options=None,
     sanity_check=False,
+    matching_backend="networkx",
 ):
     """Run through all the error-correction steps.
 
@@ -433,9 +320,13 @@ def correct(
         sanity_check (bool): if True, check that the recovery
             operation succeeded and verify that parity is conserved
             among all correlation surfaces.
+        matching_backend (str or ft_stack.matching.MatchingGraph, optional):
+            The backend to generate the matching graph. See build_dec_and_match_graphs
+            for more details.
     Returns:
         bool: True if error correction succeeded, False if not.
     """
+
     inner_dict = {"basic": GKP_binner}
     outer_dict = {"MWPM": "MWPM"}
 
@@ -444,8 +335,8 @@ def correct(
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == "MWPM":
-        G_dec, G_match = build_dec_and_match_graphs(code, weight_options)
-        matching = MWPM(G_match, G_dec)
+        G_dec, G_match = build_dec_and_match_graphs(code, weight_options, matching_backend)
+        matching = G_match.min_weight_perfect_matching()
         recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
     return result
