@@ -38,7 +38,7 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
    ``` 
    If you are a developer, you also need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
 
-6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual envs natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`. In some cases, you may need to name your environment `venv` or `env` and/or add its name to `.gitignore`.
+6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual envs natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`.
 
 ## Usage
 
