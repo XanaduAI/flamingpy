@@ -1,8 +1,8 @@
 # FT-Stack
 ![tests](https://github.com/XanaduAI/ft-stack/actions/workflows/tests.yaml/badge.svg?branch=main)
 
-## Threshold estimations for concatenated quantum codes
-FT-Stack simulates all the error-correction steps (encoding, decoding, recovery, success check) for concatenated measurement-based quantum-error-correcting codes in fault-tolerant bosonic systems. Among these are CV-DV codes, whose inner encoding can be GKP states uniquely, or hybrid variations consisting of both Gaussian and GKP states. The package is conveniently modularized, allowing the user to easily swap encodings, decoders, and other features, and provides a host of visual tools for ease of verifying correctness.
+## Simulations of fault-tolerant quantum computation
+The FT-Stack simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. Among these are the GKP code (in particular, combinations of GKP and squeezed states) concatenated with the surface code. The package is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features, and provides a host of visualization tools for ease of verifying correctness.
 
 ## Installation 
 
@@ -16,11 +16,11 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
 
 1. Clone `ft-stack` through the Code tab above.
 
-2. Clean installation and configuration of compilers and Python envs are achievable through command line interfaces. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ **BASH** for concreteness and to avoid some known path setting and compilation issues. BASH is natively available for non-Windows users -- they can now open a terminal and skip the rest of this installation step. 
+2. Clean installation and configuration of compilers and Python envs are achievable through command line interfaces. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ **BASH** for concreteness and to avoid some known path-setting and compilation issues. BASH is natively available for non-Windows users -- they can now open a terminal and skip the rest of this installation step.
 
-    We recommend Windows 10 users use WSL 2. If you never used WSL, first, make sure Windows is updated. Open **Turn Windows feature on or off** from Start and mark **Virtual Machine Platform** and **Windows Subsystem for Linux**. Click OK and await instructions to restart your machine. Now from the **Microsoft Store** find and install **Ubuntu** app (you may choose other Linux distros if you wish). Open a **Windows PowerShell** as an administrator and issue `wsl --set-version Ubuntu 2` (replacing Ubuntu with distro you have previously selected). You can now open and enjoy a native BASH through WSL 2.        
+    We recommend Windows 10 users use WSL 2. If you have never used WSL, first make sure that Windows is up to date via Windows Update. Then, open **Turn Windows feature on or off** from Start and mark **Virtual Machine Platform** and **Windows Subsystem for Linux**. Click OK and await instructions to restart your machine. Now, from the **Microsoft Store**, find and install the **Ubuntu** app (you may choose other Linux distros if you wish). Open a **Windows PowerShell** as an administrator and issue `wsl --set-version Ubuntu 2` (replacing Ubuntu with distro you have previously selected). You can now open and enjoy a native BASH through WSL 2.
 
-3. If you have already set up C/C++ compilers, you can skip the following step. Ubuntu users (including WSL 2 clients) run `sudo apt update && sudo apt upgrade` if you not done yet in your BASH. Now simply run the following to get all necessary compilation tools:
+3. If you have already set up C/C++ compilers, you can skip the following step. Ubuntu users (including WSL 2 clients) can run `sudo apt update && sudo apt upgrade` in BASH if not already done so you not done yet in your BASH. Now simply run the following to get all necessary compilation tools:
     ```bash
     sudo apt-get install build-essential
     ```
@@ -32,13 +32,13 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
     conda create -n ft-stack python=3.9
     activate ft-stack
     ```
-5. Next change to the directory `ft-stack` was cloned. The following line will install and compile all required libraries: 
+5. Next, change to the directory where `ft-stack` was cloned. The following line will install and compile all required libraries:
    ```bash
    pip install -e .
    ``` 
    If you are a developer, you also need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
 
-6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual envs natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`. Note also, in some cases, you need to name your environment `venv` or `env` and/or add its name to `.gitignore`.
+6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual envs natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`. In some cases, you may need to name your environment `venv` or `env` and/or add its name to `.gitignore`.
 
 ## Usage
 
@@ -52,21 +52,27 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
 
 We welcome all constructive contributions — simply fork an FT-Stack repository, and then make a pull request (PR) containing your contributions. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the existing and upcoming FT-Stack arXiv papers.
 
-While FT-Stack is distributed with NO GUARANTEE, we welcome all issue/bug reports. If you are experiencing any type of issues or have found bugs, please let us know by posting them on our [GitHub issue tracker](https://github.com/XanaduAI/ft-stack/issues).
+While the FT-Stack is distributed with no guarantee, we welcome all issue and bug reports. If you are experiencing any type of issue or have found bugs, please let us know by posting them on our [GitHub issue tracker](https://github.com/XanaduAI/ft-stack/issues).
 
 ## Attribution
 
 If you are using FT-Stack for research purposes, please cite the reference below:
 
 ```bash
-@misc{tzitrin2021faulttolerant,
-      title={Fault-tolerant quantum computation with static linear optics}, 
-      author={Ilan Tzitrin and Takaya Matsuura and Rafael N. Alexander and Guillaume Dauphinais and J. Eli Bourassa and Krishna K. Sabapathy and Nicolas C. Menicucci and Ish Dhand},
-      year={2021},
-      eprint={2104.03241},
-      archivePrefix={arXiv},
-      primaryClass={quant-ph}
+@article{tzitrin2021,
+   title={Fault-Tolerant Quantum Computation with Static Linear Optics},
+   volume={2},
+   ISSN={2691-3399},
+   url={http://dx.doi.org/10.1103/PRXQuantum.2.040353},
+   DOI={10.1103/prxquantum.2.040353},
+   number={4},
+   journal={PRX Quantum},
+   publisher={American Physical Society (APS)},
+   author={Tzitrin, Ilan and Matsuura, Takaya and Alexander, Rafael N. and Dauphinais, Guillaume and Bourassa, J. Eli and Sabapathy, Krishna K. and Menicucci, Nicolas C. and Dhand, Ish},
+   year={2021},
+   month={Dec}
 }
+
 ```
 
 ## License
