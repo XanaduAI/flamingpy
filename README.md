@@ -6,39 +6,40 @@ The FT-Stack simulates error correction on combinations of CV and DV codes to ob
 
 ## Installation 
 
-### Quick installation (pre-compiled binaries)
+### Method #1: Quick installation (pre-compiled binaries)
+
+Our recommended method to download and install FT-Stack is through our PyPi package. In your choice of CLI with a Python environment activated, run the following single-line. Pip will automatically install FT-Stack and fetch all pre-compiled binaries it requires:
 
 > Coming soon ...
 
-### Installation from Source (advanced users)  
+### Method #2: Installation from Source through Conda packages  
 
-To manipulate and run FT-Stack you will need appropriately configured C/C++ compilers and Python virtual environments. Follow these recommended steps for a full installation: 
+If you are a developer and need to manipulate and test FT-Stack, you will need to install from Source and appropriately configure C++ compilers and Python environments. 
+
+If you use [Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) to manage your virtual environments, installation from Source can be performed easily through a few commands. In your CLI with a **Conda environment** activated run:
+```bash
+pip install -e .
+pip install -r dev-requirements.txt
+``` 
+The first command installs and compiles the dependencies of FT-Stack while the second installs extra dependencies for testing purposes.
+
+### Method #3: Full installation from Source using BASH (advanced users only)
 
 1. Clone `ft-stack` through the Code tab above.
 
-2. Clean installation and configuration of compilers and Python envs are achievable through command line interfaces. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ **BASH** for concreteness and to avoid some known path-setting and compilation issues. BASH is natively available for non-Windows users -- they can now open a terminal and skip the rest of this installation step.
+2. Clean installation and configuration of compilers and Python environments are achievable through CLIs. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ **BASH** for concreteness and to avoid some known path-setting and compilation issues. BASH is natively available for non-Windows users -- we recommend Windows 10 users use [WSL 2](https://docs.microsoft.com/en-gb/windows/wsl/install).
 
-    We recommend Windows 10 users use WSL 2. If you have never used WSL, first make sure that Windows is up to date via Windows Update. Then, open **Turn Windows feature on or off** from Start and mark **Virtual Machine Platform** and **Windows Subsystem for Linux**. Click OK and await instructions to restart your machine. Now, from the **Microsoft Store**, find and install the **Ubuntu** app (you may choose other Linux distros if you wish). Open a **Windows PowerShell** as an administrator and issue `wsl --set-version Ubuntu 2` (replacing Ubuntu with distro you have previously selected). You can now open and enjoy a native BASH through WSL 2.
+3. If you have already set up C/C++ compilers, you can skip the following step. Ubuntu users (including WSL 2 clients) can run `sudo apt update && sudo apt upgrade` in BASH if not already done so. Now simply run `sudo apt-get install build-essential` to get all necessary compilation tools. Non-Debian users need to get C/C++ compilers through their own package installers.
 
-3. If you have already set up C/C++ compilers, you can skip the following step. Ubuntu users (including WSL 2 clients) can run `sudo apt update && sudo apt upgrade` in BASH if not already done so you not done yet in your BASH. Now simply run the following to get all necessary compilation tools:
-    ```bash
-    sudo apt-get install build-essential
-    ```
-    Other users need to get C/C++ compilers through their own package installers.
-
-4. If you have already set up Python interpreters and customized virtual envs, you can skip the following step. We strongly recommend using **miniconda** for configuring envs, which can be installed in BASH following this [guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html). Run the following to set up and switch to a new virtual env called `ft-stack`:
+4. If you have already set up Python interpreters and customized virtual environments, you can skip the following step. We recommend using the light version of Conda i.e. **miniconda** for configuring environments, which can be installed in BASH following this [guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html). Run the following to set up and switch to a new virtual env called `ft-stack`:
     ```bash
     conda init
     conda create -n ft-stack python=3.9
     activate ft-stack
     ```
-5. Next, change to the directory where `ft-stack` was cloned. The following line will install and compile all required libraries:
-   ```bash
-   pip install -e .
-   ``` 
-   If you are a developer, you also need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
+5. Next, change to the directory where `ft-stack` was cloned. As before, running `pip install -e .` will install and compile all required libraries and you need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
 
-6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual envs natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`.
+6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual environments natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`.
 
 ## Usage
 
@@ -52,7 +53,7 @@ To manipulate and run FT-Stack you will need appropriately configured C/C++ comp
 
 We welcome all constructive contributions — simply fork an FT-Stack repository, and then make a pull request (PR) containing your contributions. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the existing and upcoming FT-Stack arXiv papers.
 
-While the FT-Stack is distributed with no guarantee, we welcome all issue and bug reports. If you are experiencing any type of issue or have found bugs, please let us know by posting them on our [GitHub issue tracker](https://github.com/XanaduAI/ft-stack/issues).
+While the FT-Stack is distributed with no guarantee, we welcome all issues and bug reports. If you are experiencing any type of issue or have found bugs, please let us know by posting them on our [GitHub issue tracker](https://github.com/XanaduAI/ft-stack/issues).
 
 ## Attribution
 
