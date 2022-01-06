@@ -16,7 +16,7 @@ Our recommended method to download and install FT-Stack is through our PyPi pack
 
 If you are a developer and need to manipulate and test FT-Stack, you will need to install from Source and appropriately configure C++ compilers and Python environments. 
 
-If you use [Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) to manage your virtual environments, installation from Source can be performed easily through a few commands. In your CLI with a **Conda environment** activated run:
+If you use [Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) to manage your virtual environments, installation from Source can be performed easily through a few commands. In your CLI, change to FT-Stack directory, activate your **Conda environment** and then run:
 ```bash
 pip install -e .
 pip install -r dev-requirements.txt
@@ -39,7 +39,7 @@ The first command installs and compiles the dependencies of FT-Stack while the s
     ```
 5. Next, change to the directory where `ft-stack` was cloned. As before, running `pip install -e .` will install and compile all required libraries and you need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
 
-6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL virtual environments natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`.
+6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL environments natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) -- such IDEs are available to be installed on your Linux subsystem using `conda`.
 
 ## Usage
 
