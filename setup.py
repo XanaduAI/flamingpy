@@ -73,7 +73,6 @@ setup(
         "scipy==1.6.0",
         "thewalrus==0.15.0",
         "cmake",
-        "pyqt5",
-        "git"
+        "pyqt5"
     ]
 )
