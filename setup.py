@@ -89,7 +89,6 @@ setup(
         "pandas==1.2.1",
         "scipy==1.6.0",
         "thewalrus==0.15.0",
-        "cmake",
-        "pyqt5"
+        "cmake"
     ]
 )
