@@ -26,8 +26,7 @@ weight_options = {
     "method": "blueprint",
     "integer": True,
     "multiplier": 100,
-    "delta": delta,
-}
+    "delta": delta, }
 
 # Drawing options
 dw = {
@@ -50,13 +49,15 @@ CVRHG.measure_hom("p", RHG_code.syndrome_inds)
 # Manual decoding to plot intermediate results.
 dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
 G_dec, G_match = dec.build_dec_and_match_graphs(RHG_code, weight_options)
-matching = dec.MWPM(G_match, G_dec)
+matching = G_match.min_weight_perfect_matching()
 viz.draw_dec_graph(G_dec, dw.get("label_edges"))
 ax = viz.syndrome_plot(
     RHG_code, G_dec, index_dict=RHG_code._decoder_mapping, drawing_opts=dw
 )
 viz.draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, dw.get("label_edges"))
-viz.draw_dec_graph(G_match)
+# This function requires a network graph object. Most backends implement
+# the to_nx() method to perform the conversion if needed.
+viz.draw_dec_graph(G_match.graph, title="Matching graph")
 plt.show()
 
 # Automatic decoding

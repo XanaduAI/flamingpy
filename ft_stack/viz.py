@@ -250,9 +250,13 @@ def draw_code_lattice(
     draw_EGraph(graph, color_nodes=True, color_edges=True)
 
 
-def draw_dec_graph(G, label_edges=True):
+def draw_dec_graph(G, label_edges=True, title=None):
     """Draw decoding and matching graphs G with a color legend."""
-    title = G.graph["title"]
+    if title is None:
+        try:
+            title = G["title"]
+        except Exception:
+            title = ""
     plt.figure()
     plt.title(title, family="serif", size=10)
     # NetworkX drawing function for circular embedding of graphs.
@@ -471,11 +475,11 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
 
 
 def draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, label_edges):
-    virtual_points = G_match.graph["virtual_points"]
+    virtual_points = G_match.virtual_points
     for pair in matching:
         if pair not in it.product(virtual_points, virtual_points):
             xlist, ylist, zlist = [], [], []
-            path = G_match.edges[pair]["path"]
+            path = G_match.edge_path(pair)
             for node in path:
                 stabe = G_dec.nodes[node]["stabilizer"]
                 if isinstance(stabe, RHG.RHGCube):
