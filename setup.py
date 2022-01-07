@@ -14,7 +14,6 @@
 
 import os
 import sys
-import platform
 import subprocess
 
 from setuptools import setup, Extension, find_packages
@@ -31,31 +30,28 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
+        path = self.get_ext_fullpath(ext.name)
+        extdir = os.path.abspath(os.path.dirname(path))
 
-        cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
+        # Required for auto-detection of auxiliary "native" libs.
+        if not extdir.endswith(os.path.sep):
+            extdir += os.path.sep
 
-        if platform.system() == "Windows":
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
-        else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
+        os.makedirs(self.build_temp, exist_ok=True)
 
-        env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
-                                                              self.distribution.get_version())
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
+        # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
+        cmake_args = [
+            "-DCMAKE_BUILD_TYPE=Release",
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
+            f"-DPYTHON_EXECUTABLE={sys.executable}",
+        ]
 
-        
+        cmake_cmd = ["cmake", ext.sourcedir] + cmake_args
+        build_cmd = ["cmake", "--build", "."]
+
+        subprocess.check_call(cmake_cmd, cwd=self.build_temp)
+        subprocess.check_call(build_cmd, cwd=self.build_temp)
+
 setup(
     name="ft-stack",
     version="0.1.0",
@@ -68,6 +64,7 @@ setup(
     install_requires=[
         "matplotlib==3.3.3",
         "networkx==2.5",
+        "retworkx==0.10.2",
         "numpy==1.21.0",
         "pandas==1.2.1",
         "scipy==1.6.0",
