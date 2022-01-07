@@ -5,6 +5,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(lemonpy)
 
+if(NOT DEFINED CMAKE_MODULE_LINKER_FLAGS_MAINTAINER)
+    set(
+        CMAKE_MODULE_LINKER_FLAGS_MAINTAINER ""
+        CACHE STRING ""
+    )
+endif()
+
 Include(FetchContent)
 
 FetchContent_Declare(
