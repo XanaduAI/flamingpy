@@ -31,7 +31,7 @@ The first command installs and compiles the dependencies of FT-Stack while the s
 
 3. If you have already set up C/C++ compilers, you can skip the following step. Ubuntu users (including WSL 2 clients) can run `sudo apt update && sudo apt upgrade` in BASH if not already done so. Now simply run `sudo apt-get install build-essential` to get all necessary compilation tools. Non-Debian users need to get C/C++ compilers through their own package installers.
 
-4. If you have already set up Python interpreters and customized virtual environments, you can skip the following step. We recommend using the light version of Conda i.e. **miniconda** for configuring environments, which can be installed in BASH following this [guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html). Run the following to set up and switch to a new virtual env called `ft-stack`:
+4. If you have already set up Python interpreters and customized virtual environments, you can skip the following step. We recommend using the light version of **Conda**, i.e. miniconda, or **virtualenv** for configuring Python environments. In particular, miniconda can be installed in BASH following this [guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html). Run the following to set up and switch to a new virtual env called `ft-stack`:
     ```bash
     conda init
     conda create -n ft-stack python=3.9
