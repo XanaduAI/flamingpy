@@ -8,10 +8,10 @@ from ft_stack.graphstates import CVGraph
 from ft_stack.RHG import RHGCode, alternating_polarity
 
 # How many simulations to do for each algorithm.
-num_trials = 100
+num_trials = 10
 
 # DV (outer) code
-distance = 7
+distance = 3
 boundaries = "periodic"
 RHG_code = RHGCode(
     distance=distance, boundaries=boundaries, polarity=alternating_polarity
@@ -48,9 +48,7 @@ matching_graph = {
 
 
 for i in range(num_trials):
-    print(f"-- {i} --")
     for alg in ["networkx", "lemon", "retworkx"]:
-        print(f"* {alg}")
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
