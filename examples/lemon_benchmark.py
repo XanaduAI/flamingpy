@@ -4,16 +4,18 @@ import time
 from ft_stack.lemon import max_weight_matching
 import matplotlib.pyplot as plt
 
+
 time_lemon = []
 time_nx = []
 matrix_size = []
 
-for N in range(50,550,50):
+# Change that for more data points
+for num_nodes in range(50,150,50):
 
-    matrix_size.append(N)
-    b = np.random.random_integers(0,2000,size=(N,N))
+    matrix_size.append(num_nodes)
+    b = np.random.random_integers(0,2000,size=(num_nodes, num_nodes))
     b_symm = (b + b.T)*.5
-    for i in range(N):
+    for i in range(num_nodes):
         b_symm[i,i] = 0
     
     G_match=nx.from_numpy_matrix(b_symm)

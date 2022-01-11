@@ -14,5 +14,5 @@ delta = 0.1
 error_hom_val = GKP.Z_err_cond([delta] * len(xs), xs, use_hom_val=True)    
 error_no_hom_val = GKP.Z_err_cond([delta] * len(xs), xs)
 
-viz.plt_Z_err_cond(xs, error_hom_val, alpha, True)
-viz.plt_Z_err_cond(xs, error_no_hom_val, alpha, False)
+viz.plot_Z_err_cond(xs, error_hom_val, alpha, True)
+viz.plot_Z_err_cond(xs, error_no_hom_val, alpha, False)
