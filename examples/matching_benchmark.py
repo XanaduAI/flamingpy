@@ -1,7 +1,6 @@
 import time
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 from ft_stack import decoder as dec
 from ft_stack import matching as mt
@@ -60,7 +59,7 @@ for i in range(num_trials):
         # Manual decoding to plot intermediate results.
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         G_dec, G_match = dec.build_dec_and_match_graphs(
-            RHG_code, weight_options, MatchingGraphType=matching_graph[alg]
+            RHG_code, weight_options, matching_backend=matching_graph[alg]
         )
         before = time.time()
         matching = G_match.min_weight_perfect_matching()
@@ -68,12 +67,12 @@ for i in range(num_trials):
         times[alg].append(after - before)
 
 plt.figure()
-bins = np.logspace(-3, 0, 30)
+# bins = np.logspace(-3, 0, 30)
 for alg in ["networkx", "lemon", "retworkx"]:
-    plt.hist(times[alg], bins=bins, label=alg)
+    plt.hist(times[alg], bins=10, label=alg)
 plt.legend()
 plt.xscale("log")
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Matching for code distance {distance}")
-plt.savefig("benchmark_matching_distance_{distance}.pdf")
+plt.savefig(f"benchmark_matching_distance_{distance}.pdf")
