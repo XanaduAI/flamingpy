@@ -34,3 +34,5 @@ include_directories(${ftstack_BINARY_DIR})
 include_directories(${ftstack_SOURCE_DIR})
 
 target_link_libraries(src/lemonpy PRIVATE ftstack)
+
+add_compile_options(-O3)
