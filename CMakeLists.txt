@@ -29,8 +29,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Pybind11)
 pybind11_add_module(ftstack "src/lemonpy/lemonpy.cpp")
 
-include_directories(${ftstack_BINARY_DIR})
-include_directories(${ftstack_SOURCE_DIR})
+include_directories(${lemon_BINARY_DIR})
+include_directories(${lemon_SOURCE_DIR})
 
 target_link_libraries(ftstack PRIVATE lemon)
 
