@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import os
 import re
 import sys
@@ -22,15 +23,17 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
-# The following two classes are adaptations of the Python example for pybind11:
-# https://github.com/pybind/python_example/blob/master/setup.py
 
+# The following class is an adaptation of Python examples for pybind11:
+# https://github.com/pybind/python_example/blob/master/setup.py
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir="ft_stack/lemonpy"):
+    def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
-
+        
+# The following class was adapted from pymatching package:
+# https://github.com/oscarhiggott/PyMatching/blob/master/setup.py
 class CMakeBuild(build_ext):
     def run(self):
         try:
@@ -72,15 +75,17 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+        
 setup(
     name="ft-stack",
     version="0.1.0",
     description="Threshold estimations for concatenated quantum codes",
     url="https://github.com/XanaduAI/ft-stack",
-    packages=find_packages(),
-    package_data={"ft_stack":["data/*"]},
+    packages=find_packages("src"),
+    package_dir={'':'src'},
+    package_data={"ft_stack":["src/ft_stack/data/*"]},
     cmdclass={"build_ext": CMakeBuild},
-    ext_modules=[CMakeExtension(name="lemonpy")],
+    ext_modules=[CMakeExtension('lemonpy')],
     install_requires=[
         "matplotlib==3.3.3",
         "networkx==2.5",
