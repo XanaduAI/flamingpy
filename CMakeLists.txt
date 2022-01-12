@@ -17,18 +17,17 @@ file(GLOB SOURCES "src/lemonpy/*.cpp")
 Include(FetchContent)
 
 FetchContent_Declare(
-    Pybind11
-    GIT_REPOSITORY https://github.com/pybind/pybind11.git
-)
-FetchContent_MakeAvailable(Pybind11)
-
-FetchContent_Declare(
   lemon
   URL http://lemon.cs.elte.hu/pub/sources/lemon-1.3.1.tar.gz
 )
 FetchContent_MakeAvailable(lemon)
 
-pybind11_add_module(ftstack lemonpy.cpp)
+FetchContent_Declare(
+    Pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+)
+FetchContent_MakeAvailable(Pybind11)
+pybind11_add_module(ftstack "src/lemonpy/lemonpy.cpp")
 
 include_directories(${ftstack_BINARY_DIR})
 include_directories(${ftstack_SOURCE_DIR})
