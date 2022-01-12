@@ -27,7 +27,7 @@ from distutils.version import LooseVersion
 # The following class is an adaptation of Python examples for pybind11:
 # https://github.com/pybind/python_example/blob/master/setup.py
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir="src/lemonpy"):
+    def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
@@ -85,7 +85,7 @@ setup(
     package_dir={'':'src'},
     package_data={"ft_stack":["src/ft_stack/data/*"]},
     cmdclass={"build_ext": CMakeBuild},
-    ext_modules=[CMakeExtension(name="lemonpy")],
+    ext_modules=[CMakeExtension('src/lemonpy/lemonpy')],
     install_requires=[
         "matplotlib==3.3.3",
         "networkx==2.5",
