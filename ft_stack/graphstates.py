@@ -17,8 +17,6 @@ import numpy as np
 
 # TODO: Avoid Niagara errors associated with Matplotlib; e.g.:
 # if __name__ != "__main__":
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
 from numpy.random import default_rng as rng
 
 import scipy.sparse as sp
@@ -28,9 +26,8 @@ from ft_stack.GKP import Z_err, Z_err_cond
 class EGraph(nx.Graph):
     """An enhanced graph based on a NetworkX Graph.
 
-    A class for adding some functionality to a NetworkX graph,
-    including a drawing function draw and some short-hand/convenience
-    methods.
+    A class for adding some functionality to a NetworkX graph
+    with some short-hand/convenience methods.
 
     Attributes:
         indexer (str): method for indexing the nodes; 'default' for
@@ -119,155 +116,8 @@ class EGraph(nx.Graph):
         coords = [point for point in self.nodes if point[plane_ind] == number]
         return coords
 
-    def draw(
-        self,
-        color_nodes=False,
-        color_edges=False,
-        state_colors={},
-        label=None,
-        title=False,
-        legend=False,
-        display_axes=True,
-    ):
-        """Draw the graph.
 
-        Args:
-            color_nodes (bool): If True, color nodes based on 'color'
-                attributes attached to the node. Black by default.
-            color_edges (bool): If True, color edges based on 'color'
-                attributes attached to the node. Grey by default.
-            label (NoneType): ...
-            display_axes (bool): if False, turn off the axes.
-
-        Returns:
-            A matplotib Axes object.
-        """
-        # Recommended to be viewed with IPython.
-        # Font properties
-        dims = self.graph.get("dims")
-        if dims:
-            # TODO: Store dims as EGraph attributes, rather than a graph
-            # attribute?
-            font_size = 10 * sum(dims) ** (1 / 2)
-        else:
-            # TODO: If dims not specified find x, y, z limits of graph,
-            # supposing the graph is filled. Alternatively, just change
-            # the figure size?
-            dims = (5, 5, 5)
-            font_size = 14
-        xmax, ymax, zmax = dims
-        # Set plotting options
-        plot_params = {
-            "font.size": font_size,
-            "font.family": "serif",
-            "axes.labelsize": font_size,
-            "axes.titlesize": font_size,
-            "xtick.labelsize": font_size,
-            "ytick.labelsize": font_size,
-            "legend.fontsize": font_size,
-            "grid.color": "lightgray",
-            "lines.markersize": font_size,
-        }
-        plt.rcParams.update(plot_params)
-
-        fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
-        ax = fig.add_subplot(111, projection="3d")
-
-        if label:
-            title_dict = {
-                "p_phase": "Phase error probabilities",
-                "p_phase_cond": "Conditional phase error probabilities",
-                "hom_val_p": "p-homodyne outcomes",
-                "hom_val_q": "q-homodyne outcomes",
-                "bit_val": "Bit values",
-                "weight": "Weights",
-                "indices": "Indices",
-            }
-            name = title_dict.get(label) if title_dict.get(label) else label
-            n_uncomputed = 0
-            if title:
-                ax.set_title(name)
-            if label == "index":
-                indices = self.index_generator()
-
-        if color_nodes == "state":
-            handles = []
-            color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-            i = 0
-            for state in state_colors.keys():
-                color = state_colors.get(state)
-                if not color:
-                    color = color_cycle[i]
-                line = mlines.Line2D([], [], color=color, marker=".", label=state)
-                handles += [line]
-                state_colors[state] = color
-                i += 1
-
-        # Plotting points. y and z are swapped in the loops so that
-        # z goes into the page; however, the axes labels are correct.
-        for point in self.nodes:
-            x, z, y = point
-
-            # Color nodes based on color_nodes if string, or based on
-            # color attribute if True; black otherwise.
-            if color_nodes == "state":
-                color = state_colors.get(self.nodes[point].get("state"))
-            elif type(color_nodes) == str:
-                color = color_nodes
-            else:
-                color = self.nodes[point].get("color") if color_nodes else "k"
-
-            ax.scatter(x, y, z, c=color, s=plt.rcParams["lines.markersize"] * 5)
-
-            if label:
-                value = self.nodes[point].get(label) if label != "index" else indices[point]
-                if value is not None:
-                    x, z, y = point
-                    # Raise negative sign above node.
-                    sign = "^{-}" * (-int(np.sign(value)))
-                    if type(value) != int:
-                        value = r"${}{:.2g}$".format(sign, np.abs(value))
-                    ax.text(
-                        x, y, z, value, color="MediumBlue", backgroundcolor="w", zorder=2,
-                    )
-                else:
-                    n_uncomputed += 1
-
-        if label and n_uncomputed > 0:
-            message = "{} at {} node(s) have not yet been computed."
-            print(message.format(name.lower(), n_uncomputed))
-
-        # Plotting edges.
-        for edge in self.edges:
-
-            # Color edges based on color_edges if string, or based on
-            # color ttribute if True; black otherwise.
-            if type(color_edges) == str:
-                color = color_edges
-            else:
-                color = self.edges[edge].get("color") if color_edges else "k"
-
-            x1, z1, y1 = edge[0]
-            x2, z2, y2 = edge[1]
-            plt.plot([x1, x2], [y1, y2], [z1, z2], color=color)
-
-        if color_nodes == "state" and legend:
-            ax.legend(handles=handles)
-
-        plt.xticks(range(0, 2 * xmax + 1))
-        plt.yticks(range(0, 2 * zmax + 1))
-        ax.set_zticks(range(0, 2 * ymax + 1))
-        ax.set_xlabel("x", labelpad=15)
-        ax.set_ylabel("z", labelpad=15)
-        ax.set_zlabel("y", labelpad=15)
-        if not display_axes:
-            ax.axis("off")
-        plt.tight_layout(pad=5)
-        plt.draw()
-        return ax
-
-
-def SCZ_mat(adj, heat_map=False):
+def SCZ_mat(adj):
     """Return a symplectic matrix corresponding to CZ gate application.
 
     Gives the 2N by 2N symplectic matrix for CZ gate application
@@ -295,13 +145,6 @@ def SCZ_mat(adj, heat_map=False):
         block_func = sp.bmat
     # Construct symplectic
     symplectic = block_func([[identity, zeros], [adj, identity]])
-    if heat_map:
-        print("The symplectic CZ matrix (dark spots 0, bright spots 1):")
-        plt.figure()
-        if type(symplectic) != np.ndarray:
-            symplectic = symplectic.toarray()
-        plt.matshow(symplectic, 0)
-        plt.show()
     return symplectic
 
 
@@ -597,17 +440,14 @@ class CVGraph:
         #         err = Z_err([delta_effective])[0]
         #         self.egraph.nodes[point]['p_phase'] = errs[i]
 
-    def SCZ(self, sparse=False, heat_map=False):
+    def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
-
-        Args:
-            heat_map (bool): if True, draw a heat map of the matrix.
 
         Returns:
             array: the symplectic matrix.
         """
         adj = self._adj
-        return SCZ_mat(adj, heat_map=heat_map)
+        return SCZ_mat(adj)
 
     def Z_probs(self, inds=[], cond=False):
         """array: the phase error probabilities of modes inds."""
@@ -651,46 +491,4 @@ class CVGraph:
             return self._noise_cov
         print('Sampling order must be "final."')
 
-    def draw(self, **kwargs):
-        """Draw the underlying graph with state colors.
 
-        Run EGraph.draw with state information. State colors optionally
-        supplied using state_colors argument; otherwise they are
-        determined by the default color cycle.
-        """
-        default_args = {
-            "color_nodes": "state",
-            "legend": True,
-            "title": True,
-            "state_colors": {state: None for state in self._states},
-        }
-        kwargs = {**default_args, **kwargs}
-        self.egraph.draw(**kwargs)
-
-
-if __name__ == "__main__":
-    # Bell state EGraph
-    edge = [(0, 0, 0), (1, 1, 1)]
-    dims = (1, 1, 1)
-    bell_state = EGraph(dims=dims)
-    bell_state.add_edge(*edge, color="MidnightBlue")
-    # Plot the bell state
-    bell_state.draw(color_nodes="magenta", label="index")
-    bell_state.adj_generator(sparse=True)
-    print("Adjacency matrix: \n", bell_state.adj_mat, "\n")
-
-    CVbell = CVGraph(bell_state, p_swap=0.5)
-    # Noise model for CVGraph
-    model = {"noise": "grn", "delta": 1, "sampling_order": "final"}
-    CVbell.apply_noise(model)
-    CVbell.measure_hom("p", [0])
-    CVbell.measure_hom("q", [1])
-    CVbell.eval_Z_probs(cond=False)
-    CVbell.draw(label="hom_val_p")
-    CVbell.draw(label="hom_val_q")
-    CVbell.draw(label="p_phase")
-    print("\nNodes :", bell_state.nodes.data())
-    print("Edges :", bell_state.edges.data())
-    print("p indices: ", CVbell.p_inds, "\n")
-    print("GKP indices: ", CVbell.GKP_inds, "\n")
-    print("\nSymplectic CZ matrix: \n", CVbell.SCZ(heat_map=True), "\n")

@@ -23,12 +23,11 @@ from ft_stack.decoder import (
     assign_weights,
     CV_decoder,
     decoding_graph,
-    matching_graph,
-    MWPM,
     recovery,
     check_correction,
     correct,
 )
+from ft_stack.matching import NxMatchingGraph
 from ft_stack.RHG import alternating_polarity, RHGCode, RHGCube
 import networkx as nx
 import itertools as it
@@ -57,9 +56,8 @@ def enc_state(request):
 @pytest.fixture(scope="module")
 def dec_graphs(enc_state):
     G_dec = decoding_graph(enc_state[0])
-    G_match = matching_graph(G_dec)
-    matching = MWPM(G_match, G_dec)
-    return G_dec, G_match, matching
+    G_match = NxMatchingGraph().with_edges_from_dec_graph(G_dec)
+    return G_dec, G_match, G_match.min_weight_perfect_matching()
 
 
 class TestAssignWeights:
@@ -133,13 +131,12 @@ class TestDecoder:
 
     def test_matching_graph(self, dec_graphs):
         G_match = dec_graphs[1]
-        assert G_match.graph["title"] == "Matching Graph"
-        virtual_points = G_match.graph["virtual_points"]
-        remaining_points = G_match.nodes - virtual_points
+        virtual_points = G_match.virtual_points
+        remaining_points = G_match.graph.nodes - virtual_points
         n_virt = len(virtual_points)
         n_stabes = len(remaining_points)
-        virtual_subgraph = G_match.subgraph(virtual_points)
-        stabilizer_subgraph = G_match.subgraph(remaining_points)
+        virtual_subgraph = G_match.graph.subgraph(virtual_points)
+        stabilizer_subgraph = G_match.graph.subgraph(remaining_points)
         # Check that the graph formed between the virtual boundary excitations,
         # as well as the graph formed between the nodes corresponding to
         # stabilizers, are both complete graphs.
@@ -155,13 +152,13 @@ class TestDecoder:
         # in the matching is the same as the set of all nodes in the
         # matching graph)
         G_match, matching = dec_graphs[1], dec_graphs[2]
-        assert not {a for b in matching for a in b} - G_match.nodes
+        assert not {a for b in matching for a in b} - G_match.graph.nodes
 
 
 class TestRecovery:
     def test_recovery(self, enc_state, dec_graphs):
         recovery(enc_state[0], dec_graphs[1], dec_graphs[0], dec_graphs[2])
-        G_dec_new = decoding_graph(enc_state[0], draw=False)
+        G_dec_new = decoding_graph(enc_state[0])
         odd_cubes = G_dec_new.graph["odd_cubes"]
         # Check that there remain no unsatisfied stabilizers after the
         # recovery operation.
