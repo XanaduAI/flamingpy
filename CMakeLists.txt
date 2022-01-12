@@ -25,10 +25,10 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/pybind/pybind11.git
 )
 FetchContent_MakeAvailable(Pybind11)
-pybind11_add_module(lemonpy "src/lemonpy/lemonpy.cpp")
 
 include_directories(${lemon_BINARY_DIR})
 include_directories(${lemon_SOURCE_DIR})
+pybind11_add_module(lemonpy "src/lemonpy/lemonpy.cpp")
 target_link_libraries(lemonpy PRIVATE lemon)
 
 add_compile_options(-O3)
