@@ -33,6 +33,6 @@ pybind11_add_module(ftstack lemonpy.cpp)
 include_directories(${ftstack_BINARY_DIR})
 include_directories(${ftstack_SOURCE_DIR})
 
-target_link_libraries(src/lemonpy PRIVATE ftstack)
+target_link_libraries(ftstack PRIVATE lemon)
 
 add_compile_options(-O3)
