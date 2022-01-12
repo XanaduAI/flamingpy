@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(ftstack)
+project(lemonpy)
 
 if(NOT DEFINED CMAKE_MODULE_LINKER_FLAGS_MAINTAINER)
     set(
@@ -28,7 +28,7 @@ FetchContent_MakeAvailable(Pybind11)
 
 include_directories(${lemon_BINARY_DIR})
 include_directories(${lemon_SOURCE_DIR})
-pybind11_add_module(lemonpy "src/lemonpy/lemonpy.cpp")
+pybind11_add_module(lemonpy "src/ft_stack/lemonpy/lemonpy.cpp")
 target_link_libraries(lemonpy PRIVATE lemon)
 
 add_compile_options(-O3)

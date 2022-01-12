@@ -85,7 +85,7 @@ setup(
     package_dir={'':'src'},
     package_data={"ft_stack":["src/ft_stack/data/*"]},
     cmdclass={"build_ext": CMakeBuild},
-    ext_modules=[CMakeExtension('src/lemonpy/lemonpy')],
+    ext_modules=[CMakeExtension('ft_stack.lemonpy')],
     install_requires=[
         "matplotlib==3.3.3",
         "networkx==2.5",
