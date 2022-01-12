@@ -30,7 +30,10 @@ jobs:
         run: python3 -m pip install --upgrade pip
 
       - name: Install ft-stack
-        run: pip install . ; pip install -r dev-requirements.txt
+        run: pip install -e . 
+        
+      - name: Install testing requirements
+        run: pip install -r dev-requirements.txt
         
       - name: Run tests
         run: find . -wholename "./examples/*.py" -exec python3 {} \;
