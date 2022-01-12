@@ -12,8 +12,6 @@ if(NOT DEFINED CMAKE_MODULE_LINKER_FLAGS_MAINTAINER)
     )
 endif()
 
-file(GLOB SOURCES "src/lemonpy/*.cpp")
-
 Include(FetchContent)
 
 FetchContent_Declare(
@@ -27,11 +25,10 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/pybind/pybind11.git
 )
 FetchContent_MakeAvailable(Pybind11)
-pybind11_add_module(ftstack "src/lemonpy/lemonpy.cpp")
+pybind11_add_module(lemonpy "src/lemonpy/lemonpy.cpp")
 
 include_directories(${lemon_BINARY_DIR})
 include_directories(${lemon_SOURCE_DIR})
-
-target_link_libraries(ftstack PRIVATE lemon)
+target_link_libraries(lemonpy PRIVATE lemon)
 
 add_compile_options(-O3)
