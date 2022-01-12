@@ -27,7 +27,7 @@ from distutils.version import LooseVersion
 # The following class is an adaptation of Python examples for pybind11:
 # https://github.com/pybind/python_example/blob/master/setup.py
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir="ft_stack/src/lemonpy"):
+    def __init__(self, name, sourcedir="src/lemonpy"):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
