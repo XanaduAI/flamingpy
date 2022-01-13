@@ -91,7 +91,7 @@ with open(os.path.join(this_directory, 'README.md')) as f:
 setup(
     name="ft-stack",
     version="0.1.13",
-    description="Threshold estimations for concatenated quantum codes",
+    description="FT-Stack is a hybrid Python/C++ library for efficient threshold estimations of concatenated quantum codes and simulations of fault-tolerant quantum computers.",
     license="Apache License 2.0",
     classifiers=[
         "Intended Audience :: Science/Research",
