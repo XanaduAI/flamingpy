@@ -94,7 +94,18 @@ setup(
     description="Threshold estimations for concatenated quantum codes",
     license="Apache License 2.0",
     classifiers=[
-        "License :: OSI Approved :: Apache Software License"
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Apache Software License",
+        "Natural Language :: English",
+        "Operating System :: POSIX",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: Microsoft :: Windows",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3 :: Only",
+        "Topic :: Scientific/Engineering :: Physics"
     ],
     long_description=long_description,
     long_description_content_type="text/markdown",
