@@ -44,7 +44,7 @@ First, clone `ft-stack` through the Code tab above. A Clean installation and con
 ```bash
 conda init
 conda create -n ftstack python=3.9
-activate ftstack
+conda activate ftstack
 ```
 Last, change to the directory where FT-Stack was cloned and run:
 ```bash
