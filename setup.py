@@ -90,8 +90,12 @@ with open(os.path.join(this_directory, 'README.md')) as f:
 
 setup(
     name="ft-stack",
-    version="0.1.9",
+    version="0.1.12",
     description="Threshold estimations for concatenated quantum codes",
+    license="Apache License 2.0",
+    classifiers=[
+        "License :: OSI Approved :: Apache Software License"
+    ],
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/XanaduAI/ft-stack",
@@ -104,14 +108,12 @@ setup(
     ext_modules=[CMakeExtension('ft_stack.lemonpy')],
     distclass=BinaryDistribution,
     install_requires=[
-        "matplotlib==3.3.3",
-        "networkx",
-        "retworkx==0.10.2",
-        "numpy",
-        "pandas==1.2.1",
-        "scipy==1.6.0",
-        "thewalrus",
-        "numba==0.53.1",
-        "cmake"
+        "matplotlib>=3.3.3",
+        "networkx>=2.5",
+        "retworkx>=0.10.2",
+        "numpy>=1.21.0",
+        "pandas>=1.2.1",
+        "scipy>=1.6.0",
+        "thewalrus>=0.15.0"
     ]
 )

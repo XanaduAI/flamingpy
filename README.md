@@ -78,4 +78,4 @@ If you are using FT-Stack for research purposes, please cite the reference below
 
 ## License
 
-> Coming soon ...
+FT-Stack is **free** and **open source**, and released under the Apache License, Version 2.0.
