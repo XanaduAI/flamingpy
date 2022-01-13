@@ -90,7 +90,7 @@ with open(os.path.join(this_directory, 'README.md')) as f:
 
 setup(
     name="ft-stack",
-    version="0.1.12",
+    version="0.1.13",
     description="Threshold estimations for concatenated quantum codes",
     license="Apache License 2.0",
     classifiers=[
