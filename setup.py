@@ -19,7 +19,8 @@ import sys
 import platform
 import subprocess
 
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, dist, Extension, find_packages
+from setuptools.command.install import install
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
@@ -75,20 +76,39 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
-        
+
+class BinaryDistribution(dist.Distribution):
+        def has_ext_modules(foo):
+                    return True
+
+
+# use README.md as long_description
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md')) as f:
+        long_description = f.read()
+
+
 setup(
     name="ft-stack",
-    version="0.1.0",
+    version="0.1.1",
     description="Threshold estimations for concatenated quantum codes",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages("src"),
     package_dir={'':'src'},
-    package_data={"ft_stack":["src/ft_stack/data/*"]},
+    package_data={
+        "ft_stack":["src/ft_stack/data/*.csv"],
+        "ft_stack":["src/ft_stack/*.so"]
+        },
+    include_package_data=True,
+    python_requires='>=3.8',
     cmdclass={"build_ext": CMakeBuild},
     ext_modules=[CMakeExtension('ft_stack.lemonpy')],
+    distclass=BinaryDistribution,
     install_requires=[
         "matplotlib==3.3.3",
-        "networkx==2.5",
+        "networkx",
         "retworkx==0.10.2",
         "numpy==1.21.0",
         "pandas==1.2.1",

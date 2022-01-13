@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -26,6 +27,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Pybind11)
 
+INCLUDE_DIRECTORIES(SYSTEM ${PYTHON_INCLUDE_PATH})
 include_directories(${lemon_BINARY_DIR})
 include_directories(${lemon_SOURCE_DIR})
 pybind11_add_module(lemonpy "src/ft_stack/lemonpy/lemonpy.cpp")
