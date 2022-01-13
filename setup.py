@@ -90,17 +90,14 @@ with open(os.path.join(this_directory, 'README.md')) as f:
 
 setup(
     name="ft-stack",
-    version="0.1.1",
+    version="0.1.9",
     description="Threshold estimations for concatenated quantum codes",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages("src"),
     package_dir={'':'src'},
-    package_data={
-        "ft_stack":["src/ft_stack/data/*.csv"],
-        "ft_stack":["src/ft_stack/*.so"]
-        },
+    #package_data={"ft_stack":["src/ft_stack/data/*.csv", "src/ft_stack/*.so", "examples/lemon_benchmark.py"]},
     include_package_data=True,
     python_requires='>=3.8',
     cmdclass={"build_ext": CMakeBuild},
@@ -110,10 +107,11 @@ setup(
         "matplotlib==3.3.3",
         "networkx",
         "retworkx==0.10.2",
-        "numpy==1.21.0",
+        "numpy",
         "pandas==1.2.1",
         "scipy==1.6.0",
-        "thewalrus==0.15.0",
+        "thewalrus",
+        "numba==0.53.1",
         "cmake"
     ]
 )
