@@ -1,63 +1,80 @@
-# FT-Stack
-![tests](https://github.com/XanaduAI/ft-stack/actions/workflows/tests.yaml/badge.svg?branch=main)
+<h1 align="center">FT-Stack</h1>
 
-## Simulations of fault-tolerant quantum computation
-The FT-Stack simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. Among these are the GKP code (in particular, combinations of GKP and squeezed states) concatenated with the surface code. The package is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features, and provides a host of visualization tools for ease of verifying correctness.
+<p align="center">
+  <!-- Tests (GitHub actions) -->
+  <a href="https://github.com/XanaduAI/ft-stack/actions/workflows/tests.yaml">
+    <img src="https://img.shields.io/github/workflow/status/XanaduAI/strawberryfields/Tests/master?logo=github&style=flat-square" />
+  </a>
+  <!-- PyPI -->
+  <a href="https://pypi.org/project/ft-stack">
+    <img src="https://img.shields.io/pypi/v/ft-stack.svg?style=popout-square" />
+  </a>
+  <!-- PyPI - Python Version -->
+  <a href="https://pypi.org/project/ft-stack">
+    <img src="https://img.shields.io/pypi/pyversions/ft-stack.svg?style=popout-square" />
+  <!-- License -->
+  <a href="https://www.apache.org/licenses/LICENSE-2.0">
+    <img src="https://img.shields.io/pypi/l/ft-stack.svg?logo=apache&style=flat-square" />    
+  </a>
+</p>
 
-## Installation 
+<p align="center">
+  FT-Stack is a hybrid Python/C++ library for efficient threshold estimations of concatenated quantum codes and simulations of fault-tolerant quantum computers.
+</p>
 
-### Method #1: Quick installation (pre-compiled binaries)
+## Features
+* Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. 
+* Support the generation of GKP code (in particular, combinations of GKP and squeezed states) concatenated with the surface code. 
+* Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features. 
+* Provides a host of visualization tools for ease of verifying correctness.
 
-Our recommended method to download and install FT-Stack is through our PyPI package. In your choice of command-line interface (CLI), with a Python environment activated, run the following single line. Pip will automatically install FT-Stack and fetch all the pre-compiled binaries it requires:
+## Download and installation 
 
-> Coming soon ...
+FT-Stack requires **Python 3.8 or higher**. The recommended method to download and install FT-Stack, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/ft-stack). In your choice of CLI (with a Python environment activated) run the following single line:
 
-### Method #2: Installation from Source through Conda packages  
+```bash
+pip install ft-stack
+``` 
 
-If you are a developer and need to manipulate and test FT-Stack, you will need to install from Source and appropriately configure C++ compilers and Python environments. First, clone `ft-stack` through the Code tab above.
+### Installation from Source (advanced users only)
 
-If you use [Conda](https://docs.conda.io/en/latest/) to manage your virtual environments, installation from Source can be performed easily through a few commands. In your CLI, change to the FT-Stack directory, activate your **Conda environment**, and then run:
+If you are a developer and wish to manipulate and test FT-Stack source code, you can install from Source and appropriately configure C++ compilers and Python environments. 
+
+First, clone `ft-stack` through the Code tab above. A Clean installation and configuration of compilers and Python environments can be achieved through CLIs. We recommend users employ **BASH** here (Windows users can rely on [WSL 2](https://docs.microsoft.com/en-gb/windows/wsl/install)). Next, install C/C++ compilers. Debian users can run `sudo apt update`, `sudo apt upgrade`, and `sudo apt-get install build-essential`, while Windows users should rely on Visual Studio C/C++ or similar. Now, set up your interpreters and customized virtual environments. We recommend using the light version of **Conda**, i.e. miniconda, or **virtualenv** for configuring Python environments. In particular, miniconda can be installed in BASH following this [guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html). Run the following to set up and switch to a new virtual env called, e.g., `ftstack`:
+```bash
+conda init
+conda create -n ftstack python=3.9
+activate ftstack
+```
+Last, change to the directory where FT-Stack was cloned and run:
 ```bash
 pip install -e .
 pip install -r dev-requirements.txt
 ``` 
-The first command installs and compiles the dependencies of FT-Stack while the second installs extra dependencies for testing purposes.
+The first command installs and compiles the dependencies of FT-Stack while the second installs extra dependencies for testing purposes.    
 
-### Method #3: Full installation from Source using BASH (for advanced users)
-
-1. Clone `ft-stack` through the Code tab above.
-
-2. Clean installation and configuration of compilers and Python environments are achievable through CLIs. While Windows users can rely on Visual Studio C/C++ and/or MinGW compilers and prompts for such purposes, we recommend all Windows/MacOS/Linux users employ **BASH** for concreteness and to avoid some known path-setting and compilation issues. BASH is natively available for non-Windows users; we recommend that Windows 10 users use [WSL 2](https://docs.microsoft.com/en-gb/windows/wsl/install).
-
-3. If you have already set up C/C++ compilers, you can skip the following step. Ubuntu users (including WSL 2 clients) can run `sudo apt update && sudo apt upgrade` in BASH if not already done so. Now simply run `sudo apt-get install build-essential` to get all necessary compilation tools. Non-Debian users need to get C/C++ compilers through their own package installers.
-
-4. If you have already set up Python interpreters and customized virtual environments, you can skip the following step. We recommend using the light version of **Conda**, i.e. miniconda, or **virtualenv** for configuring Python environments. In particular, miniconda can be installed in BASH following this [guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html). Run the following to set up and switch to a new virtual env called, e.g., `ft-stack`:
-    ```bash
-    conda init
-    conda create -n ft-stack python=3.9
-    activate ft-stack
-    ```
-5. Next, change to the directory where `ft-stack` was cloned. As before, running `pip install -e .` will install and compile all required libraries and you need to run `pip install -r dev-requirements.txt` to get additional dependencies. 
-
-6. You can now switch to your Python IDE, set `ft-stack` as your interpreter, and enjoy using FT-Stack. For Windows users, popular Python IDEs such as PyCharm and Visual Studio Code support importing Python interpreters through WSL environments natively. If you would like to use an IDE without WSL environments support, such as Spyder 5.2.1, you can do so using a GUI X-server for WSL such as [vcxsrv](https://sourceforge.net/projects/vcxsrv/) — such IDEs are available to be installed on your Linux subsystem using `conda`.
-
-## Usage
+## Getting started ad basic usage
 
 > Coming soon ...
 
-## Performance and benchmarks
+## Performance Demos
 
 > Coming soon ...
 
-## Contribution and support
+## Contributing to FT-Stack
 
 We welcome all constructive contributions — simply fork an FT-Stack repository and then make a pull request (PR) containing your contributions. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprings pertaining to the FT-Stack.
 
-While the FT-Stack is distributed with no guarantee, we welcome all issues and bug reports. If you are experiencing any type of issue or have found bugs, please let us know by posting them on our [GitHub issue tracker](https://github.com/XanaduAI/ft-stack/issues).
+## Support
 
-## Attribution
+- **Source Code:** https://github.com/XanaduAI/ft-stack
+- **Issue Tracker:** https://github.com/XanaduAI/ft-stack/issues
 
-If you are using FT-Stack for research purposes, please cite the reference below:
+If you are experiencing any type of issue or have found bugs, please let us know by posting them our GitHub issue tracker. While we welcome and are committed to respons to all reports, please note FT-Stack is distributed with no guarantee. 
+
+## Attribution for authors
+
+FT-Stack is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). If you are using FT-Stack for research purposes, please cite the reference below:
 
 ```bash
 @article{tzitrin2021,
