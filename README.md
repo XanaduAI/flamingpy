@@ -38,7 +38,7 @@ pip install ft-stack
 
 ### Installation from Source (advanced users)
 
-If you are a developer and wish to manipulate and test FT-Stack source code, you can install from Source. First, clone `ft-stack` through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
+If you are a developer and wish to manipulate and test FT-Stack source code, you can install it from Source. First, clone `ft-stack` through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
 
 ```bash
 conda create -n ftstack python=3.9
@@ -52,14 +52,8 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-The first command installs and compiles the dependencies of FT-Stack while the second installs extra dependencies for testing purposes. 
-If you run into a CMAKE error, you may need to run the following line before re-attempting the installation:
-
-```bash
-conda install cmake
-``` 
-
-For more detailed instructions and recommendations, including how to configure your compilers and resolve common errors, see the documentation [coming soon ...].
+The first command installs and compiles the dependencies of FT-Stack while the second install extra dependencies for testing purposes. 
+If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors in the documentation [coming soon].
 
 ## Getting started ad basic usage
 
@@ -71,14 +65,14 @@ For more detailed instructions and recommendations, including how to configure y
 
 ## Contributing to FT-Stack
 
-We welcome all constructive contributions — simply fork an FT-Stack repository and then make a pull request (PR) containing your contributions. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints pertaining to the FT-Stack.
+We welcome all constructive contributions — simply fork an FT-Stack repository and then make a pull request (PR) containing your contributions. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints on the FT-Stack.
 
 ## Support
 
 - **Source Code:** https://github.com/XanaduAI/ft-stack
 - **Issue Tracker:** https://github.com/XanaduAI/ft-stack/issues
 
-If you are experiencing any type of issue or have found bugs, please let us know by posting them our GitHub issue tracker. While we welcome and are committed to respond to all reports, please note FT-Stack is distributed with no guarantee. 
+If you are experiencing any type of issue or have found bugs, please let us know by posting them on our GitHub issue tracker. While we welcome and are committed to responding to all reports, please note FT-Stack is distributed with no guarantee. 
 
 ## Attribution for authors
 
@@ -98,7 +92,6 @@ FT-Stack is the work of [many contributors](https://github.com/XanaduAI/ft-stack
    year={2021},
    month={Dec}
 }
-
 ```
 
 ## License
