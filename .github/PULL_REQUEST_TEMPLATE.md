@@ -17,13 +17,15 @@
 
 <Note in most cases, we need a set of unit tests automatically and comprehensively testing for new features – if not applicable or CI tests already exist either explain it or put “N/A”>
 
-## Expected benefits 
+## Expected benefits and drawbacks
 
-<Summarize your justifications and the benefits one achieves with these changes – you cannot place “N/A” here>
+<Summarize your justifications and the benefits one achieves with these changes. Also, are there any drawback that you know exist today with the changes or may occur in future? – you cannot place “N/A” here>
 
-## Possible drawbacks
+**Expected benefits:**
+- text goes here
 
-<Any drawback that you know exist today with the changes or may occur in future  – if none put “N/A”>
+**Possible drawbacks:**
+- text goes here
 
 ## Related Github issues
 
