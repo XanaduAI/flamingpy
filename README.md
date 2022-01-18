@@ -53,7 +53,7 @@ pip install -r dev-requirements.txt
 ``` 
 
 The first command installs and compiles the dependencies of FT-Stack while the second install extra dependencies for testing purposes. 
-If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors in the documentation [coming soon].
+If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
 
 ## Getting started ad basic usage
 
