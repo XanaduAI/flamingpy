@@ -38,7 +38,7 @@ pip install ft-stack
 
 ### Installation from Source (advanced users)
 
-If you are a developer and wish to manipulate and test FT-Stack source code, you can install it from Source. First, clone `ft-stack` through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
+If you are a developer and wish to manipulate and test FT-Stack source code, you can install the project from Source. First, clone `ft-stack` through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
 
 ```bash
 conda create -n ftstack python=3.9
@@ -52,8 +52,7 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-The first command installs and compiles the dependencies of FT-Stack while the second install extra dependencies for testing purposes. 
-If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
+The first command installs and compiles the dependencies of FT-Stack (given you have appropriate compilers pre-installed). The second install extra dependencies for testing purposes. If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
 
 ## Getting started ad basic usage
 
