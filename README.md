@@ -48,11 +48,11 @@ conda activate ftstack
 Finally, change to the directory where FT-Stack was cloned and run:
 
 ```bash
-pip install -e .
 pip install -r dev-requirements.txt
+pip install -e .
 ``` 
 
-The first command installs and compiles the dependencies of FT-Stack (given you have appropriate compilers pre-installed). The second install extra dependencies for testing purposes. If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
+The first command installs dependencies for building the project and for testing purposes. The second installs and compiles the dependencies of FT-Stack (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
 
 ## Getting started ad basic usage
 
