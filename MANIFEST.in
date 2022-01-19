@@ -1,0 +1,3 @@
+include src/ft_stack/data/*.csv
+include src/ft_stack/*.so
+include src/ft_stack/examples/*.py 

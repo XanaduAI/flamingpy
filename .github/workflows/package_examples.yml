@@ -1,4 +1,4 @@
-name: Examples
+name: Package Examples
 
 on:
   push:
@@ -29,8 +29,11 @@ jobs:
       - name: Install pip
         run: python3 -m pip install --upgrade pip
 
-      - name: Install ft-stack
-        run: pip install . ; pip install -r dev-requirements.txt
+      - name: Install ft-stack from Source
+        run: pip install -e . 
         
-      - name: Run tests
-        run: find . -wholename "./examples/*.py" -exec python3 {} \;
+      - name: Install testing requirements
+        run: pip install -r dev-requirements.txt
+        
+      - name: Run package examples
+        run: find . -wholename "./src/ft_stack/examples/*.py" -exec python3 {} \;

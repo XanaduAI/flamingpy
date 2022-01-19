@@ -1,4 +1,4 @@
-import lemonpy
+import ft_stack.lemonpy as lp
 import networkx as nx
 
 
@@ -9,7 +9,7 @@ def max_weight_matching(G_match, weight):
           2. Adjacency matrix has zeros along diagonal.
     """
     adjacency = nx.to_numpy_matrix(G_match,weight=weight)
-    lemon_matching = lemonpy.mwpm(adjacency)
+    lemon_matching = lp.mwpm(adjacency)
 
     #lemon uses different node ids, so we convert back to networkx node ids
     nx_map = list(G_match.nodes())
