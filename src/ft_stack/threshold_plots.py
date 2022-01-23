@@ -309,7 +309,7 @@ if __name__ == "__main__":
     # Change options here.
     options = {
         "input_file": "data/test_processed.csv",
-        "save_file": "data/results.pdf",
+        "save_file": "data/test_results.pdf",
         "p_swap": 0,
         "unit": "dB",
     }

@@ -19,7 +19,7 @@
 
 ## Expected benefits and drawbacks
 
-<Summarize your justifications and the benefits one achieves with these changes. Also, are there any drawback that you know exist today with the changes or may occur in future? – you cannot place “N/A” here>
+<Summarize your justifications and the benefits one achieves with these changes. Also, is there any drawback that you know exist today with the changes or may occur in future? – you cannot place “N/A” here>
 
 **Expected benefits:**
 - text goes here

@@ -19,7 +19,6 @@ import networkx as nx
 import string
 import pytest
 from numpy.random import default_rng as rng
-
 from ft_stack.graphstates import EGraph, CVGraph, SCZ_mat, SCZ_apply
 
 # A NetworkX random graph of size N for use in this module.

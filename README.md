@@ -2,19 +2,46 @@
 
 <p align="center">
   <!-- Tests (GitHub actions) -->
-  <a href="https://github.com/XanaduAI/ft-stack/actions/workflows/tests.yaml">
-    <img src="https://img.shields.io/github/workflow/status/XanaduAI/strawberryfields/Tests/master?logo=github&style=flat-square" />
+  <a href="https://github.com/XanaduAI/ft-stack/actions/workflows/build_tests.yaml">
+    <img src="https://img.shields.io/github/workflow/status/XanaduAI/strawberryfields/Tests?label=build%20%26%20tests&style=flat-square" />
+  </a>
+  <!-- contributors -->
+  <a href="https://github.com/XanaduAI/ft-stack/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/XanaduAI/strawberryfields?style=flat-square" />
+  </a>
+  <!-- code size -->
+    <img src="https://img.shields.io/github/languages/code-size/XanaduAI/strawberryfields?style=flat-square" />
+  </a>
+  <!-- PyPI (Python Version) -->
+  <a href="https://pypi.org/project/ft-stack">
+    <img src="https://img.shields.io/pypi/pyversions/ft-stack.svg?style=flat-square" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/ft-stack">
-    <img src="https://img.shields.io/pypi/v/ft-stack.svg?style=popout-square" />
+    <img src="https://img.shields.io/pypi/v/ft-stack.svg?style=flat-square" />
   </a>
-  <!-- PyPI - Python Version -->
+  <!-- total download -->
   <a href="https://pypi.org/project/ft-stack">
-    <img src="https://img.shields.io/pypi/pyversions/ft-stack.svg?style=popout-square" />
+    <img src="https://img.shields.io/pypi/dm/ft-stack?style=flat-square" />
+  </a>
+  <!-- PyPI (status) -->
+  <a href="https://pypi.org/project/ft-stack">
+    <img src="https://img.shields.io/pypi/status/strawberryfields" />
+  </a>
+  <!-- open issues -->
+  <a href="https://github.com/XanaduAI/ft-stack/issues">
+    <img src="https://img.shields.io/github/issues/XanaduAI/strawberryfields?style=flat-square" />
+  </a>
+  <!-- open PRs -->
+  <a href="https://github.com/XanaduAI/ft-stack/pulls">
+    <img src="https://img.shields.io/github/issues-pr/XanaduAI/strawberryfields?style=flat-square" />
+  </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
     <img src="https://img.shields.io/pypi/l/ft-stack.svg?logo=apache&style=flat-square" />    
+  </a>
+  <!-- code size -->
+    <img src="https://img.shields.io/github/stars/XanaduAI/strawberryfields?style=social" />
   </a>
 </p>
 
@@ -23,11 +50,14 @@
 </p>
 
 ## Features
+
+<img src="https://s10.gifyu.com/images/ftstack_featured.jpg" width="330px" align="right">
+
 * Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. 
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states). 
 * Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features. 
 * Provides a host of visualization tools for ease of verifying correctness.
-
+  
 ## Download and installation 
 
 FT-Stack requires **Python 3.8 or higher**. The recommended method to download and install FT-Stack, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/ft-stack). In your choice of CLI (with a Python environment activated) run the following single line:
@@ -48,11 +78,11 @@ conda activate ftstack
 Finally, change to the directory where FT-Stack was cloned and run:
 
 ```bash
-pip install -r dev-requirements.txt
+pip install -r dev_requirements.txt
 pip install -e .
 ``` 
 
-The first command installs dependencies for building the project and for testing purposes. The second installs and compiles FT-Stack and its dependencies (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
+The first command installs dependencies for building the project and testing purposes, and can be skipped. The second installs and compiles FT-Stack and its dependencies (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
 
 ## Getting started ad basic usage
 

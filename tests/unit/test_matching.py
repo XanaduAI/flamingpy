@@ -16,7 +16,6 @@ The networkx implementation is used as a reference.
 """
 
 import itertools as it
-
 import numpy as np
 import pytest
 import networkx as nx
