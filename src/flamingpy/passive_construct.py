@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@ import numpy as np
 from scipy.linalg import block_diag
 import thewalrus.symplectic as symp
 
-from ft_stack.graphstates import CVGraph, SCZ_apply
-from ft_stack.GKP import GKP_binner, Z_err_cond
+from flamingpy.graphstates import CVGraph, SCZ_apply
+from flamingpy.GKP import GKP_binner, Z_err_cond
 
 
 def invert_permutation(p):
@@ -61,9 +61,7 @@ def BS_network(n):
     return bs_network
 
 
-def reduce_macro_and_simulate(
-    RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, swap_prob, delta
-):
+def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, swap_prob, delta):
     """Reduce the macronode RHG lattice to the canonical lattice.
 
     Take the macronode lattice EGraph RHG_macro and generate a
@@ -215,9 +213,7 @@ def reduce_macro_and_simulate(
         m_arr = np.array([m(neighbors[i - 1]) for i in (1, 2, 3, 4)])
         # Array of processed q-homodyne outcomes from neighboring
         # macronodes of the form [0, Z(1), Z(2), Z(3), Z(4)].
-        Z_arr = np.array(
-            [0] + [Z(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)]
-        )
+        Z_arr = np.array([0] + [Z(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)])
         # p-homodyne outcome of the star node.
         star_p_val = CVRHG.egraph.nodes[vertex]["hom_val_p"]
 

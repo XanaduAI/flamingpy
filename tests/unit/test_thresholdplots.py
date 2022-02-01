@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
 """"Unit tests for threshold_plots.py using project's existing processed data."""
 import pandas as pd
 import numpy as np
-from ft_stack.threshold_plots import find_threshold, plot_results
+from flamingpy.threshold_plots import find_threshold, plot_results
 
 
-# Some common input options for testing
+# Some common input options for tests
 options = {
-    "input_file": "src/ft_stack/data/test_processed.csv",
+    "input_file": "src/flamingpy/data/test_processed.csv",
     "save_file": "test_results.pdf",
     "p_swap": 0,
-    "unit": "dB"
+    "unit": "dB",
 }
 results = pd.read_csv(options["input_file"])
 
@@ -32,10 +32,10 @@ def test_find_thresholds():
     a0_expected = 0.149
     """Tests for find_threshold function."""
     d_p_t = find_threshold(results, options["p_swap"], options["unit"], options["save_file"], False)
-    # Check if the expected threshold was returned 
-    assert round(d_p_t[0],3) == delta_expected
-    # Check if the expected failure probability (the offset) was returned    
-    assert round(d_p_t[1],3) == a0_expected
+    # Check if the expected threshold was returned
+    assert round(d_p_t[0], 3) == delta_expected
+    # Check if the expected failure probability (the offset) was returned
+    assert round(d_p_t[1], 3) == a0_expected
 
 
 def test_plot_results():
@@ -54,7 +54,7 @@ def test_plot_results():
         show=False,
         swap_tol_plot=swap_tol_data,
         inset=True,
-        break_axis=True
+        break_axis=True,
     )
-    # Check if plot_results has returned nonempty plot    
+    # Check if plot_results has returned nonempty plot
     assert plot.lines

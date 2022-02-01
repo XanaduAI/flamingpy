@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import numpy as np
 import pytest
 import networkx as nx
 
-from ft_stack.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
+from flamingpy.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
+
 
 # Test parameters
-
 matching_graph_types = [LemonMatchingGraph, RxMatchingGraph]
 num_nodes = range(4, 24, 4)
 

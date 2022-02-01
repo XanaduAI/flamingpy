@@ -1,17 +1,30 @@
+# Copyright 2022 Xanadu Quantum Technologies Inc.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """ The matching graph interface and some implementation.
 """
 
 import itertools as it
-from abc import ABC
-from dataclasses import dataclass
-from typing import Iterable, List, Tuple, TypeVar, Union
-
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 import numpy as np
 import retworkx as rx
 
-from ft_stack import lemon
+from abc import ABC
+from dataclasses import dataclass
+from typing import Iterable, List, Tuple, TypeVar, Union
+from flamingpy import lemon
+
 
 # These abstract the concept of nodes and edges of a graph
 # as placeholder types.
@@ -167,9 +180,7 @@ class NxMatchingGraph(MatchingGraph):
         MatchingGraph.__init__(self)
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
-        self.graph.add_edge(
-            edge[0], edge[1], weight=weight, inverse_weight=-weight, path=path
-        )
+        self.graph.add_edge(edge[0], edge[1], weight=weight, inverse_weight=-weight, path=path)
 
     def edge_weight(self, edge: Edge):
         return self.graph.edges[edge]["weight"]
@@ -178,9 +189,7 @@ class NxMatchingGraph(MatchingGraph):
         return self.graph.edges[edge]["path"]
 
     def min_weight_perfect_matching(self) -> List[Edge]:
-        return nx.max_weight_matching(
-            self.graph, maxcardinality=True, weight="inverse_weight"
-        )
+        return nx.max_weight_matching(self.graph, maxcardinality=True, weight="inverse_weight")
 
 
 class LemonMatchingGraph(NxMatchingGraph):
@@ -246,14 +255,10 @@ class RxMatchingGraph(MatchingGraph):
         )
 
     def edge_weight(self, edge: Edge):
-        return self.graph.get_edge_data(
-            self.node_index(edge[0]), self.node_index(edge[1])
-        ).weight
+        return self.graph.get_edge_data(self.node_index(edge[0]), self.node_index(edge[1])).weight
 
     def edge_path(self, edge: Edge):
-        return self.graph.get_edge_data(
-            self.node_index(edge[0]), self.node_index(edge[1])
-        ).weight
+        return self.graph.get_edge_data(self.node_index(edge[0]), self.node_index(edge[1])).weight
 
     def min_weight_perfect_matching(self) -> List[Edge]:
         return list(

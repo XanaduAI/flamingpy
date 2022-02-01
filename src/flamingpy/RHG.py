@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,25 +15,25 @@
 import itertools as it
 import numpy as np
 
-from ft_stack.graphstates import EGraph
+from flamingpy.graphstates import EGraph
 import networkx as nx
 
 
 def alternating_polarity(edge):
     """Return +1 or -1 depending on the vertices that form edge edge.
 
-    Help with the assignment of edge weights (i.e. polarity) for 
-    the RHG graph. This particular alternating pattern ensures that 
-    every vertex has two +1 and two -1 weight edges incident on it. The 
-    precise combination depends on the direction of the edge and the 
-    coordinates of the vertices. This pattern may be helpful to reduce 
+    Help with the assignment of edge weights (i.e. polarity) for
+    the RHG graph. This particular alternating pattern ensures that
+    every vertex has two +1 and two -1 weight edges incident on it. The
+    precise combination depends on the direction of the edge and the
+    coordinates of the vertices. This pattern may be helpful to reduce
     CV-level noise.
-    
+
     Args:
         edge (list-type): a pair of tuples, denoting lattice vertices.
-    
+
     Returns:
-        int: +1 or -1.    
+        int: +1 or -1.
     """
     point1, point2 = np.array(edge[0]), np.array(edge[1])
     direction = np.where(point2 - point1)[0][0]
@@ -87,11 +87,11 @@ def RHG_graph(
     polarity=None,
 ):
     """Create an EGraph of a dims-dimensional RHG lattice.
-    
+
     Generate an RHG lattice with dimensions given by dims (an integer
     denoting the number of stabilizer cubes in each direction,
     or a tuple specifying all three dimensions). By default, a useful
-    set of finite boundary conditions is assumed, but any combination 
+    set of finite boundary conditions is assumed, but any combination
     can be specified.
 
     Args:
@@ -105,14 +105,14 @@ def RHG_graph(
             accepts a list that specifies which boundary in which
             direction. Set  to 'finite' == ['primal', 'dual', 'dual']
             by default.
-        macronodes (bool): if True, generates a macronode version of 
+        macronodes (bool): if True, generates a macronode version of
             the lattice, where each pair of vertices connected by
             an edge is replaced with a dumbbell .-., causing each
             vertex to be replaced by four (in bulk).
         polarity (func): a function that specifies edge weights. The
             input to the function should be an edge (i.e. list of two
             vertices) and the output should be the edge weight.
-            
+
     Returns:
         EGraph: the RHG lattice.
     """
@@ -467,9 +467,9 @@ class RHGCode:
 
         The decoding graph has as its nodes every stabilizer in G and a
         every boundary point (for now coming uniquely from a primal
-        boundary). The output graph has stabilizer nodes relabelled to 
-        integer indices, but still points to the original stabilizer with 
-        the help of the 'stabilizer' attribute. Common vertices are stored 
+        boundary). The output graph has stabilizer nodes relabelled to
+        integer indices, but still points to the original stabilizer with
+        the help of the 'stabilizer' attribute. Common vertices are stored
         under the 'common_vertex' edge attribute.
         """
         # An empty decoding graph.

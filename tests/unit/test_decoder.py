@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 import pytest
 import sys
 import io
-from ast import literal_eval
 import numpy as np
-from ft_stack.graphstates import CVGraph
-from ft_stack.decoder import (
+import networkx as nx
+import itertools as it
+
+from ast import literal_eval
+from flamingpy.graphstates import CVGraph
+from flamingpy.decoder import (
     assign_weights,
     CV_decoder,
     decoding_graph,
@@ -27,10 +30,9 @@ from ft_stack.decoder import (
     check_correction,
     correct,
 )
-from ft_stack.matching import NxMatchingGraph
-from ft_stack.RHG import alternating_polarity, RHGCode, RHGCube
-import networkx as nx
-import itertools as it
+from flamingpy.matching import NxMatchingGraph
+from flamingpy.RHG import alternating_polarity, RHGCode, RHGCube
+
 
 code_params = it.product([2, 3, 4], ["finite", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1])
 

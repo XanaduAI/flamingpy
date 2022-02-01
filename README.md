@@ -1,52 +1,38 @@
-<h1 align="center">FT-Stack</h1>
+<p align="center">
+  <a href="https://github.com/XanaduAI/ft-stack">
+    <img width=40% src="https://s10.gifyu.com/images/imagee72e454028813818.png">
+  </a>
+</p>
 
 <p align="center">
   <!-- Tests (GitHub actions) -->
   <a href="https://github.com/XanaduAI/ft-stack/actions/workflows/build_tests.yaml">
     <img src="https://img.shields.io/github/workflow/status/XanaduAI/strawberryfields/Tests?label=build%20%26%20tests&style=flat-square" />
   </a>
-  <!-- contributors -->
-  <a href="https://github.com/XanaduAI/ft-stack/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/XanaduAI/strawberryfields?style=flat-square" />
-  </a>
-  <!-- code size -->
-    <img src="https://img.shields.io/github/languages/code-size/XanaduAI/strawberryfields?style=flat-square" />
+  <!-- CodeFactor -->
+  <a href="https://www.codefactor.io/repository/github/xanaduai/strawberryfields">
+    <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/strawberryfields/master?style=flat-square" />
   </a>
   <!-- PyPI (Python Version) -->
-  <a href="https://pypi.org/project/ft-stack">
-    <img src="https://img.shields.io/pypi/pyversions/ft-stack.svg?style=flat-square" />
+  <a href="https://pypi.org/project/flamingpy">
+    <img src="https://img.shields.io/pypi/pyversions/flamingpy.svg?style=flat-square" />
   </a>
   <!-- PyPI -->
-  <a href="https://pypi.org/project/ft-stack">
-    <img src="https://img.shields.io/pypi/v/ft-stack.svg?style=flat-square" />
+  <a href="https://pypi.org/project/flamingpy">
+    <img src="https://img.shields.io/pypi/v/flamingpy.svg?style=flat-square" />
   </a>
-  <!-- total download -->
-  <a href="https://pypi.org/project/ft-stack">
-    <img src="https://img.shields.io/pypi/dm/ft-stack?style=flat-square" />
-  </a>
-  <!-- PyPI (status) -->
-  <a href="https://pypi.org/project/ft-stack">
-    <img src="https://img.shields.io/pypi/status/strawberryfields" />
-  </a>
-  <!-- open issues -->
-  <a href="https://github.com/XanaduAI/ft-stack/issues">
-    <img src="https://img.shields.io/github/issues/XanaduAI/strawberryfields?style=flat-square" />
-  </a>
-  <!-- open PRs -->
-  <a href="https://github.com/XanaduAI/ft-stack/pulls">
-    <img src="https://img.shields.io/github/issues-pr/XanaduAI/strawberryfields?style=flat-square" />
+  <!-- CodeCov -->
+  <a href="https://codecov.io/gh/XanaduAI/strawberryfields">
+    <img src="https://img.shields.io/codecov/c/github/xanaduai/strawberryfields/master.svg?style=popout-square" />
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
-    <img src="https://img.shields.io/pypi/l/ft-stack.svg?logo=apache&style=flat-square" />    
-  </a>
-  <!-- code size -->
-    <img src="https://img.shields.io/github/stars/XanaduAI/strawberryfields?style=social" />
+    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache&style=flat-square" />    
   </a>
 </p>
 
 <p align="center">
- FT-Stack is a Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers.
+ <a href="https://github.com/XanaduAI/ft-stack">FlamingPy</a> is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers.
 </p>
 
 ## Features
@@ -60,31 +46,31 @@
   
 ## Download and installation 
 
-FT-Stack requires **Python 3.8 or higher**. The recommended method to download and install FT-Stack, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/ft-stack). In your choice of CLI (with a Python environment activated) run the following single line:
+FlamingPy requires **Python 3.8 or 3.9**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
-pip install ft-stack
+python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
 ``` 
 
-### Installation from Source (advanced users)
+#### Installation from Source (advanced users)
 
-If you are a developer and wish to manipulate and test FT-Stack source code, you can install the project from Source. First, clone `ft-stack` through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
+If you are a developer and wish to manipulate and test FlamingPy source code, you can install the project from Source. First, clone FlamingPy through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
 
 ```bash
-conda create -n ftstack python=3.9
-conda activate ftstack
+conda create -n flamingpy python=3.8
+conda activate flamingpy
 ```
 
-Finally, change to the directory where FT-Stack was cloned and run:
+Finally, change to the directory where FlamingPy was cloned and run:
 
 ```bash
-pip install -r dev_requirements.txt
-pip install -e .
+python3 -m pip install -r dev_requirements.txt
+python3 -m pip install -e .
 ``` 
 
-The first command installs dependencies for building the project and testing purposes, and can be skipped. The second installs and compiles FT-Stack and its dependencies (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
+The first command installs dependencies for building the project and testing purposes, and can be skipped. The second installs and compiles FlamingPy and its dependencies (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
 
-## Getting started ad basic usage
+## Getting started and basic usage
 
 > Coming soon ...
 
@@ -92,37 +78,28 @@ The first command installs dependencies for building the project and testing pur
 
 > Coming soon ...
 
-## Contributing to FT-Stack
+## Contribution
 
-We welcome all constructive contributions — simply fork an FT-Stack repository and then make a pull request (PR) containing your contributions. All contributors to FT-Stack will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints on the FT-Stack.
+We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributers to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for the FlamingPy. See our
+changelog for more details.
 
 ## Support
 
 - **Source Code:** https://github.com/XanaduAI/ft-stack
 - **Issue Tracker:** https://github.com/XanaduAI/ft-stack/issues
 
-If you are experiencing any type of issue or have found bugs, please let us know by posting them on our GitHub issue tracker. While we welcome and are committed to responding to all reports, please note FT-Stack is distributed with no guarantee. 
+If you are having issues, please let us know by posting the issue on our GitHub issue tracker.
 
 ## Attribution for authors
 
-FT-Stack is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). If you are using FT-Stack for research purposes, please cite the reference below:
+FlamingPy is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). 
 
-```bash
-@article{tzitrin2021,
-   title={Fault-Tolerant Quantum Computation with Static Linear Optics},
-   volume={2},
-   ISSN={2691-3399},
-   url={http://dx.doi.org/10.1103/PRXQuantum.2.040353},
-   DOI={10.1103/prxquantum.2.040353},
-   number={4},
-   journal={PRX Quantum},
-   publisher={American Physical Society (APS)},
-   author={Tzitrin, Ilan and Matsuura, Takaya and Alexander, Rafael N. and Dauphinais, Guillaume and Bourassa, J. Eli and Sabapathy, Krishna K. and Menicucci, Nicolas C. and Dhand, Ish},
-   year={2021},
-   month={Dec}
-}
-```
+If you are doing research using FlamingPy, please cite our paper below:
+
+> Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
+> Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
+> [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353) 
 
 ## License
 
-FT-Stack is **free** and **open source**, and released under the Apache License, Version 2.0.
+FlamingPy is **free** and **open source**, and released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

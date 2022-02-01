@@ -1,0 +1,32 @@
+name: Formatting Checks
+on:
+  pull_request:
+    branches:
+      - main
+      - main-dev
+  push:
+    branches:
+      - main
+      - main-dev    
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Get the latest pip and black
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install black
+
+      - uses: actions/checkout@v2
+
+      - name: Run black
+        run: |
+          black -l 100 tests/unit --check
+          black -l 100 src/flamingpy --check

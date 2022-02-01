@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
 """Classes for representing graph states."""
 import networkx as nx
 import numpy as np
+import scipy.sparse as sp
 
 # TODO: Avoid Niagara errors associated with Matplotlib; e.g.:
 # if __name__ != "__main__":
 from numpy.random import default_rng as rng
-
-import scipy.sparse as sp
-from ft_stack.GKP import Z_err, Z_err_cond
+from flamingpy.GKP import Z_err, Z_err_cond
 
 
 class EGraph(nx.Graph):
@@ -264,21 +263,21 @@ class CVGraph:
 
     def apply_noise(self, model={}):
         """Apply noise model given in model.
-        
+
         Args:
             model (dict, optional): the noise model dictionary of the form
                 (default values displayed):
-    
+
                 {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01}
-    
+
                 grn stands for Gaussian Random Noise; sampling_order
                 dictates how to simulate measurement outcomes: sample from
                 an uncorrelated noise matrix initially ('initial'), a
                 correlated noise matrix finally ('final'), or for ideal
                 homodyne outcomes initially and from a separable noise
                 covariance matrix finally ('two-step'); 'delta' is the
-                quadrature blurring parameter, related to the squeezing 
-                of the GKP states and the momentum-quadrature variance of 
+                quadrature blurring parameter, related to the squeezing
+                of the GKP states and the momentum-quadrature variance of
                 the p-squeezed states.
 
         """
@@ -490,5 +489,3 @@ class CVGraph:
         if self._sampling_order == "final":
             return self._noise_cov
         print('Sampling order must be "final."')
-
-

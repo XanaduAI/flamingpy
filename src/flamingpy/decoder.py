@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@ import sys
 import itertools as it
 import numpy as np
 
-from ft_stack.matching import NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
-from ft_stack.GKP import GKP_binner, Z_err_cond
+from flamingpy.matching import NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
+from flamingpy.GKP import GKP_binner, Z_err_cond
 
 # Smallest and largest numbers representable.
 smallest_number = sys.float_info.min
@@ -52,9 +52,7 @@ def assign_weights(code, **kwargs):
         for node in syndrome_coords:
             neighbors = G[node]
             # List and number of p-squeezed states in neighborhood of node.
-            p_list = [
-                G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"
-            ]
+            p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
             p_count = len(p_list)
             if p_count in (0, 1):
                 if weight_options.get("prob_precomputed"):
@@ -272,10 +270,10 @@ def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"
                     before rounding
         MatchingGraphType (str or ft_stack.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
-            it most be either "networkx", "retworkx" or "lemon" to pick one 
+            it most be either "networkx", "retworkx" or "lemon" to pick one
             of the already implemented backends. Else, the provided type should
             inherit from the MatchingGraph abstract base class and have an empty init.
-            The default is the networkx backend since it is the reference implementation. 
+            The default is the networkx backend since it is the reference implementation.
             However, both retworkx and lemon and orders of magnitude faster.
     Returns:
         (EGraph, MatchingGraph): The decoding and matching graphs.
@@ -285,7 +283,9 @@ def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"
     assign_weights(code, **weight_options)
 
     default_backends = {
-        "networkx": NxMatchingGraph, "retworkx": RxMatchingGraph, "lemon": LemonMatchingGraph
+        "networkx": NxMatchingGraph,
+        "retworkx": RxMatchingGraph,
+        "lemon": LemonMatchingGraph,
     }
     if matching_backend in default_backends:
         matching_backend = default_backends[matching_backend]

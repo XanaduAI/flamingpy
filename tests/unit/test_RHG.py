@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for RHG classes and methods in RHG.py."""
-
-from ft_stack.RHG import RHG_graph, RHGCode, RHGCube
-from ft_stack.graphstates import EGraph
-import numpy as np
+from flamingpy.RHG import RHG_graph, RHGCode, RHGCube
+from flamingpy.graphstates import EGraph
 from numpy.random import default_rng as rng
 from networkx import fast_gnp_random_graph
 from networkx.algorithms.operators import difference
+
+import numpy as np
 import itertools as it
 import pytest
 
@@ -245,7 +245,7 @@ class TestRHGGraph:
 
     def test_periodic_boundaries(self, d):
         RHG_lattice = RHG_graph(d, "periodic")
-        assert len(RHG_lattice) == 6 * (d ** 3)
+        assert len(RHG_lattice) == 6 * (d**3)
 
         all_boundaries = []
         for plane in ("x", "y", "z"):
@@ -304,7 +304,7 @@ class TestRHGCode:
     def test_stabilizers(self, RHG_code):
         cubes = RHG_code.stabilizers
         # Check that there are d^3 stabilizers
-        assert len(cubes) == RHG_code.distance ** 3
+        assert len(cubes) == RHG_code.distance**3
         # Check that each stabilizer has 6 corresponing physical
         # vertices, no matter if it's a 3, 4, 5, or 6 body stabilizer.
         for cube in cubes:

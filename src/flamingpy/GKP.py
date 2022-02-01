@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     Returns:
         array: probability of Z (phase flip) errors for each variance,
             contioned on the homodyne outcomes.
-    """ # TODO: Make the following line smarter.
+    """  # TODO: Make the following line smarter.
     n_max = var_num
 
     bit, frac = GKP_binner(hom_val, return_fraction=True)
@@ -180,5 +180,3 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
         if np.size(var) == 1:
             error = error[0]
         return error
-
-

@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,13 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from ft_stack.passive_construct import invert_permutation, BS_network, reduce_macro_and_simulate
-from ft_stack.graphstates import CVGraph
-import ft_stack.RHG as RHG
+from flamingpy.passive_construct import invert_permutation, BS_network, reduce_macro_and_simulate
+from flamingpy.graphstates import CVGraph
+from numpy.random import shuffle, default_rng as rng
+
+import flamingpy.RHG as RHG
 import itertools as it
 import pytest
 import numpy as np
-from numpy.random import shuffle, default_rng as rng
+
 
 code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1])
 
@@ -68,9 +70,7 @@ class TestReduction:
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
 
-        reduce_macro_and_simulate(
-            RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta
-        )
+        reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta)
         # Check proper reduction to effective node type.
         for central_node in RHG_macro.macro.nodes:
             micronodes = RHG_macro.macro.nodes[central_node]["micronodes"]

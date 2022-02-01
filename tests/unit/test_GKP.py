@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ import math
 import numpy as np
 from numpy import sqrt, pi
 from numpy.random import default_rng as rng
-from ft_stack.GKP import to_pi_string, integer_fractional, GKP_binner, Z_err, Z_err_cond
+from flamingpy.GKP import to_pi_string, integer_fractional, GKP_binner, Z_err, Z_err_cond
+
 
 N = 50
 

@@ -1,0 +1,80 @@
+name: Upload Linux Wheels x86_64
+on:
+  release:
+    types: [published]
+  pull_request:
+    types:
+      - labeled
+    branches:    
+      - main
+      - main-dev  
+
+jobs:
+  upload-linux-x64:
+    if: ${{ github.event.label.name == 'manual upload' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8, 3.9]
+        os: [ubuntu-latest]
+        arch: [x86_64]
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }}
+    
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
+    
+      - uses: actions/checkout@v2
+
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pillow pyyaml wheel --upgrade
+          python3 -m pip install -r dev_requirements.txt
+          
+      - name: Build flamingpy from Source
+        run: pip install -e . 
+        
+      - name: Run tests
+        run: python -m pytest tests/ --tb=native
+        
+      - name: Stripping C++ modules
+        run: strip --strip-unneeded src/flamingpy/*.so
+        
+      - name: Build the wheel
+        run: python3 setup.py bdist_wheel
+        env:
+          CIBW_ARCHS_LINUX: ${{matrix.arch}}
+        
+      - name: Rename the wheel
+        run: | 
+          wheel=$(find dist/*.whl) 
+          mv $wheel $(echo $wheel | sed 's/-linux_/-manylinux1_/')
+             
+      - name: Publish the wheel
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          
+      - name: Uninstall existing versions and add a delay
+        run: |
+          python3 -m pip uninstall flamingpy -y
+          sleep 2m
+
+      - name: Pip install flamingpy        
+        run: python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
+        
+      - name: Run some involved package examples for testing purposes
+        run: | 
+          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/decoder_example.py
+          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/lemon_benchmark.py

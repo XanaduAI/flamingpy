@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
 """Plot data from FT simulations."""
 import argparse
 import pandas as pd
-from matplotlib import pyplot as plt
 import numpy as np
+
+from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
+
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.serif"] = "DejaVu Serif"
@@ -60,11 +62,7 @@ def process_results(file_name, unit=None, save=True):
         split_dir = file_name.split("/")
         split_file_name = split_dir[-1].split(".")
         new_file_name = (
-            "/".join(split_dir[:-1])
-            + "/"
-            + split_file_name[0]
-            + "_processed."
-            + split_file_name[1]
+            "/".join(split_dir[:-1]) + "/" + split_file_name[0] + "_processed." + split_file_name[1]
         )
         df_new.to_csv(new_file_name)
     return df_new
@@ -264,7 +262,7 @@ def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
         result = (delta_distance[0] - delta_t) * delta_distance[1] ** (1 / mu)
         return result
 
-    quad_fit = lambda x, a0, a1, a2: a0 + a1 * x + a2 * (x ** 2)
+    quad_fit = lambda x, a0, a1, a2: a0 + a1 * x + a2 * (x**2)
 
     def fit_func(delta_distance, delta_t, mu, a0, a1, a2):
         result = quad_fit(delta_rescaled(delta_distance, delta_t, mu), a0, a1, a2)
@@ -297,9 +295,7 @@ def find_threshold(data, p_swap, unit="dB", file_name=None, plot=True):
         plt.show()
     print_str = (
         "The threshold is estimated at delta = {:.3g}{}. "
-        "Here, the failure probability is {:.3g}.".format(
-            delta_t, " dB" * bool(unit), a0
-        )
+        "Here, the failure probability is {:.3g}.".format(delta_t, " dB" * bool(unit), a0)
     )
     print(print_str)
     return delta_t - 0.02, a0
@@ -335,9 +331,7 @@ if __name__ == "__main__":
     p_swap = np.array(
         [0, 0.06, 0.12, 0.18, 0.24, 0.30, 0.36, 0.42, 0.48, 0.54, 0.6, 0.66, 0.70, 0.71]
     )
-    sqz = np.array(
-        [10.1, 10.4, 10.7, 11.1, 11.5, 11.8, 12.4, 12.9, 13.7, 14.9, 17, 24, 35, 60]
-    )
+    sqz = np.array([10.1, 10.4, 10.7, 11.1, 11.5, 11.8, 12.4, 12.9, 13.7, 14.9, 17, 24, 35, 60])
 
     swap_tol_data = zip(sqz, p_swap)
     plot = plot_results(

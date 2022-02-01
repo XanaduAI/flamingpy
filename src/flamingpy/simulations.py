@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
 import argparse
 import csv
 import sys
+
 from datetime import datetime
-from ft_stack.decoder import correct
-from ft_stack.graphstates import CVGraph
-from ft_stack.RHG import RHG_graph, RHGCode, alternating_polarity
-from ft_stack.passive_construct import BS_network, reduce_macro_and_simulate
+from flamingpy.decoder import correct
+from flamingpy.graphstates import CVGraph
+from flamingpy.RHG import RHG_graph, RHGCode, alternating_polarity
+from flamingpy.passive_construct import BS_network, reduce_macro_and_simulate
 
 
 def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):

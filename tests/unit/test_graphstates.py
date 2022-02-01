@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ import numpy.random as rand
 import networkx as nx
 import string
 import pytest
+
 from numpy.random import default_rng as rng
-from ft_stack.graphstates import EGraph, CVGraph, SCZ_mat, SCZ_apply
+from flamingpy.graphstates import EGraph, CVGraph, SCZ_mat, SCZ_apply
+
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
@@ -186,9 +188,7 @@ class TestCVGraph:
         G.apply_noise(model_init)
         H.apply_noise(model_init)
         init_noise_all_GKP = np.full(2 * n, delta / 2, dtype=np.float32)
-        init_noise_all_p = np.array(
-            [1 / (2 * delta)] * n + [delta / 2] * n, dtype=np.float32
-        )
+        init_noise_all_p = np.array([1 / (2 * delta)] * n + [delta / 2] * n, dtype=np.float32)
         assert np.array_equal(G._init_noise, init_noise_all_GKP)
         assert np.array_equal(H._init_noise, init_noise_all_p)
 

@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
-from ft_stack.RHG import alternating_polarity, RHG_graph, RHGCode
-from ft_stack.graphstates import CVGraph
-from ft_stack.passive_construct import BS_network
-import pytest
-from ft_stack.simulations import ec_monte_carlo
+
+from flamingpy.RHG import alternating_polarity, RHG_graph, RHGCode
+from flamingpy.graphstates import CVGraph
+from flamingpy.passive_construct import BS_network
+from flamingpy.simulations import ec_monte_carlo
+
 import itertools as it
+import pytest
+
 
 params = it.product([2, 3, 4], ["finite", "periodic"])
 

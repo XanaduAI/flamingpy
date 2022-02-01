@@ -1,5 +1,4 @@
 name: Package Examples
-
 on:
   push:
     branches:
@@ -11,10 +10,10 @@ on:
       - main-dev
 
 jobs:
-
-  unit-tests:
+  package-examples:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.8, 3.9]
     
@@ -26,14 +25,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install pip
+      - name: Get the latest pip
         run: python3 -m pip install --upgrade pip
         
-      - name: Install compilation and testing requirements
+      - name: Install compilation and testing requirements of flamingpy
         run: pip install -r dev_requirements.txt
 
-      - name: Build ft-stack from Source
+      - name: Build flamingpy from Source
         run: pip install -e .  
         
       - name: Run package examples
-        run: find . -wholename "./src/ft_stack/examples/*.py" -exec python3 {} \;
+        run: find . -wholename "./src/flamingpie/examples/*.py" -exec python3 {} \;

@@ -1,4 +1,4 @@
-# Copyright 2021 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import os
 import re
 import sys
@@ -24,6 +23,9 @@ from setuptools.command.install import install
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
+
+with open("src/flamingpy/_version.py") as f:
+    version = f.readlines()[-1].split()[-1].strip("\"'")
 
 # The following class is an adaptation of Python examples for pybind11:
 # https://github.com/pybind/python_example/blob/master/setup.py
@@ -47,8 +49,8 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_version = LooseVersion(re.search(r"version\s*([\d.]+)", out.decode()).group(1))
-            if cmake_version < "3.1.0":
-                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
+            if cmake_version < "3.14.0":
+                raise RuntimeError("CMake >= 3.14.0 is required on Windows")
 
         for ext in self.extensions:
             self.build_extension(ext)
@@ -94,15 +96,17 @@ with open(os.path.join(this_directory, "README.md")) as f:
 
 
 setup(
-    name="ft-stack",
-    version="0.1.13",
-    description="FT-Stack is a Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers.",
+    name="flamingpy",
+    version=version,
+    description="FlamingPy is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers.",
     license="Apache License 2.0",
     classifiers=[
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
         "Operating System :: POSIX",
+        "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
@@ -117,11 +121,11 @@ setup(
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    # package_data={"ft_stack":["src/ft_stack/data/*.csv", "src/ft_stack/*.so", "examples/lemon_benchmark.py"]},
+    # package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
     include_package_data=True,
-    python_requires=">=3.8",
+    python_requires=">=3.8,!=3.10.*",
     cmdclass={"build_ext": CMakeBuild},
-    ext_modules=[CMakeExtension("ft_stack.lemonpy")],
+    ext_modules=[CMakeExtension("flamingpy.lemonpy")],
     distclass=BinaryDistribution,
     install_requires=[
         "matplotlib>=3.3.3",

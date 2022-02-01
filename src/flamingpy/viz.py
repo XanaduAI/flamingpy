@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@ and generate plots using Matplotlib.
 """
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-from matplotlib.patches import Patch
-
-from ft_stack import GKP, RHG
-
 import numpy as np
 import copy
 import networkx as nx
 import itertools as it
+
+from matplotlib.patches import Patch
+from flamingpy import GKP, RHG
 
 
 def plot_integer_fractional(xs, ns, fs, alpha):
@@ -40,9 +39,7 @@ def plot_integer_fractional(xs, ns, fs, alpha):
     plt.plot(xs, fs, ",")
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
-    newylabels = (
-        [GKP.to_pi_string(-alpha / 2)] + newylabels + [GKP.to_pi_string(alpha / 2)]
-    )
+    newylabels = [GKP.to_pi_string(-alpha / 2)] + newylabels + [GKP.to_pi_string(alpha / 2)]
     plt.xticks(newxticks, newxlabels, fontsize="small")
     plt.yticks(newyticks, newylabels)
     plt.show()
@@ -174,9 +171,7 @@ def draw_EGraph(
         ax.scatter(x, y, z, c=color, s=plt.rcParams["lines.markersize"] * 5)
 
         if label:
-            value = (
-                egraph.nodes[point].get(label) if label != "index" else indices[point]
-            )
+            value = egraph.nodes[point].get(label) if label != "index" else indices[point]
             if value is not None:
                 x, z, y = point
                 # Raise negative sign above node.
@@ -273,9 +268,7 @@ def draw_dec_graph(G, label_edges=True, title=None):
     weight_list = [G.edges[edge]["weight"] for edge in G.edges]
     weight_dict = {edge: "{:.2f}".format(G.edges[edge]["weight"]) for edge in G.edges}
     if label_edges:
-        nx.draw_networkx_edge_labels(
-            G, nx.circular_layout(G), edge_labels=weight_dict, font_size=7
-        )
+        nx.draw_networkx_edge_labels(G, nx.circular_layout(G), edge_labels=weight_dict, font_size=7)
     r = nx.draw_networkx_edges(G, nx.circular_layout(G), edge_color=weight_list)
     plt.colorbar(r)
 
