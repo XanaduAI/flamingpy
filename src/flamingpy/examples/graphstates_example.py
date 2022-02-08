@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""Example for building and visualizing EGraphs with CV noise."""
+import matplotlib.pyplot as plt
 from flamingpy import viz
 from flamingpy.graphstates import EGraph, CVGraph
-import matplotlib.pyplot as plt
+
 
 # Bell state EGraph
 edge = [(0, 0, 0), (1, 1, 1)]

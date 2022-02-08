@@ -11,22 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" 
-Helper functions to draw various graphs 
+"""
+Helper functions to draw various graphs
 and generate plots using Matplotlib.
 """
+import copy
+import itertools as it
+import numpy as np
+import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-import numpy as np
-import copy
-import networkx as nx
-import itertools as it
 
 from matplotlib.patches import Patch
 from flamingpy import GKP, RHG
 
 
 def plot_integer_fractional(xs, ns, fs, alpha):
+    """Plot the integer and fractional part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [GKP.to_pi_string(tick) for tick in newxticks]
@@ -46,6 +47,7 @@ def plot_integer_fractional(xs, ns, fs, alpha):
 
 
 def plot_GKP_bins(outcomes, bit_values, alpha):
+    """Plot binned real numbers mod alpha."""
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [GKP.to_pi_string(tick) for tick in newxticks]
@@ -57,6 +59,7 @@ def plot_GKP_bins(outcomes, bit_values, alpha):
 
 
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val):
+    """Plot conditional phase probabilities for GKP states."""
     _, frac = GKP.GKP_binner(hom_val, return_fraction=True)
     val = hom_val if use_hom_val else frac
     xmin, xmax = alpha * (hom_val[0] // alpha), alpha * (hom_val[-1] // alpha) + alpha
@@ -163,7 +166,7 @@ def draw_EGraph(
         # color attribute if True; black otherwise.
         if color_nodes == "state":
             color = state_colors.get(egraph.nodes[point].get("state"))
-        elif type(color_nodes) == str:
+        elif isinstance(color_nodes, str):
             color = color_nodes
         else:
             color = egraph.nodes[point].get("color") if color_nodes else "k"
@@ -176,7 +179,7 @@ def draw_EGraph(
                 x, z, y = point
                 # Raise negative sign above node.
                 sign = "^{-}" * (-int(np.sign(value)))
-                if type(value) != int:
+                if not isinstance(value, int):
                     value = r"${}{:.2g}$".format(sign, np.abs(value))
                 ax.text(
                     x,
@@ -199,7 +202,7 @@ def draw_EGraph(
 
         # Color edges based on color_edges if string, or based on
         # color ttribute if True; black otherwise.
-        if type(color_edges) == str:
+        if isinstance(color_edges, str):
             color = color_edges
         else:
             color = egraph.edges[edge].get("color") if color_edges else "k"
@@ -225,8 +228,9 @@ def draw_EGraph(
 
 
 def plot_binary_mat_heat_map(symplectic):
+    """Plot the heat map of symplectic matrices."""
     plt.figure()
-    if type(symplectic) != np.ndarray:
+    if not isinstance(symplectic, np.ndarray):
         symplectic = symplectic.toarray()
     plt.matshow(symplectic, 0)
     plt.show()
@@ -237,6 +241,7 @@ def draw_code_lattice(
     node_color={"primal": "k", "dual": "grey"},
     edge_color={1: "b", -1: "r"},
 ):
+    """Draw EGraphs corresponding to QEC codes."""
     graph = copy.deepcopy(graph)
     for (_, attr) in graph.nodes.items():
         attr["color"] = node_color[attr["type"]]
@@ -468,6 +473,7 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
 
 
 def draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, label_edges):
+    """Plot the matching output by MWPM."""
     virtual_points = G_match.virtual_points
     for pair in matching:
         if pair not in it.product(virtual_points, virtual_points):

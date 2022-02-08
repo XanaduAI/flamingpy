@@ -1,8 +1,6 @@
 name: Linting Checks
 on:
   pull_request:
-    types:
-      - locked
     branches:    
       - main
       - main-dev
@@ -31,4 +29,4 @@ jobs:
         run: python3 -m pip install -e . 
 
       - name: Run pylint
-        run: python3 -m pylint flamingpy tests/unit/*.py
+        run: python3 -m pylint --disable=R,W flamingpy src/flamingpy/examples/*.py tests/unit/*.py

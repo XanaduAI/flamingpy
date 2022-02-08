@@ -92,7 +92,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
             if CVRHG.egraph.nodes[micronode]["state"] == "GKP":
                 gkps.append(j)
         centre_point = tuple([round(i) for i in micronode])
-        if len(gkps):
+        if gkps:
             star_ind, reduced_state = i + gkps[0], "GKP"
         else:
             star_ind, reduced_state = i, "p"

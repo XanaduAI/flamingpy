@@ -1,0 +1,75 @@
+name: Bug report
+description: Create a bug report to help us improve FlamingPy
+title: '[replace with a short, descriptive title for your report]'
+labels: "bug"
+
+body:
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: |
+        Before posting a bug report
+      description: |
+        Please first search existing GitHub issues and documentation to make sure this report and relevant resolutions do not already exist:
+        https://github.com/XanaduAI/strawberryfields/issues
+      options:
+        - label: I have searched existing GitHub issues and documentation to make sure the issue and relevant resolutions do not already exist.
+          required: true
+  - type: markdown
+    id: description
+    attributes:
+      value: |
+          # Issue description
+          A clear and concise description of what the bug is -- remember to include essential code snippets, references, and screenshots below, as needed.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: |
+        What do you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual buggy behavior
+      description: |
+        What actually happens? Describe the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduces
+    attributes:
+      label: How to reproduce
+      description: |
+        Steps to reproduce the behavior. (Please provide steps such as 'Go to ...', 'Run commands ...', and 'See the warning ...') 
+        If you have used a specific CLI and/or IDE, you must include it here.
+        What percentage of the time does it happen?
+    validations:
+      required: true
+  - type: textarea
+    id: system
+    attributes:
+      label:  System information
+      description: Please post the output of `import flamingpy as fp; fp.about()` or, if not possible/relevant, a note on why this is not included. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: true
+  - type: markdown
+    id: tracebacks
+    attributes:
+      value: |
+        # Tracebacks and additional source code
+        You can include additional code snippets and error tracebacks related to the issue here.
+  - type: textarea
+    id: tracebacks
+    attributes:
+      label:  Tracebacks
+      description: Please include the error tracebacks related to the issue here. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: additional-info
+    attributes:
+      label:  Additional context
+      description: Please include any additional source code, information, configuration or data that might be necessary to reproduce the issue.
+      render: shell

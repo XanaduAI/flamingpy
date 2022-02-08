@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""Example of instantiating, applying noise, decoding, recovering, and visualizing this procedure for the RHG lattice."""
+import matplotlib.pyplot as plt
 from flamingpy import viz
 from flamingpy import decoder as dec
 from flamingpy.RHG import RHGCode, alternating_polarity
 from flamingpy.graphstates import CVGraph
-import matplotlib.pyplot as plt
 
 
 # DV (outer) code

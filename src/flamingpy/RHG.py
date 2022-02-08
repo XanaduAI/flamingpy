@@ -14,9 +14,8 @@
 """Classes for the RHG code and related functions."""
 import itertools as it
 import numpy as np
-
-from flamingpy.graphstates import EGraph
 import networkx as nx
+from flamingpy.graphstates import EGraph
 
 
 def alternating_polarity(edge):
@@ -122,7 +121,7 @@ def RHG_graph(
     # Dealing with boundaries
     if boundaries == "finite":
         boundaries = ["primal", "dual", "dual"]
-    elif type(boundaries) == str:
+    elif isinstance(boundaries, str):
         boundaries = [boundaries] * 3
     # Locations of all primal vertices.
     inds = it.product(range(dims[0]), range(dims[1]), range(dims[2]))
@@ -281,7 +280,7 @@ class RHGCode:
         self.complex = error_complex
         if boundaries == "finite":
             self.boundaries = ["primal", "dual", "dual"]
-        elif type(boundaries) == str:
+        elif isinstance(boundaries, str):
             self.boundaries = [boundaries] * 3
         else:
             self.boundaries = boundaries

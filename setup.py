@@ -121,7 +121,7 @@ setup(
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    # package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
+    #package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
     include_package_data=True,
     python_requires=">=3.8,!=3.10.*",
     cmdclass={"build_ext": CMakeBuild},

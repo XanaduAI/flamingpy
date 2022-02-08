@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""""Unit tests for GKP-specific functions in GKP.py."""
-import pytest
+""""Unit tests for GKP-specific functions in the GKP module."""
 import math
+import pytest
 import numpy as np
 from numpy import sqrt, pi
 from numpy.random import default_rng as rng
@@ -54,8 +54,7 @@ class TestGKPBinning:
 
     @pytest.mark.parametrize("alpha", alpha_vals)
     def test_integer_fractional(self, alpha):
-        # Test that the integer and fractional part as obtained by
-        # integer_fractional matches that of the constructed numbers/
+        """Test that the integer and fractional part as obtained by integer_fractional matches that of constructed numbers."""
         integers = rng().integers(-N // 2, N // 2, N)
         fractions = (rng().random(N) - 0.5) * alpha
         numbers = integers * alpha + fractions
@@ -64,8 +63,7 @@ class TestGKPBinning:
         assert np.allclose(frac_part, fractions)
 
     def test_gkp_binner(self):
-        # Tests that GKP_binner gives the integer part mod 2, and
-        # returns the fractional part if asked.
+        """Tests that GKP_binner gives the integer part mod 2, and returns the fractional part if asked."""
         alpha = np.sqrt(np.pi)
         integers = rng().integers(-N // 2, N // 2, N)
         fractions = rng().random(N) * (alpha / 2)
@@ -93,8 +91,7 @@ class TestPhaseProbs:
     """Test the phase error proability functions."""
 
     def test_Z_err(self):
-        # Ensure phase errors are 0 for low deltas and 0.5 for high
-        # deltas.
+        """Ensure phase errors are 0 for low deltas and 0.5 for high deltas."""
         low_probs = Z_err(low_delta)
         high_probs = Z_err(high_delta)
         assert np.allclose(low_probs, 0)
@@ -102,7 +99,7 @@ class TestPhaseProbs:
 
     @pytest.mark.parametrize("use_hom_val", [False, True])
     def test_Z_err_cond(self, use_hom_val):
-        # Test high-squeezing (low delta) regime.
+        """Test high-squeezing (low delta) regime."""
         for delta in (high_delta, low_delta):
             even_probs = Z_err_cond(delta, even_homs, var_num=lim, use_hom_val=use_hom_val)
             odd_probs = Z_err_cond(delta, odd_homs, var_num=lim, use_hom_val=use_hom_val)

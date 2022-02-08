@@ -11,11 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""Example for building and visualizing RHG lattices."""
+import matplotlib.pyplot as plt
 from flamingpy.RHG import RHGCode, alternating_polarity
 from flamingpy import viz
-
-import matplotlib.pyplot as plt
 
 
 ## Some simple tests:
@@ -33,7 +32,7 @@ RHG = RHGCode(d, boundaries=boundaries, polarity=alternating_polarity)
 RHG_lattice = RHG.graph
 # Check maronode lattice
 # RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
-ax = viz.draw_code_lattice(RHG_lattice)
+viz.draw_code_lattice(RHG_lattice)
 plt.show()
 
 # # Check edges between boundaries for periodic boundary conditions.

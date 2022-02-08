@@ -13,16 +13,14 @@
 # limitations under the License.
 """ The matching graph interface and some implementation.
 """
-
+from abc import ABC
+from dataclasses import dataclass
+from typing import Iterable, List, Tuple, TypeVar, Union
 import itertools as it
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 import numpy as np
 import retworkx as rx
-
-from abc import ABC
-from dataclasses import dataclass
-from typing import Iterable, List, Tuple, TypeVar, Union
 from flamingpy import lemon
 
 
@@ -193,6 +191,8 @@ class NxMatchingGraph(MatchingGraph):
 
 
 class LemonMatchingGraph(NxMatchingGraph):
+    """A matching graph class backed by the Lemon package."""
+
     def min_weight_perfect_matching(self) -> List[Edge]:
         return lemon.max_weight_matching(self.graph, weight="inverse_weight")
 

@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""Example for benchmarking Lemon's max_weight_matching against networkx."""
+import time
 import networkx as nx
 import numpy as np
-import time
 import matplotlib.pyplot as plt
 
 from flamingpy.lemon import max_weight_matching
@@ -24,7 +24,7 @@ time_lemon = []
 time_nx = []
 matrix_size = []
 
-# Change that for more data points
+# Change this for more data points
 for num_nodes in range(50, 150, 50):
 
     matrix_size.append(num_nodes)

@@ -87,7 +87,7 @@ class EGraph(nx.Graph):
         """
         if self.adj_mat is not None:
             return self.adj_mat
-        if not self.to_points:
+        if self.to_points is None:
             self.index_generator()
         # TODO: SortedDict implementation.
         sorted_nodes = [self.to_points[i] for i in range(self.order())]
@@ -133,7 +133,7 @@ def SCZ_mat(adj):
     """
     # Number of modes
     N = adj.shape[0]
-    if type(adj) == np.ndarray:
+    if isinstance(adj, np.ndarray):
         identity = np.eye(N, dtype=np.int8)
         zeros = np.zeros((N, N), dtype=np.int8)
         block_func = np.block
@@ -353,7 +353,7 @@ class CVGraph:
                     if state == "GKP":
                         self._init_quads[ind] = self._random_gen.integers(0, 2) * np.sqrt(np.pi)
 
-    def measure_hom(self, quad="p", inds=[], method="cholesky", dim="single", updated_quads=[]):
+    def measure_hom(self, quad="p", inds=None, method="cholesky", dim="single", updated_quads=None):
         """Conduct a homodyne measurement on the lattice.
 
         Simulate a homodyne measurement of quadrature quad of states
@@ -364,7 +364,7 @@ class CVGraph:
         the two-step sampling.
         """
         N = self._N
-        if not len(inds):
+        if inds is None:
             inds = range(N)
         N_inds = len(inds)
         if self._sampling_order == "initial":
@@ -377,7 +377,7 @@ class CVGraph:
             elif quad == "p":
                 outcomes = outcomes[N:][inds]
         if self._sampling_order == "two-step":
-            if len(updated_quads):
+            if updated_quads is not None:
                 updated = updated_quads
             else:
                 means = self._init_quads
@@ -403,13 +403,13 @@ class CVGraph:
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
-    def eval_Z_probs(self, inds=[], exact=True, cond=False):
+    def eval_Z_probs(self, inds=None, exact=True, cond=False):
         """Evaluate the probability of phase errors at nodes inds.
 
         If inds not specified, compute probabilities for all nodes.
         """
         N = self._N
-        if not len(inds):
+        if inds is None:
             inds = range(N)
         N_inds = len(inds)
         if exact:
@@ -448,27 +448,27 @@ class CVGraph:
         adj = self._adj
         return SCZ_mat(adj)
 
-    def Z_probs(self, inds=[], cond=False):
+    def Z_probs(self, inds=None, cond=False):
         """array: the phase error probabilities of modes inds."""
         N = self._N
-        if not len(inds):
+        if inds is None:
             inds = range(N)
         p_string = "p_phase" + "_cond" * bool(cond)
         phase_errs = [self.egraph.nodes[self.to_points[i]].get(p_string) for i in inds]
         return phase_errs
 
-    def hom_outcomes(self, inds=[], quad="p"):
+    def hom_outcomes(self, inds=None, quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
         N = self._N
-        if not len(inds):
+        if inds is None:
             inds = range(N)
         outcomes = [self.egraph.nodes[self.to_points[i]].get("hom_val_" + quad) for i in inds]
         return outcomes
 
-    def bit_values(self, inds=[]):
+    def bit_values(self, inds=None):
         """array: bit values associated with the p measurement."""
         N = self._N
-        if not len(inds):
+        if inds is None:
             inds = range(N)
         bits = [self.egraph.nodes[self.to_points[i]].get("bit_val") for i in inds]
         return bits

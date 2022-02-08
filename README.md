@@ -49,7 +49,7 @@
 FlamingPy requires **Python 3.8 or 3.9**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
-python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
+pip install -i https://test.pypi.org/simple/ flamingpy
 ``` 
 
 #### Installation from Source (advanced users)
@@ -64,8 +64,8 @@ conda activate flamingpy
 Finally, change to the directory where FlamingPy was cloned and run:
 
 ```bash
-python3 -m pip install -r dev_requirements.txt
-python3 -m pip install -e .
+pip install -r dev_requirements.txt
+pip install -e .
 ``` 
 
 The first command installs dependencies for building the project and testing purposes, and can be skipped. The second installs and compiles FlamingPy and its dependencies (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].

@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import flamingpy.lemonpy as lp
+"""Define max_weight_matching based on the lemonpy module."""
 import networkx as nx
+import flamingpy.lemonpy as lp
 
 
 def max_weight_matching(G_match, weight):

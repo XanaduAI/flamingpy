@@ -28,9 +28,9 @@ results = pd.read_csv(options["input_file"])
 
 
 def test_find_thresholds():
+    """Tests for find_threshold function."""
     delta_expected = 10.051
     a0_expected = 0.149
-    """Tests for find_threshold function."""
     d_p_t = find_threshold(results, options["p_swap"], options["unit"], options["save_file"], False)
     # Check if the expected threshold was returned
     assert round(d_p_t[0], 3) == delta_expected
@@ -39,11 +39,11 @@ def test_find_thresholds():
 
 
 def test_plot_results():
+    """Tests for plot_results function."""
     d_p_t = find_threshold(results, options["p_swap"], options["unit"], options["save_file"], False)
     p_swap = np.array([0, 0.36, 0.71])
     sqz = np.array([10.1, 12.4, 60])
     swap_tol_data = zip(sqz, p_swap)
-    """Tests for plot_results function."""
     plot = plot_results(
         results,
         p_swap=options["p_swap"],

@@ -11,23 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Monte Carlo simulations for estimating FT thresholds."""
+"""Unit tests for Monte Carlo simulations for estimating FT thresholds."""
+
+import itertools as it
+import pytest
 
 from flamingpy.RHG import alternating_polarity, RHG_graph, RHGCode
 from flamingpy.graphstates import CVGraph
 from flamingpy.passive_construct import BS_network
 from flamingpy.simulations import ec_monte_carlo
 
-import itertools as it
-import pytest
-
 
 params = it.product([2, 3, 4], ["finite", "periodic"])
 
 
 class TestBlueprint:
+    """A class with members to test Monte Carlo simulations for FT threshold estimations for Xanadu's blueprint architecture."""
+
     @pytest.mark.parametrize("distance, boundaries", params)
     def test_all_GKP_high_squeezing(self, distance, boundaries):
+        """Tests Monte Carlo simulations for FT threshold estimation of a system with zero swap-out probability and high squeezing."""
         p_swap = 0
         delta = 0.001
         trials = 10
@@ -38,8 +41,11 @@ class TestBlueprint:
 
 
 class TestPassive:
+    """A class with members to test Monte Carlo simulations for FT threshold estimations for Xanadu's passive architecture."""
+
     @pytest.mark.parametrize("distance", [2, 3, 3])
     def test_all_GKP_high_squeezing(self, distance):
+        """Tests Monte Carlo simulations for FT threshold estimation of a system with zero swap-out probability and high squeezing."""
         p_swap = 0
         delta = 0.001
         trials = 10

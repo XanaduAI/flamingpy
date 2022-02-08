@@ -27,6 +27,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run black
-        run: |
-          black -l 100 tests/unit --check
-          black -l 100 src/flamingpy --check
+        run: python3 -m black -l 100 tests/unit src/flamingpy --check

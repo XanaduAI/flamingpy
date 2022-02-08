@@ -11,17 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""Example of simulating Xanadu's passive architecture."""
+import time
 from flamingpy import RHG
 from flamingpy.decoder import correct
 from flamingpy.graphstates import CVGraph
 from flamingpy.passive_construct import BS_network, reduce_macro_and_simulate
 
-import time
-
 
 total = 1
-
 d = 2
 delta = 0.01
 p_swap = 0.9
