@@ -44,7 +44,7 @@ def integer_fractional(x, alpha):
 
     Any real number x can be expressed as n * alpha + f, where n is an
     integer, alpha is any real number, and f is a real number such that
-    |f| <= alpha / 2. This function returns n and f.
+    \|f\| <= alpha / 2. This function returns n and f.
 
     Args:
         x (float or array): real numbers

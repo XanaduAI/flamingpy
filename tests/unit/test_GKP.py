@@ -30,12 +30,9 @@ def test_to_pi_string():
     assert to_pi_string(-np.sqrt(np.pi)) == "$-\\sqrt{\\pi}$"
     assert to_pi_string(np.sqrt(np.pi) / 2) == "$\\sqrt{\\pi}/2$"
     assert to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
-    # Test random odd integer multiples of sqrt(pi)/2.
-    odd_int = 2 * rng().integers(-25, 25) - 1
-    odd_int_label = "" if odd_int in (-1, 1) else odd_int
-    assert to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(
-        odd_int_label
-    )
+    # Test random odd integer multiples of sqrt(pi)/2, eccept 1 and -1
+    odd_int = (2 * rng().integers(2, 25) - 1) * (-1) ** rng().integers(2)
+    assert to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
     #  Test random even multiples of sqrt(pi).
     even_int = odd_int + 1
     assert to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(even_int)

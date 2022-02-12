@@ -264,10 +264,10 @@ def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"
     Args:
         code (code): the code class to decode and correct
         weight_options (dict): how to assign weights; options are
-                'method': 'unit' or 'blueprint'
-                'integer': True (for rounding) or False (for not)
-                'multiplier': integer denoting multiplicative factor
-                    before rounding
+            'method': 'unit' or 'blueprint'
+            'integer': True (for rounding) or False (for not)
+            'multiplier': integer denoting multiplicative factor
+            before rounding
         MatchingGraphType (str or ft_stack.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
             it most be either "networkx", "retworkx" or "lemon" to pick one
@@ -312,11 +312,10 @@ def correct(
         inner_decoder (str): the CV decoder; GKP_binner by default
         outer_decoder (str): the DV decoder; MWPM by default
         weight_options (dict): how to assign weights; options are
-
-                'method': 'unit' or 'blueprint'
-                'integer': True (for rounding) or False (for not)
-                'multiplier': integer denoting multiplicative factor
-                    before rounding
+            'method': 'unit' or 'blueprint'
+            'integer': True (for rounding) or False (for not)
+            'multiplier': integer denoting multiplicative factor
+            before rounding
         sanity_check (bool): if True, check that the recovery
             operation succeeded and verify that parity is conserved
             among all correlation surfaces.

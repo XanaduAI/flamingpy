@@ -67,7 +67,7 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_args += ["-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), extdir)]
-            if sys.maxsize > 2 ** 32:
+            if sys.maxsize > 2**32:
                 cmake_args += ["-A", "x64"]
             build_args += ["--", "/m"]
         else:
@@ -121,7 +121,7 @@ setup(
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    #package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
+    # package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
     include_package_data=True,
     python_requires=">=3.8,!=3.10.*",
     cmdclass={"build_ext": CMakeBuild},

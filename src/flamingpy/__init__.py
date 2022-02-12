@@ -14,6 +14,21 @@
 """
 Threshold estimations for measurement-based implementation of quantum
 error correcting codes using GKP qubits
+
+.. currentmodule::
+.. autosummary::
+    :toctree: flamingpy
+
+	decoder
+    GKP
+    graphstates
+    lemon
+    matching
+    passive_construct
+    RHG
+    simulations
+    threshold_plots
+    viz
 """
 
 import sys

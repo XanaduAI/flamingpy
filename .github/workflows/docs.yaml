@@ -1,0 +1,17 @@
+name: Create Documentation
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: Build sphinx documentation
+      uses: XanaduAI/sphinx-action@master
+      with:
+        docs-folder: "doc/"
+        pre-build-command: "apt install -y build-essential graphviz git cmake && python3 -m pip install --upgrade pip && python3 -m pip install -r dev_requirements.txt && python3 -m pip install ."
