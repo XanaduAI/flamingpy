@@ -22,7 +22,7 @@ def max_weight_matching(G_match, weight):
        1. Symmetric adjacency matrix.
        2. Adjacency matrix has zeros along diagonal.
     """
-    adjacency = nx.to_numpy_matrix(G_match, weight=weight)
+    adjacency = nx.to_numpy_array(G_match, weight=weight)
     lemon_matching = lp.mwpm(adjacency)
 
     # lemon uses different node ids, so we convert back to networkx node ids
