@@ -326,9 +326,9 @@ class TestRHGCode:
     def test_boundary(self, RHG_code):
         """Test presence of RHG_code.boundary_coords in case of primal boundaries."""
         if "primal" in RHG_code.boundaries:
-            assert RHG_code.boundary_coords
+            assert RHG_code.bound_points
         else:
-            assert not RHG_code.boundary_coords
+            assert not RHG_code.bound_points
 
 
 class TestRHGCube:

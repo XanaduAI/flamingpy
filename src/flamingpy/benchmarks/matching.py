@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Example for benchmarking the performance of minimum-weight matching via the networkx, retworkx, and lemon backends."""
+"""Benchmark minimum-weight matching via networkx, retworkx, and lemon backends."""
 import time
 import matplotlib.pyplot as plt
 

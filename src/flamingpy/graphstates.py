@@ -16,9 +16,7 @@ import networkx as nx
 import numpy as np
 import scipy.sparse as sp
 
-# TODO: Avoid Niagara errors associated with Matplotlib; e.g.:
-# if __name__ != "__main__":
-from numpy.random import default_rng as rng
+from numpy.random import default_rng
 from flamingpy.GKP import Z_err, Z_err_cond
 
 
@@ -196,6 +194,9 @@ class CVGraph:
         p_swap (float, optional): if supplied, the probability of a
             node being a p-squeezed state. Overrides the indices given
             in state.
+        rng (numpy.random.Generator, optional): a random number generator following
+            the NumPy API. It can be seeded for reproducibility. By default,
+            numpy.random.default_rng is used without a fixed seed.
 
     Attributes:
         egraph (EGraph): the unerlying graph representation.
@@ -204,12 +205,11 @@ class CVGraph:
         _delta (float): the delta from the Args above.
         _sampling_order (str): the sampling order from the Args above.
         _adj (array): adjancency matrix of the underlying graph.
-        _random_gen (Generator): numpy random number generator.
         to_points (dict): pointer to self.egraph.to_points, the
             dictionary from indices to coordinates.
     """
 
-    def __init__(self, g, states={"p": np.empty(0, dtype=int)}, p_swap=0):
+    def __init__(self, g, states={"p": np.empty(0, dtype=int)}, p_swap=0, rng=default_rng()):
         """Initialize the CVGraph."""
         if isinstance(g, EGraph):
             self.egraph = g
@@ -221,9 +221,6 @@ class CVGraph:
 
         # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
-
-        # Create a generator for random numbers to be used throughout
-        self._random_gen = rng()
 
         if states:
             self._states = states.copy()
@@ -240,10 +237,8 @@ class CVGraph:
                 if p_swap == 1:
                     self._states["p"] = np.arange(self._N)
                 else:
-                    num_p = self._random_gen.binomial(self._N, p_swap)
-                    inds = self._random_gen.choice(
-                        range(self._N), size=int(np.floor(num_p)), replace=False
-                    )
+                    num_p = rng.binomial(self._N, p_swap)
+                    inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
                     self._states["p"] = inds
 
             # Associate remaining indices with GKP states.
@@ -261,7 +256,7 @@ class CVGraph:
                 for ind in self._states[psi]:
                     self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
-    def apply_noise(self, model={}):
+    def apply_noise(self, model={}, rng=default_rng()):
         """Apply noise model given in model.
 
         Args:
@@ -280,6 +275,10 @@ class CVGraph:
                 of the GKP states and the momentum-quadrature variance of
                 the p-squeezed states.
 
+            rng (numpy.random.Generator, optional): a random number generator following
+                NumPy API. It can be seeded for reproducibility. By default,
+                numpy.random.default_rng is used without a fixed seed.
+
         """
         # Modelling the states.
         default_model = {"noise": "grn", "delta": 0.01, "sampling_order": "initial"}
@@ -287,13 +286,18 @@ class CVGraph:
         self._delta = model["delta"]
         self._sampling_order = model["sampling_order"]
         if model["noise"] == "grn":
-            self.grn_model()
+            self.grn_model(rng)
 
-    def grn_model(self):
+    def grn_model(self, rng=default_rng()):
         """Apply Gaussian Random Noise model to the CVGraph.
 
         Store quadrature or noise information as attributes depnding
         on the sampling order.
+
+        Args:
+            rng (numpy.random.Generator, optional): a random number generator following
+                NumPy API. It can be seeded for reproducibility. By default,
+                numpy.random.default_rng is used without a fixed seed.
         """
         N = self._N
         delta = self._delta
@@ -306,21 +310,13 @@ class CVGraph:
                 if state == "GKP":
                     init_noise[indices] = delta / 2
                     init_noise[indices + N] = delta / 2
-                    init_vals[indices] = self._random_gen.normal(
-                        0, np.sqrt(delta / 2), len(indices)
-                    )
-                    init_vals[indices + N] = self._random_gen.normal(
-                        0, np.sqrt(delta / 2), len(indices)
-                    )
+                    init_vals[indices] = rng.normal(0, np.sqrt(delta / 2), len(indices))
+                    init_vals[indices + N] = rng.normal(0, np.sqrt(delta / 2), len(indices))
                 if state == "p":
                     init_noise[indices] = 1 / (2 * delta)
                     init_noise[indices + N] = delta / 2
-                    init_vals[indices] = self._random_gen.normal(
-                        0, np.sqrt(1 / (2 * delta)), len(indices)
-                    )
-                    init_vals[indices + N] = self._random_gen.normal(
-                        0, np.sqrt(delta / 2), len(indices)
-                    )
+                    init_vals[indices] = rng.normal(0, np.sqrt(1 / (2 * delta)), len(indices))
+                    init_vals[indices + N] = rng.normal(0, np.sqrt(delta / 2), len(indices))
             self._init_noise = init_noise
             self._init_vals = init_vals
 
@@ -349,11 +345,19 @@ class CVGraph:
                 indices = self._states[state]
                 for ind in indices:
                     if state == "p":
-                        self._init_quads[ind] = self._random_gen.random() * (2 * np.sqrt(np.pi))
+                        self._init_quads[ind] = rng.random() * (2 * np.sqrt(np.pi))
                     if state == "GKP":
-                        self._init_quads[ind] = self._random_gen.integers(0, 2) * np.sqrt(np.pi)
+                        self._init_quads[ind] = rng.integers(0, 2) * np.sqrt(np.pi)
 
-    def measure_hom(self, quad="p", inds=None, method="cholesky", dim="single", updated_quads=None):
+    def measure_hom(
+        self,
+        quad="p",
+        inds=None,
+        method="cholesky",
+        dim="single",
+        updated_quads=None,
+        rng=default_rng(),
+    ):
         """Conduct a homodyne measurement on the lattice.
 
         Simulate a homodyne measurement of quadrature quad of states
@@ -362,6 +366,11 @@ class CVGraph:
         method. If updated_quads is supplied, use those
         instead of applying an SCZ matrix to the initial quads in
         the two-step sampling.
+
+        Args:
+            rng (numpy.random.Generator, optional): a random number generator following
+                NumPy API. It can be seeded for reproducibility. By default,
+                numpy.random.default_rng is used without a fixed seed.
         """
         N = self._N
         if inds is None:
@@ -391,7 +400,7 @@ class CVGraph:
                 outcomes = np.empty(N_inds, dtype=np.float32)
                 sigma = np.sqrt(self._delta / 2)
                 for i in range(N_inds):
-                    outcomes[i] = self._random_gen.normal(means[i], sigma)
+                    outcomes[i] = rng.normal(means[i], sigma)
         if self._sampling_order == "final":
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]
@@ -399,7 +408,7 @@ class CVGraph:
             means = np.zeros(N_inds, dtype=bool)
             # TODO: Is below correct?
             covs = cov_dict[quad][inds, :][:, inds].toarray()
-            outcomes = self._random_gen.multivariate_normal(mean=means, cov=covs, method=method)
+            outcomes = rng.multivariate_normal(mean=means, cov=covs, method=method)
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 

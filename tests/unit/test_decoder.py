@@ -23,13 +23,12 @@ from flamingpy.graphstates import CVGraph
 from flamingpy.decoder import (
     assign_weights,
     CV_decoder,
-    decoding_graph,
     recovery,
     check_correction,
-    correct,
 )
 from flamingpy.matching import NxMatchingGraph
-from flamingpy.RHG import alternating_polarity, RHGCode, RHGCube
+from flamingpy.stab_graph import NxStabilizerGraph
+from flamingpy.RHG import alternating_polarity, RHGCode
 
 
 code_params = it.product([2, 3, 4], ["finite", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1])
@@ -53,11 +52,10 @@ def enc_state(request):
 
 
 @pytest.fixture(scope="module")
-def dec_graphs(enc_state):
+def match_data(enc_state):
     """The decoding graphs for use in this module."""
-    G_dec = decoding_graph(enc_state[0])
-    G_match = NxMatchingGraph().with_edges_from_dec_graph(G_dec)
-    return G_dec, G_match, G_match.min_weight_perfect_matching()
+    graph = NxMatchingGraph(enc_state[0])
+    return graph, graph.min_weight_perfect_matching()
 
 
 class TestAssignWeights:
@@ -110,39 +108,30 @@ class TestDecoder:
             for point in cube.egraph:
                 assert cube.egraph.nodes[point].get("bit_val") is not None
 
-    def test_decoding_graph(self, dec_graphs, enc_state):
-        """Check the indexing and structure of the decoding graph."""
-        G_dec = dec_graphs[0]
-        assert G_dec.graph["title"] == "Decoding Graph"
-        odd_cubes = G_dec.graph["odd_cubes"]
-        num_stabes = len(enc_state[0].stabilizers)
-        even_cubes = set(range(num_stabes)) - set(odd_cubes)
-        print(odd_cubes, even_cubes)
-        print(G_dec.nodes)
-        boundary_points = set(G_dec.graph["boundary_points"])
+    def test_stab_graph(self, enc_state):
+        """Check that edges in a stabilizer grapg contain the coordinates
+        of the common vertex between neighbouring stabilizers."""
+        stab_graph = enc_state[0].stab_graph
+        odd_stabs = list(stab_graph.odd_parity_stabilizers())
+        even_stabs = set(stab_graph.stabilizers) - set(odd_stabs)
         # Check odd and even cubes appropriately indexed.
-        for cube_index in odd_cubes:
-            cube = G_dec.nodes[cube_index]["stabilizer"]
-            assert cube.parity == 1
-        for cube_index in even_cubes - boundary_points - {"low", "high"}:
-            cube = G_dec.nodes[cube_index]["stabilizer"]
-            assert cube.parity == 0
-        # Check that edges contain the coordinates of the common vertex
-        # between neighbouring stabilizers.
-        for edge in G_dec.edges:
-            assert "weight" in G_dec.edges[edge]
-            if ("high" not in edge) and ("low" not in edge):
-                assert "common_vertex" in G_dec.edges[edge]
+        for stab in odd_stabs:
+            assert stab.parity == 1
+        for stab in even_stabs:
+            assert stab.parity == 0
+        for edge in stab_graph.edges():
+            if {"high", "low"}.isdisjoint(edge):
+                assert stab_graph.edge_data(*edge)["common_vertex"] is not None
 
-    def test_matching_graph(self, dec_graphs):
+    def test_matching_graph(self, match_data):
         """Test the structure of the matching graph."""
-        G_match = dec_graphs[1]
-        virtual_points = G_match.virtual_points
-        remaining_points = G_match.graph.nodes - virtual_points
+        graph = match_data[0]
+        virtual_points = graph.virtual_points
+        remaining_points = graph.graph.nodes - virtual_points
         n_virt = len(virtual_points)
         n_stabes = len(remaining_points)
-        virtual_subgraph = G_match.graph.subgraph(virtual_points)
-        stabilizer_subgraph = G_match.graph.subgraph(remaining_points)
+        virtual_subgraph = graph.graph.subgraph(virtual_points)
+        stabilizer_subgraph = graph.graph.subgraph(remaining_points)
         # Check that the graph formed between the virtual boundary excitations,
         # as well as the graph formed between the nodes corresponding to
         # stabilizers, are both complete graphs.
@@ -153,21 +142,21 @@ class TestDecoder:
         for edge in virtual_subgraph.edges:
             assert virtual_subgraph.edges[edge]["weight"] == 0
 
-    def test_MWPM(self, dec_graphs):
+    def test_MWPM(self, match_data):
         """Check that the matching is perfect (the set of all the nodes in the matching is the same as the set of all nodes in the matching graph)."""
-        G_match, matching = dec_graphs[1], dec_graphs[2]
-        assert not {a for b in matching for a in b} - G_match.graph.nodes
+        graph, matching = match_data[0], match_data[1]
+        assert not {a for b in matching for a in b} - graph.graph.nodes
 
 
 class TestRecovery:
     """A class that defines recovery and correction tests."""
 
-    def test_recovery(self, enc_state, dec_graphs):
-        """Check that there remain no unsatisfied stabilizers after the recovery operation."""
-        recovery(enc_state[0], dec_graphs[1], dec_graphs[0], dec_graphs[2])
-        G_dec_new = decoding_graph(enc_state[0])
-        odd_cubes = G_dec_new.graph["odd_cubes"]
-        assert not odd_cubes
+    def test_recovery(self, enc_state, match_data):
+        """Check that there remain no unsatisfied stabilizers after the
+        recovery operation."""
+        recovery(enc_state[0], match_data[0], match_data[1])
+        odd_cubes = enc_state[0].stab_graph.odd_parity_stabilizers()
+        assert len(list(odd_cubes)) == 0
 
     def test_corection_check(self, enc_state):
         """Check that error correction fails in case of at least one plane with odd parity."""

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Example for benchmarking Lemon's max_weight_matching against networkx."""
+"""Benchmark Lemon's max_weight_matching against networkx."""
 import time
 import networkx as nx
 import numpy as np

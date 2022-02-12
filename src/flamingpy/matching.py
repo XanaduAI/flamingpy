@@ -18,7 +18,6 @@ from dataclasses import dataclass
 from typing import Iterable, List, Tuple, TypeVar, Union
 import itertools as it
 import networkx as nx
-import networkx.algorithms.shortest_paths as sp
 import numpy as np
 import retworkx as rx
 from flamingpy import lemon
@@ -34,15 +33,22 @@ class MatchingGraph(ABC):
     """The matching graph base class.
 
     This represents a graph for which we can compute a minimum weight perfect matching.
-    See ft_stack.matching.NxMatchingGraph for a reference implementation using the networkx
+    See flammingpy.matching.NxMatchingGraph for a reference implementation using the networkx
     library as a backend.
+
+    Arguments:
+        code (RHGCode, optional): If provided, the matching graph
+        includes an edge for each pair of unsatisfied stabilizer nodes
+        in the code together with the weight of the corresponding correction.
     """
 
     # The type representing the weight of an edge.
     Weight = TypeVar("Weight")
 
-    def __init__(self):
+    def __init__(self, code=None):
         self.virtual_points = list()
+        if code is not None:
+            self.with_edges_from(code)
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
         """Add an edge into the graph.
@@ -85,12 +91,12 @@ class MatchingGraph(ABC):
         """
         return sum(self.edge_weight(edge) for edge in matching)
 
-    def with_edges_from_dec_graph(self, dec_graph: nx.Graph):
-        """Update the matching graph from the decoding graph G.
+    def with_edges_from(self, code):
+        """Update the matching graph from the given code.
 
         The matching graph has as half of its nodes the odd-parity stabilizers.
         The edge connecting two nodes corresponds to the weight of the
-        minimum-weight-path between the nodes in the decoding graph.
+        minimum-weight-path between the nodes in the stabilizer graph of the code.
         Additionally, each unsatisfied stabilizer is connected to a unique boundary point
         (for now from a primal bundary) located at the shortest weighted distance from
         the stabilizer. Between each other, the boundary points are
@@ -101,66 +107,60 @@ class MatchingGraph(ABC):
         weight-matching algorithms
 
         Args:
-            dec_graph (networkx.Graph): the decoding graph, storing information
-                about indices of odd-parity-cubes (under 'odd_cubes' graph
-                attribute) and boundary points (under 'boundary_points').
-        Returns:
-            networkx.Graph: the updated matching graph.
+            code (RHGCode): The code from which to build the edges.
         """
-        # Get the indices of the odd parity cubes from the decoding graph.
-        odd_parity_inds = dec_graph.graph["odd_cubes"]
+        self = self._with_edges_between_real_odd_nodes(code)
+        if code.stab_graph.has_bound_points():
+            return self._with_edges_from_low_or_high_connector(code)
+        else:
+            return self
 
-        # Run the matching algorithm first without the 'high' and 'low points
-        real_points = dec_graph.graph["real_points"]
-
-        alg = sp.single_source_dijkstra
+    def _with_edges_between_real_odd_nodes(self, code):
+        # Get the indices of the odd parity cubes from the stabilizer graph.
+        odd_parity_stabs = list(code.stab_graph.odd_parity_stabilizers())
         # Combinations of odd-parity cubes.
-        odd_ind_dict = {i: [] for i in odd_parity_inds[:-1]}
-        odd_combs = it.combinations(odd_parity_inds, 2)
-        for pair in odd_combs:
-            odd_ind_dict[pair[0]] += [pair[1]]
-        # Find the shortest paths between odd-parity cubes.
-        for cube1 in odd_parity_inds[:-1]:
-            lengths, paths = alg(dec_graph.subgraph(real_points), cube1)
-            for cube2 in odd_ind_dict[cube1]:
-                length = lengths[cube2]
-                path = paths[cube2]
-                # Add edge to the matching graph between the cubes, with weight
+        odd_adjacency = {i: [] for i in odd_parity_stabs[:-1]}
+        for pair in it.combinations(odd_parity_stabs, 2):
+            odd_adjacency[pair[0]] += [pair[1]]
+        # Find the shortest paths between odd-parity stabs.
+        for stab1 in odd_parity_stabs[:-1]:
+            lengths, paths = code.stab_graph.shortest_paths_without_high_low(stab1, code)
+            for stab2 in odd_adjacency[stab1]:
+                length = lengths[stab2]
+                path = paths[stab2]
+                # Add edge to the matching graph between the stabs, with weight
                 # equal to the length of the shortest path.
-                # TODO: Is the behavior correct for negative weights, or do I
-                # want 1/weight or max_num - weight?
-                self.add_edge((cube1, cube2), length, path)
+                self.add_edge((stab1, stab2), length, path)
+        return self
 
-        if dec_graph.graph["boundary_points"]:
-            i = 0
-            low_lengths, low_paths = alg(dec_graph, "low")
-            high_lengths, high_paths = alg(dec_graph, "high")
-            for cube in odd_parity_inds:
-                distances = (low_lengths[cube], high_lengths[cube])
-                where_shortest = np.argmin(distances)
-                if where_shortest == 0:
-                    length = low_lengths[cube]
-                    full_path = low_paths[cube]
-                if where_shortest == 1:
-                    length = high_lengths[cube]
-                    full_path = high_paths[cube]
-                point = full_path[1]
-                virtual_point = (point, i)
-                path = full_path[1:]
-                # Add edge to the matching graph between the cube and
-                # the virtual excitation corresponding to the boundary
-                # vertex, with weight equal to the length of the shortest
-                # path.
-                self.add_edge(
-                    (cube, virtual_point),
-                    length,
-                    path,
-                )
-                i += 1
-                self.virtual_points.append(virtual_point)
-            # Add edge with weight 0 between any two virtual excitations.
-            for edge in it.combinations(self.virtual_points, 2):
-                self.add_edge(edge, 0)
+    def _with_edges_from_low_or_high_connector(self, code):
+        low_lengths, low_paths = code.stab_graph.shortest_paths_from_low(code)
+        high_lengths, high_paths = code.stab_graph.shortest_paths_from_high(code)
+        for i, cube in enumerate(code.stab_graph.odd_parity_stabilizers()):
+            distances = (low_lengths[cube], high_lengths[cube])
+            where_shortest = np.argmin(distances)
+            if where_shortest == 0:
+                length = low_lengths[cube]
+                full_path = low_paths[cube]
+            if where_shortest == 1:
+                length = high_lengths[cube]
+                full_path = high_paths[cube]
+            point = full_path[1]
+            virtual_point = (point, i)
+            path = full_path[1:]
+            # Add edge to the matching graph between the cube and
+            # the virtual excitation corresponding to the boundary
+            # vertex, with weight equal to the length of the shortest
+            # path.
+            self.add_edge(
+                (cube, virtual_point),
+                length,
+                path,
+            )
+            self.virtual_points.append(virtual_point)
+        # Add edge with weight 0 between any two virtual excitations.
+        for edge in it.combinations(self.virtual_points, 2):
+            self.add_edge(edge, 0)
         return self
 
 
@@ -173,9 +173,9 @@ class NxMatchingGraph(MatchingGraph):
 
     Weight = Union[int, float]
 
-    def __init__(self):
+    def __init__(self, code=None):
         self.graph = nx.Graph()
-        MatchingGraph.__init__(self)
+        MatchingGraph.__init__(self, code)
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
         self.graph.add_edge(edge[0], edge[1], weight=weight, inverse_weight=-weight, path=path)
@@ -212,8 +212,8 @@ class RxEdgePayload:
     """The edge payload for the RxMatchingGraph.
 
     Args:
-        weight:  the minimum-weight-path in the decoding graph between the extremal nodes.
-        path : the nodes in the decoding graph along the minimum-weight-path.
+        weight:  the minimum-weight-path in the stabilizer graph between the extremal nodes.
+        path : the nodes in the stabilizer graph along the minimum-weight-path.
     """
 
     weight: int
@@ -229,10 +229,11 @@ class RxMatchingGraph(MatchingGraph):
 
     Weight = int
 
-    def __init__(self):
+    def __init__(self, code=None):
         self.graph = rx.PyGraph(multigraph=False)
-        self.node_map = dict()
-        MatchingGraph.__init__(self)
+        self.node_to_index = dict()
+        self.index_to_node = dict()
+        MatchingGraph.__init__(self, code)
 
     def node_index(self, node):
         """Returns the index of the corresponding node.
@@ -240,11 +241,12 @@ class RxMatchingGraph(MatchingGraph):
         If the node doesn't exist in the graph,
         a new index is generated.
         """
-        if node in self.node_map:
-            return self.node_map[node]
+        if node in self.node_to_index:
+            return self.node_to_index[node]
         else:
             index = self.graph.add_node(node)
-            self.node_map[node] = index
+            self.node_to_index[node] = index
+            self.index_to_node[index] = node
             return index
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
@@ -258,16 +260,15 @@ class RxMatchingGraph(MatchingGraph):
         return self.graph.get_edge_data(self.node_index(edge[0]), self.node_index(edge[1])).weight
 
     def edge_path(self, edge: Edge):
-        return self.graph.get_edge_data(self.node_index(edge[0]), self.node_index(edge[1])).weight
+        return self.graph.get_edge_data(self.node_index(edge[0]), self.node_index(edge[1])).path
 
     def min_weight_perfect_matching(self) -> List[Edge]:
-        return list(
-            rx.max_weight_matching(
-                self.graph,
-                max_cardinality=True,
-                weight_fn=lambda edge: -1 * edge.weight,
-            )
+        matches = rx.max_weight_matching(
+            self.graph,
+            max_cardinality=True,
+            weight_fn=lambda edge: -1 * edge.weight,
         )
+        return [(self.index_to_node[pair[0]], self.index_to_node[pair[1]]) for pair in matches]
 
     def to_nx(self):
         """Convert the same graph into a NxMatchingGraph.

@@ -14,8 +14,8 @@
 """Classes for the RHG code and related functions."""
 import itertools as it
 import numpy as np
-import networkx as nx
 from flamingpy.graphstates import EGraph
+from flamingpy.stab_graph import NxStabilizerGraph, RxStabilizerGraph
 
 
 def alternating_polarity(edge):
@@ -249,7 +249,7 @@ class RHGCode:
                 'b': 'b', 'b', 'b'
                 ['b1', 'b2', 'b3']: b1, b2, b3.
 
-        _polarity (bool): if True, lattice is constructed with two
+        polarity (bool): if True, lattice is constructed with two
             edges of +1 weights and perpendicular edges with -1 weights
             for noise cancellation in a subsequent CV lattice.
         graph (EGraph): the EGraph correspond to the code.
@@ -259,10 +259,9 @@ class RHGCode:
             vertices, according to the error complex.
         boundary_coords (list of tup): the coordinates of the boundary
             according to the error complex.
-        decoding_graph (Graph): decoding graph constructed from the stabilizers
-            without edge weights populated
-        _decoder_mapping (dict): mapping between nodes and indices for the
-            decoding graph
+        backend (string): The backend to use for the stabilizer graph.
+            Can be "networkx" (the default) or "retworkx".
+            The retworkx backend should be used when speed is a concern.
     """
 
     def __init__(
@@ -271,7 +270,7 @@ class RHGCode:
         error_complex="primal",
         boundaries="finite",
         polarity=None,
-        decoding_graph=True,
+        backend="networkx",
     ):
         """Initialize the RHG code."""
         # TODO: Check code distance convention.
@@ -284,7 +283,7 @@ class RHGCode:
             self.boundaries = [boundaries] * 3
         else:
             self.boundaries = boundaries
-        self._polarity = polarity
+        self.polarity = polarity
 
         self.graph = RHG_graph(self.dims, boundaries=self.boundaries, polarity=polarity)
         self.graph.index_generator()
@@ -292,10 +291,29 @@ class RHGCode:
         # attribute.
         self.stabilizers = self.identify_stabilizers(self.complex)
         self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
-        self.boundary_coords = self.identify_boundary(self.complex)
+        self.bound_points = self.identify_boundary(self.complex)
+        if backend == "networkx":
+            self.stab_graph = NxStabilizerGraph(self)
+        elif backend == "retworkx":
+            self.stab_graph = RxStabilizerGraph(self)
+        else:
+            raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
 
-        if decoding_graph:
-            self.decoding_graph, self._decoder_mapping = self.construct_decoding_graph()
+    @property
+    def low_bound_points(self):
+        """All points connected to the boundary slice (as determined by error_complex)
+        with smaller coordinates.
+        """
+        mid = int(len(self.bound_points) / 2)
+        return self.bound_points[:mid]
+
+    @property
+    def high_bound_points(self):
+        """All points connected to the boundary slice (as determined by error_complex)
+        with larger coordinates.
+        """
+        mid = int(len(self.bound_points) / 2)
+        return self.bound_points[mid:]
 
     def identify_stabilizers(self, error_complex="primal"):
         """Return the syndrome coordinates for the RHG lattice G.
@@ -460,68 +478,6 @@ class RHGCode:
 
     # TODO: slice_coords function that constructs rather than iterates,
     # like the EGraph.
-
-    def construct_decoding_graph(self):
-        """Create a decoding graph from the RHG lattice G.
-
-        The decoding graph has as its nodes every stabilizer in G and a
-        every boundary point (for now coming uniquely from a primal
-        boundary). The output graph has stabilizer nodes relabelled to
-        integer indices, but still points to the original stabilizer with
-        the help of the 'stabilizer' attribute. Common vertices are stored
-        under the 'common_vertex' edge attribute.
-        """
-        # An empty decoding graph.
-        G_dec = nx.Graph(title="Decoding Graph")
-        cubes = self.stabilizers
-        G_dec.add_nodes_from(cubes)
-        # For stabilizer cubes sharing a vertex, define an edge between
-        # them with weight equal to the weight assigned to the vertex.
-        for (cube1, cube2) in it.combinations(G_dec, 2):
-            common_vertex = set(cube1.coords()) & set(cube2.coords())
-            if common_vertex:
-                coordinate = common_vertex.pop()
-                G_dec.add_edge(cube1, cube2, common_vertex=coordinate, weight=None)
-
-        # Include primal boundary vertices in the case of non-periodic
-        # boundary conditions. (The following list will be empty absent a
-        # primal boundary).
-        bound_points = self.boundary_coords
-
-        # For boundary points sharing a vertex with a stabilizer cube,
-        # add an edge between them with weight equal to the weight assigned
-        # to the vertex.
-        for (cube, point) in it.product(G_dec, bound_points):
-            if point in cube.coords():
-                G_dec.add_edge(cube, point, common_vertex=point, weight=None)
-
-        # Relabel the nodes of the decoding graph to integers and define
-        # the mapping between nodes and indices.
-        G_relabelled = nx.convert_node_labels_to_integers(G_dec, label_attribute="stabilizer")
-        mapping = dict(zip(G_dec.nodes(), range(0, G_dec.order())))
-
-        # For non-periodic boundary conditions, include boundary vertices.
-        # Get the indices of the boundary vertices from the decoding
-        # graph.
-        bound_inds = [mapping[point] for point in bound_points]
-        G_relabelled.graph["boundary_points"] = bound_inds[:]
-        bound_points = G_relabelled.graph["boundary_points"]
-        # Connect two helper points, one per primal boundary, with weight 0
-        # to all the boundary points. This will speed up Dijkstra.
-        n_b = len(bound_points) // 2
-        low_bound_points, high_bound_points = bound_points[:n_b], bound_points[n_b:]
-        v_low = "low"
-        v_high = "high"
-        for point in low_bound_points:
-            G_relabelled.add_edge(v_low, point, weight=0)
-        for point in high_bound_points:
-            G_relabelled.add_edge(v_high, point, weight=0)
-
-        # Identify the real points so "high" and "low" can be skipped in some of
-        # the decoding functions down the line
-        G_relabelled.graph["real_points"] = set(G_relabelled.nodes) - set(("high", "low"))
-
-        return G_relabelled, mapping
 
 
 class RHGCube:

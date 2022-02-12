@@ -117,52 +117,7 @@ def CV_decoder(code, translator=GKP_binner):
         code.graph.nodes[point]["bit_val"] = bit_val
 
 
-def decoding_graph(code):
-    """Populate the edge weights of the decoding graph from the RHG lattice G,
-    and determine the parity of the stabilizer cubes.
-
-    The decoding graph has as its nodes every stabilizer in G and a
-    every boundary point (for now coming uniquely from a primal
-    boundary). Two stabilizers (or a stabilizer and a boundary point)
-    sharing a vertex are connected by an edge whose weight is equal to
-    the weight assigned to that vertex in G. The output graph has
-    stabilizer nodes relabelled to integer indices, but still points
-    to the original stabilizer with the help of the 'stabilizer'
-    attribute. The output graph furthermore stores the indices of
-    odd-parity cubes (under an 'odd_cubes' graph attribute) and of
-    the boundary points (under 'boundary_points'). Common vertices
-    are stored under the 'common_vertex' edge attribute. Note that one
-    ought first compute the phase error probabilities, conduct a
-    homodyne measurement, and translate the outcomes on G.
-
-    Args:
-        G (CVGraph): the CVGraph to decode
-    Returns:
-        networkx.Graph: the decoding graph.
-    """
-    cubes = code.stabilizers
-
-    decoding_graph = code.decoding_graph
-    mapping = code._decoder_mapping
-
-    # Assign edge weights based on the common vertices between stabilizers,
-    # and not to edges with the 'high' and 'low points
-    real_points = decoding_graph.graph["real_points"]
-    for edge in decoding_graph.subgraph(real_points).edges:
-        common = decoding_graph.edges[edge]["common_vertex"]
-        decoding_graph.edges[edge]["weight"] = code.graph.nodes[common]["weight"]
-
-    # Indices of odd parity cubes and boundary vertices; add these
-    # index lists to the graph attributes dictionary, to be used by the
-    # matching graph.
-    odd_parity_cubes = [cube for cube in cubes if cube.parity]
-    odd_parity_inds = [mapping[cube] for cube in odd_parity_cubes]
-    decoding_graph.graph["odd_cubes"] = odd_parity_inds[:]
-
-    return decoding_graph
-
-
-def recovery(code, G_match, G_dec, matching, sanity_check=False):
+def recovery(code, G_match, matching, sanity_check=False):
     """Run the recovery operation on graph G.
 
     Fip the bit values of all the vertices in the path connecting each
@@ -171,9 +126,8 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
     indices of there are.
 
     Args:
+        code (RHGCode): the code
         G_match (networkx.Graph): the matching graph
-        G_dec (networkx.Graph): the decoding graph
-        G (CVGraph): the CVGraph to correct
         matching (set of tuples): the minimum-weight perfect matching
         check (bool): if True, check if the recovery has succeeded.
 
@@ -182,17 +136,16 @@ def recovery(code, G_match, G_dec, matching, sanity_check=False):
             it succeeded. Otherwise None.
     """
     virtual_points = G_match.virtual_points
-    for pair in matching:
-        if pair not in it.product(virtual_points, virtual_points):
-            path = G_match.edge_path(pair)
+    for match in matching:
+        if match not in it.product(virtual_points, virtual_points):
+            path = G_match.edge_path(match)
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:
-                common_vertex = G_dec.edges[pair]["common_vertex"]
+                common_vertex = code.stab_graph.edge_data(*pair)["common_vertex"]
                 code.graph.nodes[common_vertex]["bit_val"] ^= 1
 
     if sanity_check:
-        G_dec_new = decoding_graph(code)
-        odd_cubes = G_dec_new.graph["odd_cubes"]
+        odd_cubes = list(code.stab_graph.odd_parity_stabilizers())
         if odd_cubes:
             print("Unsatisfied stabilizers:", odd_cubes)
         print("Recovery succeeded - no unsatisfied stabilizers.")
@@ -255,20 +208,20 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
     return np.all(all_surfaces)
 
 
-def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"):
+def build_match_graph(code, weight_options, matching_backend="networkx"):
     """
-    Build the decoding and matching graphs.
+    Build the matching graph for the given code.
 
-    Combines weight assignment, decoding and matching graph creation.
+    Combines weight assignment and matching graph creation.
 
     Args:
         code (code): the code class to decode and correct
         weight_options (dict): how to assign weights; options are
-            'method': 'unit' or 'blueprint'
-            'integer': True (for rounding) or False (for not)
-            'multiplier': integer denoting multiplicative factor
-            before rounding
-        MatchingGraphType (str or ft_stack.matching.MatchingGraph, optional):
+                'method': 'unit' or 'blueprint'
+                'integer': True (for rounding) or False (for not)
+                'multiplier': integer denoting multiplicative factor
+                    before rounding
+        matching_backend (str or flamingpy.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
             it most be either "networkx", "retworkx" or "lemon" to pick one
             of the already implemented backends. Else, the provided type should
@@ -276,12 +229,11 @@ def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"
             The default is the networkx backend since it is the reference implementation.
             However, both retworkx and lemon and orders of magnitude faster.
     Returns:
-        (EGraph, MatchingGraph): The decoding and matching graphs.
+        MatchingGraph: The matching graph.
     """
     if weight_options is None:
         weight_options = {}
     assign_weights(code, **weight_options)
-
     default_backends = {
         "networkx": NxMatchingGraph,
         "retworkx": RxMatchingGraph,
@@ -289,10 +241,7 @@ def build_dec_and_match_graphs(code, weight_options, matching_backend="networkx"
     }
     if matching_backend in default_backends:
         matching_backend = default_backends[matching_backend]
-
-    G_dec = decoding_graph(code)
-    G_match = matching_backend().with_edges_from_dec_graph(G_dec)
-    return G_dec, G_match
+    return matching_backend(code)
 
 
 def correct(
@@ -304,7 +253,7 @@ def correct(
 ):
     """Run through all the error-correction steps.
 
-    Combines weight assignment, decoding and matching graph creation,
+    Combines weight assignment matching graph creation,
     minimum-weight-perfect matching, recovery, and correctness check.
 
     Args:
@@ -319,7 +268,7 @@ def correct(
         sanity_check (bool): if True, check that the recovery
             operation succeeded and verify that parity is conserved
             among all correlation surfaces.
-        matching_backend (str or ft_stack.matching.MatchingGraph, optional):
+        matching_backend (str or flamingpy.matching.MatchingGraph, optional):
             The backend to generate the matching graph. See build_dec_and_match_graphs
             for more details.
     Returns:
@@ -334,8 +283,8 @@ def correct(
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
     if outer_dict[outer_decoder] == "MWPM":
-        G_dec, G_match = build_dec_and_match_graphs(code, weight_options, matching_backend)
-        matching = G_match.min_weight_perfect_matching()
-        recovery(code, G_match, G_dec, matching, sanity_check=sanity_check)
+        matching_graph = build_match_graph(code, weight_options, matching_backend)
+        matching = matching_graph.min_weight_perfect_matching()
+        recovery(code, matching_graph, matching, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
     return result

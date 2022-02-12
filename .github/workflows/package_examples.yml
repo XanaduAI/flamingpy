@@ -1,4 +1,4 @@
-name: Package Examples
+name: Package Examples and Benchmarks
 on:
   push:
     branches:
@@ -35,4 +35,7 @@ jobs:
         run: pip install -e .  
         
       - name: Run package examples
-        run: find . -wholename "./src/flamingpie/examples/*.py" -exec python3 {} \;
+        run: find . -wholename "./src/flamingpy/examples/*.py" -exec python3 {} \;
+
+      - name: Run package benchmarks
+        run: find . -wholename "./src/flamingpy/benchmarks/*.py" -exec python3 {} \;
