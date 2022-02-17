@@ -77,4 +77,4 @@ jobs:
       - name: Run some involved package examples for testing purposes
         run: | 
           python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/decoder_example.py
-          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/lemon_benchmark.py
+          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmark/lemon.py

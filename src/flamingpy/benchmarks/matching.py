@@ -13,12 +13,13 @@
 # limitations under the License.
 """Benchmark minimum-weight matching via networkx, retworkx, and lemon backends."""
 import time
+
 import matplotlib.pyplot as plt
 
-from flamingpy import decoder as dec
-from flamingpy import matching as mt
-from flamingpy.graphstates import CVGraph
-from flamingpy.RHG import RHGCode, alternating_polarity
+from flamingpy.cv.ops import CVLayer
+from flamingpy.codes import alternating_polarity, SurfaceCode
+from flamingpy.decoders import decoder as dec
+from flamingpy.decoders.mwpm import matching as mt
 
 # How many simulations to do for each algorithm.
 num_trials = 10
@@ -26,11 +27,11 @@ num_trials = 10
 # DV (outer) code
 distance = 3
 boundaries = "periodic"
-RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
+RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
 RHG_lattice = RHG_code.graph
 # CV (inner) code/state
 p_swap = 0
-CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
+CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
 
 # Noise model
 delta = 0.1
@@ -67,7 +68,7 @@ for i in range(num_trials):
 
         # Manual decoding to plot intermediate results.
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
-        G_dec, G_match = dec.build_dec_and_match_graphs(
+        G_dec, G_match = dec.build_match_graph(
             RHG_code, weight_options, matching_backend=matching_graph[alg]
         )
         before = time.time()

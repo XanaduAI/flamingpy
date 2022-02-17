@@ -13,20 +13,20 @@
 # limitations under the License.
 """Example of instantiating, applying noise, decoding, recovering, and visualizing this procedure for the RHG lattice."""
 import matplotlib.pyplot as plt
-from flamingpy import viz
-from flamingpy import decoder as dec
-from flamingpy.RHG import RHGCode, alternating_polarity
-from flamingpy.graphstates import CVGraph
 
+from flamingpy.codes import alternating_polarity, SurfaceCode
+from flamingpy.cv.ops import CVLayer
+from flamingpy.decoders import decoder as dec
+from flamingpy.utils import viz
 
 # DV (outer) code
 distance = 3
 boundaries = "periodic"
-RHG_code = RHGCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
+RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
 RHG_lattice = RHG_code.graph
 # CV (inner) code/state
 p_swap = 0
-CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
+CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
 
 # Noise model
 delta = 0.1

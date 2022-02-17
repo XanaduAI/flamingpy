@@ -11,9 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""The qubit codes module.
+
+Abstract code modules
+---------------------
+
+.. currentmodule:: flamingpy.codes
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    graphs
+    stabilizer
+
+Specific code implementations
+-----------------------------
+
+.. currentmodule:: flamingpy.codes
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    surface_code
 
 """
-Version number (major.minor.patch[-label])
-"""
-
-__version__ = "0.2.14"
+from .stabilizer import Stabilizer
+from .surface_code import alternating_polarity, RHG_graph, SurfaceCode

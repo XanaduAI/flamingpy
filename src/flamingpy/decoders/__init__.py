@@ -11,9 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""The decoder module.
+
+.. currentmodule:: flamingpy.decoders
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    decoder
+    mwpm
 
 """
-Version number (major.minor.patch[-label])
-"""
-
-__version__ = "0.2.14"

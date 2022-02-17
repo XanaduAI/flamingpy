@@ -17,10 +17,10 @@ import csv
 import sys
 
 from datetime import datetime
-from flamingpy.decoder import correct
-from flamingpy.graphstates import CVGraph
-from flamingpy.RHG import RHG_graph, RHGCode, alternating_polarity
-from flamingpy.passive_construct import BS_network, reduce_macro_and_simulate
+from flamingpy.codes import RHG_graph, SurfaceCode, alternating_polarity
+from flamingpy.decoders.decoder import correct
+from flamingpy.cv.ops import CVLayer
+from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
 
 def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
@@ -65,7 +65,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
             reduce_macro_and_simulate(*passive_objects, p_swap, delta)
         else:
             # Apply noise
-            CVRHG = CVGraph(code_lattice, p_swap=p_swap)
+            CVRHG = CVLayer(code_lattice, p_swap=p_swap)
             CVRHG.apply_noise(cv_noise)
             # Measure syndrome
             CVRHG.measure_hom("p", code.syndrome_inds)
@@ -109,11 +109,11 @@ if __name__ == "__main__":
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
         # The reduced lattice.
-        RHG_code = RHGCode(distance, boundaries="periodic")
+        RHG_code = SurfaceCode(distance, boundaries="periodic")
         RHG_reduced = RHG_code.graph
         RHG_reduced.index_generator()
         # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVGraph(RHG_reduced)
+        CVRHG_reduced = CVLayer(RHG_reduced)
 
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
@@ -121,13 +121,13 @@ if __name__ == "__main__":
         passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
     else:
         boundaries = "finite"
-        RHG_code = RHGCode(distance, boundaries=boundaries, polarity=alternating_polarity)
+        RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
         passive_objects = None
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
     # Store results in the data directory in the file results.csv.
-    file_name = "data/results.csv"
+    file_name = "test_data/results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
         file = open(file_name, "x")

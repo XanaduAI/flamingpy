@@ -52,14 +52,10 @@ Coming soon ...
    :caption: API
    :hidden:
 
-   source/flamingpy
-   source/flamingpy.decoder
-   source/flamingpy.GKP
-   source/flamingpy.graphstates
-   source/flamingpy.lemon
-   source/flamingpy.matching
-   source/flamingpy.passive_construct
-   source/flamingpy.RHG
-   source/flamingpy.simulations
-   source/flamingpy.threshold_plots
-   source/flamingpy.viz
+   source/fp
+   source/fp.codes
+   source/fp.cv
+   source/fp.decoders
+   source/fp.simulations
+   source/fp.utils
+   source/fp.lemonpy

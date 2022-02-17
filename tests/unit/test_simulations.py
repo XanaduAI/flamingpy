@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Unit tests for Monte Carlo simulations for estimating FT thresholds."""
-
 import itertools as it
 import pytest
 
-from flamingpy.RHG import alternating_polarity, RHG_graph, RHGCode
-from flamingpy.graphstates import CVGraph
-from flamingpy.passive_construct import BS_network
+from flamingpy.codes import alternating_polarity, RHG_graph, SurfaceCode
+from flamingpy.cv.ops import CVLayer
+from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo
 
 
@@ -34,7 +33,7 @@ class TestBlueprint:
         p_swap = 0
         delta = 0.001
         trials = 10
-        RHG_code = RHGCode(distance, boundaries=boundaries, polarity=alternating_polarity)
+        RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
         errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=None)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
@@ -55,11 +54,11 @@ class TestPassive:
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
         # The reduced lattice.
-        RHG_code = RHGCode(distance, boundaries="periodic")
+        RHG_code = SurfaceCode(distance, boundaries="periodic")
         RHG_reduced = RHG_code.graph
         RHG_reduced.index_generator()
         # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVGraph(RHG_reduced)
+        CVRHG_reduced = CVLayer(RHG_reduced)
 
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.

@@ -16,9 +16,9 @@ import time
 
 import matplotlib.pyplot as plt
 
-from flamingpy import decoder as dec
-from flamingpy.graphstates import CVGraph
-from flamingpy.RHG import RHGCode, alternating_polarity
+from flamingpy.codes import SurfaceCode, alternating_polarity
+from flamingpy.cv.ops import CVLayer
+from flamingpy.decoders import decoder as dec
 
 # How many simulations to do for each algorithm.
 num_trials = 10
@@ -49,13 +49,13 @@ times = {
 for backend in ["networkx", "retworkx"]:
     print(f"* {backend}")
     # Build code
-    RHG_code = RHGCode(
+    RHG_code = SurfaceCode(
         distance=distance, boundaries=boundaries, polarity=alternating_polarity, backend=backend
     )
     RHG_lattice = RHG_code.graph
     for i in range(num_trials):
         print(f"-- {i} --")
-        CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
+        CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome

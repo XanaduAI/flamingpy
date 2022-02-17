@@ -13,11 +13,12 @@
 # limitations under the License.
 """Benchmark Lemon's max_weight_matching against networkx."""
 import time
+
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-import matplotlib.pyplot as plt
 
-from flamingpy.lemon import max_weight_matching
+from flamingpy.decoders.mwpm.lemon import max_weight_matching
 
 
 time_lemon = []

@@ -13,14 +13,16 @@
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
 import string
-import pytest
+
 import networkx as nx
-import scipy.sparse as sp
 import numpy as np
 import numpy.random as rand
 from numpy.random import default_rng as rng
-from flamingpy.graphstates import EGraph, CVGraph, SCZ_mat, SCZ_apply
+import pytest
+import scipy.sparse as sp
 
+from flamingpy.codes.graphs import EGraph
+from flamingpy.cv.ops import CVLayer, SCZ_mat, SCZ_apply
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
@@ -33,7 +35,7 @@ def random_graph(request):
     G = nx.fast_gnp_random_graph(n, 0.5)
     G_adj = nx.to_numpy_array(G)
     G_adj_sparse = nx.to_scipy_sparse_matrix(G)
-    return G, G_adj, G_adj_sparse
+    return EGraph(G), G_adj, G_adj_sparse
 
 
 def noise_model(delta, order):
@@ -79,7 +81,7 @@ class TestEGraph:
 
 
 class TestCVHelpers:
-    """Tests for CVGraph helper functions."""
+    """Tests for CVLayer helper functions."""
 
     def test_SCZ_mat(self, random_graph):
         """Tests the SCZ_mat function."""
@@ -100,26 +102,26 @@ class TestCVHelpers:
     # pass
 
 
-class TestCVGraph:
-    """Tests for functions in the CVGraph class."""
+class TestCVLayer:
+    """Tests for functions in the CVLayer class."""
 
     def test_empty_init(self, random_graph):
         """Test the empty initialization of an EGraph."""
-        G = CVGraph(random_graph[0], states=None)
+        G = CVLayer(random_graph[0], states=None)
         G_array = nx.to_numpy_array(G.egraph)
-        H = CVGraph(EGraph(random_graph[0]), states=None)
+        H = CVLayer(EGraph(random_graph[0]), states=None)
         H_array = nx.to_numpy_array(H.egraph)
         # Check that the _N attribute is populated with the number
         # of nodes in the random graph.
         assert G._N == len(random_graph[0])
-        # Check that instantiating a CVGraph with an EGraph or with
+        # Check that instantiating a CVLayer with an EGraph or with
         # a regular NetworkX graph has the same effect.
         assert np.array_equal(random_graph[1], H_array)
         assert np.array_equal(random_graph[1], G_array)
 
     def test_all_GKP_init(self, random_graph):
         """Test the all-GKP initialization of EGraph."""
-        G = CVGraph(random_graph[0])
+        G = CVLayer(random_graph[0])
         n = len(random_graph[0])
         for node in G.egraph:
             assert G.egraph.nodes[node]["state"] == "GKP"
@@ -130,10 +132,10 @@ class TestCVGraph:
 
     @pytest.mark.parametrize("p_swap", [0, rng().random(), 1])
     def test_hybridize(self, random_graph, p_swap):
-        """Test whether CVGraph properly populates p-squeezed states for non-zero p-swap."""
+        """Test whether CVLayer properly populates p-squeezed states for non-zero p-swap."""
         n = len(random_graph[0])
         # Test all-p case
-        G = CVGraph(random_graph[0], p_swap=1)
+        G = CVLayer(random_graph[0], p_swap=1)
         for node in G.egraph:
             assert G.egraph.nodes[node]["state"] == "p"
         assert len(G._states["GKP"]) == 0
@@ -142,7 +144,7 @@ class TestCVGraph:
         # should be close to p_swap parameter, within tolerance.
         p_list = []
         for i in range(1000):
-            G = CVGraph(random_graph[0], p_swap=p_swap)
+            G = CVLayer(random_graph[0], p_swap=p_swap)
             p_list += [len(G._states["p"]) / n]
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
@@ -153,7 +155,7 @@ class TestCVGraph:
         num_ps = rng().integers(n)
         p_inds = rng().choice(n, num_ps, replace=False)
         gkp_inds = list(set(np.arange(n)) - set(p_inds))
-        G = CVGraph(random_graph[0], states={"p": p_inds})
+        G = CVLayer(random_graph[0], states={"p": p_inds})
         assert np.array_equal(G._states.get("p"), p_inds)
         assert np.array_equal(G._states.get("GKP"), gkp_inds)
         assert np.array_equal(G.p_inds, p_inds)
@@ -162,12 +164,12 @@ class TestCVGraph:
     @pytest.mark.parametrize("order", ["initial", "final", "two-step"])
     def test_apply_noise(self, random_graph, order):
         """Check _delta, _sampling_order attributes with default noise model."""
-        G = CVGraph(random_graph[0])
+        G = CVLayer(random_graph[0])
         G.apply_noise()
         assert G._delta == 0.01
         assert G._sampling_order == "initial"
         # Check supplied noise model
-        H = CVGraph(random_graph[0])
+        H = CVLayer(random_graph[0])
         delta = rng().random()
         H.apply_noise(noise_model(delta=delta, order=order))
         assert H._delta == delta
@@ -181,8 +183,8 @@ class TestCVGraph:
         model_two_step = noise_model(delta, "two-step")
 
         n = len(random_graph[0])
-        G = CVGraph(random_graph[0])
-        H = CVGraph(random_graph[0], p_swap=1)
+        G = CVLayer(random_graph[0])
+        H = CVLayer(random_graph[0], p_swap=1)
         G.apply_noise(model_init)
         H.apply_noise(model_init)
         init_noise_all_GKP = np.full(2 * n, delta / 2, dtype=np.float32)
@@ -209,7 +211,7 @@ class TestCVGraph:
     def test_measure_hom(self, random_graph, order):
         """Test closeness of average homodyne outcomes value to 0 in the all-GKP high-squeezing limit."""
         n = len(random_graph[0])
-        G = CVGraph(random_graph[0])
+        G = CVLayer(random_graph[0])
         delta = 0.0001
         G.apply_noise(noise_model(delta=delta, order=order))
         G.measure_hom("p")
@@ -225,7 +227,7 @@ class TestCVGraph:
 
     def test_eval_Z_probs(self, random_graph):
         """Test that p_phase and p_phase_cond attribute get populated when phase error probabilities are evaluated."""
-        G = CVGraph(random_graph[0])
+        G = CVLayer(random_graph[0])
         G.apply_noise(noise_model(delta=rng().random(), order="final"))
         G.measure_hom("p")
         G.eval_Z_probs()

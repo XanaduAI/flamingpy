@@ -13,8 +13,10 @@
 # limitations under the License.
 """Example for building and visualizing EGraphs with CV noise."""
 import matplotlib.pyplot as plt
-from flamingpy import viz
-from flamingpy.graphstates import EGraph, CVGraph
+
+from flamingpy.utils import viz
+from flamingpy.codes.graphs import EGraph
+from flamingpy.cv.ops import CVLayer
 
 
 # Bell state EGraph
@@ -28,8 +30,8 @@ plt.show()
 bell_state.adj_generator(sparse=True)
 print("Adjacency matrix: \n", bell_state.adj_mat, "\n")
 
-CVbell = CVGraph(bell_state, p_swap=0.5)
-# Noise model for CVGraph
+CVbell = CVLayer(bell_state, p_swap=0.5)
+# Noise model for CVLayer
 model = {"noise": "grn", "delta": 1, "sampling_order": "final"}
 CVbell.apply_noise(model)
 CVbell.measure_hom("p", [0])

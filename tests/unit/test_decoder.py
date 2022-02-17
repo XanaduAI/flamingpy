@@ -12,23 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for decoding funcions in the decoder module."""
+from ast import literal_eval
+import io
 import itertools as it
 import sys
-import io
-from ast import literal_eval
-import pytest
-import numpy as np
+
 import networkx as nx
-from flamingpy.graphstates import CVGraph
-from flamingpy.decoder import (
+import numpy as np
+import pytest
+
+from flamingpy.codes import alternating_polarity, SurfaceCode
+from flamingpy.cv.ops import CVLayer
+from flamingpy.decoders.decoder import (
     assign_weights,
     CV_decoder,
     recovery,
     check_correction,
 )
-from flamingpy.matching import NxMatchingGraph
-from flamingpy.stab_graph import NxStabilizerGraph
-from flamingpy.RHG import alternating_polarity, RHGCode
+from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 
 
 code_params = it.product([2, 3, 4], ["finite", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1])
@@ -36,12 +37,12 @@ code_params = it.product([2, 3, 4], ["finite", "periodic"], [1, 0.1, 0.01], [0, 
 
 @pytest.fixture(scope="module", params=code_params)
 def enc_state(request):
-    """An RHGCode object and an encoded CVGraph for use in this module."""
+    """An RHGCode object and an encoded CVLayer for use in this module."""
     distance, boundaries, delta, p_swap = request.param
-    DVRHG = RHGCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
+    DVRHG = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
     RHG_lattice = DVRHG.graph
     # CV (inner) code/state
-    CVRHG = CVGraph(RHG_lattice, p_swap=p_swap)
+    CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
     # Noise model
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     # Apply noise
@@ -99,7 +100,7 @@ class TestDecoder:
             assert bit_val_attribute in (0, 1)
             index = enc_state[0].graph.to_indices[point]
             # Check that there is not index mismatch between bit list
-            # from CVGraph.bit_values() and bits stored inside the graph
+            # from CVLayer.bit_values() and bits stored inside the graph
             # attributes.
             assert bits[index] == bit_val_attribute
         # Check that all the stabilizer cubes point to nodes with bit

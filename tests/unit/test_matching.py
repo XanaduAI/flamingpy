@@ -14,13 +14,13 @@
 """"Unit tests for MatchingGraph classes in matching.py.
 The networkx implementation is used as a reference.
 """
-
 import itertools as it
+
 import numpy as np
 import pytest
 import networkx as nx
 
-from flamingpy.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
+from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 
 
 # Test parameters
