@@ -1,3 +1,4 @@
-include src/flamingpy/data/*.csv
 include src/flamingpy/*.so
+include src/flamingpy/test_data/*.csv
 include src/flamingpy/examples/*.py 
+include src/flamingpy/benchmarks/*.py

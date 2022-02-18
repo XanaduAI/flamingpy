@@ -19,8 +19,7 @@ jobs:
         os: [ubuntu-latest]
         arch: [x86_64]
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }}
-    
+    name: ${{matrix.os}} ${{matrix.python-version}}  
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.4.1
@@ -41,10 +40,10 @@ jobs:
           python3 -m pip install -r dev_requirements.txt
           
       - name: Build flamingpy from Source
-        run: pip install -e . 
+        run: python3 -m pip install -e . 
         
       - name: Run tests
-        run: python -m pytest tests/ --tb=native
+        run: python3 -m pytest tests/ --tb=native
         
       - name: Stripping C++ modules
         run: strip --strip-unneeded src/flamingpy/*.so
@@ -69,12 +68,12 @@ jobs:
       - name: Uninstall existing versions and add a delay
         run: |
           python3 -m pip uninstall flamingpy -y
-          sleep 2m
+          sleep 5m
 
       - name: Pip install flamingpy        
         run: python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
         
       - name: Run some involved package examples for testing purposes
         run: | 
-          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/decoder_example.py
-          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmark/lemon.py
+          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/gkp.py
+          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/lemon.py

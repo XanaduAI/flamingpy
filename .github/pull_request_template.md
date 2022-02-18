@@ -1,6 +1,6 @@
 ## Context for changes
 
-< Please include a summarized description of the changes and which issues are fixed in the format below. Please avoid placing “N/A” here. >
+< Include a summarized description of the changes and fixed issues in the format below. Please avoid placing “N/A” here. >
 
 - **Title 1**: 
     text goes here
