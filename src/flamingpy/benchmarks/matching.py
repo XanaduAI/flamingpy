@@ -68,7 +68,7 @@ for i in range(num_trials):
 
         # Manual decoding to plot intermediate results.
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
-        G_dec, G_match = dec.build_match_graph(
+        G_match = dec.build_match_graph(
             RHG_code, weight_options, matching_backend=matching_graph[alg]
         )
         before = time.time()

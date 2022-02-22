@@ -13,60 +13,62 @@
 # limitations under the License.
 """Example for building and visualizing RHG lattices and surface codes."""
 import matplotlib.pyplot as plt
+import numpy as np
 
 from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity
 from flamingpy.utils import viz
+from flamingpy.cv.ops import CVLayer
+
+show = __name__ == "__main__"
 
 
-## Some simple tests:
 # Instantiate an RHG latice of a certian distance, with certain
-# boundaries. Draw the EGraph.
+# boundaries and polarity..
 d = 2
-# boundaries = "finite"
-# boundaries = "primal"
 boundaries = "periodic"
-# boundaries = ["primal", "dual", "periodic"]
-# For iterating through boundaries
-# for boundaries in it.product(['primal', 'dual', 'periodic'], repeat=3):
+polarity = None
+# polarity = alternating_polarity
 
-RHG = SurfaceCode(d, boundaries=boundaries, polarity=alternating_polarity)
+RHG = SurfaceCode(d, boundaries=boundaries, polarity=polarity)
+RHG_fig = RHG.draw()
 RHG_lattice = RHG.graph
-# Check maronode lattice
-# RHG_lattice = RHG_graph(d, boundaries=boundaries, macronodes=True)
-viz.draw_code_lattice(RHG_lattice)
-plt.show()
 
-# # Check edges between boundaries for periodic boundary conditions.
-# all_boundaries = []
-# for plane in ("x", "y", "z"):
-#     for i in (0, 2 * d - 1):
-#         all_boundaries += RHG.graph.slice_coords(plane, i)
-#     # For macronode lattice, change to (-0.1, 2 * d - 0.9)
-# RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
-# RHG_subgraph.draw()
+# Check edges between boundaries for periodic boundary conditions.
+if boundaries == "periodic":
+    all_boundaries = []
+    for plane in ("x", "y", "z"):
+        for i in (0, 2 * d - 1):
+            all_boundaries += RHG.graph.slice_coords(plane, i)
+    RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
+    RHG_subgraph.draw()
 
-# # Check stabilizer coordinates
-# syndrome = RHG.stabilizers
-# print("Number of six-body stabilizers :", len(syndrome))
-# for i in range(len(syndrome)):
-#     cube = syndrome[i]
-#     color = np.random.rand(3)
-#     for point in cube.egraph:
-#         x, z, y = point
-#         ax.scatter(x, z, y, color=color, s=200)
-# ax.set_title(str(boundaries).capitalize() + " boundaries")
+# Plot coordinates of stabilizers
+syndrome = RHG.stabilizers
+# Change [0:1] in the following line to other consecutive indices,
+# corresponding to another stabilizer you'd like to plot.
+for cube in syndrome[0:1]:
+    color = np.random.rand(3)
+    for point in cube.egraph:
+        x, z, y = point
+        RHG_fig.scatter(x, z, y, color=color, s=200)
+if show:
+    plt.show()
+else:
+    plt.close()
 
-# # Check sampling
-# delta = 0.001
-# # Percent p-squeezed states.
-# p_swap = 0
-# CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
-# for sampling_order in ["initial", "final", "two-step"]:
-#     model = {"noise": "grn", "delta": delta, "sampling_order": sampling_order}
-#     CVRHG.apply_noise(model)
-#     CVRHG.measure_hom("p")
-#     outcomes = CVRHG.hom_outcomes()
-#     plt.figure(figsize=(16, 9))
-#     plt.hist(outcomes, bins=100)
-#     CVRHG.draw(label="hom_val_p")
-#     CVRHG.draw(label="hom_val_p")
+# Check CV noise model and sampling
+delta = 0.001
+p_swap = 0
+CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
+model = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+CVRHG.apply_noise(model)
+CVRHG.measure_hom("p", RHG.syndrome_inds)
+outcomes = [CVRHG.hom_outcomes()[i] for i in RHG.syndrome_inds]
+plt.figure(figsize=(16, 9))
+plt.hist(outcomes, bins=100)
+CVRHG.draw(label="hom_val_p", legend=True, title=True)
+
+if show:
+    plt.show()
+else:
+    plt.close()

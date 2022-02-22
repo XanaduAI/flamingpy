@@ -13,23 +13,29 @@
 # limitations under the License.
 """Example for functions related to GKP states."""
 import numpy as np
+import matplotlib.pyplot as plt
 
 from flamingpy.cv import gkp
 from flamingpy.utils import viz
 
+show = __name__ == "__main__"
 
 alpha = np.sqrt(np.pi)
 xs = np.arange(-10, 10, 0.01)
 
 ns, fs = gkp.integer_fractional(xs, alpha)
-viz.plot_integer_fractional(xs, ns, fs, alpha)
+viz.plot_integer_part(xs, ns, fs, alpha, show)
+viz.plot_fractional_part(xs, ns, fs, alpha, show)
 
 bit_values = gkp.GKP_binner(xs)
-viz.plot_GKP_bins(xs, bit_values, alpha)
+viz.plot_GKP_bins(xs, bit_values, alpha, show)
 
 delta = 0.1
 error_hom_val = gkp.Z_err_cond([delta] * len(xs), xs, use_hom_val=True)
 error_no_hom_val = gkp.Z_err_cond([delta] * len(xs), xs)
 
-viz.plot_Z_err_cond(xs, error_hom_val, alpha, True)
-viz.plot_Z_err_cond(xs, error_no_hom_val, alpha, False)
+viz.plot_Z_err_cond(xs, error_hom_val, alpha, True, show)
+viz.plot_Z_err_cond(xs, error_no_hom_val, alpha, False, show)
+
+if not show:
+    plt.close()

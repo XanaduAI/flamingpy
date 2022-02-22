@@ -74,6 +74,6 @@ jobs:
         run: python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
         
       - name: Run some involved package examples for testing purposes
-        run: | 
-          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/examples/gkp.py
+        run: |
           python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/lemon.py
+          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/shortest_path.py

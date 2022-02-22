@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Continuous-variable operations, states, and noise models."""
+
 import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
@@ -399,3 +400,14 @@ class CVLayer:
         if self._sampling_order == "final":
             return self._noise_cov
         print('Sampling order must be "final."')
+
+    def draw(self, **kwargs):
+        """Draw the CV graph state with matplotlib.
+
+        See flamingpy.utils.viz.draw_EGraph for more details. Use the
+        default colours: gold for GKP states and blue for p-squeezed
+        states.
+        """
+        cv_opts = {"color_nodes": "state", "state_colors": {"GKP": "gold", "p": "blue"}}
+        updated_opts = {**cv_opts, **kwargs}
+        return self.egraph.draw(**updated_opts)

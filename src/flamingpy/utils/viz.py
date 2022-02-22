@@ -15,7 +15,6 @@
 Helper functions to draw various graphs
 and generate plots using Matplotlib.
 """
-import copy
 import itertools as it
 
 import numpy as np
@@ -28,27 +27,35 @@ from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
 
-def plot_integer_fractional(xs, ns, fs, alpha):
-    """Plot the integer and fractional part of real numbers mod alpha."""
+def plot_integer_part(xs, ns, fs, alpha, show=True):
+    """Plot the integer part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     plt.plot(xs, ns, ",")
     plt.title("Integer Part", fontsize="medium")
     plt.xticks(newxticks, newxlabels, fontsize="small")
-    plt.show()
+    if show:
+        plt.show()
 
+
+def plot_fractional_part(xs, ns, fs, alpha, show=True):
+    """Plot the fractional part of real numbers mod alpha."""
     plt.title("Fractional Part", fontsize="medium")
     plt.plot(xs, fs, ",")
+    xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
+    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
     plt.xticks(newxticks, newxlabels, fontsize="small")
     plt.yticks(newyticks, newylabels)
-    plt.show()
+    if show:
+        plt.show()
 
 
-def plot_GKP_bins(outcomes, bit_values, alpha):
+def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
@@ -57,10 +64,11 @@ def plot_GKP_bins(outcomes, bit_values, alpha):
     plt.title("Binned values", fontsize="medium")
     plt.xticks(newxticks, newxlabels, fontsize="small")
     plt.yticks([0, 1], [0, 1])
-    plt.show()
+    if show:
+        plt.show()
 
 
-def plot_Z_err_cond(hom_val, error, alpha, use_hom_val):
+def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
     _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
     val = hom_val if use_hom_val else frac
@@ -72,7 +80,8 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val):
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
     plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
     plt.xticks(newxticks, newxlabels, fontsize="small")
-    plt.show()
+    if show:
+        plt.show()
 
 
 def draw_EGraph(
@@ -168,6 +177,8 @@ def draw_EGraph(
         # color attribute if True; black otherwise.
         if color_nodes == "state":
             color = state_colors.get(egraph.nodes[point].get("state"))
+        elif isinstance(color_nodes, dict):
+            color = color_nodes.get(egraph.nodes[point].get("type"))
         elif isinstance(color_nodes, str):
             color = color_nodes
         else:
@@ -206,6 +217,8 @@ def draw_EGraph(
         # color ttribute if True; black otherwise.
         if isinstance(color_edges, str):
             color = color_edges
+        elif isinstance(color_edges, dict):
+            color = color_edges.get(egraph.edges[edge].get("weight"))
         else:
             color = egraph.edges[edge].get("color") if color_edges else "k"
 
@@ -229,55 +242,59 @@ def draw_EGraph(
     return ax
 
 
-def plot_binary_mat_heat_map(symplectic):
+def plot_binary_mat_heat_map(symplectic, show=True):
     """Plot the heat map of symplectic matrices."""
     plt.figure()
     if not isinstance(symplectic, np.ndarray):
         symplectic = symplectic.toarray()
     plt.matshow(symplectic, 0)
-    plt.show()
+    if show:
+        plt.show()
 
 
-def draw_code_lattice(
-    graph,
-    node_color={"primal": "k", "dual": "grey"},
-    edge_color={1: "b", -1: "r"},
-):
-    """Draw EGraphs corresponding to QEC codes."""
-    graph = copy.deepcopy(graph)
-    for (_, attr) in graph.nodes.items():
-        attr["color"] = node_color[attr["type"]]
-    for (_, attr) in graph.edges.items():
-        attr["color"] = edge_color[attr["weight"]]
-    draw_EGraph(graph, color_nodes=True, color_edges=True)
+def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
+    """Draw stabilizer or matching graph G with a color legend.
 
+    This requires that the graph is implemented with the networkx backend.
 
-def draw_dec_graph(G, label_edges=True, title=None):
-    """Draw decoding and matching graphs G with a color legend."""
-    if title is None:
-        try:
-            title = G["title"]
-        except Exception:
-            title = ""
+    Args:
+        graph (NxStabilizerGraph or NxMatchingGraph): the graph to draw.
+        label_edges (bool, optional): if True (the default), label the edges
+            of the graph with their weight.
+        node_labels (dict of node to label, optional): if provided, the nodes will
+            be identified with the given labels. Else, there will be no label
+            for the nodes.
+        title (string, optional): add the given title to the plot.
+    """
+    if not isinstance(graph.graph, nx.Graph):
+        raise ValueError("The graph must be implemented with the networkx backend.")
+    graph = graph.graph
     plt.figure()
-    plt.title(title, family="serif", size=10)
+    if title != "":
+        plt.title(title, family="serif", size=10)
     # NetworkX drawing function for circular embedding of graphs.
+    if node_labels is not None:
+        node_labels = {node: label for node, label in node_labels.items() if node in graph}
     nx.draw_circular(
-        G,
+        graph,
         edgelist=[],
-        with_labels=True,
+        with_labels=node_labels is not None,
+        labels=node_labels,
         node_color="k",
         font_size=7,
         font_color="w",
         font_family="serif",
     )
     # Color edges based on weight, and draw a colobar.
-    weight_list = [G.edges[edge]["weight"] for edge in G.edges]
-    weight_dict = {edge: "{:.2f}".format(G.edges[edge]["weight"]) for edge in G.edges}
+    weight_list = [graph.edges[edge]["weight"] for edge in graph.edges]
+    weight_dict = {edge: "{:.2f}".format(graph.edges[edge]["weight"]) for edge in graph.edges}
     if label_edges:
-        nx.draw_networkx_edge_labels(G, nx.circular_layout(G), edge_labels=weight_dict, font_size=7)
-    r = nx.draw_networkx_edges(G, nx.circular_layout(G), edge_color=weight_list)
-    plt.colorbar(r)
+        nx.draw_networkx_edge_labels(
+            graph, nx.circular_layout(graph), edge_labels=weight_dict, font_size=7
+        )
+    r = nx.draw_networkx_edges(graph, nx.circular_layout(graph), edge_color=weight_list)
+    cbar = plt.colorbar(r)
+    cbar.ax.tick_params(labelsize=10)
 
 
 def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
@@ -324,9 +341,6 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
         "lines.markersize": font_size,
     }
     plt.rcParams.update(plot_params)
-
-    bound_inds = G_dec.graph["boundary_points"]
-    points = [G_dec.nodes[i]["stabilizer"] for i in bound_inds]
 
     cubes = code.stabilizers
     # Default drawing options.
@@ -446,7 +460,7 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
     ax.voxels(x, y, z, filled_e, facecolors=filled_e)
 
     if drawing_opts["label_boundary"]:
-        for point in points:
+        for point in G_dec.bound_points():
             ax.scatter(point[0], point[1], point[2], s=70, c="k")
             ax.text(
                 point[0],
@@ -482,15 +496,14 @@ def draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, label_edges):
             xlist, ylist, zlist = [], [], []
             path = G_match.edge_path(pair)
             for node in path:
-                stabe = G_dec.nodes[node]["stabilizer"]
-                if isinstance(stabe, Stabilizer):
-                    x, y, z = stabe.midpoint()
+                if isinstance(node, Stabilizer):
+                    x, y, z = node.midpoint()
                 else:
-                    x, y, z = stabe
+                    x, y, z = node
                     plt.plot(x, y, z, marker="2", ms=50, c="k")
                 xlist += [x]
                 ylist += [y]
                 zlist += [z]
             ax.set_title("Minimum-weight perfect matching", family="serif", size=20)
-            ax.plot(xlist, ylist, zlist, "o-k", ms=20, linewidth=5, c=np.random.rand(3))
+            ax.plot(xlist, ylist, zlist, "o-", ms=20, linewidth=5, c=np.random.rand(3))
     return ax

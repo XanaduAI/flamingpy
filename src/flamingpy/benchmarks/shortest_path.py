@@ -68,7 +68,6 @@ for backend in ["networkx", "retworkx"]:
         after = time.time()
         times[backend].append(after - before)
 
-plt.figure()
 for backend in ["networkx", "retworkx"]:
     plt.hist(times[backend], label=backend)
 plt.legend()

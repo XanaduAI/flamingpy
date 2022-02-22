@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """The stabilizer graph interface and some implementation."""
+
+# pylint: disable=import-outside-toplevel
+
 from abc import ABC
 import itertools as it
 
@@ -273,6 +276,15 @@ class StabilizerGraph(ABC):
             lambda edge: not (is_high_or_low(edge[0]) or is_high_or_low(edge[1])),
             self.edges(),
         )
+
+    def draw(self, **kwargs):
+        """Draw the stbilizer graph with matplotlib.
+
+        See flamingpy.utils.viz.draw_dec_graph for mor details.
+        """
+        from flamingpy.utils.viz import draw_dec_graph
+
+        draw_dec_graph(self, **kwargs)
 
 
 class NxStabilizerGraph(StabilizerGraph):

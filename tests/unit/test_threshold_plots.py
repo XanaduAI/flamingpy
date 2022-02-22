@@ -14,6 +14,7 @@
 """"Unit tests for threshold_plots.py using project's existing processed data."""
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from flamingpy.utils.threshold_plots import find_threshold, plot_results
 
@@ -59,3 +60,4 @@ def test_plot_results():
     )
     # Check if plot_results has returned nonempty plot
     assert plot.lines
+    plt.close()

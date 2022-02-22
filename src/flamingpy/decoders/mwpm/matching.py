@@ -13,6 +13,9 @@
 # limitations under the License.
 """ The matching graph interface and some implementation.
 """
+
+# pylint: disable=import-outside-toplevel
+
 from abc import ABC
 from dataclasses import dataclass
 import itertools as it
@@ -164,6 +167,15 @@ class MatchingGraph(ABC):
         for edge in it.combinations(self.virtual_points, 2):
             self.add_edge(edge, 0)
         return self
+
+    def draw(self, **kwargs):
+        """Draw the matching graph with matplotlib.
+
+        See flamingpy.utils.viz.draw_dec_graph for more details.
+        """
+        from flamingpy.utils.viz import draw_dec_graph
+
+        draw_dec_graph(self, **kwargs)
 
 
 class NxMatchingGraph(MatchingGraph):

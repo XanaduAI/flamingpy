@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Classes for the measurement-based surface code and related functions."""
+
+
 import itertools as it
 
 import numpy as np
@@ -481,3 +483,18 @@ class SurfaceCode:
 
     # TODO: slice_coords function that constructs rather than iterates,
     # like the EGraph.
+
+    def draw(self, **kwargs):
+        """Draw the cluster state with matplotlib.
+
+        See flamingpy.utils.viz.draw_EGraph for mor details. Use the
+        default colour options: black for primal nodes, grey for dual
+        nodes; blue for weight +1 edges, red for weight -1 edges.
+        """
+        edge_colors = {1: "b", -1: "r"} if self.polarity == alternating_polarity else "k"
+        default_opts = {
+            "color_nodes": {"primal": "k", "dual": "grey"},
+            "color_edges": edge_colors,
+        }
+        updated_opts = {**default_opts, **kwargs}
+        return self.graph.draw(**updated_opts)

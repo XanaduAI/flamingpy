@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """A class for representing qubit code graph states."""
+
+# pylint: disable=import-outside-toplevel
+
 import networkx as nx
 import numpy as np
 import scipy.sparse as sp
@@ -109,3 +112,12 @@ class EGraph(nx.Graph):
         plane_ind = plane_dict[plane]
         coords = [point for point in self.nodes if point[plane_ind] == number]
         return coords
+
+    def draw(self, **kwargs):
+        """Draw the graph state with matplotlib.
+
+        See flamingpy.utils.viz.draw_EGraph for more details.
+        """
+        from flamingpy.utils.viz import draw_EGraph
+
+        return draw_EGraph(self, **kwargs)

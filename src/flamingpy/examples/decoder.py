@@ -19,6 +19,8 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 from flamingpy.utils import viz
 
+show = __name__ == "__main__"
+
 # DV (outer) code
 distance = 3
 boundaries = "periodic"
@@ -45,7 +47,7 @@ weight_options = {
 dw = {
     "show_nodes": True,
     "color_nodes": "state",
-    "label": "bit_val",
+    "label": None,
     "legend": True,
     "title": True,
     "display_axes": True,
@@ -64,13 +66,21 @@ dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
 G_match = dec.build_match_graph(RHG_code, weight_options)
 matching = G_match.min_weight_perfect_matching()
 G_stabilizer = RHG_code.stab_graph
-viz.draw_dec_graph(G_stabilizer, dw.get("label_edges"))
-ax = viz.syndrome_plot(RHG_code, G_stabilizer, drawing_opts=dw)
-viz.draw_matching_on_syndrome_plot(ax, matching, G_stabilizer, G_match, dw.get("label_edges"))
-# This function requires a network graph object. Most backends implement
+
+# An integer label for each nodes in the stabilizer and matching graphs.
+# This is useful to identify the nodes in the plots.
+node_labels = {node: index for index, node in enumerate(G_stabilizer.graph)}
+
+# The draw_dec_graph function requires the networkx backend. Most backends implement
 # the to_nx() method to perform the conversion if needed.
-viz.draw_dec_graph(G_match.graph, title="Matching graph")
-plt.show()
+G_stabilizer.draw(title="Stabilizer graph", node_labels=node_labels)
+ax = viz.syndrome_plot(RHG_code, G_stabilizer, drawing_opts=dw, index_dict=node_labels)
+viz.draw_matching_on_syndrome_plot(ax, matching, G_stabilizer, G_match, dw.get("label_edges"))
+G_match.draw(title="Matching graph", node_labels=node_labels)
+if show:
+    plt.show()
+else:
+    plt.close()
 
 # Automatic decoding
 c = dec.correct(
