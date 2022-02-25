@@ -49,9 +49,10 @@ def about():
     """
 
     # a QuTiP-style infobox
-    print("\nFlamingPy: Threshold estimations for measurement-based implementation\n")
-    print("of quantum error correcting codes using GKP qubits.")
-    print("Copyright 2022 Xanadu Quantum Technologies Inc.\n")
+    print(
+        "\nFlamingPy is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers."
+    )
+    print("\nCopyright 2022 Xanadu Quantum Technologies Inc.\n")
 
     print("Python version:       {}.{}.{}".format(*sys.version_info[0:3]))
     print("Platform info:        {}".format(platform.platform()))

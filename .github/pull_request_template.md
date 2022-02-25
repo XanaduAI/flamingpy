@@ -39,10 +39,11 @@
 
 
 ## Checklist and integration statements
+
 - [ ] My Python and C++ codes follow the coding and commenting styles of this project as indicated by existing files. Specifically, the changes conform to `black -l 100` and given `pylint` configurations. 
 - [ ] I have performed a self-review of these changes.
 - [ ] I confirm that I have already merged other branches into this branch as required.
 - [ ] I have added context for corresponding changes in documentation and README.md as needed.
 - [ ] I have added new workflows and CI tests for corresponding changes and these pass locally for me.
-- [ ] I have updated `_version.py` as required. 
+- [ ] I have updated `_version.py` based on [semantic versioning](https://semver.org/). I recognize that the developers may create a special release including my changes.
 - [ ] I have checked my code and corrected misspellings to the best of my capacity.
