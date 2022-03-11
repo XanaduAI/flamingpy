@@ -25,7 +25,10 @@ jobs:
         run: python3 -m pip install -r dev_requirements.txt   
         
       - name: Build flamingpy from Source
-        run: python3 -m pip install -e . 
+        run: |
+          python setup.py develop 
+          python setup.py build_cython --inplace 
+          python setup.py build_cmake --inplace  
 
       - name: Run pylint
         run: python3 -m pylint --disable=R,W flamingpy src/flamingpy/benchmarks/*.py src/flamingpy/examples/*.py tests/unit/*.py

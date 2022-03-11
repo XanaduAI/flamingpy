@@ -14,7 +14,7 @@
 """Define max_weight_matching based on the lemonpy module."""
 import networkx as nx
 
-import flamingpy.lemonpy as lp
+import flamingpy.cpp.lemonpy as lp
 
 
 def max_weight_matching(G_match, weight):

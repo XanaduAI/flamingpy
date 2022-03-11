@@ -34,9 +34,9 @@ class TestBlueprint:
         delta = 0.001
         trials = 10
         RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
-        errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=None)
+        errors_py = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=None)
         # Check that there are no errors in all-GKP high-squeezing limit.
-        assert errors == 0
+        assert errors_py == 0
 
 
 class TestPassive:
@@ -64,9 +64,9 @@ class TestPassive:
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
-        errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=passive_objects)
+        errors_py = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.
-        assert errors == 0
+        assert errors_py == 0
 
 
 # TODO: Tests that cross-check published results for blueprint and

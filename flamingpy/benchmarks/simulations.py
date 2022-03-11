@@ -11,20 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Monte Carlo simulations for estimating FT thresholds."""
+"""Benchmark for the Monte Carlo simulations estimating FT thresholds 
+   and comparing python and cpp loops.
+"""
 import argparse
 import csv
 import sys
 
+from time import process_time
 from datetime import datetime
+from flamingpy.cpp import cpp_mc_loop as cmc
 from flamingpy.codes import RHG_graph, SurfaceCode, alternating_polarity
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
 
-def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
-    """Run Monte Carlo simulations of error-correction on code code.
+def ec_monte_carlo(code, trials, delta, p_swap, passive_objects, backend="cpp"):
+    """Run Monte Carlo simulations of error-correction for the given code.
 
     Given a code object code, a noise parameter delta, and a
     swap-out probably p_swap, run a number of Monte Carlo
@@ -37,9 +41,11 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
         delta (float): the noise/squeezing/width parameter.
         p_swap (float): the probability of replacing a GKP state
             with a p-squeezed state in the lattice.
+        backend (string): choose from "cpp" Monte Carlo sampling
+            loops or pure "python" version.
 
     Returns:
-        float: the failure probability.
+        errors (integer): the failure occurance.
     """
     if passive_objects:
         RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
@@ -59,20 +65,24 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
             "delta": delta,
         }
 
-    successes = 0
-    for _ in range(trials):
-        if passive_objects:
-            reduce_macro_and_simulate(*passive_objects, p_swap, delta)
-        else:
-            # Apply noise
-            CVRHG = CVLayer(code_lattice, p_swap=p_swap)
-            CVRHG.apply_noise(cv_noise)
-            # Measure syndrome
-            CVRHG.measure_hom("p", code.syndrome_inds)
-
-        result = correct(code=code, decoder=decoder, weight_options=weight_options)
-        successes += result
-        errors = trials - successes
+    if backend == "python":
+        successes = 0
+        for _ in range(trials):
+            if passive_objects:
+                reduce_macro_and_simulate(*passive_objects, p_swap, delta)
+            else:
+                # Apply noise
+                CVRHG = CVLayer(code_lattice, p_swap=p_swap)
+                CVRHG.apply_noise(cv_noise)
+                # Measure syndrome
+                CVRHG.measure_hom("p", code.syndrome_inds)
+                result = correct(code=code, decoder=decoder, weight_options=weight_options)
+                successes += result
+                errors = trials - successes
+    elif backend == "cpp":
+        errors = cmc.cpp_mc_loop(
+            code, trials, decoder, weight_options, passive_objects, p_swap, delta, cv_noise
+        )
 
     return errors
 
@@ -91,11 +101,12 @@ if __name__ == "__main__":
         parser.add_argument("passive", type=bool)
 
         args = parser.parse_args()
-        distance, delta, p_swap, trials = (
+        distance, delta, p_swap, trials, passive = (
             args.distance,
             args.delta,
             args.p_swap,
             args.trials,
+            args.passive,
         )
 
     else:
@@ -124,20 +135,38 @@ if __name__ == "__main__":
         RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
         passive_objects = None
 
-    errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
+    tic = process_time()
+    errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="python")
+    walltime_py = process_time() - tic
+
+    tic = process_time()
+    ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="cpp")
+    walltime_cpp = process_time() - tic
 
     # Store results in the data directory in the file results.csv.
-    file_name = "test_data/results.csv"
+    file_name = "../sims_data/benchmark_results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
         file = open(file_name, "x")
         writer = csv.writer(file)
-        writer.writerow(["distance", "delta", "p_swap", "errors", "trials", "time"])
+        writer.writerow(
+            [
+                "distance",
+                "delta",
+                "p_swap",
+                "errors_py",
+                "trials",
+                "current_time",
+                "cpp_to_py_speedup",
+            ]
+        )
     # Open the file for appending if it already exists.
     except FileExistsError:
         file = open(file_name, "a", newline="")
         writer = csv.writer(file)
     # TODO: Do we need to record time?
     current_time = datetime.now().time().strftime("%H:%M:%S")
-    writer.writerow([distance, delta, p_swap, errors, trials, current_time])
+    writer.writerow(
+        [distance, delta, p_swap, errors, trials, current_time, walltime_py / walltime_cpp]
+    )
     file.close()

@@ -16,7 +16,7 @@
 
 
 def test_decoder_example():
-    from flamingpy.examples import decoder
+    from flamingpy.examples import decoding
 
 
 def test_gkp_example():
@@ -49,3 +49,7 @@ def test_matching_benchmark():
 
 def test_shortest_path_benchmark():
     from flamingpy.benchmarks import shortest_path
+
+
+def test_simulations_benchmark():
+    from flamingpy.benchmarks import simulations

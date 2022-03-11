@@ -35,21 +35,24 @@ jobs:
 
       - name: install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pillow pyyaml wheel --upgrade
-          python3 -m pip install -r dev_requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install pillow pyyaml wheel --upgrade
+          python -m pip install -r dev_requirements.txt
           
       - name: Build flamingpy from Source
-        run: python3 -m pip install -e . 
+        run: |
+          python setup.py develop 
+          python setup.py build_cython --inplace 
+          python setup.py build_cmake --inplace  
         
       - name: Run tests
-        run: python3 -m pytest tests/ --tb=native
+        run: python -m pytest tests/ --tb=native
         
       - name: Stripping C++ modules
         run: strip --strip-unneeded src/flamingpy/*.so
         
       - name: Build the wheel
-        run: python3 setup.py bdist_wheel
+        run: python setup.py bdist_wheel
         env:
           CIBW_ARCHS_LINUX: ${{matrix.arch}}
         
@@ -67,13 +70,13 @@ jobs:
           
       - name: Uninstall existing versions and add a delay
         run: |
-          python3 -m pip uninstall flamingpy -y
+          python -m pip uninstall flamingpy -y
           sleep 5m
 
       - name: Pip install flamingpy        
-        run: python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
+        run: python -m pip install -i https://test.pypi.org/simple/ flamingpy
         
       - name: Run some involved package examples for testing purposes
         run: |
-          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/lemon.py
-          python3 /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/shortest_path.py
+          python /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/lemon.py
+          python /opt/hostedtoolcache/Python/*/x64/lib/python*/site-packages/flamingpy/benchmarks/shortest_path.py

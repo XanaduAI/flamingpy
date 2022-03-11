@@ -38,18 +38,21 @@ jobs:
 
       - name: install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pillow pyyaml wheel --upgrade
-          python3 -m pip install -r dev_requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install pillow pyyaml wheel --upgrade
+          python -m pip install -r dev_requirements.txt
           
       - name: Build flamingpy from Source
-        run: python3 -m pip install -e . 
+        run: |
+          python setup.py develop 
+          python setup.py build_cython --inplace 
+          python setup.py build_cmake --inplace  
         
       - name: Run tests
-        run: python3 -m pytest tests/ --tb=native
+        run: python -m pytest tests/ --tb=native
         
       - name: Build the wheel
-        run: python3 setup.py bdist_wheel
+        run: python setup.py bdist_wheel
        
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -96,17 +99,17 @@ jobs:
           
       - name: Ensure there are no existing versions and add a delay
         run: |
-          python3 -m pip uninstall flamingpy -y
+          python -m pip uninstall flamingpy -y
           sleep 300
 
       - name: Pip install flamingpy        
         run: |
           python3 -m pip install --upgrade pip
           # TODO: remove this once we have moved to full PyPi server
-          python3 -m pip install matplotlib networkx retworkx numpy pandas scipy thewalrus --upgrade
-          python3 -m pip install -i https://test.pypi.org/simple/ flamingpy
+          python -m pip install matplotlib networkx retworkx numpy pandas scipy thewalrus --upgrade
+          python -m pip install -i https://test.pypi.org/simple/ flamingpy
         
       - name: Run some involved package examples for testing purposes
         run: | 
-          python3 /Users/runner/hostedtoolcache/Python/*/x64/lib/python3.*/site-packages/flamingpy/benchmarks/lemon.py
-          python3 /Users/runner/hostedtoolcache/Python/*/x64/lib/python3.*/site-packages/flamingpy/benchmarks/shortest_path.py
+          python /Users/runner/hostedtoolcache/Python/*/x64/lib/python3.*/site-packages/flamingpy/benchmarks/lemon.py
+          python /Users/runner/hostedtoolcache/Python/*/x64/lib/python3.*/site-packages/flamingpy/benchmarks/shortest_path.py

@@ -49,12 +49,12 @@
 FlamingPy requires **Python 3.8 or 3.9**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
-pip install -i https://test.pypi.org/simple/ flamingpy
+python -m pip install -i https://test.pypi.org/simple/ flamingpy # TODO: TestPyPI cannot properly install dependencies. Please run `python -m pip install matplotlib networkx retworkx numpy pandas scipy thewalrus --upgrade` beforehand manually. Remove this comment when we moved to PyPI.
 ``` 
 
 #### Installation from Source (advanced users)
 
-If you are a developer and wish to manipulate and test FlamingPy source code, you can install the project from Source. First, clone FlamingPy through the Code tab above. Then, create and activate a new virtual environment. If you use **Conda**, for example, you may run the following:
+If you are a developer and wish to manipulate and test FlamingPy source code, you can install the project from Source. First, clone FlamingPy through the Code tab above. Then, create and activate a new virtual environment (if you prefer using an existing environment, you may need to uninstall existing FlamingPy builds). If you use **Conda**, for example, you may run the following:
 
 ```bash
 conda create -n flamingpy python=3.8
@@ -64,11 +64,18 @@ conda activate flamingpy
 Finally, change to the directory where FlamingPy was cloned and run:
 
 ```bash
-pip install -r dev_requirements.txt
-pip install -e .
+python -m pip install -r dev_requirements.txt
+python setup.py develop # only installs Python libraries
+python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backends
+python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 ``` 
 
-The first command installs dependencies for building the project and testing purposes, and can be skipped. The second installs and compiles FlamingPy and its dependencies (given you have appropriate compilers pre-installed). If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` before re-attempting the above. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
+The purpose of the commands is as follows:
+- The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
+- The second command (develop) installs FlamingPy Python libraries without the compiling the optional backends. 
+- The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
+
+If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git`. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
 
 ## Getting started and basic usage
 

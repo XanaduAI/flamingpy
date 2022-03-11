@@ -1,4 +1,5 @@
-include src/flamingpy/*.so
-include src/flamingpy/test_data/*.csv
-include src/flamingpy/examples/*.py 
-include src/flamingpy/benchmarks/*.py
+include flamingpy/cpp/*.so
+include flamingpy/sims_data/*.csv
+include flamingpy/test_data/*.csv
+include flamingpy/benchmarks/*.py
+include flamingpy/examples/*.py 

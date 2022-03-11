@@ -21,7 +21,7 @@ from flamingpy.utils.threshold_plots import find_threshold, plot_results
 
 # Some common input options for tests
 options = {
-    "input_file": "src/flamingpy/test_data/test_processed.csv",
+    "input_file": "flamingpy/test_data/test_processed.csv",
     "save_file": "test_results.pdf",
     "p_swap": 0,
     "unit": "dB",
