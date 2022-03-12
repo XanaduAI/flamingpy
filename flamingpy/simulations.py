@@ -17,13 +17,13 @@ import csv
 import sys
 
 from datetime import datetime
-from flamingpy.codes import RHG_graph, SurfaceCode, alternating_polarity
+from flamingpy.codes import SurfaceCode, alternating_polarity
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
 
-def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
+def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
     """Run Monte Carlo simulations of error-correction for the given code.
 
     Given a code object code, a noise parameter delta, and a
@@ -41,7 +41,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
     Returns:
         errors (integer): the number of errors.
     """
-    if passive_objects:
+    if passive_objects is not None:
         RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
@@ -66,9 +66,10 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects):
         else:
             # Apply noise
             CVRHG = CVLayer(code_lattice, p_swap=p_swap)
-            CVRHG.apply_noise(cv_noise)
             # Measure syndrome
-            CVRHG.measure_hom("p", code.syndrome_inds)
+            CVRHG.apply_noise(cv_noise)
+            CVRHG.measure_hom("p", code.all_syndrome_inds)
+
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
         successes += result
         errors = trials - successes
@@ -84,14 +85,18 @@ if __name__ == "__main__":
         # Parsing input parameters
         parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
         parser.add_argument("distance", type=int)
+        parser.add_argument("ec", type=str)
+        parser.add_argument("boundaries", type=str)
         parser.add_argument("delta", type=float)
         parser.add_argument("p_swap", type=float)
         parser.add_argument("trials", type=int)
         parser.add_argument("passive", type=bool)
 
         args = parser.parse_args()
-        distance, delta, p_swap, trials, passive = (
+        distance, ec, boundaries, delta, p_swap, trials, passive = (
             args.distance,
+            args.ec,
+            args.boundaries,
             args.delta,
             args.p_swap,
             args.trials,
@@ -100,29 +105,34 @@ if __name__ == "__main__":
 
     else:
         # User-specified values, if not using command line.
-        distance, delta, p_swap, trials, passive = 2, 0.01, 0.5, 100, False
+        distance, ec, boundaries, delta, p_swap, trials, passive = (
+            2,
+            "primal",
+            "open",
+            0.01,
+            0.5,
+            100,
+            True,
+        )
 
     # The Monte Carlo simulations
+
+    # The qubit code
+    RHG_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
+    RHG_lattice = RHG_code.graph
+    RHG_lattice.index_generator()
     if passive:
         # The lattice with macronodes.
-        RHG_macro = RHG_graph(distance, boundaries="periodic", macronodes=True, polarity=False)
+        pad_bool = False if boundaries == "periodic" else True
+        RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
-        # The reduced lattice.
-        RHG_code = SurfaceCode(distance, boundaries="periodic")
-        RHG_reduced = RHG_code.graph
-        RHG_reduced.index_generator()
         # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(RHG_reduced)
-
+        CVRHG_reduced = CVLayer(RHG_lattice)
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
-        passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
-    else:
-        boundaries = "finite"
-        RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
-        passive_objects = None
+        passive_objects = [RHG_macro, RHG_lattice, CVRHG_reduced, bs_network]
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
@@ -132,12 +142,23 @@ if __name__ == "__main__":
     try:
         file = open(file_name, "x")
         writer = csv.writer(file)
-        writer.writerow(["distance", "delta", "p_swap", "errors_py", "trials", "current_time"])
+        writer.writerow(
+            [
+                "distance",
+                "ec",
+                "boundaries",
+                "delta",
+                "p_swap",
+                "errors_py",
+                "trials",
+                "current_time",
+            ]
+        )
     # Open the file for appending if it already exists.
     except FileExistsError:
         file = open(file_name, "a", newline="")
         writer = csv.writer(file)
     # TODO: Do we need to record time?
     current_time = datetime.now().time().strftime("%H:%M:%S")
-    writer.writerow([distance, delta, p_swap, errors, trials, current_time])
+    writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
     file.close()

@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Example for building and visualizing RHG lattices and surface codes."""
+
+# pylint: disable=no-member
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,36 +24,43 @@ from flamingpy.cv.ops import CVLayer
 
 show = __name__ == "__main__"
 
-
-# Instantiate an RHG latice of a certian distance, with certain
-# boundaries and polarity..
+# Instantiate a surface code.
+# Code distance (an integer)
 d = 2
-boundaries = "periodic"
+# Boundaries ("open" or "periodic")
+boundaries = "open"
+# Error complex ("primal", "dual", or "both")
+err = "both"
+# Polarity (edge weight pattern in graph state -- all unit weights by default)
 polarity = None
 # polarity = alternating_polarity
 
-RHG = SurfaceCode(d, boundaries=boundaries, polarity=polarity)
-RHG_fig = RHG.draw()
-RHG_lattice = RHG.graph
+RHG_code = SurfaceCode(d, ec=err, boundaries=boundaries, polarity=polarity)
+RHG_lattice = RHG_code.graph
+RHG_fig = RHG_code.draw()
 
 # Check edges between boundaries for periodic boundary conditions.
 if boundaries == "periodic":
     all_boundaries = []
     for plane in ("x", "y", "z"):
         for i in (0, 2 * d - 1):
-            all_boundaries += RHG.graph.slice_coords(plane, i)
+            all_boundaries += RHG_lattice.slice_coords(plane, i)
     RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
     RHG_subgraph.draw()
 
-# Plot coordinates of stabilizers
-syndrome = RHG.stabilizers
-# Change [0:1] in the following line to other consecutive indices,
-# corresponding to another stabilizer you'd like to plot.
-for cube in syndrome[0:1]:
-    color = np.random.rand(3)
-    for point in cube.egraph:
-        x, z, y = point
-        RHG_fig.scatter(x, z, y, color=color, s=200)
+# Plot the stabilizers
+for err in RHG_code.ec:
+    # Stabilizers are available in the attributes primal_stabilizers and/or
+    # dual_stabilizers, depending on the error complex.
+    stabilizers = getattr(RHG_code, err + "_stabilizers")
+    # Change [0:1] in the following line to other consecutive indices,
+    # corresponding to another stabilizer you'd like to plot.
+    for stabilizer in stabilizers[0:1]:
+        color = np.random.rand(3)
+        for point in stabilizer.egraph:
+            x, z, y = point
+            RHG_fig.scatter(x, z, y, color=color, s=200)
+
 if show:
     plt.show()
 else:
@@ -62,8 +72,8 @@ p_swap = 0
 CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
 model = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
 CVRHG.apply_noise(model)
-CVRHG.measure_hom("p", RHG.syndrome_inds)
-outcomes = [CVRHG.hom_outcomes()[i] for i in RHG.syndrome_inds]
+CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
+outcomes = [CVRHG.hom_outcomes()[i] for i in RHG_code.all_syndrome_inds]
 plt.figure(figsize=(16, 9))
 plt.hist(outcomes, bins=100)
 CVRHG.draw(label="hom_val_p", legend=True, title=True)

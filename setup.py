@@ -19,26 +19,28 @@ import platform
 import subprocess
 
 from distutils.version import LooseVersion
-#from distutils.extension import Extension
-#from distutils.core import setup
-#from skbuild import setup
+
+# from distutils.extension import Extension
+# from distutils.core import setup
+# from skbuild import setup
 from setuptools import setup, Extension, dist, find_packages
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from setuptools.command.build_ext import build_ext
-#from Cython.Distutils import build_ext
-#from Cython.Build import cythonize
+
+# from Cython.Distutils import build_ext
+# from Cython.Build import cythonize
 
 
 # Reading the package version number
 with open("flamingpy/_version.py") as f:
     version = f.readlines()[-1].split()[-1].strip("\"'")
-    
-        
+
+
 class BinaryDistribution(dist.Distribution):
     def has_ext_modules(foo):
         return True
-   
+
 
 # The following class is an adaptation of Python examples for pybind11:
 # https://github.com/pybind/python_example/blob/master/setup.py
@@ -94,26 +96,27 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=self.build_temp)    
+        subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=self.build_temp)
 
 
 # use README.md as long_description
 this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, "README.md")) as f:
     long_description = f.read()
-    
+
 
 # setup parameters
 if sys.argv[1] == "build_cython":
     ext_modules = [
-        Extension('flamingpy.cpp.cpp_mc_loop',
-            sources=['flamingpy/cpp/cpp_mc_loop.pyx'],
-            extra_compile_args=['-O3', '-w'],
-            language='c++'
+        Extension(
+            "flamingpy.cpp.cpp_mc_loop",
+            sources=["flamingpy/cpp/cpp_mc_loop.pyx"],
+            extra_compile_args=["-O3", "-w"],
+            language="c++",
         )
     ]
 elif sys.argv[1] == "build_cmake":
-    ext_modules = [CMakeExtension('flamingpy.cpp.lemonpy')]
+    ext_modules = [CMakeExtension("flamingpy.cpp.lemonpy")]
 elif sys.argv[1] == "install" or sys.argv[1] == "develop":
     ext_modules = []
 else:
@@ -133,20 +136,20 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Scientific/Engineering :: Physics"
+    "Topic :: Scientific/Engineering :: Physics",
 ]
 
 install_requires = [
-     "matplotlib>=3.3.3",
-     "networkx>=2.5",
-     "retworkx>=0.10.2",
-     "numpy>=1.21.0",
-     "pandas>=1.2.1",
-     "scipy>=1.6.0",
-     "thewalrus>=0.15.0"
+    "matplotlib>=3.3.3",
+    "networkx>=2.5",
+    "retworkx>=0.10.2",
+    "numpy>=1.21.0",
+    "pandas>=1.2.1",
+    "scipy>=1.6.0",
+    "thewalrus>=0.15.0",
 ]
 
-description="FlamingPy is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers."
+description = "FlamingPy is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers."
 
 setup(
     name="flamingpy",
@@ -159,12 +162,17 @@ setup(
     url="https://github.com/XanaduAI/ft-stack",
     packages=find_packages(where="."),
     package_dir={"": "."},
-    #provides=["flamingpy"],
-    #package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
+    # provides=["flamingpy"],
+    # package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
     include_package_data=True,
     python_requires=">=3.8,!=3.10.*",
-    cmdclass={"install": install, "develop": develop, "build_cython": build_ext, "build_cmake": CMakeBuild},
+    cmdclass={
+        "install": install,
+        "develop": develop,
+        "build_cython": build_ext,
+        "build_cmake": CMakeBuild,
+    },
     ext_modules=ext_modules,
     distclass=BinaryDistribution,
-    install_requires=install_requires
+    install_requires=install_requires,
 )

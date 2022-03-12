@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Benchmark minimum-weight matching via networkx, retworkx, and lemon backends."""
+
+# pylint: disable=no-member
+
 import time
 
 import matplotlib.pyplot as plt
@@ -64,13 +67,12 @@ for i in range(num_trials):
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.syndrome_inds)
+        CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
 
         # Manual decoding to plot intermediate results.
+        dec.assign_weights(RHG_code, **weight_options)
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
-        G_match = dec.build_match_graph(
-            RHG_code, weight_options, matching_backend=matching_graph[alg]
-        )
+        G_match = dec.build_match_graph(RHG_code, "primal", matching_backend=matching_graph[alg])
         before = time.time()
         matching = G_match.min_weight_perfect_matching()
         after = time.time()
@@ -85,4 +87,5 @@ plt.xscale("log")
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Matching for code distance {distance}")
-plt.savefig(f"benchmark_matching_distance_{distance}.pdf")
+if __name__ == "__main__":
+    plt.savefig(f"benchmark_matching_distance_{distance}.pdf")

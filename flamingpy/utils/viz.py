@@ -297,7 +297,7 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     cbar.ax.tick_params(labelsize=10)
 
 
-def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
+def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
     """Draw the syndrome plot for a CVGraph G.
 
     A comprehensive graphing tool for drawing the error syndrome of
@@ -342,7 +342,7 @@ def syndrome_plot(code, G_dec, index_dict=None, drawing_opts=None):
     }
     plt.rcParams.update(plot_params)
 
-    cubes = code.stabilizers
+    cubes = getattr(code, ec + "_stabilizers")
     # Default drawing options.
     draw_dict = {
         "show_nodes": False,

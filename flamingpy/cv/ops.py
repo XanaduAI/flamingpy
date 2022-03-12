@@ -183,10 +183,17 @@ class CVLayer:
 
         """
         # Modelling the states.
-        default_model = {"noise": "grn", "delta": 0.01, "sampling_order": "initial"}
+        perfect_inds = self.egraph.graph.get("perfect_inds")
+        default_model = {
+            "noise": "grn",
+            "delta": 0.01,
+            "sampling_order": "initial",
+            "perfect_inds": perfect_inds,
+        }
         model = {**default_model, **model}
         self._delta = model["delta"]
         self._sampling_order = model["sampling_order"]
+        self._perfect_inds = model["perfect_inds"]
         if model["noise"] == "grn":
             self.grn_model(rng)
 
@@ -204,59 +211,41 @@ class CVLayer:
         N = self._N
         delta = self._delta
 
-        if self._sampling_order == "initial":
-            init_noise = np.empty(2 * N, dtype=np.float32)
-            init_vals = np.empty(2 * N, dtype=np.float32)
-            for state in self._states:
-                indices = self._states[state]
-                if state == "GKP":
-                    init_noise[indices] = delta / 2
-                    init_noise[indices + N] = delta / 2
-                    init_vals[indices] = rng.normal(0, np.sqrt(delta / 2), len(indices))
-                    init_vals[indices + N] = rng.normal(0, np.sqrt(delta / 2), len(indices))
-                if state == "p":
-                    init_noise[indices] = 1 / (2 * delta)
-                    init_noise[indices + N] = delta / 2
-                    init_vals[indices] = rng.normal(0, np.sqrt(1 / (2 * delta)), len(indices))
-                    init_vals[indices + N] = rng.normal(0, np.sqrt(delta / 2), len(indices))
-            self._init_noise = init_noise
-            self._init_vals = init_vals
+        # For initial and final sampling, generate noise array depending
+        # on quadrature and state.
+        if self._sampling_order in ("initial", "final"):
+            noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
+            noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
+            self._init_noise = np.zeros(2 * N, dtype=np.float32)
+            for state, inds in self._states.items():
+                if self._perfect_inds:
+                    inds = np.array(list(set(inds).difference(self._perfect_inds)))
+                if len(inds) > 0:
+                    self._init_noise[inds] = noise_q[state]
+                    self._init_noise[inds + N] = noise_p[state]
 
         # For final sampling, apply a symplectic CZ matrix to the
         # initial noise covariance.
         if self._sampling_order == "final":
-            init_noise = np.empty(2 * N, dtype=np.float32)
-            init_vals = np.empty(2 * N, dtype=np.float32)
-            for state in self._states:
-                indices = self._states[state]
-                if state == "GKP":
-                    init_noise[indices] = delta / 2
-                    init_noise[indices + N] = delta / 2
-                if state == "p":
-                    init_noise[indices] = 1 / (2 * delta)
-                    init_noise[indices + N] = delta / 2
-            noise_cov_init = sp.diags(init_noise)
-            self._noise_cov = SCZ_apply(self._adj, noise_cov_init)
-            # TODO: Save var_p and var_q?
+            self._noise_cov = SCZ_apply(self._adj, sp.diags(self._init_noise) ** 2)
 
         # For two-step sampling, sample for initial (ideal)
         # state-dependent quadrature values.
         if self._sampling_order == "two-step":
+            q_val_for_p = lambda n: rng.random(size=n) * (2 * np.sqrt(np.pi))
+            q_val_for_GKP = lambda n: rng.integers(0, 2, size=n) * np.sqrt(np.pi)
+            val_funcs = {"p": q_val_for_p, "GKP": q_val_for_GKP}
             self._init_quads = np.zeros(2 * N, dtype=np.float32)
-            for state in self._states:
-                indices = self._states[state]
-                for ind in indices:
-                    if state == "p":
-                        self._init_quads[ind] = rng.random() * (2 * np.sqrt(np.pi))
-                    if state == "GKP":
-                        self._init_quads[ind] = rng.integers(0, 2) * np.sqrt(np.pi)
+            for state, indices in self._states.items():
+                n_inds = len(indices)
+                if n_inds > 0:
+                    self._init_quads[indices] = val_funcs[state](n_inds)
 
     def measure_hom(
         self,
         quad="p",
         inds=None,
         method="cholesky",
-        dim="single",
         updated_quads=None,
         rng=default_rng(),
     ):
@@ -279,10 +268,8 @@ class CVLayer:
             inds = range(N)
         N_inds = len(inds)
         if self._sampling_order == "initial":
-            means = np.zeros(2 * N, dtype=bool)
-            covs = self._init_noise
-            if dim == "single":
-                outcomes = SCZ_apply(self._adj, means + self._init_vals)
+            init_samples = rng.normal(0, self._init_noise)
+            outcomes = SCZ_apply(self._adj, init_samples)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
@@ -298,11 +285,14 @@ class CVLayer:
                 means = updated[:N][inds]
             elif quad == "p":
                 means = updated[N:][inds]
-            if dim == "single":
-                outcomes = np.empty(N_inds, dtype=np.float32)
-                sigma = np.sqrt(self._delta / 2)
-                for i in range(N_inds):
-                    outcomes[i] = rng.normal(means[i], sigma)
+            sigma = np.full(N_inds, (self._delta / 2) ** 0.5, dtype=np.float32)
+            if self._perfect_inds:
+                inds_to_0 = set(inds).intersection(self._perfect_inds)
+                ind_arr = np.empty(len(inds_to_0), dtype=np.int64)
+                for i, perfect_ind in enumerate(inds_to_0):
+                    ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
+                sigma[ind_arr] = (self._delta / 2) ** 0.5
+            outcomes = rng.normal(means, sigma)
         if self._sampling_order == "final":
             cov_q = self._noise_cov[:N, :N]
             cov_p = self._noise_cov[N:, N:]

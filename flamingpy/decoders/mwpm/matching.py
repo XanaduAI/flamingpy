@@ -50,10 +50,11 @@ class MatchingGraph(ABC):
     # The type representing the weight of an edge.
     Weight = TypeVar("Weight")
 
-    def __init__(self, code=None):
+    def __init__(self, ec, code=None):
         self.virtual_points = list()
+        self.ec = ec
         if code is not None:
-            self.with_edges_from(code)
+            self.with_edges_from(code, ec)
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
         """Add an edge into the graph.
@@ -96,7 +97,7 @@ class MatchingGraph(ABC):
         """
         return sum(self.edge_weight(edge) for edge in matching)
 
-    def with_edges_from(self, code):
+    def with_edges_from(self, code, ec):
         """Update the matching graph from the given code.
 
         The matching graph has as half of its nodes the odd-parity stabilizers.
@@ -114,22 +115,24 @@ class MatchingGraph(ABC):
         Args:
             code (RHGCode): The code from which to build the edges.
         """
-        self = self._with_edges_between_real_odd_nodes(code)
-        if code.stab_graph.has_bound_points():
-            return self._with_edges_from_low_or_high_connector(code)
+        stab_graph = getattr(code, ec + "_stab_graph")
+        self = self._with_edges_between_real_odd_nodes(code, ec)
+        if stab_graph.has_bound_points():
+            return self._with_edges_from_low_or_high_connector(code, ec)
         else:
             return self
 
-    def _with_edges_between_real_odd_nodes(self, code):
+    def _with_edges_between_real_odd_nodes(self, code, ec):
         # Get the indices of the odd parity cubes from the stabilizer graph.
-        odd_parity_stabs = list(code.stab_graph.odd_parity_stabilizers())
+        stab_graph = getattr(code, ec + "_stab_graph")
+        odd_parity_stabs = list(stab_graph.odd_parity_stabilizers())
         # Combinations of odd-parity cubes.
         odd_adjacency = {i: [] for i in odd_parity_stabs[:-1]}
         for pair in it.combinations(odd_parity_stabs, 2):
             odd_adjacency[pair[0]] += [pair[1]]
         # Find the shortest paths between odd-parity stabs.
         for stab1 in odd_parity_stabs[:-1]:
-            lengths, paths = code.stab_graph.shortest_paths_without_high_low(stab1, code)
+            lengths, paths = stab_graph.shortest_paths_without_high_low(stab1, code)
             for stab2 in odd_adjacency[stab1]:
                 length = lengths[stab2]
                 path = paths[stab2]
@@ -138,10 +141,11 @@ class MatchingGraph(ABC):
                 self.add_edge((stab1, stab2), length, path)
         return self
 
-    def _with_edges_from_low_or_high_connector(self, code):
-        low_lengths, low_paths = code.stab_graph.shortest_paths_from_low(code)
-        high_lengths, high_paths = code.stab_graph.shortest_paths_from_high(code)
-        for i, cube in enumerate(code.stab_graph.odd_parity_stabilizers()):
+    def _with_edges_from_low_or_high_connector(self, code, ec):
+        stab_graph = getattr(code, ec + "_stab_graph")
+        low_lengths, low_paths = stab_graph.shortest_paths_from_low(code)
+        high_lengths, high_paths = stab_graph.shortest_paths_from_high(code)
+        for i, cube in enumerate(stab_graph.odd_parity_stabilizers()):
             distances = (low_lengths[cube], high_lengths[cube])
             where_shortest = np.argmin(distances)
             if where_shortest == 0:
@@ -187,9 +191,9 @@ class NxMatchingGraph(MatchingGraph):
 
     Weight = Union[int, float]
 
-    def __init__(self, code=None):
+    def __init__(self, ec, code=None):
         self.graph = nx.Graph()
-        MatchingGraph.__init__(self, code)
+        MatchingGraph.__init__(self, ec, code)
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
         self.graph.add_edge(edge[0], edge[1], weight=weight, inverse_weight=-weight, path=path)
@@ -213,10 +217,10 @@ class LemonMatchingGraph(NxMatchingGraph):
     def to_nx(self):
         """Return the same graph wrapped into a NxMatchingGraph.
 
-        This is basically free since this class already use networkx
+        This is basically free since this class already uses networkx
         to represent a graph.
         """
-        nx = NxMatchingGraph()
+        nx = NxMatchingGraph(self.ec)
         nx.graph = self.graph
         return nx
 
@@ -243,11 +247,11 @@ class RxMatchingGraph(MatchingGraph):
 
     Weight = int
 
-    def __init__(self, code=None):
+    def __init__(self, ec, code=None):
         self.graph = rx.PyGraph(multigraph=False)
         self.node_to_index = dict()
         self.index_to_node = dict()
-        MatchingGraph.__init__(self, code)
+        MatchingGraph.__init__(self, ec, code)
 
     def node_index(self, node):
         """Returns the index of the corresponding node.
@@ -290,7 +294,7 @@ class RxMatchingGraph(MatchingGraph):
         This involves converting the retworkx graph representation
         to a networkx graph representation.
         """
-        nx_graph = NxMatchingGraph()
+        nx_graph = NxMatchingGraph(self.ec)
         for (idx0, idx1) in iter(self.graph.edge_list()):
             edge = (self.graph.nodes()[idx0], self.graph.nodes()[idx1])
             nx_graph.add_edge(edge, self.edge_weight(edge), self.edge_path(edge))

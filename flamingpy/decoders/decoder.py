@@ -46,8 +46,8 @@ def assign_weights(code, **kwargs):
     default_options = {"method": "unit", "integer": False, "multiplier": 1}
     weight_options = {**default_options, **kwargs}
     G = code.graph
-    # Get and denest the syndrome coordinates.
-    syndrome_coords = code.syndrome_coords
+
+    syndrome_coords = code.all_syndrome_coords
     # Blueprint weight assignment dependent on type of neighbour.
     if weight_options.get("method") == "blueprint":
         for node in syndrome_coords:
@@ -85,7 +85,6 @@ def assign_weights(code, **kwargs):
                 else:
                     weight = -np.log(err_prob)
                 G.nodes[node]["weight"] = weight
-        return
     # Naive weight assignment, unity weights.
     if weight_options.get("method") == "unit":
         for node in syndrome_coords:
@@ -109,16 +108,15 @@ def CV_decoder(code, translator=GKP_binner):
     Returns:
         None
     """
-    syndrome = code.syndrome_coords
     # TODO: Generalize to nonlocal translators
     # TODO: Vectorize?
-    for point in syndrome:
+    for point in code.all_syndrome_coords:
         hom_val = code.graph.nodes[point]["hom_val_p"]
         bit_val = translator([hom_val])[0]
         code.graph.nodes[point]["bit_val"] = bit_val
 
 
-def recovery(code, G_match, matching, sanity_check=False):
+def recovery(code, G_match, matching, ec, sanity_check=False):
     """Run the recovery operation on graph G.
 
     Fip the bit values of all the vertices in the path connecting each
@@ -137,19 +135,21 @@ def recovery(code, G_match, matching, sanity_check=False):
             it succeeded. Otherwise None.
     """
     virtual_points = G_match.virtual_points
+    stab_graph = getattr(code, ec + "_stab_graph")
     for match in matching:
         if match not in it.product(virtual_points, virtual_points):
             path = G_match.edge_path(match)
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:
-                common_vertex = code.stab_graph.edge_data(*pair)["common_vertex"]
+                common_vertex = stab_graph.edge_data(*pair)["common_vertex"]
                 code.graph.nodes[common_vertex]["bit_val"] ^= 1
 
     if sanity_check:
-        odd_cubes = list(code.stab_graph.odd_parity_stabilizers())
+        odd_cubes = list(stab_graph.odd_parity_stabilizers())
         if odd_cubes:
-            print("Unsatisfied stabilizers:", odd_cubes)
-        print("Recovery succeeded - no unsatisfied stabilizers.")
+            print("Unsatisfied " + ec + " stabilizers:", odd_cubes)
+        else:
+            print(ec.capitalize() + " recovery succeeded - no unsatisfied stabilizers.")
 
 
 # TODO: Rename to logical_error_check or someting like that. Clarify
@@ -170,46 +170,57 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
             largest coordinate in the direction plane).
         sanity_check (bool): if True, display the total parity of
             all correlation surfaces in the direction plane to verify
-            if parity is conserved.
+            if parity is conserved. In addition to the
 
     Returns:
-        None
+        list or (list, list): a list of bools indicating whether error
+            correction succeeded for each complex. If sanity_check is set to
+            True, also output a dictionary between planes and results of
+            the correlations-surface-parity sanity check.
     """
     dims = np.array(code.dims)
     dir_dict = {"x": 0, "y": 1, "z": 2}
-    truth_dict = {"x": [], "y": [], "z": []}
-    boundaries = code.boundaries
-
-    planes_to_check = []
-    if plane:
-        planes_to_check += [plane]
-    elif boundaries == ["periodic"] * 3:
-        planes_to_check = ["x", "y", "z"]
-    elif tuple(boundaries) in set(it.permutations(["primal", "dual", "dual"])):
-        where_primal = np.where(np.array(boundaries) == "primal")[0][0]
-        planes_to_check = [["x", "y", "z"][where_primal]]
-
-    minimum, maximum = sheet, sheet + 2
-    for plane in planes_to_check:
-        if sanity_check:
-            minimum, maximum = 0, 2 * dims[dir_dict[plane]]
-        for sheet in range(minimum, maximum, 2):
-            slice_verts = code.graph.slice_coords(plane, sheet)
-            syndrome_verts = code.syndrome_coords
-            only_primal = set(slice_verts) & set(syndrome_verts)
-            parity = 0
-            for node in only_primal:
-                parity ^= code.graph.nodes[node]["bit_val"]
-            truth_dict[plane].append(bool(1 - parity))
 
     if sanity_check:
-        print(truth_dict)
+        print()
 
-    all_surfaces = np.array([truth_dict[i][0] for i in planes_to_check])
-    return np.all(all_surfaces)
+    ec_checks = []
+    truth_dicts = []
+    for ec in code.ec:
+        planes_to_check = []
+        truth_dict = {"x": [], "y": [], "z": []}
+        if plane:
+            planes_to_check += [plane]
+        elif code.bound_str == "periodic":
+            planes_to_check = ["x", "y", "z"]
+        elif code.bound_str.startswith("open"):
+            planes_to_check = ["x"] if ec == "primal" else ["y"]
+
+        minimum = 0 if ec == "primal" else 1
+        for plane_str in planes_to_check:
+            maximum = 2 * dims[dir_dict[plane_str]] if sanity_check else minimum + 2
+            for sheet in range(minimum, maximum, 2):
+                slice_verts = code.graph.slice_coords(plane_str, sheet)
+                syndrome_verts = getattr(code, ec + "_syndrome_coords")
+                only_syndrome = set(slice_verts) & set(syndrome_verts)
+                parity = 0
+                for node in only_syndrome:
+                    parity ^= code.graph.nodes[node]["bit_val"]
+                truth_dict[plane_str].append(bool(1 - parity))
+
+        if sanity_check:
+            print(ec.capitalize() + " error correction check --", truth_dict)
+
+        all_surfaces = [truth_dict[i][0] for i in planes_to_check]
+        ec_checks += [np.all(all_surfaces)]
+        truth_dicts += [truth_dict]
+    if sanity_check:
+        return ec_checks, truth_dicts
+    else:
+        return ec_checks
 
 
-def build_match_graph(code, weight_options, matching_backend="networkx"):
+def build_match_graph(code, ec, matching_backend="networkx"):
     """
     Build the matching graph for the given code.
 
@@ -232,9 +243,6 @@ def build_match_graph(code, weight_options, matching_backend="networkx"):
     Returns:
         MatchingGraph: The matching graph.
     """
-    if weight_options is None:
-        weight_options = {}
-    assign_weights(code, **weight_options)
     default_backends = {
         "networkx": NxMatchingGraph,
         "retworkx": RxMatchingGraph,
@@ -242,7 +250,8 @@ def build_match_graph(code, weight_options, matching_backend="networkx"):
     }
     if matching_backend in default_backends:
         matching_backend = default_backends[matching_backend]
-    return matching_backend(code)
+
+    return matching_backend(ec, code)
 
 
 def correct(
@@ -283,9 +292,15 @@ def correct(
     outer_decoder = decoder.get("outer")
     if inner_decoder:
         CV_decoder(code, translator=inner_dict[inner_decoder])
+
+    if weight_options is None:
+        weight_options = {}
+    assign_weights(code, **weight_options)
+
     if outer_dict[outer_decoder] == "MWPM":
-        matching_graph = build_match_graph(code, weight_options, matching_backend)
-        matching = matching_graph.min_weight_perfect_matching()
-        recovery(code, matching_graph, matching, sanity_check=sanity_check)
+        for ec in code.ec:
+            matching_graph = build_match_graph(code, ec, matching_backend)
+            matching = matching_graph.min_weight_perfect_matching()
+            recovery(code, matching_graph, matching, ec, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
-    return result
+    return np.all(result)

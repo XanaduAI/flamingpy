@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Benchmark shortest-path-finding algorithms between networkx and retworkx."""
+
+# pylint: disable=no-member
+
 import time
 
 import matplotlib.pyplot as plt
@@ -59,12 +62,13 @@ for backend in ["networkx", "retworkx"]:
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.syndrome_inds)
+        CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
+        dec.assign_weights(RHG_code, **weight_options)
         # Inner decoder
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
 
         before = time.time()
-        matching_graph = dec.build_match_graph(RHG_code, weight_options, backend)
+        matching_graph = dec.build_match_graph(RHG_code, "primal", backend)
         after = time.time()
         times[backend].append(after - before)
 
@@ -74,4 +78,5 @@ plt.legend()
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Building matching graph for code distance {distance}")
-plt.savefig(f"benchmark_shortest_path_distance_{distance}.pdf")
+if __name__ == "__main__":
+    plt.savefig(f"benchmark_shortest_path_distance_{distance}.pdf")

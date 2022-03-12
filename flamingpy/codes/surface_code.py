@@ -13,7 +13,6 @@
 # limitations under the License.
 """Classes for the measurement-based surface code and related functions."""
 
-
 import itertools as it
 
 import numpy as np
@@ -84,53 +83,80 @@ def dual_neighbours(p, displace=1):
         return [bottom, left, top, right]
 
 
+def str_to_bound(bound_name):
+    """Return a list of boundaries corresponding to bound_name.
+
+    The options are:
+
+        'open_primal': [primal, dual, dual]
+        'open_dual': [primal, dual, primal]
+        '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
+
+    """
+    if bound_name == "open_primal":
+        boundaries = ["primal", "dual", "dual"]
+    elif bound_name == "open_dual":
+        boundaries = ["primal", "dual", "primal"]
+    elif bound_name in ("primal", "dual", "periodic"):
+        boundaries = [bound_name] * 3
+    elif not isinstance(bound_name, str):
+        print("Boundary type must be string.")
+        raise Exception
+    return np.array(boundaries)
+
+
 def RHG_graph(
     dims,
-    boundaries="finite",
-    macronodes=False,
+    boundaries="primal",
     polarity=None,
 ):
     """Create an EGraph of a dims-dimensional RHG lattice.
 
     Generate a Raussendorf-Harrington-Goyal (RHG) lattice, which can
-    be viewed as a foliated surface code, with dimensions given by dims
-    (an integer denoting the number of stabilizer cubes in each direction,
-    or a tuple specifying all three dimensions). By default, a useful
-    set of finite boundary conditions is assumed, but any combination
-    can be specified.
+    be viewed as the measurement-based version or foliation of
+    the surface code, with specified dimensions and boundary types.
 
     Args:
-        dims (int or list): the dimensions of the lattice (the
-            number of stabilizer cubes in each direction, complete or
-            incomplete).
-        boundaries (str or list-type, optional): the boundaries in each
-            direction. We use primal/smooth and dual/rough
-            interchangeably. If a string, 'primal', 'dual', 'periodic',
-            assumes those boundaries in all three directions; or,
-            accepts a list that specifies which boundary in which
-            direction. Set  to 'finite' == ['primal', 'dual', 'dual']
-            by default.
-        macronodes (bool): if True, generates a macronode version of
-            the lattice, where each pair of vertices connected by
-            an edge is replaced with a dumbbell .-., causing each
-            vertex to be replaced by four (in bulk).
-        polarity (func): a function that specifies edge weights. The
-            input to the function should be an edge (i.e. list of two
-            vertices) and the output should be the edge weight.
+        dims (int or list-type): the dimensions of the lattice. If int,
+            generates a cube corresponding to a code of distance dims.
+            If a three-element list [dx, dy, dz], assumes distances
+            dx, dy, dz in x, y, z directions, respectively.
+        boundaries (str or list-type, optional): the boundary types
+            in x, y, z. We use the identification primal = smooth and
+            dual = rough, to align with surface code terminology.
+            Available choices in the order x, y, z are:
 
+                'open_primal': primal, dual, dual
+                'open_dual':,  primal, dual, primal
+                '{b}': b, b, b,
+                ['{b1}', '{b2}', '{b3}']: b1, b2, b3,
+
+            where each b above can be 'primal', 'dual', or 'periodic'.
+            'primal' (i.e. ['primal', 'primal', 'primal']) by default.
+        polarity (func): a function that specifies edge weights. It
+            must be of the following form:
+
+                polarity(edge) = weight.
+
+            If not supplied, assumes all edges have weight 1.
     Returns:
         EGraph: the RHG lattice.
     """
+    # Create an EGraph with the graph attribute 'dims' (used for
+    # plotting purposes.
     if np.size(dims) == 1:
         dims = (dims, dims, dims)
-    G = EGraph(dims=dims, macronodes=macronodes)
-    # Dealing with boundaries
-    if boundaries == "finite":
-        boundaries = ["primal", "dual", "dual"]
-    elif isinstance(boundaries, str):
-        boundaries = [boundaries] * 3
+    G = EGraph(dims=dims)
+
+    # Dealing with boundaries.
+    if isinstance(boundaries, str):
+        boundaries = str_to_bound(boundaries)
+
     # Locations of all primal vertices.
-    inds = it.product(range(dims[0]), range(dims[1]), range(dims[2]))
+    max_dict = {"primal": 1, "dual": 0, "periodic": 0}
+    range_max = dims - np.array([max_dict[typ] for typ in boundaries])
+    ranges = [range(range_max[i]) for i in (0, 1, 2)]
+    inds = it.product(*ranges)
     # Primal vertices are combined into lists of six to be later usable
     # by the syndrome indentification in SurfaceCode.
     all_six_bodies = [
@@ -146,8 +172,9 @@ def RHG_graph(
     ]
     denested_six_bodies = set([a for b in all_six_bodies for a in b])
 
-    dual_inds = set(np.where(np.array(boundaries) == "dual")[0])
-    periodic_inds = set(np.where(np.array(boundaries) == "periodic")[0])
+    # Tuple indices corresponding to dual and periodic boundaries.
+    dual_inds = set((boundaries == "dual").nonzero()[0])
+    periodic_inds = set((boundaries == "periodic").nonzero()[0])
     for vertex in denested_six_bodies:
         where_vertex_0, where_vertex_max = set(), set()
         # Ensure no vertices are included if they extend beyond
@@ -163,8 +190,6 @@ def RHG_graph(
             or where_vertex_0 & dual_inds
             or where_vertex_max & periodic_inds
         ):
-            if macronodes:
-                G.macro.add_node(vertex, micronodes=[])
             for neighbor in dual_neighbours(vertex):
                 # Ensure no neighbours are included if they extend beyond
                 # requested boundary conditions.
@@ -181,22 +206,9 @@ def RHG_graph(
                 ):
                     edge = (vertex, neighbor)
                     weight = polarity(edge) if polarity else 1
-                    if macronodes:
-                        central_vertex, central_neighbor = (
-                            np.array(vertex),
-                            np.array(neighbor),
-                        )
-                        direction_vec = 0.1 * (central_neighbor - central_vertex)
-                        displaced_vertex = np.round(central_vertex + direction_vec, 1)
-                        displaced_vertex = tuple(displaced_vertex)
-                        displaced_neighbor = np.round(central_neighbor - direction_vec, 1)
-                        displaced_neighbor = tuple(displaced_neighbor)
-                        G.add_edge(displaced_vertex, displaced_neighbor, weight=weight)
-                        G.macro.add_node(neighbor, micronodes=[])
-                    else:
-                        G.add_node(vertex, type="primal")
-                        G.add_node(neighbor, type="dual")
-                        G.add_edge(vertex, neighbor, weight=weight)
+                    G.add_node(vertex, type="primal")
+                    G.add_node(neighbor, type="dual")
+                    G.add_edge(vertex, neighbor, weight=weight)
 
                     # Additional edges for periodic boundaries.
                     for ind in where_neighbor_0 & periodic_inds:
@@ -206,26 +218,11 @@ def RHG_graph(
                         neighbor_other_side = tuple(high_primal_vertex)
                         edge = (neighbor, neighbor_other_side)
                         weight = polarity(edge) if polarity else 1
-                        if macronodes:
-                            central_neighbor, other_side = (
-                                np.array(neighbor),
-                                high_primal_vertex,
-                            )
-                            direction_vec = other_side - central_neighbor
-                            shortened_vec = -0.1 * direction_vec / np.linalg.norm(direction_vec)
-                            displaced_neighbor = np.round(central_neighbor + shortened_vec, 1)
-                            displaced_neighbor = tuple(displaced_neighbor)
-                            displaced_other_side = np.round(other_side - shortened_vec, 1)
-                            displaced_other_side = tuple(displaced_other_side)
-                            G.add_edge(
-                                displaced_neighbor,
-                                displaced_other_side,
-                                weight=weight,
-                            )
-                        else:
-                            G.add_node(neighbor_other_side, type="primal")
-                            G.add_edge(neighbor, neighbor_other_side, weight=weight)
 
+                        G.add_node(neighbor_other_side, type="primal")
+                        G.add_edge(neighbor, neighbor_other_side, weight=weight, periodic=True)
+
+    # Store coordinates of primal cubes for later use.
     G.graph["primal_cubes"] = all_six_bodies
     return G
 
@@ -234,252 +231,199 @@ class SurfaceCode:
     """A class for representing the surface code.
 
     Represent the surface code in its measurement-based description. By
-    specifying the distance and choice of boundaries, store the graph
-    state corresponding to the code as an EGraph, the set of stabilizers
-    elements (Stabilizer objects), and the boundary vertices.
+    specifying the distance, error complex, and choice of boundaries,
+    store the graph state corresponding to the code, the set of
+    stabilizers elements and the stabilizer graph, as well as the
+    syndrome vertices and boundary vertices.
 
     Attributes:
-        distance (int): the code distance. Corresponds to the number
-            of stabilizer cubes (complete or incomplete) in each
-            x, y, z direction.
+
+        distance (int): the code distance.
         dims (tup): a tuple of the spatial extent in x, y, z.
-        complex (str): the error complex (primal or dual). For now
-            only primal implemented.
-        boundaries (list or str): the boundaries in x, y, z. We use the
-            identification primal = smooth and dual = rough, to align
-            with surface code terminology. Available choices in the
-            order x, y, z are 'finite' (primal, dual, dual)
+        ec (str): the error complex ('primal', 'dual', or 'both').
+        boundaries (str): the boundary conditions. The options are:
 
-                'finite': primal, dual, dual
-                'b': 'b', 'b', 'b'
-                ['b1', 'b2', 'b3']: b1, b2, b3.
+            'open': ['primal', 'dual', 'dual'] for 'primal' or 'both' EC
+                    ['dual', 'primal', 'primal'] for 'dual' EC
+            'periodic': 'periodic' in all three directions.
 
-        polarity (bool): if True, lattice is constructed with two
-            edges of +1 weights and perpendicular edges with -1 weights
-            for noise cancellation in a subsequent CV lattice.
-        graph (EGraph): the EGraph correspond to the code.
+        polarity (func): a function that specifies edge weights. It
+            must be of the following form:
+
+                polarity(edge) = weight.
+
+            If not supplied, assumes all edges have weight 1.
+        backend (string): The backend to use for the stabilizer graph.
+            Can be "networkx" (the default) or "retworkx".
+            The retworkx backend should be used when speed is a concern.
+
+        graph (EGraph): the EGraph corresponding to the code,
+            representing the graph state.
         stabilizers (list of Stabilizers): the stabilizer elements of the
             code according to the error complex.
         syndrome_coords (list of tup): the coordinates of the syndrome
             vertices, according to the error complex.
         boundary_coords (list of tup): the coordinates of the boundary
             according to the error complex.
-        backend (string): The backend to use for the stabilizer graph.
-            Can be "networkx" (the default) or "retworkx".
-            The retworkx backend should be used when speed is a concern.
     """
+
+    # TODO: Allow for codes with different aspect ratios.
+    # TODO: Check if perodic boundary conditions matches distance
+    # convention, or is one off.
+    # TODO: Add x-y-but-not-z periodic boundaries.
 
     def __init__(
         self,
         distance,
-        error_complex="primal",
-        boundaries="finite",
+        ec="primal",
+        boundaries="open",
         polarity=None,
         backend="networkx",
     ):
         """Initialize the surface code."""
-        # TODO: Check code distance convention.
         self.distance = distance
         self.dims = (distance, distance, distance)
-        self.complex = error_complex
-        if boundaries == "finite":
-            self.boundaries = ["primal", "dual", "dual"]
-        elif isinstance(boundaries, str):
-            self.boundaries = [boundaries] * 3
+        self.ec = ["primal", "dual"] if ec == "both" else [ec]
+
+        if boundaries == "open":
+            self.bound_str = "open_primal" if ec in ("primal", "both") else "open_dual"
         else:
-            self.boundaries = boundaries
+            self.bound_str = boundaries
+        self.boundaries = str_to_bound(self.bound_str)
+
         self.polarity = polarity
 
-        self.graph = RHG_graph(self.dims, boundaries=self.boundaries, polarity=polarity)
+        self.graph = RHG_graph(self.dims, self.boundaries, polarity=polarity)
         self.graph.index_generator()
-        # The following line also defines the self.syndrome_coords
-        # attribute.
-        self.stabilizers = self.identify_stabilizers(self.complex)
-        self.syndrome_inds = [self.graph.to_indices[point] for point in self.syndrome_coords]
-        self.bound_points = self.identify_boundary(self.complex)
-        if backend == "networkx":
-            self.stab_graph = NxStabilizerGraph(self)
-        elif backend == "retworkx":
-            self.stab_graph = RxStabilizerGraph(self)
-        else:
-            raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
+        # The following line defines the stabilizer, syndrome coordinate,
+        # and syndrome index attributes.
+        self.identify_stabilizers()
+        # The following line defines the boundary points attribute.
+        self.identify_boundary()
 
-    @property
-    def low_bound_points(self):
-        """All points connected to the boundary slice (as determined by error_complex)
-        with smaller coordinates.
-        """
-        mid = int(len(self.bound_points) / 2)
-        return self.bound_points[:mid]
+        if ec == "both":
+            # For both error complexes, designate certain qubits as perfect
+            # so that the correction check proceeds as expected. In particular
+            # the qubits on the first and last temporal (z-direction) slice
+            # are made perfect.
+            perfect_qubits = self.graph.slice_coords("z", 1) + self.graph.slice_coords(
+                "z", 2 * self.dims[2] - 1
+            )
+            self.graph.graph["perfect_points"] = perfect_qubits
+            self.graph.graph["perfect_inds"] = [
+                self.graph.to_indices[point] for point in perfect_qubits
+            ]
 
-    @property
-    def high_bound_points(self):
-        """All points connected to the boundary slice (as determined by error_complex)
-        with larger coordinates.
-        """
-        mid = int(len(self.bound_points) / 2)
-        return self.bound_points[mid:]
+        for ec in self.ec:
+            if backend == "networkx":
+                stabilizer_graph = NxStabilizerGraph(ec, self)
+            elif backend == "retworkx":
+                stabilizer_graph = RxStabilizerGraph(ec, self)
+            else:
+                raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
+            setattr(self, ec + "_stab_graph", stabilizer_graph)
 
-    def identify_stabilizers(self, error_complex="primal"):
-        """Return the syndrome coordinates for self.
+    def identify_stabilizers(self):
+        """Set the stabilizer and syndrome coordinates of self.
 
         Generate a list of Stabilizer objects containing coordinates of
-        all the stabilizer elements according to error_complex, starting
-        with six-body X stabilizers, followed by five, four, and three,
-        if required by choice of boundary.
+        all the stabilizer elements according to error complex ec.
+        Furthermore, generate a list of all the relevant syndrome
+        coordinates. In the end, the {ec}_syndrome_coords, {ec}_syndrome_inds,
+        and {ec}_stabilizers attributes (where ec can be 'primal' or
+        'dual') as well as all_syndrome_inds and all_syndrome_coords are set.
         """
-        G = self.graph
+        rhg_lattice = self.graph
         # Dimensions, boundary types, max and min ranges.
-        dims = list(self.dims)
-        boundaries = np.array(self.boundaries)
-        min_dict = {"primal": 0, "dual": 1, "periodic": 0}
-        mins = [min_dict[typ] for typ in boundaries]
-        maxes = np.array([2 * dims[i] - 1 for i in (0, 1, 2)])
+        dims = np.array(self.dims)
 
-        # Function for generating ranges from lists of mins and maxes.
-        ranges = [range(dims[i]) for i in range(3)]
-        inds = it.product(*ranges)
+        all_six_bodies = {}
 
-        # TODO: Implement dual error complex.
-        if error_complex == "primal":
+        if "primal" in self.ec:
+            all_six_bodies["primal"] = self.graph.graph["primal_cubes"]
+        if "dual" in self.ec:
+            min_dict = {"primal": -1, "dual": 0, "periodic": -1}
+            max_dict = {"primal": 1, "dual": 1, "periodic": 1}
+            range_min = np.array([min_dict[typ] for typ in self.boundaries])
+            range_max = dims - np.array([max_dict[typ] for typ in self.boundaries])
+            ranges = [range(range_min[i], range_max[i]) for i in (0, 1, 2)]
+            inds = it.product(*ranges)
             # All potential six-body stabilizers
-            all_six_bodies = [
+            stabes = [
                 [
-                    (2 * i, 2 * j + 1, 2 * k + 1),
-                    (2 * i + 1, 2 * j, 2 * k + 1),
-                    (2 * i + 1, 2 * j + 1, 2 * k),
-                    (2 * i + 2, 2 * j + 1, 2 * k + 1),
-                    (2 * i + 1, 2 * j + 2, 2 * k + 1),
-                    (2 * i + 1, 2 * j + 1, 2 * k + 2),
+                    (2 * i + 1, 2 * j + 2, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 1, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 2, 2 * k + 1),
+                    (2 * i + 3, 2 * j + 2, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 3, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 2, 2 * k + 3),
                 ]
                 for (i, j, k) in inds
             ]
+            all_six_bodies["dual"] = stabes
 
-        all_cubes = []
-        syndrome_coords = []
+        periodic_inds = np.where(self.boundaries == "periodic")[0]
 
-        periodic_inds = np.where(boundaries == "periodic")[0]
-        dual_inds = np.where(boundaries == "dual")[0]
-        for stabe in all_six_bodies:
-            actual_stabe = list(set(stabe) & set(G))
-            if len(actual_stabe) == 6:
-                cube = Stabilizer(G.subgraph(actual_stabe))
+        for ec in self.ec:
+            all_cubes = []
+            syndrome_coords = []
+            for stabe in all_six_bodies[ec]:
+                actual_stabe = list(set(stabe).intersection(rhg_lattice))
+                # Dealing with stabilizers at periodic boundaries
+                if len(actual_stabe) < 6:
+                    for ind in periodic_inds:
+                        if ec == "dual":
+                            highest_point = list(stabe[3 + ind])
+                            if highest_point[ind] == 1:
+                                highest_point[ind] = 2 * dims[ind] - 1
+                                virtual_point = tuple(highest_point)
+                                actual_stabe += [virtual_point]
+                        else:
+                            lowest_point = list(stabe[ind])
+                            if lowest_point[ind] == 2 * dims[ind] - 2:
+                                lowest_point[ind] = 0
+                                virtual_point = tuple(lowest_point)
+                                actual_stabe += [virtual_point]
+                cube = Stabilizer(rhg_lattice.subgraph(actual_stabe))
                 cube.physical = stabe
                 syndrome_coords += actual_stabe
                 all_cubes.append(cube)
-            if len(actual_stabe) == 5:
-                for ind in (0, 1, 2):
-                    lowest_point = list(stabe[ind])
-                    highest_point = stabe[3 + ind]
-                    if lowest_point[ind] == (2 * dims[ind] - 2):
-                        if ind in dual_inds:
-                            cube = Stabilizer(G.subgraph(actual_stabe))
-                            cube.physical = stabe
-                            syndrome_coords += actual_stabe
-                            all_cubes.append(cube)
-                        if ind in periodic_inds:
-                            lowest_point[ind] = 0
-                            virtual_point = tuple(lowest_point)
-                            actual_stabe += [virtual_point]
-                            cube = Stabilizer(G.subgraph(actual_stabe))
-                            cube.physical = stabe
-                            syndrome_coords += actual_stabe
-                            all_cubes.append(cube)
-                    if highest_point[ind] == 2 and ind in dual_inds:
-                        cube = Stabilizer(G.subgraph(actual_stabe))
-                        cube.physical = stabe
-                        syndrome_coords += actual_stabe
-                        all_cubes.append(cube)
-            if len(actual_stabe) == 4:
-                average_point = [sum([point[i] for point in actual_stabe]) / 4 for i in (0, 1, 2)]
-                rounded_avs = np.array([round(av) for av in average_point])
-                high_inds = np.where(maxes == rounded_avs)[0]
-                low_inds = np.where(mins == rounded_avs)[0]
-                if len(high_inds) >= 2:
-                    boundary_inds = high_inds
-                if len(high_inds) == 1:
-                    boundary_inds = np.array([low_inds[0], high_inds[0]])
-                if len(high_inds) == 0:
-                    boundary_inds = low_inds
-                if boundary_inds[0] in periodic_inds:
-                    new_point = rounded_avs.copy()
-                    new_point[boundary_inds[0]] = mins[boundary_inds[0]]
-                    virtual_point = tuple(new_point)
-                    actual_stabe += [virtual_point]
-                    cube = Stabilizer(G.subgraph(actual_stabe))
-                    cube.physical = stabe
-                elif boundary_inds[0] in dual_inds:
-                    cube = Stabilizer(G.subgraph(actual_stabe))
-                    cube.physical = stabe
-                if boundary_inds[1] in periodic_inds:
-                    new_point = rounded_avs.copy()
-                    new_point[boundary_inds[1]] = mins[boundary_inds[1]]
-                    virtual_point = tuple(new_point)
-                    actual_stabe += [virtual_point]
-                    cube = Stabilizer(G.subgraph(actual_stabe))
-                    cube.physical = stabe
-                elif boundary_inds[1] in dual_inds:
-                    cube = Stabilizer(G.subgraph(actual_stabe))
-                    cube.physical = stabe
-                if len(boundary_inds) == 3:
-                    if boundary_inds[2] in periodic_inds:
-                        new_point = rounded_avs.copy()
-                        new_point[boundary_inds[2]] = mins[boundary_inds[2]]
-                        virtual_point = tuple(new_point)
-                        actual_stabe += [virtual_point]
-                        cube = Stabilizer(G.subgraph(actual_stabe))
-                        cube.physical = stabe
-                    elif boundary_inds[2] in dual_inds:
-                        cube = Stabilizer(G.subgraph(actual_stabe))
-                        cube.physical = stabe
-                syndrome_coords += actual_stabe
-                all_cubes.append(cube)
+            setattr(self, ec + "_syndrome_coords", list(set(syndrome_coords)))
+            setattr(
+                self,
+                ec + "_syndrome_inds",
+                [self.graph.to_indices[point] for point in syndrome_coords],
+            )
+            setattr(self, ec + "_stabilizers", all_cubes)
+        for att in ["_syndrome_inds", "_syndrome_coords"]:
+            new_attr = sum((getattr(self, ec + att) for ec in self.ec), start=[])
+            setattr(self, "all" + att, new_attr)
 
-            if len(actual_stabe) == 3:
-                point = [2 * dims[0] - 1] * 3
-                for ind in (0, 1, 2):
-                    if ind in periodic_inds:
-                        point_ind = point[:]
-                        point_ind[ind] = 0
-                        virtual_point = tuple(point_ind)
-                        actual_stabe += [virtual_point]
-                cube = Stabilizer(G.subgraph(actual_stabe))
-                cube.physical = stabe
-                syndrome_coords += actual_stabe
-                all_cubes.append(cube)
-        # Dealing with six-body X stabilizers on perodic boundaries,
-        # and five-body X stabilizers on dual boundaries.
-        self.syndrome_coords = syndrome_coords
-        return all_cubes
-
-    def identify_boundary(self, error_complex="primal"):
+    def identify_boundary(self):
         """Obtain coordinates of syndrome qubits on the boundary.
 
-        The relevant boundary is determined by the error_complex string.
+        The relevant boundaries are determined by the ec string. In the end,
+        the attributes {b}_bound_points are set, where b can be 'primal' or
+        'dual'.
         """
-        # TODO: Dual boundaries.
-        dims = self.dims
-        boundaries = np.array(self.boundaries)
-        if error_complex == "primal":
-            # Odd indices, which is where primal syndrome qubits are located.
-            odds = [
-                range(1, 2 * dims[0], 2),
-                range(1, 2 * dims[1], 2),
-                range(1, 2 * dims[2], 2),
-            ]
-        low = []
-        high = []
-        bound_inds = np.where(boundaries == error_complex)[0]
-        for ind in bound_inds:
-            for i, j in ((0, 1), (0, 2), (1, 2)):
-                for tup in it.product(odds[i], odds[j]):
-                    l = list(tup)
-                    m = list(tup)
-                    l.insert(ind, 0)
-                    m.insert(ind, 2 * dims[ind])
-                    low.append(tuple(l))
-                    high.append(tuple(m))
-        return list(set(low)) + list(set(high))
+        for ec in self.ec:
+            if self.bound_str == "periodic":
+                setattr(self, ec + "_bound_points", [])
+            else:
+                dims = self.dims
+                syndrome_coords = getattr(self, ec + "_syndrome_coords")
+                bound_ind = np.where(self.boundaries == ec)[0][0]
+                plane_dict = {0: "x", 1: "y", 2: "z"}
+
+                low_index = 0 if ec == "primal" else 1
+                low_bound_points = self.graph.slice_coords(plane_dict[bound_ind], low_index)
+                final_low_set = set(low_bound_points).intersection(syndrome_coords)
+
+                high_index = 2 * dims[bound_ind] - 2 if ec == "primal" else 2 * dims[bound_ind] - 1
+                high_bound_points = self.graph.slice_coords(plane_dict[bound_ind], high_index)
+                final_high_set = set(high_bound_points).intersection(syndrome_coords)
+
+                setattr(self, ec + "_bound_points", list(final_low_set) + list(final_high_set))
 
     # TODO: slice_coords function that constructs rather than iterates,
     # like the EGraph.

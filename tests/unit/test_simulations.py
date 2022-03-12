@@ -21,20 +21,27 @@ from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo
 
 
-params = it.product([2, 3, 4], ["finite", "periodic"])
+code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
+
+
+@pytest.fixture(scope="module", params=code_params)
+def code(request):
+    """A SurfaceCode object for use in this module."""
+    distance, ec, boundaries = request.param
+    surface_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
+    surface_code.graph.index_generator()
+    return surface_code
 
 
 class TestBlueprint:
     """A class with members to test Monte Carlo simulations for FT threshold estimations for Xanadu's blueprint architecture."""
 
-    @pytest.mark.parametrize("distance, boundaries", params)
-    def test_all_GKP_high_squeezing(self, distance, boundaries):
+    def test_all_GKP_high_squeezing(self, code):
         """Tests Monte Carlo simulations for FT threshold estimation of a system with zero swap-out probability and high squeezing."""
         p_swap = 0
         delta = 0.001
         trials = 10
-        RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
-        errors_py = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=None)
+        errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
@@ -42,29 +49,26 @@ class TestBlueprint:
 class TestPassive:
     """A class with members to test Monte Carlo simulations for FT threshold estimations for Xanadu's passive architecture."""
 
-    @pytest.mark.parametrize("distance", [2, 3, 3])
-    def test_all_GKP_high_squeezing(self, distance):
+    def test_all_GKP_high_squeezing(self, code):
         """Tests Monte Carlo simulations for FT threshold estimation of a system with zero swap-out probability and high squeezing."""
         p_swap = 0
         delta = 0.001
         trials = 10
 
+        pad_bool = False if code.bound_str == "periodic" else True
         # The lattice with macronodes.
-        RHG_macro = RHG_graph(distance, boundaries="periodic", macronodes=True, polarity=False)
+        RHG_macro = code.graph.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
-        # The reduced lattice.
-        RHG_code = SurfaceCode(distance, boundaries="periodic")
-        RHG_reduced = RHG_code.graph
-        RHG_reduced.index_generator()
+
         # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(RHG_reduced)
+        CVRHG_reduced = CVLayer(code.graph)
 
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
-        passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
-        errors_py = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects=passive_objects)
+        passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
+        errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 

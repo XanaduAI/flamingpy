@@ -23,15 +23,18 @@ total = 1
 d = 2
 delta = 0.01
 p_swap = 0.9
-boundaries = "periodic"
-# The lattice with macronodes.
-RHG_macro = RHG_graph(d, boundaries=boundaries, macronodes=True, polarity=False)
-RHG_macro.index_generator()
-RHG_macro.adj_generator(sparse=True)
+boundaries = "open"
+ec = "both"
+pad_bool = True if boundaries == "open" else False
 # The reduced lattice.
-RHG_code = SurfaceCode(d, boundaries=boundaries)
+RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
 RHG_reduced = RHG_code.graph
 RHG_reduced.index_generator()
+# The lattice with macronodes
+RHG_macro = RHG_code.graph.macronize(pad_boundary=pad_bool)
+RHG_macro.index_generator()
+RHG_macro.adj_generator(sparse=True)
+
 # The empty CV state, uninitiated with any error model.
 CVRHG_reduced = CVLayer(RHG_reduced)
 # Define the 4X4 beamsplitter network for a given macronode.
@@ -57,11 +60,7 @@ for trial in range(total):
     }
     decoder = {"outer": "MWPM"}
     correct_start = time.time()
-    c = correct(
-        code=RHG_code,
-        decoder=decoder,
-        weight_options=weight_options,
-    )
+    c = correct(code=RHG_code, decoder=decoder, weight_options=weight_options)
     successes += int(c)
     correct_end = time.time()
     correction_time += correct_end - correct_start

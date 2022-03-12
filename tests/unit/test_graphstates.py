@@ -187,15 +187,17 @@ class TestCVLayer:
         H = CVLayer(random_graph[0], p_swap=1)
         G.apply_noise(model_init)
         H.apply_noise(model_init)
-        init_noise_all_GKP = np.full(2 * n, delta / 2, dtype=np.float32)
-        init_noise_all_p = np.array([1 / (2 * delta)] * n + [delta / 2] * n, dtype=np.float32)
+        init_noise_all_GKP = np.full(2 * n, (delta / 2) ** 0.5, dtype=np.float32)
+        init_noise_all_p = np.array(
+            [1 / (2 * delta) ** 0.5] * n + [(delta / 2) ** 0.5] * n, dtype=np.float32
+        )
         assert np.array_equal(G._init_noise, init_noise_all_GKP)
         assert np.array_equal(H._init_noise, init_noise_all_p)
 
         G.apply_noise(model_fin)
         H.apply_noise(model_fin)
-        noise_cov_all_GKP = SCZ_apply(G._adj, np.diag(init_noise_all_GKP))
-        noise_cov_all_p = SCZ_apply(H._adj, np.diag(init_noise_all_p))
+        noise_cov_all_GKP = SCZ_apply(G._adj, np.diag(init_noise_all_GKP) ** 2)
+        noise_cov_all_p = SCZ_apply(H._adj, np.diag(init_noise_all_p) ** 2)
         assert np.array_equal(G._noise_cov.toarray(), noise_cov_all_GKP)
         assert np.array_equal(H._noise_cov.toarray(), noise_cov_all_p)
         assert G.noise_cov is not None

@@ -36,8 +36,8 @@ def matching_graphs(request):
     Also return the same graph as a NxMatchingGraph for comparison.
     """
     MatchingGraphType, num_nodes = request.param
-    graph = MatchingGraphType()
-    nx_graph = NxMatchingGraph()
+    graph = MatchingGraphType("primal")
+    nx_graph = NxMatchingGraph("primal")
     rng = np.random.default_rng()
     for edge in it.combinations(range(num_nodes), r=2):
         weight = rng.integers(0, 10)

@@ -23,22 +23,24 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import invert_permutation, BS_network, reduce_macro_and_simulate
 
 
-code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1])
+code_params = it.product(
+    [2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "periodic"], ["primal", "dual", "both"]
+)
 
 
 @pytest.fixture(scope="module", params=code_params)
 def macro_RHG(request):
     """Defines a macronode RHG lattice, the reduced lattice, and the delta/p-swap paramaters for use in this module."""
-    d, delta, p_swap = request.param
-    boundaries = "periodic"
-    # The lattice with macronodes.
-    RHG_macro = RHG_graph(d, boundaries=boundaries, macronodes=True, polarity=False)
-    RHG_macro.index_generator()
-    RHG_macro.adj_generator(sparse=True)
+    d, delta, p_swap, boundaries, ec = request.param
     # The reduced lattice.
-    RHG_code = SurfaceCode(d, boundaries=boundaries)
+    RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
     RHG_reduced = RHG_code.graph
     RHG_reduced.index_generator()
+    # The lattice with macronodes.
+    pad_bool = True if boundaries == "open" else False
+    RHG_macro = RHG_reduced.macronize(pad_boundary=pad_bool)
+    RHG_macro.index_generator()
+    RHG_macro.adj_generator(sparse=True)
     return delta, p_swap, RHG_macro, RHG_reduced
 
 
@@ -72,8 +74,8 @@ class TestReduction:
         bs_network = BS_network(4)
         reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta)
         # Check proper reduction to effective node type.
-        for central_node in RHG_macro.macro.nodes:
-            micronodes = RHG_macro.macro.nodes[central_node]["micronodes"]
+        for central_node in RHG_macro.macro_to_micro:
+            micronodes = RHG_macro.macro_to_micro[central_node]
             effective_type = RHG_reduced.nodes[central_node]["state"]
             p_count = 0
             for micronode in micronodes:

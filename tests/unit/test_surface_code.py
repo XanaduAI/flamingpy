@@ -14,6 +14,7 @@
 """"Unit tests for classes and methods in the surface_code module."""
 import itertools as it
 
+import networkx as nx
 from networkx import fast_gnp_random_graph
 from networkx.algorithms.operators import difference
 import numpy as np
@@ -21,7 +22,12 @@ from numpy.random import default_rng as rng
 import pytest
 
 from flamingpy.codes.graphs import EGraph
-from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode
+from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity
+
+
+# All possible boundary combinations.
+all_bound_combs = it.product(["primal", "dual", "periodic"], repeat=3)
+all_bound_combs = [np.array(bound) for bound in all_bound_combs]
 
 
 def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
@@ -67,11 +73,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     elif isinstance(boundaries, str):
         boundaries = [boundaries] * 3
     # Define the EGraph of the lattice
-    if macronodes:
-        indexer = "macronodes"
-    else:
-        indexer = "default"
-    lattice = EGraph(dims=dims, indexer=indexer, macronodes=macronodes)
+    lattice = EGraph(dims=dims, macronodes=macronodes)
 
     # Constrain the ranges of the coordinates depending on the type
     # of boundaries.
@@ -123,7 +125,8 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     color = lambda pol: ((pol + 1) // 2) * "b" + abs((pol - 1) // 2) * "r"
 
     if macronodes:
-        macro_graph = lattice.macro
+        lattice.macro_to_micro = {}
+        macro_dict = lattice.macro_to_micro
 
     # Add edges between red points and all their neighbours.
     for point in all_red:
@@ -131,8 +134,8 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
         if macronodes:
             planetary_bodies = red_neighbours(point, displace=0.1)
             neighbouring_bodies = red_neighbours(point, displace=0.9)
-            macro_graph.add_node(point, micronodes=[])
-            # TODO: Append micronodes to macro_graph so indexer does
+            macro_dict[point] = []
+            # TODO: Append micronodes to macro_dict so indexer does
             # not have to be run.
         for i in range(4):
             pol = (-1) ** (polarity * (point[2] + i))
@@ -155,7 +158,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
         if macronodes:
             planetary_bodies = green_neighbours(point, displace=0.1)
             neighbouring_bodies = green_neighbours(point, displace=0.9)
-            macro_graph.add_node(point, micronodes=[])
+            macro_dict[point] = []
         pol = (-1) ** (polarity * (point[1] + 1))
         for i in (0, 1):
             if neighbours[i] in all_green:
@@ -177,7 +180,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
         # First and last slices of the lattice in the direction
         # specified by ind.
         if macronodes:
-            integer_vertices = macro_graph.nodes
+            integer_vertices = macro_dict
         else:
             integer_vertices = lattice.nodes
         low_slice = {point for point in integer_vertices if point[ind] == 0}
@@ -224,7 +227,12 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
                 lattice.add_edge(point, high_green, weight=pol, color=color(pol))
                 lattice.nodes[point]["color"] = "green"
                 lattice.nodes[high_green]["color"] = "green"
-
+    if macronodes:
+        for node in lattice.nodes():
+            rounded = tuple(np.round(node).astype(int))
+            if not lattice.macro_to_micro.get(rounded):
+                lattice.macro_to_micro[rounded] = []
+            lattice.macro_to_micro[rounded].append(node)
     return lattice
 
 
@@ -233,17 +241,23 @@ class TestRHGGraph:
     """Test the RHG_graph function."""
 
     def test_boundary_combinations(self, d):
-        """Check that different boundary conditions produce a nonempty lattice, and equal the lattice constructed via an alternative approach."""
+        """Check that different boundary conditions produce a nonempty lattice."""
         for boundaries in it.product(["primal", "dual", "periodic"], repeat=3):
+            boundaries = np.array(boundaries)
             RHG_lattice = RHG_graph(d, boundaries)
             assert len(RHG_lattice)
-            assert not difference(RHG_lattice, RHG_graph_old(d, boundaries)).edges
-        RHG_lattice_finite = RHG_graph(d, "finite")
-        assert len(RHG_lattice_finite)
-        assert not difference(RHG_lattice_finite, RHG_graph_old(d, "finite")).edges
+            # The following test requires a modification to RHG_graph_old,
+            # since the new method creates a lattice with a different shape.
+            # assert not set(RHG_lattice.edges) - set(RHG_graph_old(d, boundaries).edges)
+        for boundaries in ["primal", "dual", "periodic", "open_primal", "open_dual"]:
+            RHG_lattice = RHG_graph(d, boundaries)
+            assert len(RHG_lattice)
+        # The following test requires a modification to RHG_graph_old,
+        # since the new method creates a lattice with a different shape.
+        # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
     def test_periodic_boundaries(self, d):
-        """Test whether periodic boundary condition produce a lattice with the expected size."""
+        """Test whether periodic boundary conditions produce a lattice with the expected size."""
         RHG_lattice = RHG_graph(d, "periodic")
         assert len(RHG_lattice) == 6 * (d**3)
 
@@ -256,18 +270,50 @@ class TestRHGGraph:
         for point in all_boundaries:
             assert len(RHG_lattice[point]) == 4
 
-        assert not difference(RHG_lattice, RHG_graph_old(d, "periodic")).edges
+        assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
-    # def test_polarity(self, d):
-    # pass
+    @pytest.mark.parametrize("boundaries", all_bound_combs)
+    def test_polarity(self, d, boundaries):
+        "Test whether lattice polarity behaves as expected."
+        RHG_reduced = RHG_graph(d, boundaries)
+        RHG_macro = RHG_reduced.macronize()
+        for graph in (RHG_reduced, RHG_macro):
+            weights = list(nx.get_edge_attributes(graph, "weight").values())
+            assert np.all(np.array(weights) == 1)
+        # Check alternating polarity.
+        RHG_reduced = RHG_graph(d, boundaries, polarity=alternating_polarity)
+        RHG_macro = RHG_reduced.macronize()
+        for graph in (RHG_reduced, RHG_macro):
+            weights = np.array(list(nx.get_edge_attributes(graph, "weight").values()))
+            # Check that all weights are either 1 or -1
+            assert np.all((weights == 1) | (weights == -1))
+            # For all-periodic boundaries, check that each node in the
+            # reduced lattice has two +1 and two -1 edges; for
+            # the macronode lattice, that each macronode contains
+            # four edges, two with weight +1 and two with weight -1.
+            if tuple(boundaries) == ("periodic", "periodic", "periodic"):
+                if graph == RHG_reduced:
+                    adj_mat = graph.adj_generator(sparse=False)
+                    for row in adj_mat:
+                        assert np.count_nonzero(row == 1) == 2
+                        assert np.count_nonzero(row == -1) == 2
+                if graph == RHG_macro:
+                    for macronode in RHG_macro.macro_to_micro:
+                        micronodes = RHG_macro.macro_to_micro[macronode]
+                        macro_edges = RHG_macro.edges(micronodes)
+                        weights = np.array(
+                            [RHG_macro.edges[edge]["weight"] for edge in macro_edges]
+                        )
+                        assert np.count_nonzero(weights == 1) == 2
+                        assert np.count_nonzero(weights == -1) == 2
 
     def test_macronodes(self, d):
         """Check that the macronode lattice was generated as expected."""
-        for boundaries in ["finite", "periodic"]:
-            macronode_lattice = RHG_graph(d, boundaries, macronodes=True)
-            macronode_lattice.index_generator()
-            RHG_macronodes = macronode_lattice.macro
+        # Tests for periodic boundaries.
+        for boundaries in ["periodic"]:
             RHG_reduced = RHG_graph(d, boundaries)
+            macronode_lattice = RHG_reduced.macronize()
+            RHG_macronodes = macronode_lattice.macro_to_micro
             # Check that the reduced lattice has the same node set
             # as the nodes stored in the macro attribute of the
             # macronode lattice.
@@ -275,66 +321,117 @@ class TestRHGGraph:
             # Check that the macronode lattice in the case of periodic
             # boundaries is exactly four times larger than the reduced
             # lattice.
-            if boundaries == "periodic":
-                assert len(macronode_lattice) == 4 * len(RHG_reduced)
+            assert len(macronode_lattice) == 4 * len(RHG_reduced)
+            # Check that there is no difference in the edge set
+            # between the macronode_lattice and the macronode lattice
+            # create by the RHG_graph_old function.
             assert not difference(
                 macronode_lattice, RHG_graph_old(d, boundaries, macronodes=True)
             ).edges
+        # Tests for all boundaries.
+        for boundaries in it.product(["primal", "dual", "periodic"], repeat=3):
+            boundaries = np.array(boundaries)
+            RHG_reduced = RHG_graph(d, boundaries)
+            macronode_lattice = RHG_reduced.macronize(pad_boundary=True)
+            # Check that the macronode lattice in the case of padded
+            # boundaries is exactly four times larger than the reduced
+            # lattice.
+            assert len(macronode_lattice) == 4 * len(RHG_reduced)
 
 
-code_params = it.product(range(2, 5), ["primal", "dual", "finite", "periodic"])
+code_params = it.product(range(2, 5), ["primal", "dual", "both"], ["open", "periodic"])
 
 
 @pytest.fixture(scope="module", params=code_params)
-def RHG_code(request):
-    """A handy function to define the RHG code for use in this module."""
-    distance, boundaries = request.param
-    return SurfaceCode(distance, error_complex="primal", boundaries=boundaries)
+def surface_code(request):
+    """A handy function to define the surface code for use in this module."""
+    distance, ec, boundaries = request.param
+    return SurfaceCode(distance, ec, boundaries)
 
 
-class TestRHGCode:
-    """Test the RHGCode class."""
+class TestSurfaceCode:
+    """Test the SurfaceCode class."""
 
-    def test_init(self, RHG_code):
-        """Check proper initialization of RHG_code."""
-        distance = RHG_code.distance
-        assert RHG_code.dims == (distance, distance, distance)
-        assert RHG_code.complex
-        assert RHG_code.boundaries
-        assert RHG_code.syndrome_inds
+    def test_init(self, surface_code):
+        """Check the proper initialization of SurfaceCode."""
+        distance = surface_code.distance
+        assert surface_code.dims == (distance, distance, distance)
+        assert surface_code.ec
+        assert surface_code.bound_str
+        assert list(surface_code.boundaries)
+        for ec in surface_code.ec:
+            attributes = [
+                "stabilizers",
+                "syndrome_inds",
+                "syndrome_coords",
+                "bound_points",
+                "stab_graph",
+            ]
+            for att in attributes:
+                getattr(surface_code, ec + "_" + att)
+            for att in ["all_syndrome_inds", "all_syndrome_coords"]:
+                getattr(surface_code, att)
 
-    def test_stabilizers(self, RHG_code):
+    def test_stabilizers(self, surface_code):
         """Check whether all stabilizers were generated as expected."""
-        cubes = RHG_code.stabilizers
-        # Check that there are d^3 stabilizers
-        assert len(cubes) == RHG_code.distance**3
-        # Check that each stabilizer has 6 corresponing physical
-        # vertices, no matter if it's a 3, 4, 5, or 6 body stabilizer.
-        for cube in cubes:
-            assert len(cube.physical) == 6
-        # For all primal or periodic boundaries, check that there are
-        # only 6-body stabilizers.
-        if RHG_code.boundaries in [["primal"] * 3, ["periodic"] * 3]:
-            assert len(cube.egraph) == 6
-        # TODO: "finite" boundary test
+        for ec in surface_code.ec:
+            d = surface_code.distance
+            cubes = getattr(surface_code, ec + "_stabilizers")
+            # Check that there are a correct number of stabilizer elements
+            # depending on the boundary conditions.
+            if surface_code.bound_str.startswith("open"):
+                if len(surface_code.ec) == 2 and ec == "dual":
+                    assert len(cubes) == (d - 1) ** 2 * d
+                else:
+                    assert len(cubes) == d**2 * (d - 1)
+            elif surface_code.bound_str == "periodic":
+                assert len(cubes) == d**3
+            # Check that each stabilizer has 6 corresponing physical
+            # vertices, even if it's an n-body stabilizer with n < 6.
+            for cube in cubes:
+                assert len(cube.physical) == 6
+                # For periodic boundaries, check that there are
+                # only 6-body stabilizers.
+                if surface_code.bound_str == "periodic":
+                    assert len(cube.egraph) == 6
 
-    def test_syndrome(self, RHG_code):
-        """Check that syndrome coordinates in the code class match the coordinates in the stabilizers."""
-        syndrome_coords = RHG_code.syndrome_coords
-        syndrome_from_stabes = [set(cube.egraph) for cube in RHG_code.stabilizers]
-        flattened_syndrome = [a for b in syndrome_from_stabes for a in b]
-        assert not set(syndrome_coords) - set(flattened_syndrome)
+    def test_syndrome(self, surface_code):
+        """Check that the syndrome coordinates have been appropriately
+        identified."""
+        # Check that syndrome coordinates in the code class match the
+        # coordinates in the stabilizers.
+        for ec in surface_code.ec:
+            syndrome_coords = getattr(surface_code, ec + "_syndrome_coords")
+            stabilizers = getattr(surface_code, ec + "_stabilizers")
+            syndrome_from_stabes = [set(cube.egraph) for cube in stabilizers]
+            flattened_syndrome = [a for b in syndrome_from_stabes for a in b]
+            assert not set(syndrome_coords) - set(flattened_syndrome)
+            # Check that the total number of syndrome coordinates is correct.
+            d = surface_code.distance
+            if surface_code.bound_str.startswith("open"):
+                if ec == "dual" and len(surface_code.ec) == 2:
+                    assert len(syndrome_coords) == (d - 1) ** 3 + 2 * (d - 1) * d**2
+                else:
+                    assert len(syndrome_coords) == d**3 + 2 * d * (d - 1) ** 2
+            elif surface_code.bound_str == "periodic":
+                assert len(syndrome_coords) == 3 * d**3
 
-    def test_boundary(self, RHG_code):
-        """Test presence of RHG_code.boundary_coords in case of primal boundaries."""
-        if "primal" in RHG_code.boundaries:
-            assert RHG_code.bound_points
-        else:
-            assert not RHG_code.bound_points
+    def test_boundary(self, surface_code):
+        """Check that the length of boundary coordinates is correct."""
+        for ec in surface_code.ec:
+            bound_points = getattr(surface_code, ec + "_bound_points")
+            if surface_code.bound_str.startswith("open"):
+                d = surface_code.distance
+                if ec == "dual" and len(surface_code.ec) == 2:
+                    assert len(bound_points) == 2 * d * (d - 1)
+                else:
+                    assert len(bound_points) == 2 * d**2
+            elif surface_code.bound_str == "periodic":
+                assert not bound_points
 
 
-class TestRHGCube:
-    """Test the RHGCube class."""
+class TestStabilizer:
+    """Test the Stabilizer class."""
 
     def test_parity(self):
         """Check that parity is properly computed."""

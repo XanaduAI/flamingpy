@@ -37,4 +37,4 @@ jobs:
           python setup.py build_cmake --inplace 
         
       - name: Run tests
-        run: python -m pytest tests/ --cov=src/flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native  
+        run: python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native  

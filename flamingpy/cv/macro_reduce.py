@@ -80,7 +80,17 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
     # The hybridized CVRHG macronode lattice.
     CVRHG = CVLayer(RHG_macro, p_swap=swap_prob)
     # Noise-model
-    noise_model = {"noise": "grn", "delta": delta, "sampling_order": "two-step"}
+    perfect_points = RHG_macro.graph.get("perfect_points")
+    if perfect_points:
+        perfect_inds = [RHG_macro.to_indices[point] for point in perfect_points]
+    else:
+        perfect_inds = None
+    noise_model = {
+        "noise": "grn",
+        "delta": delta,
+        "sampling_order": "two-step",
+        "perfect_inds": perfect_inds,
+    }
     CVRHG.apply_noise(noise_model)
     # A list of permuted indices where each block of four
     # corresponds to [star, planet, planet, planet].
@@ -141,19 +151,24 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
     # CVRHG.draw(label="hom_val_q")
 
     def neighbor_of_i(i, j):
-        """Return the  neighbor of the ith micronode, jth macronode.
+        """Return the neighbor of the ith micronode, jth macronode.
 
         Micronode i is adjacent to a neighbor with a body index (1 for
         star, 2, 3, 4 for planets). Return the vertex and the body
-        index of the neighbor to help the processing rules.
+        index of the neighbor to help the processing rules. If there is no
+        such neighbor, return None.
         """
         # Index of ith micronode in the jth macronode.
         ith_index = permuted_inds[j + i - 1]
         ith_vertex = to_points[ith_index]
         # Vertex of the neighbor of the ith micronode.
-        ith_neighbor = list(CVRHG.egraph[ith_vertex])[0]
-        ith_body_index = CVRHG.egraph.nodes[ith_neighbor]["body_index"]
-        return ith_neighbor, ith_body_index
+        ith_adjacency = list(CVRHG.egraph[ith_vertex])
+        if ith_adjacency:
+            ith_neighbor = list(CVRHG.egraph[ith_vertex])[0]
+            ith_body_index = CVRHG.egraph.nodes[ith_neighbor]["body_index"]
+            return ith_neighbor, ith_body_index
+        else:
+            return
 
     def m(vertex):
         """Measurement outcomes in the macronode containing vertex.
@@ -161,19 +176,23 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         Return the values of the homodyne measurements of the macronode
         containing vertex. Note we are only interested in
         q-homodyne outcomes; the returned list is of the form
-        [0, 0, q2, q3, q4].
+        [0, 0, q2, q3, q4]. If vertex is None, return a list of 0s, so
+        that the processing is unaltered by the outcomes.
         """
-        meas = np.zeros(5)
-        # The central node corresponding to the neighboring
-        # macronode.
-        central_node = tuple([round(i) for i in vertex])
-        for micro in CVRHG.egraph.macro.nodes[central_node]["micronodes"]:
-            index = CVRHG.egraph.nodes[micro]["body_index"]
-            # Populate meas with the q-homodyne outcomes for
-            # the planet modes.
-            if index != 1:
-                meas[index] = CVRHG.egraph.nodes[micro]["hom_val_q"]
-        return meas
+        if vertex is None:
+            return [0, 0, 0, 0, 0]
+        else:
+            meas = np.zeros(5)
+            # The central node corresponding to the neighboring
+            # macronode.
+            central_node = tuple([round(i) for i in vertex])
+            for micro in CVRHG.egraph.macro_to_micro[central_node]:
+                index = CVRHG.egraph.nodes[micro]["body_index"]
+                # Populate meas with the q-homodyne outcomes for
+                # the planet modes.
+                if index != 1:
+                    meas[index] = CVRHG.egraph.nodes[micro]["hom_val_q"]
+            return meas
 
     def Z(M, neighbor_body_index):
         """Process the homodyne outcomes for neighboring macronode i.
@@ -205,12 +224,11 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         # i ranges from 1 to 4, to align with manuscript.
 
         verts_and_inds = [neighbor_of_i(i, j) for i in (1, 2, 3, 4)]
-        neighbors = [tup[0] for tup in verts_and_inds]
-        body_indices = [tup[1] for tup in verts_and_inds]
+        neighbors = [tup[0] if tup else None for tup in verts_and_inds]
+        body_indices = [tup[1] if tup else None for tup in verts_and_inds]
 
         # Array of arrays of measurement outcomes in all the
         # macronodes adjacent to j.
-
         m_arr = np.array([m(neighbors[i - 1]) for i in (1, 2, 3, 4)])
         # Array of processed q-homodyne outcomes from neighboring
         # macronodes of the form [0, Z(1), Z(2), Z(3), Z(4)].
@@ -220,8 +238,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
 
         # Types of state for the four micronodes directly neighboring
         # macronode j.
-        types = [RHG_macro.nodes[neighbor]["state"] for neighbor in neighbors]
-
+        types = [RHG_macro.nodes[neighbor]["state"] if neighbor else None for neighbor in neighbors]
         # Phase error probability and number of p-squeezed states
         # among the four micronodes in the vicinity of macronode j
         p_err = 0
@@ -245,7 +262,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
             p_err = 0
 
         bitp = GKP_binner([outcome])[0]
-        bitq = GKP_binner(Z_arr[gkp_inds]) if gkp_inds else 0
+        bitq = GKP_binner(Z_arr[gkp_inds].astype(np.float64)) if gkp_inds else 0
 
         processed_bit_val = (bitp + np.sum(bitq)) % 2
 

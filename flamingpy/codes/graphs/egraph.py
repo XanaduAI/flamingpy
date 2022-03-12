@@ -17,7 +17,79 @@
 
 import networkx as nx
 import numpy as np
-import scipy.sparse as sp
+
+
+def macronize(egraph, pad_boundary=False, disp=0.1):
+    """Create a macronode graph out of NetworkX graph G.
+
+    Replace each vertex v in G with a macronode (a collection of n
+    vertices, where n is the size of the neighborhood of v). This is
+    achieved by replacing each pair of vertices in G connected by an
+    edge with a 'dumbbell'. Assumes that: (1) the nodes of G are
+    three-tuples; (2) edges associated with periodic boundary conditions,
+    if they exist, have the attribute 'periodic' set to True. If there is
+    a list of perfect qubits in the graph attribute of the egraph, this list
+    is updated to reflect the new perfect qubits in the macronode graph.
+
+    Args:
+        egraph (nx.Graph): the graph to macronize. All graph, node, and
+            edge attributes of G are preserved.
+        disp (float, optional): how much to displace the nodes
+            within each macronode from the central vertex. This number
+            should be small and positive, and no larger than 0.5.
+        pad_boundary (bool, optional): if True, pad each boundary
+            macronode to have the same number of nodes as a bulk
+            macronode. For now, this only works for the RHG lattice
+            connectivity (i.e. pad to 4 nodes).
+
+    Returns:
+        nx.Graph: the macronized graph, with a macronode-to-micronode
+            dictionary stored as a graph attribute.
+    """
+    if disp >= 0.5 or disp < 0:
+        raise ValueError("Please set disp to a positive value strictly less than 0.5.")
+    macro_graph = nx.Graph(**egraph.graph)
+    # The macronode-to-micronode dictionary
+    macro_dict = {}
+    for edge in egraph.edges:
+        old_point_1, old_point_2 = np.array(edge[0]), np.array(edge[1])
+        direction_vec = old_point_2 - old_point_1
+        distance = np.linalg.norm(direction_vec)
+        periodic_flip = -1 if egraph.edges[edge].get("periodic") else 1
+        shortened_vec = periodic_flip * disp * direction_vec / distance
+        shortened_vec = np.round(shortened_vec, -int(np.log10(disp)) + 2)
+        new_point_1 = tuple(old_point_1 + shortened_vec)
+        new_point_2 = tuple(old_point_2 - shortened_vec)
+        macro_graph.add_node(new_point_1, **egraph.nodes[edge[0]])
+        macro_graph.add_node(new_point_2, **egraph.nodes[edge[1]])
+        macro_graph.add_edge(new_point_1, new_point_2, **egraph.edges[edge])
+
+        # Add to the macronode-to-micronode dictionary
+        if not macro_dict.get(edge[0]):
+            macro_dict[edge[0]] = []
+        if not macro_dict.get(edge[1]):
+            macro_dict[edge[1]] = []
+        macro_dict[edge[0]].append(new_point_1)
+        macro_dict[edge[1]].append(new_point_2)
+
+    if pad_boundary:
+        for node in egraph:
+            macro_size = len(macro_dict[node])
+            if macro_size < 4:
+                n_new = 4 - macro_size
+                for i in range(n_new):
+                    new_node = list(node)
+                    new_node[i] = new_node[i] + 0.05
+                    new_node_tup = tuple(new_node)
+                    macro_graph.add_node(new_node_tup, **egraph.nodes[node])
+                    macro_dict[node].append(new_node_tup)
+
+    macro_graph.graph["macro_dict"] = macro_dict
+    old_perfect_points = egraph.graph.get("perfect_points")
+    if old_perfect_points:
+        new_perfect_qubits = [macro_dict[point] for point in old_perfect_points]
+        macro_graph.graph["perfect_points"] = [a for b in new_perfect_qubits for a in b]
+    return macro_graph
 
 
 class EGraph(nx.Graph):
@@ -46,7 +118,7 @@ class EGraph(nx.Graph):
         self.indexer = indexer
         self._macronodes = macronodes
         if macronodes:
-            self.macro = nx.Graph()
+            self.macro_to_micro = self.graph.get("macro_dict")
         self.to_indices = None
         self.to_points = None
         self.adj_mat = None
@@ -65,14 +137,10 @@ class EGraph(nx.Graph):
         if self.indexer == "default" and not self._macronodes:
             ind_dict = dict(zip(sorted(self.nodes()), range(N)))
         elif self._macronodes:
-            macro_graph = self.macro
-            for node in self.nodes():
-                rounded = tuple(np.round(node).astype(int))
-                macro_graph.nodes[rounded]["micronodes"].append(node)
-            sorted_macro = sorted(macro_graph)
+            sorted_macro = sorted(self.macro_to_micro)
             points = []
             for vertex in sorted_macro:
-                points += self.macro.nodes[vertex]["micronodes"]
+                points += self.macro_to_micro[vertex]
             ind_dict = {points[i]: i for i in range(N)}
         self.to_indices = ind_dict
         self.to_points = {index: point for point, index in ind_dict.items()}
@@ -112,6 +180,13 @@ class EGraph(nx.Graph):
         plane_ind = plane_dict[plane]
         coords = [point for point in self.nodes if point[plane_ind] == number]
         return coords
+
+    def macronize(self, pad_boundary=False, disp=0.1):
+        """Return a new, macronized version of self.
+
+        See egraph.macronize for more details.
+        """
+        return EGraph(macronize(self, pad_boundary, disp), macronodes=True)
 
     def draw(self, **kwargs):
         """Draw the graph state with matplotlib.

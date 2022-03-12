@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 "Benchmark for the decoding procedure comparing networkx and retworkx."
+
+# pylint: disable=no-member
+
 import time
 
 import matplotlib.pyplot as plt
@@ -59,7 +62,7 @@ for backend in ["networkx", "retworkx"]:
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.syndrome_inds)
+        CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
         # Inner decoder
         before = time.time()
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
@@ -79,4 +82,5 @@ plt.legend()
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Decoding for code distance {distance}")
-plt.savefig(f"benchmark_decoding_distance_{distance}.pdf")
+if __name__ == "__main__":
+    plt.savefig(f"benchmark_decoding_distance_{distance}.pdf")

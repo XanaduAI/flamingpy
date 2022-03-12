@@ -42,7 +42,9 @@ class StabilizerGraph(ABC):
     many nodes in order to build a matching graph.
 
     Parameters:
-        code (RHGCode): The code from which to initialize the graph.
+        ec (str): the error complex ("primal" or "dual"). Determines whether
+            the graph is generated from primal or dual stabilizers in the code.
+        code (SurfaceCode): the code from which to initialize the graph.
 
     Attributes:
         stabilizers (List[RHGCube]): All the stabilizer nodes of the graph.
@@ -59,16 +61,22 @@ class StabilizerGraph(ABC):
         computing the phase error probabilities, and translating the outcomes.
     """
 
-    def __init__(self, code=None):
+    def __init__(self, ec, code=None):
         self.add_node("low")
         self.add_node("high")
         self.stabilizers = list()
         self.low_bound_points = list()
         self.high_bound_points = list()
         if code is not None:
-            self.add_stabilizers(code.stabilizers)
-            self.add_low_bound_points(code.low_bound_points)
-            self.add_high_bound_points(code.high_bound_points)
+            self.add_stabilizers(getattr(code, ec + "_stabilizers"))
+            bound_points = getattr(code, ec + "_bound_points")
+            mid = int(len(bound_points) / 2)
+            # All points connected to the boundary slice (as determined by ec)
+            # with smaller coordinates.
+            self.add_low_bound_points(bound_points[:mid])
+            # All points connected to the boundary slice (as determined by ec)
+            # with larger coordinates.
+            self.add_high_bound_points(bound_points[mid:])
             self.connect_nodes()
 
     def add_node(self, node):
@@ -297,9 +305,9 @@ class NxStabilizerGraph(StabilizerGraph):
             The actual graph backend.
     """
 
-    def __init__(self, code=None):
+    def __init__(self, ec, code=None):
         self.graph = nx.Graph()
-        StabilizerGraph.__init__(self, code)
+        StabilizerGraph.__init__(self, ec, code)
 
     def add_node(self, node):
         self.graph.add_node(node)
@@ -355,11 +363,11 @@ class RxStabilizerGraph(StabilizerGraph):
             The map from indices in the graph backend to the corresponding nodes.
     """
 
-    def __init__(self, code=None):
+    def __init__(self, ec, code=None):
         self.graph = rx.PyGraph()
         self.node_to_index = dict()
         self.index_to_node = dict()
-        StabilizerGraph.__init__(self, code)
+        StabilizerGraph.__init__(self, ec, code)
 
     def add_node(self, node):
         index = self.graph.add_node(node)
