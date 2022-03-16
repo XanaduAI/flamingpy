@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Functions for reducing a macronode lattice and simulating passive
-and static architectures."""
+"""Functions for reducing a macronode lattice to a canonical lattice."""
 import numpy as np
 from scipy.linalg import block_diag
 import thewalrus.symplectic as symp
@@ -29,13 +28,12 @@ def invert_permutation(p):
 
 
 def BS_network(n):
-    """Return the symlectic matrix of the beamspliter network.
+    """Return the symlectic matrix of the beamsplitter network.
 
-    Return the symplectic matrix of the beamsplitters connecting
-    four micronodes in each macronode out of n micronodes total. If
-    n = 4, return the matrix in the 'all q's first' convention;
-    otherwise, return a large block-diagonal matrix in the 'q1p1, ...
-    qnpn' convention.
+    Return the symplectic matrix of the beamsplitters connecting four
+    micronodes in each macronode out of n total micronodes. If n = 4, return
+    the matrix in the 'all q's first' convention; otherwise, return a large
+    block-diagonal matrix in the 'q1p1, ... qnpn' convention.
     """
     # 50/50 beamsplitter in the 'all q's first' convention.
     bs5050 = symp.beam_splitter(np.pi / 4, 0)
@@ -43,7 +41,7 @@ def BS_network(n):
     bs2 = symp.expand(bs5050, [3, 2], 4)
     bs3 = symp.expand(bs5050, [2, 0], 4)
     bs4 = symp.expand(bs5050, [3, 1], 4)
-    # Set data type to 'single' because there are only -0.5, 0.5, 0
+    # TODO: Data type set to 'single' because there are only 0, +-0.5 entries
     # but this is really 1/2 of an array that can have dtype=np.int8,
     # so revisit this.
     bs_network = (bs4 @ bs3 @ bs2 @ bs1).astype(np.single)
@@ -65,14 +63,14 @@ def BS_network(n):
 def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, swap_prob, delta):
     """Reduce the macronode RHG lattice to the canonical lattice.
 
-    Take the macronode lattice EGraph RHG_macro and generate a
+    Take the macronode lattice EGraph, RHG_macro, and generate a
     macronode CV lattice with swap-out probaiblity swap_prob and delta
     value delta. Then, label micronodes as planets and stars, conduct
     homodyne measurements, process these measurements, and compute
-    conditional phase error  probabilities. Generate an effective
-    canonical RHG lattice with effective measurement outcomes, phase
-    error probabilities, and state types ('p' or 'GKP') stored as
-    node attributes.
+    conditional phase error probabilities. Generate an canonical RHG
+    lattice with effective measurement outcomes, phase error
+    probabilities, and state types ('p' or 'GKP') stored as node
+    attributes.
     """
     to_points = RHG_macro.to_points
     N = len(RHG_macro)
@@ -147,15 +145,13 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
     # Measure stars in p, planets in q.
     CVRHG.measure_hom(quad="p", inds=stars, updated_quads=unpermuted_quads)
     CVRHG.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
-    # CVRHG.draw(label="hom_val_p")
-    # CVRHG.draw(label="hom_val_q")
 
     def neighbor_of_i(i, j):
         """Return the neighbor of the ith micronode, jth macronode.
 
         Micronode i is adjacent to a neighbor with a body index (1 for
-        star, 2, 3, 4 for planets). Return the vertex and the body
-        index of the neighbor to help the processing rules. If there is no
+        star, 2, 3, 4 for planets). Return the vertex and the body index
+        of the neighbor to help the processing rules. If there is no
         such neighbor, return None.
         """
         # Index of ith micronode in the jth macronode.
@@ -174,10 +170,10 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         """Measurement outcomes in the macronode containing vertex.
 
         Return the values of the homodyne measurements of the macronode
-        containing vertex. Note we are only interested in
-        q-homodyne outcomes; the returned list is of the form
-        [0, 0, q2, q3, q4]. If vertex is None, return a list of 0s, so
-        that the processing is unaltered by the outcomes.
+        containing vertex. Note we are only interested in q-homodyne
+        outcomes; the returned list is of the form [0, 0, q2, q3, q4].
+        If vertex is None, return a list of 0s, so that the processing
+        is unaltered by the outcomes.
         """
         if vertex is None:
             return [0, 0, 0, 0, 0]
@@ -251,7 +247,6 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
                 outcome -= Z_arr[i]
             if types[i - 1] == "GKP":
                 if delta > 0:
-                    # TODO: Double check
                     p_err += Z_err_cond(2 * delta, Z_arr[i], use_hom_val=True)
                 gkp_inds += [i]
         if delta > 0:

@@ -19,9 +19,10 @@ import flamingpy.cpp.lemonpy as lp
 
 def max_weight_matching(G_match, weight):
     """Compute the maximum weighted matching graph using lemon.
+
     Assumptions:
-    1. Symmetric adjacency matrix.
-    2. Adjacency matrix has zeros along diagonal.
+        1. Symmetric adjacency matrix.
+        2. Adjacency matrix has zeros along diagonal.
     """
     adjacency = nx.to_numpy_array(G_match, weight=weight)
     lemon_matching = lp.mwpm(adjacency)

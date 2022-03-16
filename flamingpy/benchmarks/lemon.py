@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Benchmark Lemon's max_weight_matching against networkx."""
+"""Benchmark Lemon's max_weight_matching against NetworkX."""
 import time
 
 import matplotlib.pyplot as plt
@@ -46,10 +46,14 @@ for num_nodes in range(50, 150, 50):
     end = time.time()
     time_nx.append(end - start)
 
-    print("matrix_size t_lemon t_nx = ", matrix_size[-1], time_lemon[-1], time_nx[-1])
+    print(
+        "Matrix size: {}; t_lemon: {}; t_nx: {}".format(
+            matrix_size[-1], time_lemon[-1], time_nx[-1]
+        )
+    )
 
 plt.plot(matrix_size, time_lemon, label="lemon")
-plt.plot(matrix_size, time_nx, label="networkx")
+plt.plot(matrix_size, time_nx, label="NetworkX")
 plt.xlabel("Nodes")
 plt.ylabel("Time")
 plt.yscale("log")

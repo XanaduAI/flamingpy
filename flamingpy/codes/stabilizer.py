@@ -16,18 +16,20 @@ import numpy as np
 
 
 class Stabilizer:
-    """A class for representing a stabilizer element.
+    """A class for representing a stabilizer element of a code.
 
     Arguments:
-        G (EGraph): the subgraph of the lattice EGraph induced by
-            the stabilizer vertices
-        physical (NoneType): the list of physical coordinates
-            associated with the stabilizer element, for plotting
-            purposes. Specified during syndrome identification.
+        G (EGraph): the subgraph of the EGraph of the lattice induced by
+            the stabilizer vertices.
 
     Attributes:
-        egraph (EGraph): the corresponding EGraph.
-        type (str): the type of stabilizer ('six-body' or 'five-body').
+        egraph (EGraph): the corresponding EGraph
+        physical (NoneType or list): the list of physical coordinates
+            associated with the complete stabilizer element, mainly for plotting
+            purposes. Specified during syndrome identification in the code
+            class. For example, the list will contain six points even for
+            incomplete surface code stabilizers, and will have only the
+            local points in case of periodic boundaries.
     """
 
     def __init__(self, G):
@@ -39,18 +41,13 @@ class Stabilizer:
     def parity(self):
         """Compute total parity of the cube.
 
-        For now, add the bit_values found in the 'bit_val' attribute
-        of the nodes of the EGraph.
+        Uses the bit_values found in the 'bit_val' attribute of the nodes of
+        the EGraph of the code.
 
         Returns:
             int: the total parity
         """
-        G = self.egraph
-        bit_vals = [G.nodes[node]["bit_val"] for node in G]
-        # TODO: Option for processing the homodyne outcomes first, as
-        # below.
-        # hom_vals = [G.graph.nodes[node]['hom_val'] for node in G.graph]
-        # return basic_translate([np.sum(hom_vals)])
+        bit_vals = [self.egraph.nodes[node]["bit_val"] for node in self.egraph]
         par = int(np.sum(bit_vals) % 2)
         return par
 
@@ -78,8 +75,6 @@ class Stabilizer:
 
     def midpoint(self):
         """Return the midpoint of the cube."""
-        # TODO: Perhaps choose a different point for a five-body
-        # X stabilizer, for plotting purposes.
         return (
             np.average(self.xlims()),
             np.average(self.ylims()),

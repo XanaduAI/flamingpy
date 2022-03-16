@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Functions useful for GKP encodings."""
+"""Functions useful for binning and errors associated with GKP encodings."""
 import math
 import numpy as np
 from scipy.special import erf
@@ -48,7 +48,7 @@ def integer_fractional(x, alpha):
 
     Args:
         x (float or array): real numbers
-        alpha (float): alpha from above
+        alpha (float): alpha from above.
     """
     int_frac = np.divmod(x, alpha)
     large_frac = np.greater(int_frac[1], alpha / 2).astype(int)
@@ -67,8 +67,8 @@ def GKP_binner(outcomes, return_fraction=False):
 
     Args:
         outcomes (array): the values of a p-homodyne measurement.
-        return_fraction (bool): return the fractional part of the
-            outcome as well, if desired.
+        return_fraction (bool): also return the fractional part of the outcome,
+            if desired.
 
     Returns:
         array: the corresponding bit values.
@@ -112,31 +112,31 @@ def Z_err(var, var_num=5):
 
 
 def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False):
-    """Return the conditional phase error probability for lattice nodes.
+    """Return phase error probabilities conditioned on homodyne outcomes.
 
-    Return the phase error probability for a list of variances var
-    given homodyne outcomes hom_val, with var_num used to determine
-    the number of terms to keep in the summation in the formula.
-    By default, the fractional part of hom_val is used in the summation;
-    if use_hom_val is True, use the entire homodyne value.
+    Return the phase error probability for a list of variances var given
+    homodyne outcomes hom_val, with var_num used to determine the number of
+    terms to keep in the summation in the formula. By default, the fractional
+    part of hom_val is used in the summation; if use_hom_val is True, use the
+    entire homodyne value.
 
     Args:
-        var (array): the lattice p variances.
+        var (array): the variances of the p quadrature.
         hom_val (array): the p-homodyne outcomes.
-        var_num (float): number of variances away from the origin we
-            include in the integral.
+        var_num (float): number of variances away from the origin we include in
+            the integral.
         replace_undefined (float): how to handle 0 denominators.
-            If 'bin_location', return poor-man's probability that ranges
-            from 0 in the centre of a bin to 0.5 halfway between bins.
-            Otherwise, sets it to the replace_undefined value (0 by
-            default).
-        use_hom_val (bool): if True, use the entire homodyne value
-            hom_val in the expression; otherwise use the fractional
-            part.
+            If 'bin_location', return poor-man's probability that ranges from 0
+            in the centre of a bin to 0.5 halfway between bins. Otherwise, sets
+            it to the replace_undefined value (0 by default).
+        use_hom_val (bool): if True, use the entire homodyne value hom_val in
+            the expression; otherwise use the fractional part.
     Returns:
         array: probability of Z (phase flip) errors for each variance,
             contioned on the homodyne outcomes.
-    """  # TODO: Make the following line smarter.
+    """
+    # TODO: Perhaps make n_max a more complicated function of var_num, or
+    # better automate summation range.
     n_max = var_num
 
     bit, frac = GKP_binner(hom_val, return_fraction=True)
@@ -157,7 +157,7 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     else:
         # Initiate a list with length same as var
         error = np.zeros(np.shape(var))
-        # TODO replace ex with normal pdf?
+        # TODO: Replace the following line with a better function.
         ex = lambda z, n: np.exp(-((z - n * np.sqrt(np.pi)) ** 2) / var)
         numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
         denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)

@@ -33,23 +33,21 @@ if show:
 else:
     plt.close()
 
-bell_state.adj_generator(sparse=True)
+bell_state.adj_generator(sparse=False)
 print("Adjacency matrix: \n", bell_state.adj_mat, "\n")
 
 CVbell = CVLayer(bell_state, p_swap=0.5)
 # Noise model for CVLayer
-model = {"noise": "grn", "delta": 1, "sampling_order": "final"}
+model = {"noise": "grn", "delta": 1, "sampling_order": "initial"}
 CVbell.apply_noise(model)
 CVbell.measure_hom("p", [0])
 CVbell.measure_hom("q", [1])
-CVbell.eval_Z_probs(cond=False)
 
 # Some parameters to make the graph of CVbell.
 CV_graph_params = {"legend": True, "title": True}
 
 CVbell.draw(label="hom_val_p", **CV_graph_params)
 CVbell.draw(label="hom_val_q", **CV_graph_params)
-CVbell.draw(label="p_phase", **CV_graph_params)
 
 if show:
     plt.show()
@@ -57,10 +55,10 @@ else:
     plt.close()
 
 print("\nNodes :", bell_state.nodes.data())
-print("Edges :", bell_state.edges.data())
-print("p indices: ", CVbell.p_inds, "\n")
-print("GKP indices: ", CVbell.GKP_inds, "\n")
-print("\nSymplectic CZ matrix: \n", CVbell.SCZ(), "\n")
+print("Edges :", bell_state.edges.data(), "\n")
+print("p indices: ", CVbell.p_inds)
+print("GKP indices: ", CVbell.GKP_inds)
+print("\nSymplectic CZ matrix: ", CVbell.SCZ(), "\n")
 
 viz.plot_binary_mat_heat_map(CVbell.SCZ(), show)
 

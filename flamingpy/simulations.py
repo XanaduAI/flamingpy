@@ -36,7 +36,9 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
         trials (int): the number of trials.
         delta (float): the noise/squeezing/width parameter.
         p_swap (float): the probability of replacing a GKP state
-            with a p-squeezed state in the lattice.
+            with a p-squeezed state in the lattice
+        passive_objects (NoneType or list): the arguments for
+            reduce_macro_and_simulate for passive architecture simulations.
 
     Returns:
         errors (integer): the number of errors.
@@ -46,7 +48,6 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
-        # TODO: Noise model input.
         code_lattice = code.graph
         # Noise model
         cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
@@ -61,7 +62,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
 
     successes = 0
     for _ in range(trials):
-        if passive_objects:
+        if passive_objects is not None:
             reduce_macro_and_simulate(*passive_objects, p_swap, delta)
         else:
             # Apply noise
@@ -72,14 +73,11 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
 
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
         successes += result
-        errors = trials - successes
-
+    errors = trials - successes
     return errors
 
 
 if __name__ == "__main__":
-    # TODO: Intention of below is to allow not to use the command line
-    # if desired. Is this appropriate?
     if len(sys.argv) != 1:
         print(sys.argv)
         # Parsing input parameters
@@ -136,8 +134,8 @@ if __name__ == "__main__":
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
-    # Store results in the data directory in the file results.csv.
-    file_name = "./sims_data/results.csv"
+    # Store results in a sims_data directory in the file simulations_results.csv.
+    file_name = "./flamingpy/sims_data/sims_results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
         file = open(file_name, "x")
@@ -158,7 +156,6 @@ if __name__ == "__main__":
     except FileExistsError:
         file = open(file_name, "a", newline="")
         writer = csv.writer(file)
-    # TODO: Do we need to record time?
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
     file.close()

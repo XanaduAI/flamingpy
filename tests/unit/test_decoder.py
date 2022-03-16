@@ -15,10 +15,7 @@
 
 # pylint: disable=no-member
 
-from ast import literal_eval
-import io
 import itertools as it
-import sys
 
 import networkx as nx
 import numpy as np
@@ -68,7 +65,7 @@ def match_data(enc_state):
 
 
 class TestAssignWeights:
-    "Test the weight assignment in decoder.py."
+    """Test the weight assignment in decoder.py."""
 
     def test_unit_weights(self, enc_state):
         """Check that all weights are 1 with the "unit" weight option."""
@@ -121,8 +118,8 @@ class TestDecoder:
                     assert cube.egraph.nodes[point].get("bit_val") is not None
 
     def test_stab_graph(self, enc_state):
-        """Check that edges in a stabilizer grapg contain the coordinates
-        of the common vertex between neighbouring stabilizers."""
+        """Check that edges in a stabilizer grapg contain the coordinates of
+        the common vertex between neighbouring stabilizers."""
         for ec in enc_state[0].ec:
             stab_graph = getattr(enc_state[0], ec + "_stab_graph")
             stabilizers = getattr(enc_state[0], ec + "_stabilizers")
@@ -157,7 +154,8 @@ class TestDecoder:
                 assert virtual_subgraph.edges[edge]["weight"] == 0
 
     def test_MWPM(self, match_data):
-        """Check that the matching is perfect (the set of all the nodes in the matching is the same as the set of all nodes in the matching graph)."""
+        """Check that the matching is perfect (the set of all the nodes in the
+        matching is the same as the set of all nodes in the matching graph)."""
         for i, graph in enumerate(match_data[0]):
             matching = match_data[1][i]
             assert not {a for b in matching for a in b} - graph.graph.nodes

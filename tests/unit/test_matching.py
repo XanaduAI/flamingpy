@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for MatchingGraph classes in matching.py.
+
 The networkx implementation is used as a reference.
 """
 import itertools as it
@@ -30,9 +31,9 @@ num_nodes = range(4, 24, 4)
 
 @pytest.fixture(scope="module", params=it.product(matching_graph_types, num_nodes))
 def matching_graphs(request):
-    """
-    Return an instance of the given matching graph type with random weights
+    """Return an instance of the given matching graph type with random weights
     and an edge between each of the num_nodes nodes.
+
     Also return the same graph as a NxMatchingGraph for comparison.
     """
     MatchingGraphType, num_nodes = request.param

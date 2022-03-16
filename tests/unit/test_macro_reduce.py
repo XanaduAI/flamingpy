@@ -18,7 +18,7 @@ import numpy as np
 from numpy.random import shuffle, default_rng as rng
 import pytest
 
-from flamingpy.codes import RHG_graph, SurfaceCode
+from flamingpy.codes import SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import invert_permutation, BS_network, reduce_macro_and_simulate
 
@@ -30,7 +30,8 @@ code_params = it.product(
 
 @pytest.fixture(scope="module", params=code_params)
 def macro_RHG(request):
-    """Defines a macronode RHG lattice, the reduced lattice, and the delta/p-swap paramaters for use in this module."""
+    """Defines a macronode RHG lattice, the reduced lattice, and the
+    delta/p-swap paramaters for use in this module."""
     d, delta, p_swap, boundaries, ec = request.param
     # The reduced lattice.
     RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
@@ -48,7 +49,8 @@ class TestHelpers:
     """Test helper functions for macronode reduction."""
 
     def test_invert_permutation(self):
-        """Check that permuting and then unpermuting a random array leaves it unchanged."""
+        """Check that permuting and then unpermuting a random array leaves it
+        unchanged."""
         N = rng().integers(1, 100)
         random_array = rng().integers(0, 100, N)
         random_p = np.arange(N)

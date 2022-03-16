@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The stabilizer graph interface and some implementation."""
+"""The stabilizer graph interface and some implementations."""
 
 # pylint: disable=import-outside-toplevel
 
@@ -27,19 +27,19 @@ import retworkx as rx
 class StabilizerGraph(ABC):
     """An abstraction for a stabilizer graph.
 
-    Stablizer graphs are an intermediate representation used by the
-    minimum weight perfect matching decoder.
+    Stablizer graphs are a intermediate representations of qubit codes used by
+    decoders such as minimum weight perfect matching (MWPM).
 
-    A stabilizer graph has as its nodes every stabilizer in a code and
+    The nodes of a stabilizer graph are every stabilizer element in a code and
     every boundary point (coming from the type of boundary determined
-    by the error complex -- primal or dual). Two stabilizers
-    (or a stabilizer and a boundary point) sharing a vertex are connected
-    by an edge whose weight is equal to the weight assigned to that vertex
-    in the code. The weight is computed on the fly while computing the shortest path.
+    by the error complex -- primal or dual). Two stabilizers (or a stabilizer
+    and a boundary point) sharing a vertex are connected by an edge whose
+    weight is equal to the weight assigned to that vertex in the code. The
+    weight is computed on the fly while computing the shortest path.
 
     The main function of a stabilizer graph is to be fed into the decoder.
-    In the case of MWPM, it is used to compute the shorted path between
-    many nodes in order to build a matching graph.
+    In the case of MWPM, it is used to compute the shortest paths between
+    many nodes in order to construct the matching graph.
 
     Parameters:
         ec (str): the error complex ("primal" or "dual"). Determines whether
@@ -47,18 +47,21 @@ class StabilizerGraph(ABC):
         code (SurfaceCode): the code from which to initialize the graph.
 
     Attributes:
-        stabilizers (List[RHGCube]): All the stabilizer nodes of the graph.
+        stabilizers (List[Stabilizer]): All the stabilizer nodes of the graph.
 
-        low_bound_points (List[Tuple[Int, Int, Int]]): All the points on the graph
-        on the boundary with smaller coordinates.
+        {ec}_low_bound_points (List[Tuple[Int, Int, Int]]): All the points on
+            the code boundary with smaller coordinates. 'ec' can be 'primal'
+            or 'dual'.
 
-        high_bound_points (List[Tuple[Int, Int, Int]]): All the points on the graph
-        on the boundary with larger coordinates.
+        {ec}_high_bound_points (List[Tuple[Int, Int, Int]]): All the points on
+            the code boundary with larger coordinates. 'ec' can be 'primal'
+            or 'dual'.
 
     Note:
-        One has to assign weights and bit values to the nodes of the lattice.
-        This can be achieved, e.g,. by applying CV noise, conducting homodyne measurements,
-        computing the phase error probabilities, and translating the outcomes.
+        One has first to assign weights and bit values to the nodes of the
+        lattice. This can be achieved, e.g,. by applying CV noise, conducting
+        homodyne measurements, computing the phase error probabilities, and
+        translating the outcomes.
     """
 
     def __init__(self, ec, code=None):
@@ -95,15 +98,16 @@ class StabilizerGraph(ABC):
         node2,
         common_vertex=None,
     ):
-        """Insert a node into the graph and return the updated stabilizer graph.
+        """Insert a node into the graph and return the updated stabilizer
+        graph.
 
         This should not distinguish between stabilizer and boundary points.
 
         Parameters:
-            node1 (RHGCube or Tuple[Int, Int, Int]): The first node of the edge.
-            node2 (RHGCube or Tuple[Int, Int, Int]): The second node of the edge.
-            common_vertex (optional): The vertex shared by the two nodes
-            in the corresponding code.
+            node1 (Stabilizer or Tuple[Int, Int, Int]): The first node of the edge.
+            node2 (Stabilizer or Tuple[Int, Int, Int]): The second node of the edge.
+            common_vertex (optional): The vertex shared by the two nodes in the
+                corresponding code.
 
         Returns:
             The updated stabilizer graph.
@@ -114,8 +118,8 @@ class StabilizerGraph(ABC):
         """Return a view of the edge data as a dict.
 
         Parameters:
-            node1 (RHGCube or Tuple[Int, Int, Int]): The first node of the edge.
-            node2 (RHGCube or Tuple[Int, Int, Int]): The second node of the edge.
+            node1 (Stabilizer or Tuple[Int, Int, Int]): The first node of the edge.
+            node2 (Stabilizer or Tuple[Int, Int, Int]): The second node of the edge.
 
         Raises:
             KeyError if there is no edge between the given nodes.
@@ -123,42 +127,45 @@ class StabilizerGraph(ABC):
         raise NotImplementedError
 
     def edges(self):
-        """Return an iterable of node pairs corresponding to the edges of the graph."""
+        """Return an iterable of node pairs corresponding to the edges of the
+        graph."""
         raise NotImplementedError
 
     def shortest_paths_without_high_low(self, source, code):
-        """Compute the shortest path from source to every other node in the graph
-        except the high and low connector.
+        """Compute the shortest path from source to every other node in the
+        graph, except the 'high' and 'low' connector.
 
         Note: a path can't use the 'high' and 'low' node.
 
         Arguments:
             source: The source node for each path.
         Returns:
-            (dict, dict): The first one maps a target node to the weight of
-                the corresponding path. The second one maps a target node to the
-                list of nodes along the corresponding path.
+            (dict, dict): The first dictionary maps a target node to the weight
+                of the corresponding path. The second one maps a target node to
+                the list of nodes along the corresponding path.
         """
 
         raise NotImplementedError
 
     def shortest_paths_from_high(self, code):
-        """Compute the shortest path from the 'high' node to every other node in the graph.
+        """Compute the shortest path from the 'high' node to every other node
+        in the graph.
 
         Returns:
-            (dict, dict): The first one maps a target node to the weight of
-                the corresponding path. The second one maps a target node to the
-                list of nodes along the corresponding path.
+            (dict, dict): The first dictionary maps a target node to the weight
+                of the corresponding path. The second one maps a target node to
+                the list of nodes along the corresponding path.
         """
         raise NotImplementedError
 
     def shortest_paths_from_low(self, code):
-        """Compute the shortest path from the 'low' node to every other node in the graph.
+        """Compute the shortest path from the 'low' node to every other node in
+        the graph.
 
         Returns:
-            (dict, dict): The first one maps a target node to the weight of
-                the corresponding path. The second one maps a target node to the
-                list of nodes along the corresponding path.
+            (dict, dict): The first dictionary maps a target node to the weight
+                of the corresponding path. The second one maps a target node to
+                the list of nodes along the corresponding path.
         """
         raise NotImplementedError
 
@@ -166,7 +173,7 @@ class StabilizerGraph(ABC):
         """Add a stabilizer node to the stabilizer graph.
 
         Parameters:
-            stabilizer (RHGCube):
+            stabilizer (Stabilizer):
                 The stabilizer to add.
 
         Returns:
@@ -180,7 +187,7 @@ class StabilizerGraph(ABC):
         """Add many stabilizer nodes to the stabilizer graph.
 
         Parameters:
-            stabilizers (iterable of RHGCube):
+            stabilizers (iterable of Stabilizer):
                 The stabilizers to add.
 
         Returns:
@@ -233,7 +240,8 @@ class StabilizerGraph(ABC):
         return self
 
     def add_high_bound_points(self, points):
-        """Add many boundary points with edges to the 'high' point to the graph.
+        """Add many boundary points with edges to the 'high' point to the
+        graph.
 
         Parameters:
             points (iterable of Tuple[int, int, int]):
@@ -274,11 +282,13 @@ class StabilizerGraph(ABC):
         return filter(lambda stab: stab.parity % 2 == 1, self.stabilizers)
 
     def real_nodes(self):
-        """Return an iterable of all nodes excluding the 'low' and 'high' points."""
+        """Return an iterable of all nodes excluding the 'low' and 'high'
+        points."""
         return it.chain(self.stabilizers, self.bound_points())
 
     def real_edges(self):
-        """Returns an iterable of all edges excluding the ones connected the low or high point."""
+        """Returns an iterable of all edges excluding the ones connected to the
+        'low' or 'high' points."""
         is_high_or_low = lambda n: n == "low" or n == "high"
         return filter(
             lambda edge: not (is_high_or_low(edge[0]) or is_high_or_low(edge[1])),
@@ -286,9 +296,9 @@ class StabilizerGraph(ABC):
         )
 
     def draw(self, **kwargs):
-        """Draw the stbilizer graph with matplotlib.
+        """Draw the stabilizer graph with matplotlib.
 
-        See flamingpy.utils.viz.draw_dec_graph for mor details.
+        See flamingpy.utils.viz.draw_dec_graph for more details.
         """
         from flamingpy.utils.viz import draw_dec_graph
 
@@ -296,13 +306,12 @@ class StabilizerGraph(ABC):
 
 
 class NxStabilizerGraph(StabilizerGraph):
-    """An implementation of StabilizerGraph backed by a networkx graph.
+    """An implementation of StabilizerGraph backed by a NetworkX graph.
 
     See StabilizerGraph for more details.
 
     Attributes:
-        graph (networkx.Graph):
-            The actual graph backend.
+        graph (networkx.Graph): The actual graph backend.
     """
 
     def __init__(self, ec, code=None):
@@ -337,7 +346,7 @@ class NxStabilizerGraph(StabilizerGraph):
 
 
 def nx_shortest_paths_from(graph, source, code):
-    """The networkx shortest path implementation."""
+    """The NetworkX shortest path implementation."""
     for edge in graph.edges.data():
         if edge[2].get("common_vertex") is not None:
             edge[2]["weight"] = code.graph.nodes[edge[2]["common_vertex"]]["weight"]
@@ -355,12 +364,12 @@ class RxStabilizerGraph(StabilizerGraph):
     See StabilizerGraph for more details.
 
     Attributes:
-        graph (retworkx.PyGraph):
-            The actual graph backend. This graph store integer indices to represent nodes.
-        node_to_index (dict):
-            The map from nodes to the corresponding indices in the graph backend.
-        index_to_node (dict):
-            The map from indices in the graph backend to the corresponding nodes.
+        graph (retworkx.PyGraph): The actual graph backend. This graph stores
+            integer indices to represent nodes.
+        node_to_index (dict): The map from nodes to the corresponding indices
+            in the graph backend.
+        index_to_node (dict): The map from indices in the graph backend to the
+            corresponding nodes.
     """
 
     def __init__(self, ec, code=None):
@@ -394,7 +403,7 @@ class RxStabilizerGraph(StabilizerGraph):
 
     def shortest_paths_without_high_low(self, source, code):
         subgraph = self.graph.copy()  # This is a shallow copy.
-        # We know that nodes 0 and 1 are the high and low nodes.
+        # We know that nodes 0 and 1 are the 'high' and 'low' nodes.
         subgraph.remove_nodes_from([0, 1])
         return self._shortest_paths_from(subgraph, source, code)
 
@@ -404,7 +413,7 @@ class RxStabilizerGraph(StabilizerGraph):
     def shortest_paths_from_low(self, code):
         return self._shortest_paths_from(self.graph, "low", code)
 
-    # The following methods are helper for the shortest paths methods.
+    # The following methods are helpers for the shortest paths methods.
 
     def _shortest_paths_from(self, graph, source, code):
         paths = rx.graph_dijkstra_shortest_paths(

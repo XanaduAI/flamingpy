@@ -6,3 +6,4 @@ cmake>=3.14.0
 black>=19.3b0
 codecov>=2.1.12
 cython>=0.29.28
+sphinx>=4.4.0

@@ -11,14 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for visualizing error correction and plotting, processing,
-and saving data.
+"""Utilities for visualizing error correction and plotting, processing, and
+saving data.
 
 .. currentmodule:: flamingpy.utils
 .. autosummary::
     :toctree: api
 
-    threshold_plots
     viz
-
 """

@@ -15,7 +15,7 @@
 import itertools as it
 import pytest
 
-from flamingpy.codes import alternating_polarity, RHG_graph, SurfaceCode
+from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo
@@ -34,10 +34,12 @@ def code(request):
 
 
 class TestBlueprint:
-    """A class with members to test Monte Carlo simulations for FT threshold estimations for Xanadu's blueprint architecture."""
+    """A class with members to test Monte Carlo simulations for FT threshold
+    estimations for Xanadu's blueprint architecture."""
 
     def test_all_GKP_high_squeezing(self, code):
-        """Tests Monte Carlo simulations for FT threshold estimation of a system with zero swap-out probability and high squeezing."""
+        """Tests Monte Carlo simulations for FT threshold estimation of a
+        system with zero swap-out probability and high squeezing."""
         p_swap = 0
         delta = 0.001
         trials = 10
@@ -47,10 +49,12 @@ class TestBlueprint:
 
 
 class TestPassive:
-    """A class with members to test Monte Carlo simulations for FT threshold estimations for Xanadu's passive architecture."""
+    """A class with members to test Monte Carlo simulations for FT threshold
+    estimations for Xanadu's passive architecture."""
 
     def test_all_GKP_high_squeezing(self, code):
-        """Tests Monte Carlo simulations for FT threshold estimation of a system with zero swap-out probability and high squeezing."""
+        """Tests Monte Carlo simulations for FT threshold estimation of a
+        system with zero swap-out probability and high squeezing."""
         p_swap = 0
         delta = 0.001
         trials = 10
@@ -71,7 +75,3 @@ class TestPassive:
         errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
-
-
-# TODO: Tests that cross-check published results for blueprint and
-# passive architecture.

@@ -32,5 +32,5 @@ cpdef int cpp_mc_loop(object code, int trials, dict decoder, dict weight_options
             CVRHG.measure_hom("p", code.syndrome_inds)
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
         successes += result
-        errors = trials - successes
+    errors = trials - successes
     return errors

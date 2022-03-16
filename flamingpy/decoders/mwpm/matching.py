@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" The matching graph interface and some implementation.
-"""
+"""The matching graph interface and some implementation."""
 
 # pylint: disable=import-outside-toplevel
 
@@ -37,12 +36,12 @@ Edge = Tuple[Node, Node]
 class MatchingGraph(ABC):
     """The matching graph base class.
 
-    This represents a graph for which we can compute a minimum weight perfect matching.
-    See flammingpy.matching.NxMatchingGraph for a reference implementation using the networkx
-    library as a backend.
+    This represents a graph for which we can compute a minimum weight perfect
+    matching. See flammingpy.matching.NxMatchingGraph for a reference
+    implementation using the networkx library as a backend.
 
     Arguments:
-        code (RHGCode, optional): If provided, the matching graph
+        code (SurfaceCode, optional): If provided, the matching graph
         includes an edge for each pair of unsatisfied stabilizer nodes
         in the code together with the weight of the corresponding correction.
     """
@@ -67,15 +66,13 @@ class MatchingGraph(ABC):
         raise NotImplementedError
 
     def edge_weight(self, edge: Edge) -> Weight:
-        """Return the weight of the given edge or raise an exception
-        if the edge is not part of the graph.
-        """
+        """Return the weight of the given edge or raise an exception if the
+        edge is not part of the graph."""
         raise NotImplementedError
 
     def edge_path(self, edge: Edge) -> List[Node]:
-        """Return the path for the given edge or raise an exception
-        if the edge is not part of the graph.
-        """
+        """Return the path for the given edge or raise an exception f the edge
+        is not part of the graph."""
         raise NotImplementedError
 
     def min_weight_perfect_matching(self) -> List[Edge]:
@@ -102,18 +99,18 @@ class MatchingGraph(ABC):
 
         The matching graph has as half of its nodes the odd-parity stabilizers.
         The edge connecting two nodes corresponds to the weight of the
-        minimum-weight-path between the nodes in the stabilizer graph of the code.
-        Additionally, each unsatisfied stabilizer is connected to a unique boundary point
-        (for now from a primal bundary) located at the shortest weighted distance from
-        the stabilizer. Between each other, the boundary points are
-        connected by an edge of weight 0. The output graph stores the
-        indices of the used boundary points under the 'used_boundary_point'
-        attribute. Paths are stored under the 'paths' attribute of edges,
-        and 'inverse_weights' are also stored, for the benefit of maximum-
-        weight-matching algorithms
+        minimum-weight-path between the nodes in the stabilizer graph of the
+        code. Additionally, each unsatisfied stabilizer is connected to a unique
+        boundary point (for now from a primal bundary) located at the shortest
+        weighted distance from the stabilizer. Between each other, the boundary
+        points are connected by an edge of weight 0. The output graph stores
+        the indices of the used boundary points under the 'used_boundary_point'
+        attribute. Paths are stored under the 'paths' attribute of edges, and
+        'inverse_weights' are also stored, for the benefit of maximum-weight
+        matching algorithms
 
         Args:
-            code (RHGCode): The code from which to build the edges.
+            code (SurfaceCode): The code from which to build the edges.
         """
         stab_graph = getattr(code, ec + "_stab_graph")
         self = self._with_edges_between_real_odd_nodes(code, ec)
@@ -186,6 +183,7 @@ class NxMatchingGraph(MatchingGraph):
     """A matching graph backed by networkx.
 
     The edge weights can be either of type int or float.
+
     See the MatchingGraph class for more details.
     """
 
@@ -217,8 +215,8 @@ class LemonMatchingGraph(NxMatchingGraph):
     def to_nx(self):
         """Return the same graph wrapped into a NxMatchingGraph.
 
-        This is basically free since this class already uses networkx
-        to represent a graph.
+        This is basically free since this class already uses networkx to
+        represent a graph.
         """
         nx = NxMatchingGraph(self.ec)
         nx.graph = self.graph
@@ -230,8 +228,9 @@ class RxEdgePayload:
     """The edge payload for the RxMatchingGraph.
 
     Args:
-        weight:  the minimum-weight-path in the stabilizer graph between the extremal nodes.
-        path : the nodes in the stabilizer graph along the minimum-weight-path.
+        weight: the minimum-weight-path in the stabilizer graph between the
+            extremal nodes.
+        path: the nodes in the stabilizer graph along the minimum-weight-path.
     """
 
     weight: int
@@ -242,6 +241,7 @@ class RxMatchingGraph(MatchingGraph):
     """A matching graph backed by retworkx.
 
     The edge weights must be of type int.
+
     See the MatchingGraph class for more details.
     """
 
@@ -256,8 +256,8 @@ class RxMatchingGraph(MatchingGraph):
     def node_index(self, node):
         """Returns the index of the corresponding node.
 
-        If the node doesn't exist in the graph,
-        a new index is generated.
+        If the node doesn't exist in the graph, a new index is
+        generated.
         """
         if node in self.node_to_index:
             return self.node_to_index[node]
@@ -291,8 +291,8 @@ class RxMatchingGraph(MatchingGraph):
     def to_nx(self):
         """Convert the same graph into a NxMatchingGraph.
 
-        This involves converting the retworkx graph representation
-        to a networkx graph representation.
+        This involves converting the retworkx graph representation to a
+        networkx graph representation.
         """
         nx_graph = NxMatchingGraph(self.ec)
         for (idx0, idx1) in iter(self.graph.edge_list()):

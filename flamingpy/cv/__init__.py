@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The continuous-variable module.
+"""The module for continuous-variable states, noise, and operations.
 
 .. currentmodule:: flamingpy.cv
 .. autosummary::
@@ -21,5 +21,4 @@
     gkp
     macro_reduce
     ops
-
 """

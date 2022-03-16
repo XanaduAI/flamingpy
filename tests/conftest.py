@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-Default parameters, environment variables, fixtures, and common routines for the unit tests and manual checks.
-"""
+"""Default parameters, environment variables, fixtures, and common routines for
+the unit tests and manual checks."""
 
 import pytest
 import numpy as np

@@ -11,23 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Benchmark for the Monte Carlo simulations estimating FT thresholds 
-   and comparing python and cpp loops.
-"""
-import argparse
+"""Benchmark for the Monte Carlo simulations estimating FT thresholds and
+comparing python and cpp loops."""
 import csv
-import sys
 
 from time import process_time
 from datetime import datetime
 from flamingpy.cpp import cpp_mc_loop as cmc
-from flamingpy.codes import RHG_graph, SurfaceCode, alternating_polarity
+from flamingpy.codes import SurfaceCode, alternating_polarity
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
 
-def ec_monte_carlo(code, trials, delta, p_swap, passive_objects, backend="cpp"):
+def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="cpp"):
     """Run Monte Carlo simulations of error-correction for the given code.
 
     Given a code object code, a noise parameter delta, and a
@@ -42,20 +39,21 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects, backend="cpp"):
         p_swap (float): the probability of replacing a GKP state
             with a p-squeezed state in the lattice.
         backend (string): choose from "cpp" Monte Carlo sampling
-            loops or pure "python" version.
+            loops or pure "python" version
+        passive_objects (NoneType or list): the arguments for
+            reduce_macro_and_simulate for passive architecture simulations.
 
     Returns:
-        errors (integer): the failure occurance.
+        errors (integer): the number of errors.
     """
-    if passive_objects:
+    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    if passive_objects is not None:
         RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
-        # TODO: Noise model input.
         code_lattice = code.graph
         # Noise model
-        cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
         # Decoding options
         decoder = {"inner": "basic", "outer": "MWPM"}
         weight_options = {
@@ -64,21 +62,20 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects, backend="cpp"):
             "multiplier": 1,
             "delta": delta,
         }
-
     if backend == "python":
         successes = 0
         for _ in range(trials):
-            if passive_objects:
+            if passive_objects is not None:
                 reduce_macro_and_simulate(*passive_objects, p_swap, delta)
             else:
                 # Apply noise
                 CVRHG = CVLayer(code_lattice, p_swap=p_swap)
                 CVRHG.apply_noise(cv_noise)
                 # Measure syndrome
-                CVRHG.measure_hom("p", code.syndrome_inds)
-                result = correct(code=code, decoder=decoder, weight_options=weight_options)
-                successes += result
-                errors = trials - successes
+                CVRHG.measure_hom("p", code.all_syndrome_inds)
+            result = correct(code=code, decoder=decoder, weight_options=weight_options)
+            successes += result
+        errors = trials - successes
     elif backend == "cpp":
         errors = cmc.cpp_mc_loop(
             code, trials, decoder, weight_options, passive_objects, p_swap, delta, cv_noise
@@ -87,86 +84,77 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects, backend="cpp"):
     return errors
 
 
-if __name__ == "__main__":
-    # TODO: Intention of below is to allow not to use the command line
-    # if desired. Is this appropriate?
-    if len(sys.argv) != 1:
-        print(sys.argv)
-        # Parsing input parameters
-        parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
-        parser.add_argument("distance", type=int)
-        parser.add_argument("delta", type=float)
-        parser.add_argument("p_swap", type=float)
-        parser.add_argument("trials", type=int)
-        parser.add_argument("passive", type=bool)
+# The Monte Carlo simulations
 
-        args = parser.parse_args()
-        distance, delta, p_swap, trials, passive = (
-            args.distance,
-            args.delta,
-            args.p_swap,
-            args.trials,
-            args.passive,
-        )
+# Arguments
+distance = 2
+ec = "primal"
+boundaries = "open"
+delta = 0.01
+p_swap = 0.5
+trials = 100
+passive = True
 
-    else:
-        # User-specified values, if not using command line.
-        distance, delta, p_swap, trials, passive = 2, 0.01, 0.5, 100, False
+# The qubit code
+RHG_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
+RHG_lattice = RHG_code.graph
+RHG_lattice.index_generator()
+if passive:
+    # The lattice with macronodes.
+    pad_bool = False if boundaries == "periodic" else True
+    RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
+    RHG_macro.index_generator()
+    RHG_macro.adj_generator(sparse=True)
+    # The empty CV state, uninitiated with any error model.
+    CVRHG_reduced = CVLayer(RHG_lattice)
+    # Define the 4X4 beamsplitter network for a given macronode.
+    # star at index 0, planets at indices 1-3.
+    bs_network = BS_network(4)
+    passive_objects = [RHG_macro, RHG_lattice, CVRHG_reduced, bs_network]
 
-    # The Monte Carlo simulations
-    if passive:
-        # The lattice with macronodes.
-        RHG_macro = RHG_graph(distance, boundaries="periodic", macronodes=True, polarity=False)
-        RHG_macro.index_generator()
-        RHG_macro.adj_generator(sparse=True)
-        # The reduced lattice.
-        RHG_code = SurfaceCode(distance, boundaries="periodic")
-        RHG_reduced = RHG_code.graph
-        RHG_reduced.index_generator()
-        # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(RHG_reduced)
+tic = process_time()
+errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="python")
+walltime_py = process_time() - tic
 
-        # Define the 4X4 beamsplitter network for a given macronode.
-        # star at index 0, planets at indices 1-3.
-        bs_network = BS_network(4)
-        passive_objects = [RHG_macro, RHG_reduced, CVRHG_reduced, bs_network]
-    else:
-        boundaries = "finite"
-        RHG_code = SurfaceCode(distance, boundaries=boundaries, polarity=alternating_polarity)
-        passive_objects = None
+tic = process_time()
+ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="cpp")
+walltime_cpp = process_time() - tic
 
-    tic = process_time()
-    errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="python")
-    walltime_py = process_time() - tic
-
-    tic = process_time()
-    ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="cpp")
-    walltime_cpp = process_time() - tic
-
-    # Store results in the data directory in the file results.csv.
-    file_name = "../sims_data/benchmark_results.csv"
-    # Create a CSV file if it doesn't already exist.
-    try:
-        file = open(file_name, "x")
-        writer = csv.writer(file)
-        writer.writerow(
-            [
-                "distance",
-                "delta",
-                "p_swap",
-                "errors_py",
-                "trials",
-                "current_time",
-                "cpp_to_py_speedup",
-            ]
-        )
-    # Open the file for appending if it already exists.
-    except FileExistsError:
-        file = open(file_name, "a", newline="")
-        writer = csv.writer(file)
-    # TODO: Do we need to record time?
-    current_time = datetime.now().time().strftime("%H:%M:%S")
+# Store results in a sims_data directory in the file simulations_results.csv.
+file_name = "./flamingpy/sims_data/sims_benchmark_results.csv"
+# Create a CSV file if it doesn't already exist.
+try:
+    file = open(file_name, "x")
+    writer = csv.writer(file)
     writer.writerow(
-        [distance, delta, p_swap, errors, trials, current_time, walltime_py / walltime_cpp]
+        [
+            "distance",
+            "ec",
+            "boundaries",
+            "delta",
+            "p_swap",
+            "errors_py",
+            "trials",
+            "current_time",
+            "cpp_to_py_speedup",
+        ]
     )
-    file.close()
+# Open the file for appending if it already exists.
+except FileExistsError:
+    file = open(file_name, "a", newline="")
+    writer = csv.writer(file)
+current_time = datetime.now().time().strftime("%H:%M:%S")
+writer.writerow(
+    [
+        distance,
+        ec,
+        boundaries,
+        delta,
+        p_swap,
+        errors,
+        trials,
+        current_time,
+        walltime_py / walltime_cpp,
+    ]
+)
+file.close()

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for StablizerGraph classes in stab_graph.py.
+
 The networkx implementation is used as a reference.
 """
 
@@ -44,13 +45,14 @@ code_params = it.product(
 
 @pytest.fixture(scope="module", params=code_params)
 def enc_state(request):
-    """Return the encoded state from compute_enc_state with one set of parameters."""
+    """Return the encoded state from compute_enc_state with one set of
+    parameters."""
     return compute_enc_state(request)
 
 
 def compute_enc_state(request):
-    """RHGCode object and an encoded CVLayer with the networkx reference and another backend
-    for use in this module."""
+    """RHGCode object and an encoded CVLayer with the networkx reference and
+    another backend for use in this module."""
     distance, boundaries, ec, delta, p_swap, backend = request.param
     weight_options = {
         "method": "blueprint",
@@ -100,8 +102,8 @@ def compute_enc_state(request):
 
 
 def convert_dict_of_weights(weights):
-    """Convert RHGCubes into tuples of nodes and return a dictionary
-    between them and path weights."""
+    """Convert RHGCubes into tuples of nodes and return a dictionary between
+    them and path weights."""
     conversion = dict()
     for (n, w) in weights.items():
         if isinstance(n, Stabilizer):
@@ -117,7 +119,8 @@ def assert_weights(w1, w2):
 
 
 def test_shortest_paths_have_same_weight(enc_state):
-    """Test that different backends return shortest paths with the same weights.
+    """Test that different backends return shortest paths with the same
+    weights.
 
     This also compare that the format are the same.
     """
@@ -150,7 +153,8 @@ code_params2 = it.product(
 # An RHGCode object as well as an encoded CVLayer for use in this module.
 @pytest.fixture(scope="module", params=code_params2)
 def enc_state2(request):
-    """The encoded state from compute_enc_state with another set of parameters."""
+    """The encoded state from compute_enc_state with another set of
+    parameters."""
     return compute_enc_state(request)
 
 

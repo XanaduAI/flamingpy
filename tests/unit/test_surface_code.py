@@ -60,9 +60,6 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     Returns:
         EGraph: the RHG lattice.
     """
-    # TODO: Compactify construction by identifying syndrome qubits;
-    # potentially use NetworkX lattice generators.
-    # first.
     # Dimensions of the lattice.
     if np.size(dims) == 1:
         dims = (dims, dims, dims)
@@ -82,7 +79,6 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     x_min, y_min, z_min = [min_dict[typ] for typ in boundaries]
     x_max, y_max, z_max = [max_dict[typ] for typ in boundaries]
 
-    # TODO: Change notation to data / ancillae notation
     # Coordinates of red qubits in even and odd vertical slices.
     even_red = [
         (2 * i + 1, 2 * j + 1, 2 * k)
@@ -135,8 +131,6 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
             planetary_bodies = red_neighbours(point, displace=0.1)
             neighbouring_bodies = red_neighbours(point, displace=0.9)
             macro_dict[point] = []
-            # TODO: Append micronodes to macro_dict so indexer does
-            # not have to be run.
         for i in range(4):
             pol = (-1) ** (polarity * (point[2] + i))
             neighbour = neighbours[i]
@@ -241,7 +235,8 @@ class TestRHGGraph:
     """Test the RHG_graph function."""
 
     def test_boundary_combinations(self, d):
-        """Check that different boundary conditions produce a nonempty lattice."""
+        """Check that different boundary conditions produce a nonempty
+        lattice."""
         for boundaries in it.product(["primal", "dual", "periodic"], repeat=3):
             boundaries = np.array(boundaries)
             RHG_lattice = RHG_graph(d, boundaries)
@@ -257,7 +252,8 @@ class TestRHGGraph:
         # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
     def test_periodic_boundaries(self, d):
-        """Test whether periodic boundary conditions produce a lattice with the expected size."""
+        """Test whether periodic boundary conditions produce a lattice with the
+        expected size."""
         RHG_lattice = RHG_graph(d, "periodic")
         assert len(RHG_lattice) == 6 * (d**3)
 
@@ -274,7 +270,7 @@ class TestRHGGraph:
 
     @pytest.mark.parametrize("boundaries", all_bound_combs)
     def test_polarity(self, d, boundaries):
-        "Test whether lattice polarity behaves as expected."
+        """Test whether lattice polarity behaves as expected."""
         RHG_reduced = RHG_graph(d, boundaries)
         RHG_macro = RHG_reduced.macronize()
         for graph in (RHG_reduced, RHG_macro):

@@ -11,10 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-Threshold estimations for measurement-based implementation of quantum
-error correcting codes using GKP qubits
-"""
+"""Threshold estimations for measurement-based implementation of quantum error
+correcting codes using GKP qubits."""
 
 import sys
 import platform
@@ -45,7 +43,9 @@ def version():
 
 def about():
     """Prints the installed version numbers for FlamingPy and its dependencies,
-    and some system info. Please include this information in bug reports.
+    and some system info.
+
+    Please include this information in bug reports.
     """
 
     # a QuTiP-style infobox

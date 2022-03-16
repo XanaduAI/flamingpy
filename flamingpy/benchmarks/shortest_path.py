@@ -27,7 +27,7 @@ from flamingpy.decoders import decoder as dec
 num_trials = 10
 
 # DV (outer) code
-distance = 5
+distance = 3
 boundaries = "periodic"
 
 # Noise model
@@ -50,7 +50,7 @@ times = {
 }
 
 for backend in ["networkx", "retworkx"]:
-    print(f"* {backend}")
+    print(f"\n* {backend}")
     # Build code
     RHG_code = SurfaceCode(
         distance=distance, boundaries=boundaries, polarity=alternating_polarity, backend=backend

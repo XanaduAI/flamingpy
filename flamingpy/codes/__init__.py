@@ -33,7 +33,6 @@ Specific code implementations
     :toctree: api
 
     surface_code
-
 """
 from .stabilizer import Stabilizer
 from .surface_code import alternating_polarity, RHG_graph, SurfaceCode

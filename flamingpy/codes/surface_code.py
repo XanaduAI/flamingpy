@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Classes for the measurement-based surface code and related functions."""
+"""Class for the measurement-based surface code and related functions."""
 
 import itertools as it
 
@@ -29,8 +29,8 @@ def alternating_polarity(edge):
     the RHG graph. This particular alternating pattern ensures that
     every vertex has two +1 and two -1 weight edges incident on it. The
     precise combination depends on the direction of the edge and the
-    coordinates of the vertices. This pattern may be helpful to reduce
-    CV-level noise.
+    coordinates of the vertices. This pattern may be helpful to reduce, e.g.
+    CV noise.
 
     Args:
         edge (list-type): a pair of tuples, denoting lattice vertices.
@@ -65,7 +65,7 @@ def dual_neighbours(p, displace=1):
             to change when creating maronodes.
 
     Returns:
-        list of tuple: the coordinates of the four neighbours.
+        List[Tuple]: the coordinates of the four neighbours.
     """
     x, y, z = p[0], p[1], p[2]
     top = (x, y + displace, z)
@@ -84,14 +84,13 @@ def dual_neighbours(p, displace=1):
 
 
 def str_to_bound(bound_name):
-    """Return a list of boundaries corresponding to bound_name.
+    """Return a list of x-y-z boundaries corresponding to bound_name.
 
     The options are:
 
         'open_primal': [primal, dual, dual]
         'open_dual': [primal, dual, primal]
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
-
     """
     if bound_name == "open_primal":
         boundaries = ["primal", "dual", "dual"]
@@ -110,7 +109,7 @@ def RHG_graph(
     boundaries="primal",
     polarity=None,
 ):
-    """Create an EGraph of a dims-dimensional RHG lattice.
+    """Return an EGraph of a dims-dimensional RHG lattice.
 
     Generate a Raussendorf-Harrington-Goyal (RHG) lattice, which can
     be viewed as the measurement-based version or foliation of
@@ -132,7 +131,7 @@ def RHG_graph(
                 ['{b1}', '{b2}', '{b3}']: b1, b2, b3,
 
             where each b above can be 'primal', 'dual', or 'periodic'.
-            'primal' (i.e. ['primal', 'primal', 'primal']) by default.
+            By default, 'primal'  is used (i.e. ['primal', 'primal', 'primal']).
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
 
@@ -157,6 +156,8 @@ def RHG_graph(
     range_max = dims - np.array([max_dict[typ] for typ in boundaries])
     ranges = [range(range_max[i]) for i in (0, 1, 2)]
     inds = it.product(*ranges)
+    # TODO: Possibly change z-direction extent of dual complex for 'both'
+    # option in SurfaceCode.
     # Primal vertices are combined into lists of six to be later usable
     # by the syndrome indentification in SurfaceCode.
     all_six_bodies = [
@@ -231,20 +232,19 @@ class SurfaceCode:
     """A class for representing the surface code.
 
     Represent the surface code in its measurement-based description. By
-    specifying the distance, error complex, and choice of boundaries,
-    store the graph state corresponding to the code, the set of
-    stabilizers elements and the stabilizer graph, as well as the
-    syndrome vertices and boundary vertices.
+    specifying the distance, error complex, choice of boundaries, and polarity,
+    store the graph state corresponding to the code, the set of stabilizer
+    elements and the stabilizer graph, as well as the syndrome and boundary
+    vertices.
 
     Attributes:
-
         distance (int): the code distance.
         dims (tup): a tuple of the spatial extent in x, y, z.
         ec (str): the error complex ('primal', 'dual', or 'both').
         boundaries (str): the boundary conditions. The options are:
 
             'open': ['primal', 'dual', 'dual'] for 'primal' or 'both' EC
-                    ['dual', 'primal', 'primal'] for 'dual' EC
+                    ['primal', 'dual', 'primal'] for 'dual' EC
             'periodic': 'periodic' in all three directions.
 
         polarity (func): a function that specifies edge weights. It
@@ -257,21 +257,25 @@ class SurfaceCode:
             Can be "networkx" (the default) or "retworkx".
             The retworkx backend should be used when speed is a concern.
 
-        graph (EGraph): the EGraph corresponding to the code,
-            representing the graph state.
-        stabilizers (list of Stabilizers): the stabilizer elements of the
-            code according to the error complex.
-        syndrome_coords (list of tup): the coordinates of the syndrome
-            vertices, according to the error complex.
-        boundary_coords (list of tup): the coordinates of the boundary
-            according to the error complex.
+        graph (EGraph): the EGraph corresponding to the code, representing the
+            graph state.
+        '{b}'_stab_graph (StabilizerGraph): the stabilizer graph combining
+            stabilizers from error complex b ('primal' or 'dual'). The
+            particular implementation depends on backend.
+
+        '{b}'_stabilizers (List[Stabilizer]): the stabilizer elements of the
+            code according to the error complex b ('primal'/'dual').
+        '{b}'_syndrome_coords (List[Tuple]): the coordinates of the syndrome
+            vertices according to the error complex b ('primal'/'dual'/'all').
+        '{b}'_syndrome_inds (List[Int]): the integer indices of the syndrome
+            vertices according to the error comple b ('primal'/'dual'/'all').
+        '{b}'_boundary_coords (list of tup): the coordinates of the boundary
+            according to the error complex b ('primal'/'dual').
     """
 
     # TODO: Allow for codes with different aspect ratios.
-    # TODO: Check if perodic boundary conditions matches distance
-    # convention, or is one off.
+    # TODO: Check distance convention for periodic boundaries.
     # TODO: Add x-y-but-not-z periodic boundaries.
-
     def __init__(
         self,
         distance,
@@ -280,7 +284,6 @@ class SurfaceCode:
         polarity=None,
         backend="networkx",
     ):
-        """Initialize the surface code."""
         self.distance = distance
         self.dims = (distance, distance, distance)
         self.ec = ["primal", "dual"] if ec == "both" else [ec]
@@ -329,7 +332,9 @@ class SurfaceCode:
         Generate a list of Stabilizer objects containing coordinates of
         all the stabilizer elements according to error complex ec.
         Furthermore, generate a list of all the relevant syndrome
-        coordinates. In the end, the {ec}_syndrome_coords, {ec}_syndrome_inds,
+        coordinates.
+
+        In the end, the {ec}_syndrome_coords, {ec}_syndrome_inds,
         and {ec}_stabilizers attributes (where ec can be 'primal' or
         'dual') as well as all_syndrome_inds and all_syndrome_coords are set.
         """
@@ -402,9 +407,9 @@ class SurfaceCode:
     def identify_boundary(self):
         """Obtain coordinates of syndrome qubits on the boundary.
 
-        The relevant boundaries are determined by the ec string. In the end,
-        the attributes {b}_bound_points are set, where b can be 'primal' or
-        'dual'.
+        The relevant boundaries are determined by the ec string. In the
+        end, the attributes {b}_bound_points are set, where b can be
+        'primal' or 'dual'.
         """
         for ec in self.ec:
             if self.bound_str == "periodic":
@@ -425,8 +430,8 @@ class SurfaceCode:
 
                 setattr(self, ec + "_bound_points", list(final_low_set) + list(final_high_set))
 
-    # TODO: slice_coords function that constructs rather than iterates,
-    # like the EGraph.
+    # TODO: tailored slice_coords function that constructs rather than iterates,
+    # improving over EGraph method.
 
     def draw(self, **kwargs):
         """Draw the cluster state with matplotlib.
@@ -435,7 +440,7 @@ class SurfaceCode:
         default colour options: black for primal nodes, grey for dual
         nodes; blue for weight +1 edges, red for weight -1 edges.
         """
-        edge_colors = {1: "b", -1: "r"} if self.polarity == alternating_polarity else "k"
+        edge_colors = {1: "b", -1: "r"} if self.polarity == alternating_polarity else "grey"
         default_opts = {
             "color_nodes": {"primal": "k", "dual": "grey"},
             "color_edges": edge_colors,

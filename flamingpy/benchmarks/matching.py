@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Benchmark minimum-weight matching via networkx, retworkx, and lemon backends."""
+"""Benchmark minimum-weight matching via NetworkX, retworkx, and lemon
+backends."""
 
 # pylint: disable=no-member
 
@@ -24,7 +25,7 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.decoders import decoder as dec
 from flamingpy.decoders.mwpm import matching as mt
 
-# How many simulations to do for each algorithm.
+# How many simulations to do for each algorithm
 num_trials = 10
 
 # DV (outer) code
@@ -32,11 +33,9 @@ distance = 3
 boundaries = "periodic"
 RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
 RHG_lattice = RHG_code.graph
-# CV (inner) code/state
-p_swap = 0
-CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
 
-# Noise model
+# Noise model parameters
+p_swap = 0.2
 delta = 0.1
 cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
 
@@ -62,14 +61,18 @@ matching_graph = {
 }
 
 
-for i in range(num_trials):
-    for alg in ["networkx", "lemon", "retworkx"]:
+for alg in ["networkx", "lemon", "retworkx"]:
+    print(f"\n* {alg}")
+    for i in range(num_trials):
+        print(f"-- {i} --")
+        # Instantiate the CV layer
+        CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
         CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
 
-        # Manual decoding to plot intermediate results.
+        # Manually decode so as to benchmark just the matching portion
         dec.assign_weights(RHG_code, **weight_options)
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         G_match = dec.build_match_graph(RHG_code, "primal", matching_backend=matching_graph[alg])
@@ -80,8 +83,8 @@ for i in range(num_trials):
 
 plt.figure()
 # bins = np.logspace(-3, 0, 30)
-for alg in ["networkx", "lemon", "retworkx"]:
-    plt.hist(times[alg], bins=10, label=alg)
+for alg in ["networkx", "retworkx", "lemon"]:
+    plt.hist(times[alg], bins=100, label=alg)
 plt.legend()
 plt.xscale("log")
 plt.xlabel("Times [seconds]")

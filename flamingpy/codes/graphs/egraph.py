@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A class for representing qubit code graph states."""
+"""A class for representing quantum graph states."""
 
 # pylint: disable=import-outside-toplevel
 
@@ -19,21 +19,27 @@ import networkx as nx
 import numpy as np
 
 
-def macronize(egraph, pad_boundary=False, disp=0.1):
-    """Create a macronode graph out of NetworkX graph G.
+def macronize(can_graph, pad_boundary=False, disp=0.1):
+    """Create a macronode graph out of canonical graph can_graph.
 
-    Replace each vertex v in G with a macronode (a collection of n
+    Assume can_graph represents a 'canonical' or 'reduced' graph state.
+    Replace each vertex v in can_graph with a macronode (a collection of n
     vertices, where n is the size of the neighborhood of v). This is
-    achieved by replacing each pair of vertices in G connected by an
-    edge with a 'dumbbell'. Assumes that: (1) the nodes of G are
-    three-tuples; (2) edges associated with periodic boundary conditions,
-    if they exist, have the attribute 'periodic' set to True. If there is
-    a list of perfect qubits in the graph attribute of the egraph, this list
-    is updated to reflect the new perfect qubits in the macronode graph.
+    achieved by replacing each pair of vertices in can_graph connected by an
+    edge with a 'dumbbell'.
+
+    Assumes that: (1) the nodes of G are three-tuples; (2) edges associated
+    with periodic boundary conditions, if they exist, have the attribute
+    'periodic' set to True.
+
+    If there is a list of perfect qubits stored as a graph attribute
+    (specifically, can_graph.graph["perfect_points"]), this list is updated to
+    reflect the new perfect qubits in the macronode graph.
 
     Args:
-        egraph (nx.Graph): the graph to macronize. All graph, node, and
-            edge attributes of G are preserved.
+        can_graph (nx.Graph): the graph to macronize. All graph, node, and
+            edge attributes of can_graph are preserved. Will access and process
+            can_graph.graph["perfect_points"] if it exists.
         disp (float, optional): how much to displace the nodes
             within each macronode from the central vertex. This number
             should be small and positive, and no larger than 0.5.
@@ -48,21 +54,21 @@ def macronize(egraph, pad_boundary=False, disp=0.1):
     """
     if disp >= 0.5 or disp < 0:
         raise ValueError("Please set disp to a positive value strictly less than 0.5.")
-    macro_graph = nx.Graph(**egraph.graph)
+    macro_graph = nx.Graph(**can_graph.graph)
     # The macronode-to-micronode dictionary
     macro_dict = {}
-    for edge in egraph.edges:
+    for edge in can_graph.edges:
         old_point_1, old_point_2 = np.array(edge[0]), np.array(edge[1])
         direction_vec = old_point_2 - old_point_1
         distance = np.linalg.norm(direction_vec)
-        periodic_flip = -1 if egraph.edges[edge].get("periodic") else 1
+        periodic_flip = -1 if can_graph.edges[edge].get("periodic") else 1
         shortened_vec = periodic_flip * disp * direction_vec / distance
         shortened_vec = np.round(shortened_vec, -int(np.log10(disp)) + 2)
         new_point_1 = tuple(old_point_1 + shortened_vec)
         new_point_2 = tuple(old_point_2 - shortened_vec)
-        macro_graph.add_node(new_point_1, **egraph.nodes[edge[0]])
-        macro_graph.add_node(new_point_2, **egraph.nodes[edge[1]])
-        macro_graph.add_edge(new_point_1, new_point_2, **egraph.edges[edge])
+        macro_graph.add_node(new_point_1, **can_graph.nodes[edge[0]])
+        macro_graph.add_node(new_point_2, **can_graph.nodes[edge[1]])
+        macro_graph.add_edge(new_point_1, new_point_2, **can_graph.edges[edge])
 
         # Add to the macronode-to-micronode dictionary
         if not macro_dict.get(edge[0]):
@@ -73,7 +79,7 @@ def macronize(egraph, pad_boundary=False, disp=0.1):
         macro_dict[edge[1]].append(new_point_2)
 
     if pad_boundary:
-        for node in egraph:
+        for node in can_graph:
             macro_size = len(macro_dict[node])
             if macro_size < 4:
                 n_new = 4 - macro_size
@@ -81,11 +87,11 @@ def macronize(egraph, pad_boundary=False, disp=0.1):
                     new_node = list(node)
                     new_node[i] = new_node[i] + 0.05
                     new_node_tup = tuple(new_node)
-                    macro_graph.add_node(new_node_tup, **egraph.nodes[node])
+                    macro_graph.add_node(new_node_tup, **can_graph.nodes[node])
                     macro_dict[node].append(new_node_tup)
 
     macro_graph.graph["macro_dict"] = macro_dict
-    old_perfect_points = egraph.graph.get("perfect_points")
+    old_perfect_points = can_graph.graph.get("perfect_points")
     if old_perfect_points:
         new_perfect_qubits = [macro_dict[point] for point in old_perfect_points]
         macro_graph.graph["perfect_points"] = [a for b in new_perfect_qubits for a in b]
@@ -93,29 +99,25 @@ def macronize(egraph, pad_boundary=False, disp=0.1):
 
 
 class EGraph(nx.Graph):
-    """An enhanced graph based on a NetworkX Graph.
+    """An enhanced graph for representing quantum graph states.
 
-    A class for adding some functionality to a NetworkX graph
-    with some short-hand/convenience methods.
+    A class that builds on a NetworkX graph to better represent graph states.
+    Includes indexing, drawing, and convenience methods.
 
     Attributes:
-        indexer (str): method for indexing the nodes; 'default' for
-            Python's sorted function; 'macronodes' for rounding
-            micronodes to integers, sorting those, and
-            furthermore sorting the micronodes within each macronodes,
-            all using Python's 'sorted'.
+        macro_to_micro (dict): if macronodes is set to True, the macro_dict
+            object from the underlying graph (None or a dictionary of the form
+            {central coordinate of macronode: [all micronode coordinates]})
         to_indices (dict): if self.index_generator() has been run,
             a dictionary of the form {points: indices}
         to_points (dict): if self.index_generator() has been run,
             a dictionary of the form {indices: points}
         adj_mat (np.array): if self.adj_generator() has been run,
-            the adjacency mtrix of the graph.
+            the adjacency matrix of the graph.
     """
 
     def __init__(self, *args, indexer="default", macronodes=False, **kwargs):
-        """Initialize an EGraph (itself an NetworkX graph)."""
         super().__init__(*args, **kwargs)
-        self.indexer = indexer
         self._macronodes = macronodes
         if macronodes:
             self.macro_to_micro = self.graph.get("macro_dict")
@@ -124,17 +126,18 @@ class EGraph(nx.Graph):
         self.adj_mat = None
 
     def index_generator(self):
-        """Return a relabelled graph with indices as labels.
+        """Generate indices for the nodes of self.
 
-        Point tuples are stored in the 'pos' attribute of the new graph.
-        Use the default sort as the index mapping.
+        Set the to_indices and to_points attribute of self with points-
+        to-indices and indices-to-points dictionaries, respectively.
+        Indices are generated using the built-in sorted function (in
+        case of macronodes, the central/integer coordinates are sorted).
         """
-        # TODO: Let user specify index mapping.
-        # TODO: SortedDict implementation.
+        # TODO: User-specified index mapping?
         N = self.order()
         if self.to_indices is not None:
             return self.to_indices
-        if self.indexer == "default" and not self._macronodes:
+        if not self._macronodes:
             ind_dict = dict(zip(sorted(self.nodes()), range(N)))
         elif self._macronodes:
             sorted_macro = sorted(self.macro_to_micro)
@@ -147,31 +150,36 @@ class EGraph(nx.Graph):
         return ind_dict
 
     def adj_generator(self, sparse=True):
-        """Return the adjacency matrix of the graph.
+        """Return the correctly indexed adjacency matrix of the graph and set
+        the self.adj_mat attribute.
 
-        Indices correspond to sorted nodes.
+        Calling the NetworkX adjacency matrix methods with default
+        options may create a mismatch between the indices of the
+        rows/columns of the matrix and the indices generated by
+        self.index_generator(). This function demands that the indices
+        match.
         """
         if self.adj_mat is not None:
             return self.adj_mat
         if self.to_points is None:
             self.index_generator()
-        # TODO: SortedDict implementation.
         sorted_nodes = [self.to_points[i] for i in range(self.order())]
-        # TODO: New data type in case of fancier weights.
+        # TODO: Reconsider data type for more intricate weights.
         if sparse:
-            adj = nx.to_scipy_sparse_matrix(self, nodelist=sorted_nodes, dtype=np.int8)
+            adj = nx.to_scipy_sparse_array(self, nodelist=sorted_nodes, dtype=np.int8)
         else:
             adj = nx.to_numpy_array(self, nodelist=sorted_nodes, dtype=np.int8)
         self.adj_mat = adj
-        # TODO: Heat map?
+        # TODO: Draw heat map, if user desires?
         return adj
 
     def slice_coords(self, plane, number):
-        """Obtain all the coordinates in an x, y, or z slice.
+        """Obtain all the coordinates in an x, y, or z slice of self.
 
         Args:
             plane (str): 'x', 'y', or 'z', denoting the slice direction
-            number (int): the index of the slice
+            number (int): the index of the slice. The allowable range is from 0
+                to the total number of slices in the given direction.
 
         Returns:
             list of tuples: the coordinates of the slice.
@@ -189,7 +197,7 @@ class EGraph(nx.Graph):
         return EGraph(macronize(self, pad_boundary, disp), macronodes=True)
 
     def draw(self, **kwargs):
-        """Draw the graph state with matplotlib.
+        """Draw the graph state with Matplotlib.
 
         See flamingpy.utils.viz.draw_EGraph for more details.
         """

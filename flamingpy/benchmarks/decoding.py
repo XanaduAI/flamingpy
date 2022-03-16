@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"Benchmark for the decoding procedure comparing networkx and retworkx."
+"""Benchmark for the complete decoding procedure comparing NetworkX and
+retworkx."""
 
 # pylint: disable=no-member
 
@@ -23,10 +24,10 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 
-# How many simulations to do for each algorithm.
+# How many simulations to do for each algorithm
 num_trials = 10
 
-# DV (outer) code
+# DV (outer) code parameters
 distance = 5
 boundaries = "periodic"
 

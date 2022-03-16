@@ -26,19 +26,19 @@ largest_number = sys.float_info.max
 
 
 def assign_weights(code, **kwargs):
-    """Assign weights to qubits in a hybrid CV graph state CVG.
+    """Assign weights, reflecting error probabilities, to qubits in code.
 
     Args:
-        code (code class): the qubit code
-        state (CVGraph): the CVGraph whose syndrome has been measured
+        code (SurfaceCode): the qubit QEC code
         method (str, optional): the method for weight assignment. By
-            default, 'unit', denoting weight 1 everyoewhere. For
-            heuristic and analog weight assignment from blueprint, use
-            'blueprint'
+            default, 'unit', denoting edges of weight 1 everywhere. For
+            heuristic and analog weight assignment from Xanadu's blueprint,
+            use 'blueprint'
         integer (bool, optional): whether to convert weights to
             integers using Python's round function; False by default
         multiplier (int, optional): multiply the weight by multiplier
-            before rounding; 1 by default.
+            before rounding; 1 by default
+        delta (float, optional): the CV noise parameter.
 
     Returns:
         None
@@ -63,10 +63,9 @@ def assign_weights(code, **kwargs):
                     hom_val = G.nodes[node]["hom_val_p"]
                     err_prob = Z_err_cond(delta_effective, hom_val)
                 # Allow for taking log of 0.
-                # TODO: Is this the best way to do it? Or can I just choose
-                # an arbitrary small number?
                 if err_prob > 0.5:
                     err_prob = 0.5
+                # TODO: Can I just choose an arbitrary small number?
                 if err_prob == 0:
                     err_prob = smallest_number
                 if weight_options.get("integer"):
@@ -91,25 +90,20 @@ def assign_weights(code, **kwargs):
             G.nodes[node]["weight"] = 1
 
 
-# TODO: General functions for applying noise and measuring syndrome.
-
-
 def CV_decoder(code, translator=GKP_binner):
-    """Convert homodyne outcomes to bit values according to translate.
+    """Convert homodyne outcomes to bit values according to translator.
 
-    The inner (CV) decoder, aka translator, aka binning function. Set
+    The inner (CV) decoder, a.k.a. translator, a.k.a binning function. Set
     converted values to the bit_val attribute for nodes in G.
 
     Args:
-        state: the CVGraph with homodyne outcomes computed.
-        translator: the choice of binning function; by default, the
+        code (SurfaceCode): the qubit QEC code
+        translator (func): the choice of binning function; by default, the
             standard GKP binning function that snaps to the closest
             integer multiple of sqrt(pi).
     Returns:
         None
     """
-    # TODO: Generalize to nonlocal translators
-    # TODO: Vectorize?
     for point in code.all_syndrome_coords:
         hom_val = code.graph.nodes[point]["hom_val_p"]
         bit_val = translator([hom_val])[0]
@@ -117,22 +111,23 @@ def CV_decoder(code, translator=GKP_binner):
 
 
 def recovery(code, G_match, matching, ec, sanity_check=False):
-    """Run the recovery operation on graph G.
+    """Run recovery on code.
 
     Fip the bit values of all the vertices in the path connecting each
-    pair of stabilizers according to the matching. If check, verify
+    pair of stabilizers according to matching. If sanity_check is True, verify
     that there are no odd-parity cubes remaining, or display their
     indices of there are.
 
     Args:
-        code (RHGCode): the code
-        G_match (networkx.Graph): the matching graph
-        matching (set of tuples): the minimum-weight perfect matching
-        check (bool): if True, check if the recovery has succeeded.
+        code (SurfaceCode): the qubit QEC code
+        G_match (MatchingGraph): the matching graph
+        matching (set of tuples): the minimum weight perfect matching
+        ec (string): the error complex ('primal' or 'dual')
+        sanity_check (bool): if True, check if the recovery has succeeded
+            and print a message.
 
     Returns:
-        None or bool: if check, False if the recovery failed, True if
-            it succeeded. Otherwise None.
+        None
     """
     virtual_points = G_match.virtual_points
     stab_graph = getattr(code, ec + "_stab_graph")
@@ -152,31 +147,40 @@ def recovery(code, G_match, matching, ec, sanity_check=False):
             print(ec.capitalize() + " recovery succeeded - no unsatisfied stabilizers.")
 
 
-# TODO: Rename to logical_error_check or someting like that. Clarify
-# what correlation surface is, per RHG paper.
-def check_correction(code, plane=None, sheet=0, sanity_check=False):
-    """Perform a correlation-surface check.
+def check_correction(code, sanity_check=False):
+    """Check whether the error correction has succeded or failed.
 
-    Check the total parity of a correlation surface specified by
-    direction plane and index sheet to check if the error correction
-    procedure has succeeded. By default, checks the x = 0 plane.
+    Verify that no logical operator has been applied at the end of the
+    recovery. This is achieved by checking that the total parity on the
+    appropriate correlation or gauge surface(s) is even. Such as surface
+    consists of the set of all syndrome qubits (of the kind in code.ec),
+    in a plane of the correct kind ("primal" or "dual") along a
+    specified direction.
+
+    For all-periodic boundaries, total parities of planes along all
+    three directions are compared. For open boundaries, a plane parallel
+    to the primal or dual spatial (x or y) boundary (if the error complex
+    is primal or dual, respectively) is checked. In every case, the first
+    plane along the specified direction of the right type is checked
+    (although this doesn't matter for the following reason).
+
+    Since a logical operator cuts through a set of parallel planes at
+    a single point per plane, we expect parities along all parallel
+    planes to be the same: this is the idea behind sanity_check.
 
     Args:
-        G (CVGraph): the recovered graph
-        plane (str): 'x', 'y', or 'z', determining the direction of the
-            correlation surface; if None, select plane to check
-            depending on the boundary conditions
-        sheet (int): the sheet index (from 0 to one less than the
-            largest coordinate in the direction plane).
+        code (SurfaceCode): the qubit QEC code. At the stage this functions is
+            run, the recovery has already been applied, so that code.graph
+            represents the error-corrected graph state.
         sanity_check (bool): if True, display the total parity of
-            all correlation surfaces in the direction plane to verify
-            if parity is conserved. In addition to the
+            all parallel correlation surfaces to verify if parity
+            is conserved.
 
     Returns:
         list or (list, list): a list of bools indicating whether error
             correction succeeded for each complex. If sanity_check is set to
             True, also output a dictionary between planes and results of
-            the correlations-surface-parity sanity check.
+            the parallel-plane-parity sanity check.
     """
     dims = np.array(code.dims)
     dir_dict = {"x": 0, "y": 1, "z": 2}
@@ -189,9 +193,7 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
     for ec in code.ec:
         planes_to_check = []
         truth_dict = {"x": [], "y": [], "z": []}
-        if plane:
-            planes_to_check += [plane]
-        elif code.bound_str == "periodic":
+        if code.bound_str == "periodic":
             planes_to_check = ["x", "y", "z"]
         elif code.bound_str.startswith("open"):
             planes_to_check = ["x"] if ec == "primal" else ["y"]
@@ -221,21 +223,14 @@ def check_correction(code, plane=None, sheet=0, sanity_check=False):
 
 
 def build_match_graph(code, ec, matching_backend="networkx"):
-    """
-    Build the matching graph for the given code.
-
-    Combines weight assignment and matching graph creation.
+    """Build the matching graph for the given code.
 
     Args:
         code (code): the code class to decode and correct
-        weight_options (dict): how to assign weights; options are
-                'method': 'unit' or 'blueprint'
-                'integer': True (for rounding) or False (for not)
-                'multiplier': integer denoting multiplicative factor
-                    before rounding
+        ec (string): the error complex ("primal" or "dual")
         matching_backend (str or flamingpy.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
-            it most be either "networkx", "retworkx" or "lemon" to pick one
+            it must be either "networkx", "retworkx" or "lemon" to pick one
             of the already implemented backends. Else, the provided type should
             inherit from the MatchingGraph abstract base class and have an empty init.
             The default is the networkx backend since it is the reference implementation.
@@ -263,26 +258,35 @@ def correct(
 ):
     """Run through all the error-correction steps.
 
-    Combines weight assignment, matching graph creation,
-    minimum-weight-perfect matching, recovery, and correctness check.
+    Combines weight assignment, inner decoding and outer decoding, The last
+    of these includes matching graph creation, minimum-weight-perfect matching,
+    recovery, and correctness check.
 
     Args:
         code (code): the code class to decode and correct
-        inner_decoder (str): the CV decoder; GKP_binner by default
-        outer_decoder (str): the DV decoder; MWPM by default
-        weight_options (dict): how to assign weights; options are
+        decoder (dict): a dictionary of the form
+
+            {"inner": f, "outer": s},
+
+            where f is the inner/CV decoding function (GKP_binner by default)
+            and s is the string indicating the outer/DV decoder to use
+            ('MWPM' by default)
+        weight_options (dict, optional): how to assign weights; options are
+
             'method': 'unit' or 'blueprint'
             'integer': True (for rounding) or False (for not)
             'multiplier': integer denoting multiplicative factor
-            before rounding
-        sanity_check (bool): if True, check that the recovery
+                before rounding
+
+            Unit weights by default.
+        sanity_check (bool, optional): if True, check that the recovery
             operation succeeded and verify that parity is conserved
-            among all correlation surfaces.
+            among all correlation surfaces
         matching_backend (str or flamingpy.matching.MatchingGraph, optional):
-            The backend to generate the matching graph. See build_dec_and_match_graphs
+            The backend to generate the matching graph. See build_match_graph
             for more details.
     Returns:
-        bool: True if error correction succeeded, False if not.
+        bool: True if error correction succeded, False if not.
     """
 
     inner_dict = {"basic": GKP_binner}

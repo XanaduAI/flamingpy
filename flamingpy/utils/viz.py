@@ -11,10 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-Helper functions to draw various graphs
-and generate plots using Matplotlib.
-"""
+"""Helper functions to draw various graphs and generate plots using
+Matplotlib."""
 import itertools as it
 
 import numpy as np
@@ -94,30 +92,59 @@ def draw_EGraph(
     legend=False,
     display_axes=True,
 ):
-    """Draw the graph.
+    """Draw the graph state represented by the EGraph.
 
     Args:
-        color_nodes (bool): If True, color nodes based on 'color'
-            attributes attached to the node. Black by default.
-        color_edges (bool): If True, color edges based on 'color'
-            attributes attached to the node. Grey by default.
-        label (NoneType): ...
+        color_nodes (bool or string or dict): Options are:
+
+            True: color the nodes based on the 'color' attribute
+                attached to the node. If unavailable, color nodes black.
+            'state': color nodes based on the 'state' attribute. Uses
+                the color wheel by default, but colors can also be
+                specified via a dictionary in the state_colors argument.
+            string: color all nodes with the color specified by the stirng
+            dict: color nodes based on the 'type' attribute of the node,
+                with the dictionary specifying the colours. For example,
+                if the type can be primal or dual, the dictionary should
+                be of the form:
+
+                    {"primal": primal_color, "dual": dual_color}.
+
+        color_edges (bool):
+
+            True: color the edges based on the 'color' attribute
+                attached to the node. If unavailable, color nodes grey.
+            string: color all edges with the color specified by the stirng
+            dict: color edges based on the 'weight' attribute of the node,
+                with the dictionary specifying the colours. For example,
+                if the weight can be +1 or -1, the dictionary should
+                be of the form:
+
+                    {-1: minus_color, +1: plus_color}.
+
+        label (NoneType or string): plot values next to each node
+            associated with the node attribute label. For example,
+            to plot bit values, set label to "bit_val". If set to 'index',
+            it will plot the integer indices of the nodes. If the attribute
+            for some or all of the nodes, a message will print indicating
+            for how many nodes the attribute has not been set.
+        title (bool): if True, display the title, depending on the label.
+            For default labels, the titles are converted from attribute
+            name to plane English and capitalized.
+        legend (bool): if True and label is set to 'state', display
+            the state color legend.
         display_axes (bool): if False, turn off the axes.
 
     Returns:
-        A matplotib Axes object.
+        A Matplotib Axes object.
     """
     # Recommended to be viewed with IPython.
     # Font properties
     dims = egraph.graph.get("dims")
+    # TODO: automate/improve the following figure size designation
     if dims:
-        # TODO: Store dims as EGraph attributes, rather than a graph
-        # attribute?
         font_size = 10 * sum(dims) ** (1 / 2)
     else:
-        # TODO: If dims not specified find x, y, z limits of graph,
-        # supposing the graph is filled. Alternatively, just change
-        # the figure size?
         dims = (5, 5, 5)
         font_size = 14
     xmax, ymax, zmax = dims
@@ -146,7 +173,7 @@ def draw_EGraph(
             "hom_val_q": "q-homodyne outcomes",
             "bit_val": "Bit values",
             "weight": "Weights",
-            "indices": "Indices",
+            "index": "Indices",
         }
         name = title_dict.get(label) if title_dict.get(label) else label
         n_uncomputed = 0
@@ -214,13 +241,13 @@ def draw_EGraph(
     for edge in egraph.edges:
 
         # Color edges based on color_edges if string, or based on
-        # color ttribute if True; black otherwise.
+        # color attribute if True; black otherwise.
         if isinstance(color_edges, str):
             color = color_edges
         elif isinstance(color_edges, dict):
             color = color_edges.get(egraph.edges[edge].get("weight"))
         else:
-            color = egraph.edges[edge].get("color") if color_edges else "k"
+            color = egraph.edges[edge].get("color") if color_edges else "grey"
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
@@ -242,28 +269,28 @@ def draw_EGraph(
     return ax
 
 
-def plot_binary_mat_heat_map(symplectic, show=True):
-    """Plot the heat map of symplectic matrices."""
+def plot_binary_mat_heat_map(mat, show=True):
+    """Plot the heat map of a matrix."""
     plt.figure()
-    if not isinstance(symplectic, np.ndarray):
-        symplectic = symplectic.toarray()
-    plt.matshow(symplectic, 0)
+    if not isinstance(mat, np.ndarray):
+        mat = mat.toarray()
+    plt.matshow(mat, 0)
     if show:
         plt.show()
 
 
 def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
-    """Draw stabilizer or matching graph G with a color legend.
+    """Draw a stabilizer or matching graph with a color legend.
 
-    This requires that the graph is implemented with the networkx backend.
+    This requires that the graph is implemented with the NetworkX backend.
 
     Args:
         graph (NxStabilizerGraph or NxMatchingGraph): the graph to draw.
         label_edges (bool, optional): if True (the default), label the edges
             of the graph with their weight.
-        node_labels (dict of node to label, optional): if provided, the nodes will
-            be identified with the given labels. Else, there will be no label
-            for the nodes.
+        node_labels (dict of node to label, optional): if provided, the nodes
+            will be identified with the given labels. Else, there will be no
+            label for the nodes.
         title (string, optional): add the given title to the plot.
     """
     if not isinstance(graph.graph, nx.Graph):
@@ -297,27 +324,28 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     cbar.ax.tick_params(labelsize=10)
 
 
-def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
-    """Draw the syndrome plot for a CVGraph G.
+def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
+    """Draw the syndrome plot for a code.
 
-    A comprehensive graphing tool for drawing the error syndrome of
-    a CVGraph G. Labelling options are specified with the help of
+    A comprehensive graphing tool for drawing the error syndrome of code.
+    Labelling options are specified with the help of
     drawing_opts, and can include:
 
                 'show_nodes' -> the underlying graph displayed
-                'label_nodes' -> node labels, as per CVGraph.draw
+                'label_nodes' -> node labels, as per draw_EGraph
                 'label_cubes' -> indices of the stabilizers
                 'label_boundary'-> indices of the boundary points
-                'legend' -> legends for the nodes and cubes
+                'legend' -> legends for the nodes and stabilizers
 
-    Cubes are shown as transparent voxels, green for even parity and
-    red for odd. For now, cubes on periodic boundaries are not shown,
-    and stabilizers on dual boundaries occupy are shown to occupy
-    the full space of a six-body cube.
+    Stabilizers are shown as transparent voxels, green for even parity and
+    red for odd. For now, stabilizers on periodic boundaries are not
+    drawn in a special way, stabilizers on dual boundaries are unshifted
+    from the primal stabilizer location, and incomplete stabilizers
+    are still represented as complete cubes.
 
     Args:
-        G_dec (networkx.Graph): the decoding graph
-        G (CVGraph): the encoded CVGraph
+        code (SurfaceCode): the qubit QEC code
+        ec (string): the error complex ('primal' or 'dual')
         index_dict (dict): the stabiizer-to-index mapping
         drawing_opts (dict): a dictionary of drawing options, with
             all possibilities described above.
@@ -326,7 +354,6 @@ def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
         matplotlib.pyplot.axes: the 'axes' object
     """
     # Font properties
-    # TODO: Make consistent with EGraph fontprops
     font_size = 10 * sum(code.dims) ** (1 / 2)
     # Set plotting options
     plot_params = {
@@ -347,6 +374,7 @@ def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
     draw_dict = {
         "show_nodes": False,
         "color_nodes": "state",
+        "color_edges": "k",
         "label": None,
         "legend": True,
         "title": True,
@@ -365,16 +393,14 @@ def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
     shape = np.array(code.dims)
     # font_props = state.font_props
     # If show_nodes is True, get the axes object and legend from
-    # CVGraph.sketch (this also plots the graph in the console).
+    # draw_EGraph (this also plots the graph in the console).
     if drawing_opts["show_nodes"]:
-        # TODO: If draw method moved out of CVGraph and into EGraph,
-        # the state argument would be unnecessary here.
         egraph_args = [
             "color_nodes",
+            "color_edges",
+            "state_colors",
             "label",
             "legend",
-            "title",
-            "state_colors",
             "display_axes",
         ]
         egraph_opts = {k: drawing_opts[k] for k in egraph_args}
@@ -383,8 +409,8 @@ def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
     else:
-        # TODO: Initialize axes based on empty ax object from state.draw()
-        # but prevent from state.draw() from plotting.
+        # TODO: Initialize axes based on empty ax object from draw_EGraph
+        # but prevent from draw_EGraph from plotting.
         fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
         ax = fig.gca(projection="3d")
         # ax.tick_params(labelsize=font_props['size'])
@@ -460,7 +486,8 @@ def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
     ax.voxels(x, y, z, filled_e, facecolors=filled_e)
 
     if drawing_opts["label_boundary"]:
-        for point in G_dec.bound_points():
+        bound_points = getattr(code, ec + "_bound_points")
+        for point in bound_points:
             ax.scatter(point[0], point[1], point[2], s=70, c="k")
             ax.text(
                 point[0],
@@ -481,10 +508,12 @@ def syndrome_plot(code, G_dec, ec, index_dict=None, drawing_opts=None):
             # prop=font_props,
             loc="upper left",
         )
-    # Since CVGraph.sketch() legend has been overwritten, readd
+    # Since draw_EGraph legend has been overwritten, re-add
     # it to the plot.
     if leg:
         ax.add_artist(leg)
+    if drawing_opts["title"]:
+        ax.set_title(ec.capitalize() + " syndrome")
     return ax
 
 

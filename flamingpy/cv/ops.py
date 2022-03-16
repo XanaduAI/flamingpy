@@ -17,20 +17,21 @@ import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
 
-from flamingpy.cv.gkp import Z_err, Z_err_cond
+# from flamingpy.cv.gkp import Z_err, Z_err_cond
 
 
 def SCZ_mat(adj):
     """Return a symplectic matrix corresponding to CZ gate application.
 
-    Gives the 2N by 2N symplectic matrix for CZ gate application
-    based on the adjacency matrix adj. Assumes quadrature-like
-    convention: (q1, ..., qN, p_1, ..., p_N).
+    Give the 2N by 2N symplectic matrix for CZ gate application based on the
+    adjacency matrix adj. Assumes quadrature-like convention:
+
+        (q1, ..., qN, p_1, ..., p_N).
 
     Args:
-        adj (array): N by N binary symmetric matrix. If modes i and j
-            are linked by a CZ, then entry ij and ji is equal to the
-            weight of the edge (1 by default); otherwise 0.
+        adj (array): N by N binary symmetric matrix. If modes i and j are
+            linked by a CZ, then entry ij and ji is equal to the weight of the
+            edge (1 by default); otherwise 0.
     Returns:
         np.array or sp.sparse.csr_matrix: 2N by 2N symplectic matrix.
             sparse if the adjacency matrix is sparse.
@@ -42,7 +43,7 @@ def SCZ_mat(adj):
         zeros = np.zeros((N, N), dtype=np.int8)
         block_func = np.block
     else:
-        # TODO: Specify kind of Scipy sparse matrix?
+        # TODO: Specify different kind of Scipy sparse matrix?
         identity = sp.identity(N, dtype=np.int8)
         zeros = sp.csr_matrix((N, N), dtype=np.int8)
         block_func = sp.bmat
@@ -54,9 +55,9 @@ def SCZ_mat(adj):
 def SCZ_apply(adj, quads, one_shot=True):
     """Apply SCZ matrix to one- or two-dimensional array quads.
 
-    If one-shot is True, use SCZ_mat to apply a symplectic CZ matrix
-    to a matrix or vector of quadratures. Otherwise, take advantage of
-    the block structure of a symplectic SCZ matrix for a more memory-
+    If one-shot is True, use SCZ_mat to apply a symplectic CZ matrix to
+    a matrix or vector of quadratures. Otherwise, take advantage of the
+    block structure of a symplectic SCZ matrix for a more memory-
     efficient matrix multiplication.
     """
     N = quads.shape[0] // 2
@@ -83,37 +84,37 @@ def SCZ_apply(adj, quads, one_shot=True):
 
 
 class CVLayer:
-    """A class for applying to an EGraph a physical layer of
-    continuous-variable states.
+    """A class for applying to an EGraph a physical layer of continuous-
+    variable states.
 
-    Has all the functionality of an EGraph, but associates its
-    nodes with continuous-variable quantum states and its edges with
-    continuous-variable CZ gates.
+    Has all the functionality of an EGraph, but associates its nodes with
+    continuous-variable quantum states and its edges with continuous-variable
+    CZ gates.
 
-    For now, only a hybrid state of p-squeezed and GKP states is
-    considered.
+    For now, only a hybrid state of p-squeezed and GKP states is considered.
 
     Args:
         g (graph-type): the graph underlying the state.
-        state (dict, optional): the dictionary of all non-GKP states
-            and their indices, of the form {'state': []}. By default,
-            all states are GKP states.
-        p_swap (float, optional): if supplied, the probability of a
-            node being a p-squeezed state. Overrides the indices given
-            in state.
-        rng (numpy.random.Generator, optional): a random number generator following
-            the NumPy API. It can be seeded for reproducibility. By default,
-            numpy.random.default_rng is used without a fixed seed.
+        state (dict, optional): the dictionary of all non-GKP states and their
+            indices, of the form {'state': []}. By default, all states are
+            GKP states.
+        p_swap (float, optional): if supplied, the probability of a node being
+            a p-squeezed state. Overrides the indices given in state.
+        rng (numpy.random.Generator, optional): a random number generator
+            following the NumPy API. It can be seeded for reproducibility.
+            By default, numpy.random.default_rng is used without a fixed seed.
 
     Attributes:
         egraph (EGraph): the unerlying graph representation.
         _N (int): the number of qubits in the lattice.
+        _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph.
         _states (dict): states along with their indices.
-        _delta (float): the delta from the Args above.
-        _sampling_order (str): the sampling order from the Args above.
+        _delta (float): the delta from the Args above (after noise applied)
+        _sampling_order (str): the sampling order from the Args above (after
+            noise applied).
         _adj (array): adjancency matrix of the underlying graph.
-        to_points (dict): pointer to self.egraph.to_points, the
-            dictionary from indices to coordinates.
+        to_points (dict): pointer to self.egraph.to_points, the dictionary from
+            indices to coordinates.
     """
 
     def __init__(self, g, states={"p": np.empty(0, dtype=int)}, p_swap=0, rng=default_rng()):
@@ -129,7 +130,6 @@ class CVLayer:
             # Non-zero swap-out probability overrides indices specified
             # in states and hybridizes the lattice. Print a message if
             # both supplied.
-            # TODO: Raise exception?
             if p_swap:
                 if len(self._states["p"]):
                     print(
@@ -159,28 +159,31 @@ class CVLayer:
                     self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
     def apply_noise(self, model={}, rng=default_rng()):
-        """Apply noise model given in model.
+        """Apply the noise model in model with a random number generator rng.
 
         Args:
             model (dict, optional): the noise model dictionary of the form
                 (default values displayed):
 
-                {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01}
+                {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01,
+                 'perfect_inds': self.egraph.graph.get('perfect_inds')}
 
-                grn stands for Gaussian Random Noise; sampling_order
-                dictates how to simulate measurement outcomes: sample from
-                an uncorrelated noise matrix initially ('initial'), a
-                correlated noise matrix finally ('final'), or for ideal
-                homodyne outcomes initially and from a separable noise
-                covariance matrix finally ('two-step'); 'delta' is the
-                quadrature blurring parameter, related to the squeezing
-                of the GKP states and the momentum-quadrature variance of
-                the p-squeezed states.
+                'grn; stands for Gaussian Random Noise; sampling_order dictates
+                how to simulate measurement outcomes: sample from an
+                uncorrelated noise matrix initially ('initial'), a correlated
+                noise matrix finally ('final'), or for ideal homodyne outcomes
+                initially and from a separable noise covariance matrix finally
+                ('two-step'); 'delta' is the quadrature blurring parameter,
+                related to the squeezing of the GKP states and the
+                momentum-quadrature variance of the p-squeezed states.
+                'perfect_inds' is a list of indices to which noise should not
+                be applied. By default, looks to the "perfect_inds" attribute
+                of egraph.graph.
 
-            rng (numpy.random.Generator, optional): a random number generator following
-                NumPy API. It can be seeded for reproducibility. By default,
-                numpy.random.default_rng is used without a fixed seed.
-
+            rng (numpy.random.Generator, optional): a random number generator
+                following the NumPy API. It can be seeded for reproducibility.
+                By default, numpy.random.default_rng is used without a fixed
+                seed.
         """
         # Modelling the states.
         perfect_inds = self.egraph.graph.get("perfect_inds")
@@ -200,19 +203,20 @@ class CVLayer:
     def grn_model(self, rng=default_rng()):
         """Apply Gaussian Random Noise model to the CVGraph.
 
-        Store quadrature or noise information as attributes depnding
-        on the sampling order.
+        Store quadrature or noise information as attributes depending on the
+        sampling order.
 
         Args:
-            rng (numpy.random.Generator, optional): a random number generator following
-                NumPy API. It can be seeded for reproducibility. By default,
-                numpy.random.default_rng is used without a fixed seed.
+            rng (numpy.random.Generator, optional): a random number generator
+                following the NumPy API. It can be seeded for reproducibility.
+                By default, numpy.random.default_rng is used without a fixed
+                seed.
         """
         N = self._N
         delta = self._delta
 
-        # For initial and final sampling, generate noise array depending
-        # on quadrature and state.
+        # For initial and final sampling, generate noise array depending on
+        # quadrature and state.
         if self._sampling_order in ("initial", "final"):
             noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
             noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
@@ -224,13 +228,13 @@ class CVLayer:
                     self._init_noise[inds] = noise_q[state]
                     self._init_noise[inds + N] = noise_p[state]
 
-        # For final sampling, apply a symplectic CZ matrix to the
-        # initial noise covariance.
+        # For final sampling, apply a symplectic CZ matrix to the initial noise
+        # covariance.
         if self._sampling_order == "final":
             self._noise_cov = SCZ_apply(self._adj, sp.diags(self._init_noise) ** 2)
 
-        # For two-step sampling, sample for initial (ideal)
-        # state-dependent quadrature values.
+        # For two-step sampling, sample for initial (ideal) state-dependent
+        # quadrature values.
         if self._sampling_order == "two-step":
             q_val_for_p = lambda n: rng.random(size=n) * (2 * np.sqrt(np.pi))
             q_val_for_GKP = lambda n: rng.integers(0, 2, size=n) * np.sqrt(np.pi)
@@ -251,11 +255,10 @@ class CVLayer:
     ):
         """Conduct a homodyne measurement on the lattice.
 
-        Simulate a homodyne measurement of quadrature quad of states
-        at indices inds according to sampling order specified by
-        self._sampling_order. Use the Numpy random sampling method
-        method. If updated_quads is supplied, use those
-        instead of applying an SCZ matrix to the initial quads in
+        Simulate a homodyne measurement of quadrature quad of states at indices
+        inds according to sampling order specified by self._sampling_order. Use
+        the Numpy random sampling method method. If updated_quads is supplied,
+        use those instead of applying an SCZ matrix to the initial quads in
         the two-step sampling.
 
         Args:
@@ -298,7 +301,6 @@ class CVLayer:
             cov_p = self._noise_cov[N:, N:]
             cov_dict = {"q": cov_q, "p": cov_p}
             means = np.zeros(N_inds, dtype=bool)
-            # TODO: Is below correct?
             covs = cov_dict[quad][inds, :][:, inds].toarray()
             outcomes = rng.multivariate_normal(mean=means, cov=covs, method=method)
         for i in range(N_inds):
@@ -309,36 +311,7 @@ class CVLayer:
 
         If inds not specified, compute probabilities for all nodes.
         """
-        N = self._N
-        if inds is None:
-            inds = range(N)
-        N_inds = len(inds)
-        if exact:
-            if self._sampling_order != "final":
-                print('Sampling order must be "final"')
-                raise Exception
-            var_p = self._noise_cov[N:, N:][inds, :][:, inds].toarray()
-            var_p = np.diag(var_p)
-            if cond:
-                # TODO: Fix this.
-                # TODO: Account for change in hom input for two-step sampling
-                hom_vals = self.hom_outcomes(inds=inds)
-                errs = Z_err_cond(var_p, hom_vals)
-
-            else:
-                errs = Z_err(var_p)
-            p_string = "p_phase" + "_cond" * cond
-            for i in range(N_inds):
-                self.egraph.nodes[self.to_points[inds[i]]][p_string] = errs[i]
-        # TODO: Fix the following to account for p-squeezed states in
-        # vicinity.
-        # else:
-        #     for i in range(N_inds):
-        #         point = self.to_points[inds[i]]
-        #         n_neighbors = len(self.egraph[point])
-        #         delta_effective = (n_neighbors + 1) * self._delta
-        #         err = Z_err([delta_effective])[0]
-        #         self.egraph.nodes[point]['p_phase'] = errs[i]
+        pass
 
     def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
@@ -351,12 +324,7 @@ class CVLayer:
 
     def Z_probs(self, inds=None, cond=False):
         """array: the phase error probabilities of modes inds."""
-        N = self._N
-        if inds is None:
-            inds = range(N)
-        p_string = "p_phase" + "_cond" * bool(cond)
-        phase_errs = [self.egraph.nodes[self.to_points[i]].get(p_string) for i in inds]
-        return phase_errs
+        pass
 
     def hom_outcomes(self, inds=None, quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
@@ -394,8 +362,8 @@ class CVLayer:
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.
 
-        See flamingpy.utils.viz.draw_EGraph for more details. Use the
-        default colours: gold for GKP states and blue for p-squeezed
+        See flamingpy.utils.viz.draw_EGraph for more details. Use the default
+        colours: gold for GKP states and blue for p-squeezed
         states.
         """
         cv_opts = {"color_nodes": "state", "state_colors": {"GKP": "gold", "p": "blue"}}

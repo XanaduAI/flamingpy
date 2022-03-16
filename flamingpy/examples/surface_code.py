@@ -19,8 +19,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity
-from flamingpy.utils import viz
-from flamingpy.cv.ops import CVLayer
 
 show = __name__ == "__main__"
 
@@ -60,23 +58,6 @@ for err in RHG_code.ec:
         for point in stabilizer.egraph:
             x, z, y = point
             RHG_fig.scatter(x, z, y, color=color, s=200)
-
-if show:
-    plt.show()
-else:
-    plt.close()
-
-# Check CV noise model and sampling
-delta = 0.001
-p_swap = 0
-CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
-model = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
-CVRHG.apply_noise(model)
-CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
-outcomes = [CVRHG.hom_outcomes()[i] for i in RHG_code.all_syndrome_inds]
-plt.figure(figsize=(16, 9))
-plt.hist(outcomes, bins=100)
-CVRHG.draw(label="hom_val_p", legend=True, title=True)
 
 if show:
     plt.show()

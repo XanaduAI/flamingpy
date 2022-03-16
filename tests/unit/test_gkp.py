@@ -53,7 +53,8 @@ class TestGKPBinning:
 
     @pytest.mark.parametrize("alpha", alpha_vals)
     def test_integer_fractional(self, alpha):
-        """Test that the integer and fractional part as obtained by integer_fractional matches that of constructed numbers."""
+        """Test that the integer and fractional part as obtained by
+        integer_fractional matches that of constructed numbers."""
         integers = rng().integers(-N // 2, N // 2, N)
         fractions = (rng().random(N) - 0.5) * alpha
         numbers = integers * alpha + fractions
@@ -62,7 +63,8 @@ class TestGKPBinning:
         assert np.allclose(frac_part, fractions)
 
     def test_gkp_binner(self):
-        """Tests that GKP_binner gives the integer part mod 2, and returns the fractional part if asked."""
+        """Tests that GKP_binner gives the integer part mod 2, and returns the
+        fractional part if asked."""
         alpha = np.sqrt(np.pi)
         integers = rng().integers(-N // 2, N // 2, N)
         fractions = rng().random(N) * (alpha / 2)
