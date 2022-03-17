@@ -1,0 +1,32 @@
+name: Formatting Checks
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop    
+
+jobs:
+  black-n-docformatter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Get the latest pip and black
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install black docformatter --upgrade
+
+      - uses: actions/checkout@v2
+
+      - name: Run black
+        run: python -m black -l 100 tests flamingpy --check
+      
+      - name: Run docformatter
+        run: python -m docformatter --check flamingpy/*/*.py  

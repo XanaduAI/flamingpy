@@ -1,0 +1,10 @@
+include .\flamingpy\test_data\*.csv
+include ./flamingpy/test_data/*.csv
+include .\flamingpy\cpp\*.so
+include ./flamingpy/cpp/*.so
+include .\flamingpy\cpp\*.pyd
+include ./flamingpy/cpp/*.pyd
+include .\flamingpy\benchmarks\*.py
+include ./flamingpy/benchmarks/*.py
+include .\flamingpy\examples\*.py
+include ./flamingpy/examples/*.py
