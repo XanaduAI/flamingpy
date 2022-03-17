@@ -23,6 +23,7 @@ from flamingpy.codes import SurfaceCode, alternating_polarity
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 
+
 # How many simulations to do for each algorithm.
 num_trials = 10
 

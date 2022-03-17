@@ -22,9 +22,11 @@ import numpy
 import scipy
 import networkx
 import retworkx
-import thewalrus
 import matplotlib
 import pandas
+
+import flamingpy.cpp.lemonpy as lp
+import flamingpy.cpp.cpp_mc_loop as cmc
 
 from ._version import __version__
 
@@ -50,18 +52,19 @@ def about():
 
     # a QuTiP-style infobox
     print(
-        "\nFlamingPy is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers."
+        "\nFlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
     )
     print("\nCopyright 2022 Xanadu Quantum Technologies Inc.\n")
 
-    print("Python version:       {}.{}.{}".format(*sys.version_info[0:3]))
-    print("Platform info:        {}".format(platform.platform()))
-    print("Installation path:    {}".format(os.path.dirname(__file__)))
-    print("FlamingPy version:    {}".format(__version__))
-    print("Numpy version:        {}".format(numpy.__version__))
-    print("Scipy version:        {}".format(scipy.__version__))
-    print("NetworkX version:     {}".format(networkx.__version__))
-    print("RetworkX version:     {}".format(retworkx.__version__))
-    print("The Walrus version:   {}".format(thewalrus.__version__))
-    print("Matplotlib version:   {}".format(matplotlib.__version__))
-    print("Pandas version:       {}".format(pandas.__version__))
+    print("Platform info:               {}".format(platform.platform()))
+    print("Installation path:           {}".format(os.path.dirname(__file__)))
+    print("Python version:              {}.{}.{}".format(*sys.version_info[0:3]))
+    print("FlamingPy version:           {}".format(__version__))
+    print("Numpy version:               {}".format(numpy.__version__))
+    print("Scipy version:               {}".format(scipy.__version__))
+    print("NetworkX version:            {}".format(networkx.__version__))
+    print("RetworkX version:            {}".format(retworkx.__version__))
+    print("Matplotlib version:          {}".format(matplotlib.__version__))
+    print("Pandas version:              {}".format(pandas.__version__))
+    print("lemonpy shared object:       {}".format(lp))
+    print("cpp_mc_loop shared object:   {}".format(cmc))

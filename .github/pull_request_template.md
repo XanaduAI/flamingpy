@@ -40,7 +40,7 @@
 
 ## Checklist and integration statements
 
-- [ ] My Python and C++ codes follow the coding and commenting styles of this project as indicated by existing files. Specifically, the changes conform to `black -l 100` and given `pylint` configurations. 
+- [ ] My Python and C++ codes follow the coding and commenting styles of this project as indicated by existing files. Specifically, the changes conform to given `black`, `docformatter` and `pylint` configurations. 
 - [ ] I have performed a self-review of these changes.
 - [ ] I confirm that I have already merged other branches into this branch as required.
 - [ ] I have added context for corresponding changes in documentation and README.md as needed.

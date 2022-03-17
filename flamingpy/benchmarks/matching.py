@@ -25,6 +25,7 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.decoders import decoder as dec
 from flamingpy.decoders.mwpm import matching as mt
 
+
 # How many simulations to do for each algorithm
 num_trials = 10
 

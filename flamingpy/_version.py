@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Version number (major.minor.patch[-label])"""
+"""Version number (major.minor.patch[label])"""
 
 
-__version__ = "0.3.1-alpha"
+__version__ = "0.4.6a1"

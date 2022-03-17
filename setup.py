@@ -20,16 +20,10 @@ import subprocess
 
 from distutils.version import LooseVersion
 
-# from distutils.extension import Extension
-# from distutils.core import setup
-# from skbuild import setup
 from setuptools import setup, Extension, dist, find_packages
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from setuptools.command.build_ext import build_ext
-
-# from Cython.Distutils import build_ext
-# from Cython.Build import cythonize
 
 
 # Reading the package version number
@@ -117,13 +111,13 @@ if sys.argv[1] == "build_cython":
     ]
 elif sys.argv[1] == "build_cmake":
     ext_modules = [CMakeExtension("flamingpy.cpp.lemonpy")]
-elif sys.argv[1] == "install" or sys.argv[1] == "develop":
+elif sys.argv[1] == "install" or sys.argv[1] == "develop" or sys.argv[1] == "bdist_wheel":
     ext_modules = []
 else:
     raise NotImplementedError
 
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
@@ -135,8 +129,9 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Physics"
 ]
 
 install_requires = [
@@ -145,11 +140,10 @@ install_requires = [
     "retworkx>=0.10.2",
     "numpy>=1.21.0",
     "pandas>=1.2.1",
-    "scipy>=1.6.0",
-    "thewalrus>=0.15.0",
+    "scipy>=1.6.0"
 ]
 
-description = "FlamingPy is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers."
+description = "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
 
 setup(
     name="flamingpy",
@@ -159,18 +153,16 @@ setup(
     classifiers=classifiers,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/XanaduAI/ft-stack",
+    url="https://github.com/XanaduAI/flamingpy",
     packages=find_packages(where="."),
-    package_dir={"": "."},
-    # provides=["flamingpy"],
-    # package_data={"flamingpy":["src/flamingpy/data/*.csv", "src/flamingpy/*.so"]},
     include_package_data=True,
-    python_requires=">=3.8,!=3.10.*",
+    package_dir={"": "."},
+    python_requires=">=3.8,!=3.11.*",
     cmdclass={
         "install": install,
         "develop": develop,
         "build_cython": build_ext,
-        "build_cmake": CMakeBuild,
+        "build_cmake": CMakeBuild
     },
     ext_modules=ext_modules,
     distclass=BinaryDistribution,

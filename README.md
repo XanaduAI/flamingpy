@@ -3,12 +3,12 @@
 
 <p align="center">
   <!-- Tests (GitHub actions) -->
-  <a href="https://github.com/XanaduAI/ft-stack/actions/workflows/build_tests.yaml">
-    <img src="https://img.shields.io/github/workflow/status/XanaduAI/strawberryfields/Tests?label=build%20%26%20tests&style=flat-square" />
+  <a href="https://github.com/XanaduAI/flamingpy/actions/workflows/build_tests.yaml">
+    <img src="https://img.shields.io/github/workflow/status/XanaduAI/flamingpy/Tests?label=build%20%26%20tests&style=flat-square" />
   </a>
   <!-- CodeFactor -->
-  <a href="https://www.codefactor.io/repository/github/xanaduai/strawberryfields">
-    <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/strawberryfields/master?style=flat-square" />
+  <a href="https://www.codefactor.io/repository/github/xanaduai/flamingpy">
+    <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/flamingpy/master?style=flat-square" />
   </a>
   <!-- PyPI (Python Version) -->
   <a href="https://pypi.org/project/flamingpy">
@@ -19,8 +19,8 @@
     <img src="https://img.shields.io/pypi/v/flamingpy.svg?style=flat-square" />
   </a>
   <!-- CodeCov -->
-  <a href="https://codecov.io/gh/XanaduAI/strawberryfields">
-    <img src="https://img.shields.io/codecov/c/github/xanaduai/strawberryfields/master.svg?style=popout-square" />
+  <a href="https://codecov.io/gh/XanaduAI/flamingpy">
+    <img src="https://img.shields.io/codecov/c/github/xanaduai/flamingpy/master.svg?style=popout-square" />
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
- <a href="https://github.com/XanaduAI/ft-stack">FlamingPy</a> is a cross-platform Python library with several backends for efficient simulations of error correction in fault-tolerant quantum computers.
+ <a href="https://github.com/XanaduAI/ft-stack">FlamingPy</a> is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers.
 </p>
 
 ## Features
@@ -43,10 +43,10 @@
   
 ## Download and installation 
 
-FlamingPy requires **Python 3.8 or 3.9**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
+FlamingPy requires **Python 3.8+**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
-python -m pip install -i https://test.pypi.org/simple/ flamingpy # TODO: TestPyPI cannot properly install dependencies. Please run `python -m pip install matplotlib networkx retworkx numpy pandas scipy thewalrus --upgrade` beforehand manually. Remove this comment when we moved to PyPI.
+python -m pip install flamingpy
 ``` 
 
 #### Installation from Source (advanced users)
@@ -72,7 +72,7 @@ The purpose of the commands is as follows:
 - The second command (develop) installs FlamingPy Python libraries without the compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
-If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git`. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the documentation [coming soon].
+If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git`. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our Frequently Encountered Errors page in the [documentation](https://flamingpy.readthedocs.io/en/stable/help/frequently_encountered_errors.html).
 
 ## Getting started and basic usage
 
@@ -127,19 +127,20 @@ print(message)
 ```
 
 <!-- ## Performance Demos
- -->
+  -->
 
 ## Contribution
 
-We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributers to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for the FlamingPy. See our
-changelog for more details.
+We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our release notes and changelog for more details.
+
+
 
 ## Support
 
-- **Source Code:** https://github.com/XanaduAI/ft-stack
-- **Issue Tracker:** https://github.com/XanaduAI/ft-stack/issues
-
 If you are having issues, please let us know by posting the issue on our GitHub issue tracker.
+
+- **Source Code:** https://github.com/XanaduAI/flamingpy
+- **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
 
 ## Attribution for authors
 

@@ -235,15 +235,15 @@ class TestCVLayer:
         assert np.isclose(sum(outcomes_q) / n, 0, atol=1e-1)
         # TODO: test two-step sampling
 
-    def test_eval_Z_probs(self, random_graph):
-        """Test that p_phase and p_phase_cond attribute get populated when
-        phase error probabilities are evaluated."""
-        pass
-        # G = CVLayer(random_graph[0])
-        # G.apply_noise(noise_model(delta=rng().random(), order="final"))
-        # G.measure_hom("p")
-        # G.eval_Z_probs()
-        # G.eval_Z_probs(cond=True)
-        # for node in G.egraph:
-        #     assert "p_phase" in G.egraph.nodes[node]
-        #     assert "p_phase_cond" in G.egraph.nodes[node]
+    # def test_eval_Z_probs(self, random_graph):
+    #     """Test that p_phase and p_phase_cond attribute get populated when
+    #     phase error probabilities are evaluated."""
+    #     pass
+    #     G = CVLayer(random_graph[0])
+    #     G.apply_noise(noise_model(delta=rng().random(), order="final"))
+    #     G.measure_hom("p")
+    #     G.eval_Z_probs()
+    #     G.eval_Z_probs(cond=True)
+    #     for node in G.egraph:
+    #         assert "p_phase" in G.egraph.nodes[node]
+    #         assert "p_phase_cond" in G.egraph.nodes[node]

@@ -64,9 +64,9 @@ py::array py_mwpm(py::array_t<float, py::array::c_style | py::array::forcecast> 
   // call pure C++ function
   std::vector<int> result = mwpm(pos, array.shape()[0]);
 
-  ssize_t              ndim    = 2;
-  std::vector<ssize_t> shape   = { static_cast<ssize_t>(result.size() / 2) , 2 };
-  std::vector<ssize_t> strides = { sizeof(int)*2 , sizeof(int) };
+  Py_ssize_t              ndim    = 2;
+  std::vector<Py_ssize_t> shape   = { static_cast<Py_ssize_t>(result.size() / 2) , 2 };
+  std::vector<Py_ssize_t> strides = { sizeof(int)*2 , sizeof(int) };
 
   // return 2-D NumPy array
   return py::array(py::buffer_info(

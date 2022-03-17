@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: [3.8, 3.9, '3.10']
         os: [macos-10.15]
         arch: [x86_64]
     runs-on: ${{ matrix.os }}
@@ -39,7 +39,7 @@ jobs:
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pillow pyyaml wheel --upgrade
+          python -m pip install pyyaml wheel --upgrade
           python -m pip install -r dev_requirements.txt
           
       - name: Build flamingpy from Source
@@ -78,8 +78,9 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          #password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          #repository_url: https://test.pypi.org/legacy/
              
   test-wheel:
     needs: upload-pypi
@@ -87,7 +88,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: [3.8, 3.9, '3.10']
         os: [macos-10.15]
         arch: [x86_64]
     runs-on: ${{ matrix.os }}
@@ -105,9 +106,7 @@ jobs:
       - name: Pip install flamingpy        
         run: |
           python3 -m pip install --upgrade pip
-          # TODO: remove this once we have moved to full PyPi server
-          python -m pip install matplotlib networkx retworkx numpy pandas scipy thewalrus --upgrade
-          python -m pip install -i https://test.pypi.org/simple/ flamingpy
+          python -m pip install flamingpy
         
       - name: Run some involved package examples for testing purposes
         run: | 

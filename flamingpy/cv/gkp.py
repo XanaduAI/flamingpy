@@ -61,7 +61,7 @@ def GKP_binner(outcomes, return_fraction=False):
     """Naively translate CV outcomes to bit values.
 
     The function treats values in (-sqrt(pi)/2, sqrt(pi)/2) as 0
-    and those in (sqrt(pi)/2, 3sqrt(pi)/2) as 1. Values on the
+    and those in (sqrt(pi)/2, 3*sqrt(pi)/2) as 1. Values on the
     boundary are binned to 0. The rest of the bins
     are defined periodically.
 

@@ -14,10 +14,76 @@
 """Functions for reducing a macronode lattice to a canonical lattice."""
 import numpy as np
 from scipy.linalg import block_diag
-import thewalrus.symplectic as symp
 
 from flamingpy.cv.ops import CVLayer, SCZ_apply
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
+
+
+def expand(S, modes, N):
+    r"""Expands a Symplectic matrix S to act on the entire subsystem.
+    Args:
+        S (array): a :math:`2M\times 2M` Symplectic matrix
+        modes (Sequence[int]): the list of modes S acts on
+        N (int): full size of the subsystem
+    Returns:
+        array: the resulting :math:`2N\times 2N` Symplectic matrix
+    Note:
+        This is from thewalrus library.
+        https://github.com/XanaduAI/thewalrus/blob/master/thewalrus/symplectic.py
+    """
+    M = len(S) // 2
+    S2 = np.identity(2 * N, dtype=S.dtype)
+    w = np.array(modes)
+
+    S2[w.reshape(-1, 1), w.reshape(1, -1)] = S[:M, :M].copy()  # X
+    S2[(w + N).reshape(-1, 1), (w + N).reshape(1, -1)] = S[M:, M:].copy()  # P
+    S2[w.reshape(-1, 1), (w + N).reshape(1, -1)] = S[:M, M:].copy()  # XP
+    S2[(w + N).reshape(-1, 1), w.reshape(1, -1)] = S[M:, :M].copy()  # PX
+
+    return S2
+
+
+def beam_splitter(theta, phi, dtype=np.float64):
+    """Beam-splitter.
+
+    Args:
+        theta (float): transmissivity parameter
+        phi (float): phase parameter
+        dtype (numpy.dtype): datatype to represent the Symplectic matrix
+    Returns:
+        array: symplectic-orthogonal transformation matrix of an interferometer with angles theta and phi
+    Note:
+        This is from thewalrus library.
+        https://github.com/XanaduAI/thewalrus/blob/master/thewalrus/symplectic.py
+    """
+    ct = np.cos(theta, dtype=dtype)
+    st = np.sin(theta, dtype=dtype)
+    eip = np.cos(phi, dtype=dtype) + 1j * np.sin(phi, dtype=dtype)
+    U = np.array(
+        [
+            [ct, -eip.conj() * st],
+            [eip * st, ct],
+        ]
+    )
+    return interferometer(U)
+
+
+def interferometer(U):
+    """Interferometer.
+
+    Args:
+        U (array): unitary matrix
+    Returns:
+        array: symplectic transformation matrix
+    Note:
+        This is from thewalrus library.
+        https://github.com/XanaduAI/thewalrus/blob/master/thewalrus/symplectic.py
+    """
+    X = U.real
+    Y = U.imag
+    S = np.block([[X, -Y], [Y, X]])
+
+    return S
 
 
 def invert_permutation(p):
@@ -36,11 +102,11 @@ def BS_network(n):
     block-diagonal matrix in the 'q1p1, ... qnpn' convention.
     """
     # 50/50 beamsplitter in the 'all q's first' convention.
-    bs5050 = symp.beam_splitter(np.pi / 4, 0)
-    bs1 = symp.expand(bs5050, [1, 0], 4)
-    bs2 = symp.expand(bs5050, [3, 2], 4)
-    bs3 = symp.expand(bs5050, [2, 0], 4)
-    bs4 = symp.expand(bs5050, [3, 1], 4)
+    bs5050 = beam_splitter(np.pi / 4, 0)
+    bs1 = expand(bs5050, [1, 0], 4)
+    bs2 = expand(bs5050, [3, 2], 4)
+    bs3 = expand(bs5050, [2, 0], 4)
+    bs4 = expand(bs5050, [3, 1], 4)
     # TODO: Data type set to 'single' because there are only 0, +-0.5 entries
     # but this is really 1/2 of an array that can have dtype=np.int8,
     # so revisit this.

@@ -96,8 +96,8 @@
 
 <div class="container my-5 py-5" id="main-column">
     <div class="text-center">
-        <h1>Install FlamingPy</h1>
-        <p class="lead grey-text w-responsive mx-auto">FlamingPy supports Python 3.8 or newer.</p>
+        <h1>Installation at a glance</h1>
+        <p class="lead grey-text w-responsive mx-auto">FlamingPy requires Python 3.8 or newer.</p>
         <p class="lead grey-text w-responsive mx-auto mb-5">If you currently do not have Python 3 installed, we recommend <a href="https://www.anaconda.com/download/">Anaconda for Python 3</a>, a distributed version of Python packaged for scientific computation.</p>
     </div>
 
@@ -116,8 +116,8 @@
         <div class="tab-pane in show active" id="stable" role="tabpanel">
             <pre>
                 <code class="bash">
-# install the latest released version of FlamingPy
-pip install -i https://test.pypi.org/simple/ flamingpy
+# install the latest released version of FlamingPy, all in a single package
+pip install flamingpy
                 </code>
             </pre>
         </div>
@@ -127,8 +127,10 @@ pip install -i https://test.pypi.org/simple/ flamingpy
 # download and install the latest source code from GitHub for developers
 git clone https://github.com/XanaduAI/ft-stack.git
 cd flamingpy
-pip install -r dev-requirements.txt
-pip install -e .
+python -m pip install -r dev-requirements.txt
+python setup.py develop # only installs Python libraries
+python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backends
+python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
                 </code>
             </pre>
         </div>

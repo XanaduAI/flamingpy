@@ -248,4 +248,4 @@ from custom_directives import CustomGalleryItemDirective, DetailsDirective
 def setup(app):
     app.add_directive("customgalleryitem", CustomGalleryItemDirective)
     app.add_directive("details", DetailsDirective)
-    app.add_stylesheet("xanadu_gallery.css")
+    app.add_css_file("xanadu_gallery.css")
