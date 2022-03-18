@@ -142,6 +142,8 @@ If you are having issues, please let us know by posting the issue on our GitHub 
 - **Source Code:** https://github.com/XanaduAI/flamingpy
 - **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
 
+You can also start a general discussion and connect with our community members in or [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions). 
+
 ## Attribution for authors
 
 FlamingPy is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). 
