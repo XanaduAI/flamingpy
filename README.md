@@ -43,7 +43,7 @@
   
 ## Download and installation 
 
-FlamingPy requires **Python 3.8+**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
+FlamingPy requires **Python 3.8 or above**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
 python -m pip install flamingpy
@@ -131,7 +131,7 @@ print(message)
 
 ## Contribution
 
-We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our release notes and changelog for more details.
+We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our [release notes and changelogs](https://github.com/XanaduAI/flamingpy/releases) for more details.
 
 
 
