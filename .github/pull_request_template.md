@@ -20,7 +20,8 @@
 
 ## Workflow actions and tests
 
-< In most cases, we need a set of unit tests that automatically and comprehensively test for newly added features. Discuss and list new or existing workflow updates here; otherwise, mark N/A below. >
+< In most cases, we need a set of unit tests that automatically and comprehensively test for newly added features. Discuss existing CI tests that cover the changes or any updates to the workflow here; otherwise, mark N/A below. >
+
 - [ ] Not Applicable
 
 
