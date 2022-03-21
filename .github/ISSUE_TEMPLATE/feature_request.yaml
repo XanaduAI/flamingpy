@@ -15,3 +15,10 @@ body:
       options:
         - label: I have searched existing GitHub issues and documentation to make sure the feature request and relevant resolutions do not already exist.
           required: true
+- type: markdown
+    id: description
+    attributes:
+      value: |
+          # Feature description
+          A clear and concise description of the desired enhancement -- remember to include references, code snippets, and screenshots below, if relevant.
+  
