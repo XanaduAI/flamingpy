@@ -1,20 +1,13 @@
 name: Upload MacOS Wheels x86_64
 on:
   release:
-    types: [published]
-  pull_request:
-    types:
-      - labeled
-    branches:    
-      - main
-      - main-dev  
+  workflow_dispatch: 
       
 env:
   MACOSX_DEPLOYMENT_TARGET: 10.15
 
 jobs:
   macos-x64-wheel:
-    if: ${{ github.event.label.name == 'manual upload' }}
     strategy:
       fail-fast: false
       matrix:
@@ -63,7 +56,6 @@ jobs:
   upload-pypi:
     needs: macos-x64-wheel
     runs-on: ubuntu-latest
-    if: ${{ github.event.label.name == 'manual upload' }}
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -84,7 +76,6 @@ jobs:
              
   test-wheel:
     needs: upload-pypi
-    if: ${{ github.event.label.name == 'manual upload' }}
     strategy:
       fail-fast: false
       matrix:
