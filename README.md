@@ -4,7 +4,7 @@
 <p align="center">
   <!-- Tests (GitHub actions) -->
   <a href="https://github.com/XanaduAI/flamingpy/actions/workflows/build_tests.yaml">
-    <img src="https://img.shields.io/github/workflow/status/XanaduAI/flamingpy/Tests?label=build%20%26%20tests&style=flat-square" />
+    <img src="https://img.shields.io/github/workflow/status/XanaduAI/flamingpy/build_tests?label=build%20%26%20tests&style=flat-square" />
   </a>
   <!-- CodeFactor -->
   <a href="https://www.codefactor.io/repository/github/xanaduai/flamingpy">
