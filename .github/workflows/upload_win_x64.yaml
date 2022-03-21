@@ -1,17 +1,10 @@
 name: Upload Win Wheels x86_64
 on:
   release:
-    types: [published]
-  pull_request:
-    types:
-      - labeled
-    branches:    
-      - main
-      - develop  
+  workflow_dispatch:
 
 jobs:
   win-x64-wheel:
-    if: ${{ github.event.label.name == 'manual upload' }}
     strategy:
       fail-fast: false
       matrix:
@@ -69,7 +62,6 @@ jobs:
   upload-pypi:
     needs: win-x64-wheel
     runs-on: ubuntu-latest
-    if: ${{ github.event.label.name == 'manual upload' }}
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -93,7 +85,6 @@ jobs:
              
   test-wheel:
     needs: upload-pypi
-    if: ${{ github.event.label.name == 'manual upload' }}
     strategy:
       fail-fast: false
       matrix:

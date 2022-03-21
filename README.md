@@ -4,27 +4,27 @@
 <p align="center">
   <!-- Tests (GitHub actions) -->
   <a href="https://github.com/XanaduAI/flamingpy/actions/workflows/build_tests.yaml">
-    <img src="https://img.shields.io/github/workflow/status/XanaduAI/flamingpy/Tests?label=build%20%26%20tests&style=flat-square" />
+    <img src="https://github.com/XanaduAI/flamingpy/actions/workflows/build_tests.yaml/badge.svg" />
   </a>
   <!-- CodeFactor -->
   <a href="https://www.codefactor.io/repository/github/xanaduai/flamingpy">
-    <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/flamingpy/master?style=flat-square" />
+    <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/flamingpy/main" />
   </a>
   <!-- PyPI (Python Version) -->
   <a href="https://pypi.org/project/flamingpy">
-    <img src="https://img.shields.io/pypi/pyversions/flamingpy.svg?style=flat-square" />
+    <img src="https://img.shields.io/pypi/pyversions/flamingpy.svg" />
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/flamingpy">
-    <img src="https://img.shields.io/pypi/v/flamingpy.svg?style=flat-square" />
+    <img src="https://img.shields.io/pypi/v/flamingpy.svg" />
   </a>
   <!-- CodeCov -->
   <a href="https://codecov.io/gh/XanaduAI/flamingpy">
-    <img src="https://img.shields.io/codecov/c/github/xanaduai/flamingpy/master.svg?style=popout-square" />
+    <img src="https://codecov.io/gh/XanaduAI/flamingpy/branch/main/graph/badge.svg?token=3FUq4JZL7X" />
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
-    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache&style=flat-square" />    
+    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache" />    
   </a>
 </p>
 
@@ -43,7 +43,7 @@
   
 ## Download and installation 
 
-FlamingPy requires **Python 3.8+**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
+FlamingPy requires **Python 3.8 or above**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
 python -m pip install flamingpy
@@ -131,7 +131,7 @@ print(message)
 
 ## Contribution
 
-We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our release notes and changelog for more details.
+We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our [release notes and changelogs](https://github.com/XanaduAI/flamingpy/releases) for more details.
 
 
 
@@ -141,6 +141,8 @@ If you are having issues, please let us know by posting the issue on our GitHub 
 
 - **Source Code:** https://github.com/XanaduAI/flamingpy
 - **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
+
+You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions). 
 
 ## Attribution for authors
 
