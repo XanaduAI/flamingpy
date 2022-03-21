@@ -20,7 +20,7 @@
   </a>
   <!-- CodeCov -->
   <a href="https://codecov.io/gh/XanaduAI/flamingpy">
-    <img src="https://img.shields.io/codecov/c/github/xanaduai/flamingpy/master.svg?style=popout-square" />
+    <img src="https://img.shields.io/codecov/c/github/xanaduai/flamingpy/main.svg?style=popout-square" />
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
