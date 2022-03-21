@@ -15,7 +15,7 @@ body:
       options:
         - label: I have searched existing GitHub issues and documentation to make sure the feature request and relevant resolutions do not already exist.
           required: true
-- type: markdown
+  - type: markdown
     id: description
     attributes:
       value: |
