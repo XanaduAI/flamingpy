@@ -53,4 +53,4 @@ body:
         - "2: Somewhat important. Needed this quarter."
         - "3: Very important! Slowing down or blocking work."
     validations:
-      required: true  
+      required: true
