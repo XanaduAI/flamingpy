@@ -1,7 +1,7 @@
 name: Upload Win Wheels x86_64
 on:
   release:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   win-x64-wheel:
