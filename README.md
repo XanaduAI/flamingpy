@@ -20,11 +20,11 @@
   </a>
   <!-- CodeCov -->
   <a href="https://codecov.io/gh/XanaduAI/flamingpy">
-    <img src="https://img.shields.io/codecov/c/github/xanaduai/flamingpy/main.svg?style=popout-square" />
+    <img src="https://codecov.io/gh/XanaduAI/flamingpy/branch/main/graph/badge.svg?token=3FUq4JZL7X" />
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
-    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache&style=flat-square" />    
+    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache" />    
   </a>
 </p>
 
