@@ -1,5 +1,5 @@
-![Logo](doc/_static/flamingpy_logo_light.svg#gh-light-mode-only)
-![Logo](doc/_static/flamingpy_logo_dark.svg#gh-dark-mode-only)
+![Logo](https://github.com/XanaduAI/flamingpy/tree/main/doc/_static/flamingpy_logo_light.svg#gh-light-mode-only)
+![Logo](https://github.com/XanaduAI/flamingpy/tree/main/doc/_static/flamingpy_logo_dark.svg#gh-dark-mode-only)
 
 <p align="center">
   <!-- Tests (GitHub actions) -->
@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
- <a href="https://github.com/XanaduAI/ft-stack">FlamingPy</a> is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers.
+ <a href="https://flamingpy.readthedocs.io/en/latest/">FlamingPy</a> is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers.
 </p>
 
 ## Features
