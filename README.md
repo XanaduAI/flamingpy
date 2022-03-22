@@ -6,13 +6,17 @@
   <a href="https://github.com/XanaduAI/flamingpy/actions/workflows/build_tests.yaml">
     <img src="https://github.com/XanaduAI/flamingpy/actions/workflows/build_tests.yaml/badge.svg" />
   </a>
+  <!-- ReadTheDocs -->
+  <a href="https://flamingpy.readthedocs.io">
+    <img src="https://img.shields.io/readthedocs/flamingpy.svg" />
+  </a>
   <!-- CodeFactor -->
   <a href="https://www.codefactor.io/repository/github/xanaduai/flamingpy">
     <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/flamingpy/main" />
   </a>
-  <!-- ReadTheDocs -->
-  <a href="https://flamingpy.readthedocs.io">
-    <img src="https://img.shields.io/readthedocs/flamingpy.svg" />
+  <!-- CodeCov -->
+  <a href="https://codecov.io/gh/XanaduAI/flamingpy">
+    <img src="https://codecov.io/gh/XanaduAI/flamingpy/branch/main/graph/badge.svg?token=3FUq4JZL7X" />
   </a>
   <!-- PyPI (Python Version) -->
   <a href="https://pypi.org/project/flamingpy">
@@ -21,10 +25,6 @@
   <!-- PyPI -->
   <a href="https://pypi.org/project/flamingpy">
     <img src="https://img.shields.io/pypi/v/flamingpy.svg" />
-  </a>
-  <!-- CodeCov -->
-  <a href="https://codecov.io/gh/XanaduAI/flamingpy">
-    <img src="https://codecov.io/gh/XanaduAI/flamingpy/branch/main/graph/badge.svg?token=3FUq4JZL7X" />
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
