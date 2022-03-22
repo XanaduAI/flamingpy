@@ -10,6 +10,10 @@
   <a href="https://www.codefactor.io/repository/github/xanaduai/flamingpy">
     <img src="https://img.shields.io/codefactor/grade/github/XanaduAI/flamingpy/main" />
   </a>
+  <!-- ReadTheDocs -->
+  <a href="https://flamingpy.readthedocs.io">
+    <img src="https://img.shields.io/readthedocs/flamingpy.svg" />
+  </a>
   <!-- PyPI (Python Version) -->
   <a href="https://pypi.org/project/flamingpy">
     <img src="https://img.shields.io/pypi/pyversions/flamingpy.svg" />
