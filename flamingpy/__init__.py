@@ -25,8 +25,13 @@ import retworkx
 import matplotlib
 import pandas
 
-import flamingpy.cpp.lemonpy as lp
-import flamingpy.cpp.cpp_mc_loop as cmc
+import warnings
+try:
+    import flamingpy.cpp.lemonpy as lp
+    import flamingpy.cpp.cpp_mc_loop as cmc
+except ModuleNotFoundError:
+    warnings.warn('flamingpy.cpp libraries failed to import', ImportWarning)
+
 
 from ._version import __version__
 
