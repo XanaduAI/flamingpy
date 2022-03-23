@@ -11,7 +11,7 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 import os
 import sys
 import subprocess
@@ -31,7 +31,6 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-import numpy
 from flamingpy import __version__ as release
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
@@ -230,6 +229,8 @@ epub_exclude_files = ["search.html"]
 
 
 # -- Extension configuration -------------------------------------------------
+
+autodoc_mock_imports = ['numpy']
 
 # -- Options for intersphinx extension ---------------------------------------
 
