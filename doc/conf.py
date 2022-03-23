@@ -13,6 +13,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os, sys, subprocess, re
+import numpy
 from unittest import mock
 
 sys.path.insert(0, os.path.abspath("_ext"))
@@ -29,8 +30,8 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-#from flamingpy import __version__ as release
-release = "1.1.1"
+from flamingpy import __version__ as release
+#release = "1.1.1"
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
