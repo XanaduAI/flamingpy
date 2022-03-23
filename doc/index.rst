@@ -1,7 +1,7 @@
 FlamingPy Documentation
 =======================
 
-**Release** |release|
+**Release |release|**
 
 .. raw:: html
 
@@ -118,7 +118,7 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Home
    :hidden:
 
@@ -126,7 +126,7 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    easy_installation
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Using FlamingPy
    :hidden:
 
@@ -134,7 +134,7 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    usage/tutorials
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Development
    :hidden:
 
@@ -143,7 +143,7 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    development/contribution
    
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Getting Help
    :hidden:
 
@@ -151,8 +151,8 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    help/frequently_encountered_errors
 
 .. toctree::
-   :maxdepth: 1
-   :caption: API
+   :maxdepth: 2
+   :caption: Python API
    :hidden:
 
    source/fp
