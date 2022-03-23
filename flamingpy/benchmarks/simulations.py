@@ -13,7 +13,8 @@
 # limitations under the License.
 """Benchmark for the Monte Carlo simulations estimating FT thresholds and
 comparing python and cpp loops."""
-import csv, warnings
+import csv
+import warnings
 
 from time import process_time
 from datetime import datetime
