@@ -58,7 +58,7 @@ extensions = [
 ]
 
 MOCK_MODULES = [
-    "cpp",
+    "lemonpy",
 ]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
@@ -148,7 +148,6 @@ html_static_path = ["_static"]
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
 html_sidebars = {
     "**": [
         "logo-text.html",
@@ -207,7 +206,7 @@ texinfo_documents = [
         "FlamingPy Documentation",
         author,
         "FlamingPy",
-        "One line description of project.",
+        "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers.",
         "Miscellaneous",
     ),
 ]
