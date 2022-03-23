@@ -27,7 +27,7 @@ FlamingPy Documentation
     </style>
     <div class="row container-fluid">
       <div class="col-lg-4 col-12 align-middle mb-2 text-center">
-          <img src="_static/flamingpy_logo_dark.svg" class="img-fluid" alt="Responsive image" style="width:100%; max-width: 300px;"></img>
+          <img src="_static/flamingpy_logo_light.svg" class="img-fluid" alt="Responsive image" style="width:100%; max-width: 300px;"></img>
       </div>
       <div class="col-lg-8 col-12 align-middle mb-2">
         <p class="lead grey-text">
