@@ -12,7 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import os, sys, subprocess
+import os, sys, subprocess, re
 from unittest import mock
 
 sys.path.insert(0, os.path.abspath("_ext"))
@@ -31,7 +31,6 @@ author = "Xanadu Inc."
 # The full version, including alpha/beta/rc tags.
 with open("../flamingpy/_version.py") as f:
     release = f.readlines()[-1].split()[-1].strip("\"'")
-#release = "1.1.1"
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
