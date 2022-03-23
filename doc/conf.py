@@ -123,7 +123,7 @@ html_theme_options = {
     "download_button": "#b13a59",
 }
 
-edit_on_github_project = "XanaduAI/ft-stack"
+edit_on_github_project = "XanaduAI/flamingpy"
 edit_on_github_branch = "main/doc"
 
 
