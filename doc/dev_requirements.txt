@@ -12,3 +12,4 @@ scipy>=1.6
 retworkx>=0.10.2
 matplotlib>=3.3.3
 pandas>=1.2.1
+graphviz>=0.19.1
