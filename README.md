@@ -152,7 +152,7 @@ You can also start a general discussion and connect with our community members i
 
 ## Attribution for authors
 
-FlamingPy is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). The OWNERS would like to specifically thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project. 
+FlamingPy is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). The developers would like to specifically thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project. 
 
 If you are doing research using FlamingPy, please cite our paper below:
 
