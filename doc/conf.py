@@ -34,7 +34,8 @@ author = "Xanadu Inc."
 # The short X.Y version
 version = ""
 # The full version, including alpha/beta/rc tags
-release = ""
+import flamingpy as fp
+release = fp.__version__
 
 
 # -- General configuration ---------------------------------------------------
