@@ -1,4 +1,4 @@
-Getting started and basic usage
+Getting Started and Basic Usage
 ===============================
 
 There is a vast literature available to understand the theoretical concepts behind FlamingPy. For a self-contained description, see Xanadu's `blueprint <https://quantum-journal.org/papers/q-2021-02-04-392/>`__ for a fault-tolerant photonic quantum computer.
