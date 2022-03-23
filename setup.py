@@ -138,9 +138,9 @@ install_requires = [
     "matplotlib>=3.3.3",
     "networkx>=2.5",
     "retworkx>=0.10.2",
-    "numpy>=1.21.0",
+    "numpy>=1.21",
     "pandas>=1.2.1",
-    "scipy>=1.6.0"
+    "scipy>=1.6"
 ]
 
 description = "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
