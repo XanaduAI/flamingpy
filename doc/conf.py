@@ -58,7 +58,7 @@ extensions = [
 ]
 
 MOCK_MODULES = [
-    "lemonpy",
+    "flamingpy.cpp.lemonpy",
 ]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
