@@ -17,10 +17,9 @@ import sys
 import subprocess
 from unittest import mock
 
-# sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath("_ext"))
 sys.path.insert(0, os.path.abspath("/opt/miniconda/envs/pie/lib/python3.9/site-packages"))
-sys.path.append(os.path.abspath("../src/"))
+sys.path.append(os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
 
