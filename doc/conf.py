@@ -18,7 +18,7 @@ import subprocess
 from unittest import mock
 
 sys.path.insert(0, os.path.abspath("_ext"))
-sys.path.insert(0, os.path.abspath("/opt/miniconda/envs/pie/lib/python3.9/site-packages"))
+sys.path.insert(0, os.path.abspath("/opt/miniconda/envs/pie/lib/python3.8/site-packages"))
 sys.path.append(os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
@@ -31,9 +31,10 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-#from flamingpy import __version__ as release
+import numpy
+from flamingpy import __version__ as release
 # The short X.Y version.
-#version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
+version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
 
 # -- General configuration ---------------------------------------------------
