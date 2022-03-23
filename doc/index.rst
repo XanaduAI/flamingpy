@@ -161,4 +161,3 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    source/fp.decoders
    source/fp.simulations
    source/fp.utils
-   source/fp.cpp.lemonpy
