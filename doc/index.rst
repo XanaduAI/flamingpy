@@ -1,10 +1,5 @@
-.. FlamingPy documentation master file, created by
-   sphinx-quickstart on Tue Feb  1 17:32:06 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-FlamingPy
-=========
+FlamingPy Documentation
+=======================
 
 FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers.
 
@@ -20,6 +15,24 @@ Features
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states). 
 * Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features. 
 * Provides a host of visualization tools for ease of verifying correctness.
+
+
+Attribution for authors
+-----------------------
+
+FlamingPy is the work of `many contributors <https://github.com/XanaduAI/ft-stack/graphs/contributors>`__. The developers would like to specifically thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project. 
+
+If you are doing research using FlamingPy, please cite our paper below:
+
+    Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
+    Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
+    `DOI:10.1103/prxquantum.2.040353 <http://dx.doi.org/10.1103/PRXQuantum.2.040353>`__ 
+
+
+License
+-------
+
+FlamingPy is **free** and **open source**, and released under the `Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`__.
 
 
 .. toctree::
