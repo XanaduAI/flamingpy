@@ -29,7 +29,7 @@ FlamingPy Documentation
       </div>
       <div class="col-lg-8 col-12 align-middle mb-2">
         <p class="lead grey-text">
-            FlamingPy is a cross-platform Python library with a variety of backends 
+            FlamingPy (FP) is a cross-platform Python library with a variety of backends 
             for efficient simulations of error correction in fault-tolerant quantum computers.
         </p>
       </div>
