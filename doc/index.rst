@@ -27,7 +27,7 @@ FlamingPy Documentation
     </style>
     <div class="row container-fluid">
       <div class="col-lg-4 col-12 align-middle mb-2 text-center">
-          <img src="_static/laptop.png" class="img-fluid" alt="Responsive image" style="width:100%; max-width: 300px;"></img>
+          <img src="_static/flamingpy_logo_dark.svg" class="img-fluid" alt="Responsive image" style="width:100%; max-width: 300px;"></img>
       </div>
       <div class="col-lg-8 col-12 align-middle mb-2">
         <p class="lead grey-text">
@@ -45,7 +45,7 @@ FlamingPy Documentation
                         <div class="d-flex">
                             <div>
                                 <h3 class="card-title pl-3 mt-4">
-                                Using SF
+                                Using FP
                                 </h3>
                                 <p class="mb-3 grey-text px-3">
                                     Learn how to simulate a fault-tolerant quantum computer <i class="fas fa-angle-double-right"></i>
