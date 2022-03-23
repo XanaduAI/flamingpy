@@ -135,10 +135,10 @@ See our [Documentation](https://flamingpy.readthedocs.io/en/latest/) for more tu
 <!-- ## Performance Demos
   -->
 
+
 ## Contribution
 
 We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our [release notes and changelogs](https://github.com/XanaduAI/flamingpy/releases) for more details.
-
 
 
 ## Support
@@ -150,6 +150,7 @@ If you are having issues, please let us know by posting the issue on our GitHub 
 
 You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions). 
 
+
 ## Attribution for authors
 
 FlamingPy is the work of [many contributors](https://github.com/XanaduAI/ft-stack/graphs/contributors). The developers would like to specifically thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project. 
@@ -159,6 +160,7 @@ If you are doing research using FlamingPy, please cite our paper below:
 > Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
 > Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
 > [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353) 
+
 
 ## License
 
