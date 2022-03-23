@@ -6,6 +6,7 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -13,11 +14,23 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os, sys, subprocess, re
-from unittest import mock
+from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.abspath("_ext"))
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
+
+class Mock(MagicMock):
+    __name__ = "foo"
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+MOCK_MODULES = ["flamingpy.cpp.lemonpy"]
+mock = Mock()
+
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = mock
 
 
 # -- Project information -----------------------------------------------------
@@ -56,12 +69,6 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "edit_on_github"
 ]
-
-MOCK_MODULES = [
-    "cpp.lemonpy",
-]
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = mock.Mock()
     
 automodapi_toctreedirnm = "source/api"
 automodsumm_inherited_members = True
