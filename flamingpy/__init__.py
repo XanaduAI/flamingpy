@@ -30,7 +30,7 @@ try:
     import flamingpy.cpp.lemonpy as lp
     import flamingpy.cpp.cpp_mc_loop as cmc
 except ImportError:
-    warnings.warn('flamingpy.cpp libraries failed to import', ImportWarning)
+    warnings.warn('failed to import flamingpy.cpp libraries', ImportWarning)
 
 
 from ._version import __version__
