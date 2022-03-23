@@ -29,7 +29,7 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-with open("flamingpy/_version.py") as f:
+with open("../flamingpy/_version.py") as f:
     release = f.readlines()[-1].split()[-1].strip("\"'")
 #release = "1.1.1"
 # The short X.Y version.
