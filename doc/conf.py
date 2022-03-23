@@ -252,14 +252,11 @@ epub_exclude_files = ["search.html"]
 
 # -- Options for intersphinx extension ---------------------------------------
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"https://docs.python.org/": None}
-
 # the order in which autodoc lists the documented members
 autodoc_member_order = "bysource"
 
 # inheritance_diagram graphviz attributes
-inheritance_node_attrs = dict(color="lightskyblue1", style="filled")
+inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")
 
 from custom_directives import CustomGalleryItemDirective, DetailsDirective
 
