@@ -6,7 +6,6 @@ Module contents
 
 .. currentmodule:: flamingpy
 
-.. automodule:: flamingpy
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. automodapi:: flamingpy
+    :no-heading:
+    :include-all-objects:
