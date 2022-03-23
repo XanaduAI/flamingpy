@@ -31,9 +31,9 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-from flamingpy import __version__ as release
+#from flamingpy import __version__ as release
 # The short X.Y version.
-version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
+#version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
 
 # -- General configuration ---------------------------------------------------
