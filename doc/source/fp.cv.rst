@@ -1,7 +1,8 @@
 fp.cv
 =====
+  
+.. currentmodule:: flamingpy.cv
 
-.. automodule:: flamingpy.cv
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. automodapi:: flamingpy.cv
+    :no-heading:
+    :include-all-objects:
