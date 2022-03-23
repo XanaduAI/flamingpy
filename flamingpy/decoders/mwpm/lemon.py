@@ -19,7 +19,7 @@ import networkx as nx
 try:
     import flamingpy.cpp.lemonpy as lp
 except ImportError:
-    warnings.warn('failed to import flamingpy.cpp.lemonpy library', ImportWarning)
+    warnings.warn("failed to import flamingpy.cpp.lemonpy library", ImportWarning)
 
 
 def max_weight_matching(G_match, weight):
