@@ -40,8 +40,9 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-with open("../flamingpy/_version.py") as f:
-    release = f.readlines()[-1].split()[-1].strip("\"'")
+# with open("../flamingpy/_version.py") as f:
+#    release = f.readlines()[-1].split()[-1].strip("\"'")
+from flamingpy import __version__ as release    
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
@@ -69,6 +70,8 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "edit_on_github"
 ]
+
+intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
     
 automodapi_toctreedirnm = "source/api"
 automodsumm_inherited_members = True
