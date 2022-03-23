@@ -17,6 +17,7 @@ correcting codes using GKP qubits."""
 import sys
 import platform
 import os
+import warnings
 
 import numpy
 import scipy
@@ -25,7 +26,6 @@ import retworkx
 import matplotlib
 import pandas
 
-import warnings
 try:
     import flamingpy.cpp.lemonpy as lp
     import flamingpy.cpp.cpp_mc_loop as cmc
