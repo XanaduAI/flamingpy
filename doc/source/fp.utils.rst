@@ -1,7 +1,11 @@
 fp.utils
 ========
 
-.. automodule:: flamingpy.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Package Details
+---------------
+  
+.. currentmodule:: flamingpy.utils
+
+.. automodapi:: flamingpy.utils
+    :no-heading:
+    :include-all-objects:
