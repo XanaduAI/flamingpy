@@ -29,7 +29,7 @@ import warnings
 try:
     import flamingpy.cpp.lemonpy as lp
     import flamingpy.cpp.cpp_mc_loop as cmc
-except ModuleNotFoundError:
+except ImportError:
     warnings.warn('flamingpy.cpp libraries failed to import', ImportWarning)
 
 
