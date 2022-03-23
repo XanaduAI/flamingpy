@@ -23,7 +23,6 @@ sys.path.append(os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
 
-autodoc_mock_imports = ['numpy']
 
 # -- Project information -----------------------------------------------------
 
@@ -230,8 +229,6 @@ epub_exclude_files = ["search.html"]
 
 
 # -- Extension configuration -------------------------------------------------
-
-autodoc_mock_imports = ['numpy']
 
 # -- Options for intersphinx extension ---------------------------------------
 
