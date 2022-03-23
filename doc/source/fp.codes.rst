@@ -1,7 +1,7 @@
 fp.codes
 ========
 
-.. automodule:: flamingpy.codes
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. currentmodule:: flamingpy.codes
+
+.. automodapi:: flamingpy.codes
+    :include-all-objects:
