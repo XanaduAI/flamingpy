@@ -26,7 +26,8 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ["flamingpy.cpp.lemonpy", "flamingpy.cpp.cpp_mc_loop"]
+# MOCK_MODULES = ["flamingpy.cpp.lemonpy", "flamingpy.cpp.cpp_mc_loop"]
+MOCK_MODULES = []
 mock = Mock()
 
 for mod_name in MOCK_MODULES:
