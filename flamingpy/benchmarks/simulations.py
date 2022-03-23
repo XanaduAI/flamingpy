@@ -13,7 +13,7 @@
 # limitations under the License.
 """Benchmark for the Monte Carlo simulations estimating FT thresholds and
 comparing python and cpp loops."""
-import csv
+import csv, warnings
 
 from time import process_time
 from datetime import datetime
@@ -23,7 +23,6 @@ from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
-import warnings
 try:
     import flamingpy.cpp.cpp_mc_loop as cmc
 except ImportError:
