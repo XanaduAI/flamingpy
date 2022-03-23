@@ -1,5 +1,5 @@
-![Logo](https://github.com/XanaduAI/flamingpy/tree/main/doc/_static/flamingpy_logo_light.svg#gh-light-mode-only)
-![Logo](https://github.com/XanaduAI/flamingpy/tree/main/doc/_static/flamingpy_logo_dark.svg#gh-dark-mode-only)
+![flamingpy_logo_light](https://user-images.githubusercontent.com/25132802/159598111-fcf6b75a-26a0-4d24-b267-d9d7597bdf39.svg#gh-light-mode-only)
+![flamingpy_logo_dark](https://user-images.githubusercontent.com/25132802/159598097-6a16733c-a954-49ba-a29c-ce469ae19fcc.svg#gh-dark-mode-only)
 
 <p align="center">
   <!-- Tests (GitHub actions) -->
