@@ -62,12 +62,15 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
+    "sphinx.ext.graphviz",
     "sphinx.ext.imgmath",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
     "sphinx.ext.inheritance_diagram",
     "edit_on_github"
 ]
@@ -105,6 +108,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "setup.py"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
+
+# If true, sectionauthor and moduleauthor directives will be shown in the
+# output. They are ignored by default.
+show_authors = True
 
 
 # -- Options for HTML output -------------------------------------------------
