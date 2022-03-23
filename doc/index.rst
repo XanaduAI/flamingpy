@@ -1,8 +1,6 @@
 FlamingPy Documentation
 =======================
 
-.. rst-class:: lead grey-text ml-2
-
 :Release: |release|
 
 .. raw:: html
