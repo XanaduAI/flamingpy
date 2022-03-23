@@ -53,7 +53,9 @@ extensions = [
     "sphinx.ext.imgmath",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
-    "edit_on_github",
+    "sphinx_automodapi.automodapi",
+    "sphinx.ext.inheritance_diagram",
+    "edit_on_github"
 ]
 
 MOCK_MODULES = [
