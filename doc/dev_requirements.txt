@@ -12,4 +12,3 @@ scipy>=1.6
 retworkx>=0.10.2
 matplotlib>=3.3.3
 pandas>=1.2.1
-flamingpy>=0.4.6a1
