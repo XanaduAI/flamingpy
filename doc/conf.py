@@ -58,15 +58,15 @@ extensions = [
 ]
 
 MOCK_MODULES = [
-    "flamingpy.cpp.lemonpy",
+    "lemonpy",
 ]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
     
-#automodapi_toctreedirnm = "source/api"
-#automodsumm_inherited_members = True
-#autosummary_generate = True
-#autosummary_imported_members = False    
+automodapi_toctreedirnm = "source/api"
+automodsumm_inherited_members = True
+autosummary_generate = True
+autosummary_imported_members = False    
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
