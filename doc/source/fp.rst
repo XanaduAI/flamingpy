@@ -1,8 +1,7 @@
 fp
 ==
 
-Module contents
----------------
+This section contains the API documentation for FlamingPy.
 
 .. currentmodule:: flamingpy
 
