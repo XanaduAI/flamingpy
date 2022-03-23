@@ -1,7 +1,7 @@
 FlamingPy Documentation
 =======================
 
-:Release: |release|
+**Release** |release|
 
 .. raw:: html
 
