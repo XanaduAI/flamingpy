@@ -42,7 +42,8 @@ author = "Xanadu Inc."
 # The full version, including alpha/beta/rc tags.
 # with open("../flamingpy/_version.py") as f:
 #    release = f.readlines()[-1].split()[-1].strip("\"'")
-from flamingpy import __version__ as release    
+import flamingpy
+release = flamingpy.__version__
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
