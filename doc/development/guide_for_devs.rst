@@ -10,13 +10,21 @@ FlamingPy requires the following Python version to be installed:
 
 as well as the following Python packages:
 
-* `NumPy <http://numpy.org/>`_ >= 1.21.0
+* `docutils <https://docutils.sourceforge.io/>`_ >= 0.15.2
+* `m2r2 <https://pypi.org/project/m2r2/>`_ >= 0.3.2
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
+* `numba <https://numba.pydata.org/>`_ >= 0.53.1
 * `networkx <https://networkx.org/>`_ >= 2.5
-* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `NumPy <http://numpy.org/>`_ >= 1.21.0
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
+* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
 * `scipy <https://scipy.org/>`_ >= 1.6.0
-
+* `sphinx <https://www.sphinx-doc.org/en/master/index.html>`_ >= 4.3.1
+* `sphinxcontrib-bibtex <https://sphinxcontrib-bibtex.readthedocs.io/en/latest/>`_ >= 0.4.2
+* `sphinx-autodoc-typehints <https://pypi.org/project/sphinx-autodoc-typehints/>`_ >= 1.10.3
+* `sphinx-automodapi <https://sphinx-automodapi.readthedocs.io/en/latest/>`_ >= 0.13
+* `sphinx-copybutton <https://sphinx-copybutton.readthedocs.io/en/latest/>`_ >= 0.4
+* `toml <https://pypi.org/project/toml/>`_ >= 0.10.2
 
 If you currently do not have Python 3 installed, we recommend
 `Anaconda for Python 3 <https://www.anaconda.com/download/>`_, a distributed version
