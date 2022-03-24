@@ -3,9 +3,21 @@ Build Documentation
 
 The FlamingPy documentation is built using `sphinx`. To build the documentation locally, the following packages are required:
 
-* `Sphinx <http://sphinx-doc.org/>`_ >=1.5
-* `graphviz <http://graphviz.org/>`_ >=2.38
-* `sphinxcontrib-bibtex <https://sphinxcontrib-bibtex.readthedocs.io/en/latest/>`_ >=0.3.6
+* `docutils <https://docutils.sourceforge.io/>`_ >= 0.15.2
+* `m2r2 <https://pypi.org/project/m2r2/>`_ >= 0.3.2
+* `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
+* `numba <https://numba.pydata.org/>`_ >= 0.53.1
+* `networkx <https://networkx.org/>`_ >= 2.5
+* `NumPy <http://numpy.org/>`_ >= 1.21.0
+* `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
+* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `scipy <https://scipy.org/>`_ >= 1.6.0
+* `sphinx <https://www.sphinx-doc.org/en/master/index.html>`_ >= 4.3.1
+* `sphinxcontrib-bibtex <https://sphinxcontrib-bibtex.readthedocs.io/en/latest/>`_ >= 0.4.2
+* `sphinx-autodoc-typehints <https://pypi.org/project/sphinx-autodoc-typehints/>`_ >= 1.10.3
+* `sphinx-automodapi <https://sphinx-automodapi.readthedocs.io/en/latest/>`_ >= 0.13
+* `sphinx-copybutton <https://sphinx-copybutton.readthedocs.io/en/latest/>`_ >= 0.4
+* `toml <https://pypi.org/project/toml/>`_ >= 0.10.2
 
 All required packages can be installed via:
 ::
@@ -17,4 +29,6 @@ We will build the documentation using `make` (if you require to install and unde
 
   $ make html
 
-The documentation can then be found in the ``doc/_build/html/`` directory.
+You may need to run `make clean` beforehand. 
+
+The documentation can be found in the :file:`doc/_build/html/` directory.
