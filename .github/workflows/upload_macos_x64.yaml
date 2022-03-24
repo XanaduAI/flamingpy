@@ -83,23 +83,23 @@ jobs:
         os: [macos-10.15]
         arch: [x86_64]
     runs-on: ${{ matrix.os }}
-    steps:  
+    steps:
       - name: Setup python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-          
+
       - name: Ensure there are no existing versions and add a delay
         run: |
           python -m pip uninstall flamingpy -y
           sleep 300
 
-      - name: Pip install flamingpy        
+      - name: Pip install flamingpy
         run: |
           python3 -m pip install --upgrade pip
           python -m pip install flamingpy
-        
+       
       - name: Run some involved package examples for testing purposes
-        run: | 
+        run: |
           python /Users/runner/hostedtoolcache/Python/*/x64/lib/python3.*/site-packages/flamingpy/benchmarks/lemon.py
           python /Users/runner/hostedtoolcache/Python/*/x64/lib/python3.*/site-packages/flamingpy/benchmarks/shortest_path.py
