@@ -161,7 +161,7 @@ If you are doing research using FlamingPy, please cite our paper below:
 > Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
 > [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353) 
 
-
+In addition to the authors above, the developers would like to thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project. 
 ## License
 
 FlamingPy is **free** and **open source**, and released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
