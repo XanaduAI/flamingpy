@@ -14,9 +14,11 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os, sys, re
-import flamingpy as fp
+
 from unittest.mock import MagicMock
 from custom_directives import CustomGalleryItemDirective, DetailsDirective
+
+import flamingpy as fp
 
 sys.path.insert(0, os.path.abspath("_ext"))
 sys.path.insert(0, os.path.abspath(".."))
@@ -79,11 +81,11 @@ extensions = [
 ]
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
-  
+ 
 automodapi_toctreedirnm = "source/api"
 automodsumm_inherited_members = True
 autosummary_generate = True
-autosummary_imported_members = False   
+autosummary_imported_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates", "xanadu_theme"]
