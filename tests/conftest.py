@@ -15,10 +15,11 @@
 the unit tests and manual checks."""
 import os
 import pytest
-import flamingpy 
+import flamingpy
 
 # defaults
 TOL = 1e-5
+
 
 @pytest.fixture(scope="session")
 def tol():
