@@ -15,5 +15,5 @@
 the unit tests and manual checks."""
 
 import pytest
-import numpy as np
+import numpy
 import flamingpy
