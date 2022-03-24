@@ -102,9 +102,7 @@ Features
 Attribution for authors
 -----------------------
 
-FlamingPy is the work of `many contributors <https://github.com/XanaduAI/ft-stack/graphs/contributors>`__. The developers would like to specifically thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project. 
-
-If you are doing research using FlamingPy, please cite our paper below:
+FlamingPy is the work of `many contributors <https://github.com/XanaduAI/flamingpy/graphs/contributors>`__. If you are doing research using FlamingPy, please cite our paper below:
 
     Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
     Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
