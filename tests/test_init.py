@@ -26,7 +26,7 @@ def test_about():
     """Tests if the about string prints correctly."""
     f = io.StringIO()
     with contextlib.redirect_stdout(f):
-        ff.about()
+        fp.about()
     out = f.getvalue().strip()
 
     assert "Platform info:" in out
