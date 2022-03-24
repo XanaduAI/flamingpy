@@ -116,7 +116,13 @@ pygments_style = None
 show_authors = True
 
 
-# -- Options for HTML output -------------------------------------------------
+# -- Options for HTMLHelp output ---------------------------------------------
+
+# Output file base name for HTML help builder.
+htmlhelp_basename = "FlamingPydoc"
+
+
+# -- Options for other HTML outputs ------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -148,13 +154,6 @@ html_theme_options = {
 edit_on_github_project = "XanaduAI/flamingpy"
 edit_on_github_branch = "main/doc"
 
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -175,11 +174,6 @@ html_sidebars = {
         "globaltoc.html",
     ]
 }
-
-# -- Options for HTMLHelp output ---------------------------------------------
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = "FlamingPydoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -250,8 +244,6 @@ epub_title = project
 epub_exclude_files = ["search.html"]
 
 
-# -- Extension configuration -------------------------------------------------
-
 # -- Options for intersphinx extension ---------------------------------------
 
 # the order in which autodoc lists the documented members
@@ -260,8 +252,8 @@ autodoc_member_order = "bysource"
 # inheritance_diagram graphviz attributes
 inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")
 
-from custom_directives import CustomGalleryItemDirective, DetailsDirective
 
+from custom_directives import CustomGalleryItemDirective, DetailsDirective
 
 def setup(app):
     app.add_directive("customgalleryitem", CustomGalleryItemDirective)
