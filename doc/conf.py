@@ -16,7 +16,6 @@
 import os, sys, re
 
 from unittest.mock import MagicMock
-from custom_directives import CustomGalleryItemDirective, DetailsDirective
 
 import flamingpy as fp
 
@@ -255,6 +254,8 @@ autodoc_member_order = "bysource"
 # inheritance_diagram graphviz attributes
 inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")
 
+
+from custom_directives import CustomGalleryItemDirective, DetailsDirective
 
 def setup(app):
     app.add_directive("customgalleryitem", CustomGalleryItemDirective)
