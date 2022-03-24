@@ -14,6 +14,6 @@
 """Default parameters, environment variables, fixtures, and common routines for
 the unit tests and manual checks."""
 
-import pytest
-import numpy
-import flamingpy
+
+def test_flamingpy():
+    import flamingpy
