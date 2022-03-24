@@ -29,6 +29,6 @@ We will build the documentation using `make` (if you require to install and unde
 
   $ make html
 
-You may need to run `make clean` beforehand. 
+You may need to run ``make clean`` beforehand. 
 
 The documentation can be found in the :file:`doc/_build/html/` directory.
