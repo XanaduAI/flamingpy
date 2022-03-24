@@ -43,8 +43,8 @@ author = "Xanadu Inc."
 # The full version, including alpha/beta/rc tags.
 # with open("../flamingpy/_version.py") as f:
 #    release = f.readlines()[-1].split()[-1].strip("\"'")
-import flamingpy
-release = flamingpy.__version__
+import flamingpy as fp
+release = fp.__version__
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
@@ -73,6 +73,7 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
     "sphinx.ext.inheritance_diagram",
+    "m2r2",
     "edit_on_github"
 ]
 
@@ -84,7 +85,7 @@ autosummary_generate = True
 autosummary_imported_members = False    
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ["_templates", "xanadu_theme"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
