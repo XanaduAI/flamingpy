@@ -110,7 +110,7 @@ If you are doing research using FlamingPy, please cite our paper below:
     Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
     `DOI:10.1103/prxquantum.2.040353 <http://dx.doi.org/10.1103/PRXQuantum.2.040353>`__ 
 
-
+In addition to the authors above, the developers would like to thank Michael Vasmer and Ashlesha Patil for their contributions to the pre-release project.
 License
 -------
 
