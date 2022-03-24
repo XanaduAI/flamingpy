@@ -8,23 +8,23 @@ FlamingPy requires the following Python version to be installed:
 
 * `Python <http://python.org/>`_ >= 3.8
 
-as well as the following Python packages:
+as well as the following Python packages for development purposes:
 
-* `docutils <https://docutils.sourceforge.io/>`_ >= 0.15.2
-* `m2r2 <https://pypi.org/project/m2r2/>`_ >= 0.3.2
+* `black <https://pypi.org/project/black/>`_ >= 19.3b0
+* `cmake <https://pypi.org/project/cmake/>`_ >= 3.14
+* `codecov <https://about.codecov.io/language/python/>`_ >= 2.1.12
+* `cython <https://cython.org/>`_ >= 0.29.28
+* `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
-* `numba <https://numba.pydata.org/>`_ >= 0.53.1
 * `networkx <https://networkx.org/>`_ >= 2.5
-* `NumPy <http://numpy.org/>`_ >= 1.21.0
+* `NumPy <http://numpy.org/>`_ >= 1.21
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
+* `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
+* `pytest-cov <https://pypi.org/project/pytest-cov/>`_ >= 3.0
+* `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
+* `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
-* `scipy <https://scipy.org/>`_ >= 1.6.0
-* `sphinx <https://www.sphinx-doc.org/en/master/index.html>`_ >= 4.3.1
-* `sphinxcontrib-bibtex <https://sphinxcontrib-bibtex.readthedocs.io/en/latest/>`_ >= 0.4.2
-* `sphinx-autodoc-typehints <https://pypi.org/project/sphinx-autodoc-typehints/>`_ >= 1.10.3
-* `sphinx-automodapi <https://sphinx-automodapi.readthedocs.io/en/latest/>`_ >= 0.13
-* `sphinx-copybutton <https://sphinx-copybutton.readthedocs.io/en/latest/>`_ >= 0.4
-* `toml <https://pypi.org/project/toml/>`_ >= 0.10.2
+* `scipy <https://scipy.org/>`_ >= 1.6
 
 If you currently do not have Python 3 installed, we recommend
 `Anaconda for Python 3 <https://www.anaconda.com/download/>`_, a distributed version
@@ -116,6 +116,8 @@ from the `doc` directory to then build the HTML documentation, run
 
 .. code-block:: bash
 
-    make clean html
+    make html
+
+You may need to run ``make clean`` beforehand. 
 
 The documentation can be found in the :file:`doc/_build/html/` directory.
