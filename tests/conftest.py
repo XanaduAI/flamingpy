@@ -11,9 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Default parameters, environment variables, fixtures, and common routines for
+"""Default parameters, environment variables, fixtures, and shared objects
 the unit tests and manual checks."""
+import os
+import pytest
+import flamingpy 
 
+# defaults
+TOL = 1e-5
 
-def test_flamingpy():
-    import flamingpy
+@pytest.fixture(scope="session")
+def tol():
+    """Numerical tolerance for equality tests."""
+    return float(os.environ.get("TOL", TOL))
