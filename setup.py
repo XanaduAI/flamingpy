@@ -137,8 +137,8 @@ classifiers = [
 install_requires = [
     "matplotlib>=3.3.3",
     "networkx>=2.5",
-    "retworkx>=0.10.2",
     "numpy>=1.21",
+    "retworkx>=0.10.2",
     "pandas>=1.2.1",
     "scipy>=1.6"
 ]
