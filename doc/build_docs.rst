@@ -6,8 +6,8 @@ The FlamingPy documentation is built using `sphinx`. To build the documentation 
 * `docutils <https://docutils.sourceforge.io/>`_ >= 0.15.2
 * `m2r2 <https://pypi.org/project/m2r2/>`_ >= 0.3.2
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
-* `numba <https://numba.pydata.org/>`_ >= 0.53.1
 * `networkx <https://networkx.org/>`_ >= 2.5
+* `numba <https://numba.pydata.org/>`_ >= 0.53.1
 * `NumPy <http://numpy.org/>`_ >= 1.21.0
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
