@@ -1,7 +1,18 @@
 fp.decoders
 ===========
 
-Module Details
+Available modules
+-----------------
+
+.. currentmodule:: flamingpy.decoders
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    ~decoder
+    ~mwpm
+
+Module members
 --------------
 
 .. currentmodule:: flamingpy.decoders
