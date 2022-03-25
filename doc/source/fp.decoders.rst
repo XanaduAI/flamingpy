@@ -1,8 +1,8 @@
 fp.decoders
 ===========
 
-Package Details
----------------
+Module Details
+--------------
 
 .. currentmodule:: flamingpy.decoders
 
