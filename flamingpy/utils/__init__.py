@@ -13,10 +13,4 @@
 # limitations under the License.
 """Utilities for visualizing error correction and plotting, processing, and
 saving data.
-
-.. currentmodule:: flamingpy.utils
-.. autosummary::
-    :toctree: api
-
-    viz
 """
