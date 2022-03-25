@@ -1,8 +1,8 @@
 fp.simulations
 ==============
 
-Package Details
----------------
+Module Details
+--------------
 
 .. currentmodule:: flamingpy.simulations
 
