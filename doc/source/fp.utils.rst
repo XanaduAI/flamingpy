@@ -1,8 +1,8 @@
 fp.utils
 ========
 
-Package Details
----------------
+Module Details
+--------------
   
 .. currentmodule:: flamingpy.utils
 
