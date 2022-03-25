@@ -12,13 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """The module for decoders and error-correction functions.
-
-.. currentmodule:: flamingpy.decoders
-.. autosummary::
-    :recursive:
-    :toctree: api
-
-    decoder
-    mwpm
 """
 from .decoder import correct
