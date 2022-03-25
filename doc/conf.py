@@ -14,10 +14,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os, sys, re
-
 from unittest.mock import MagicMock
-
-import flamingpy as fp
 
 sys.path.insert(0, os.path.abspath("_ext"))
 sys.path.insert(0, os.path.abspath(".."))
@@ -44,9 +41,10 @@ copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-# with open("../flamingpy/_version.py") as f:
-#    release = f.readlines()[-1].split()[-1].strip("\"'")
-release = fp.__version__
+with open("../flamingpy/_version.py") as f:
+    release = f.readlines()[-1].split()[-1].strip("\"'")
+# import flamingpy as fp
+# release = fp.__version__
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
