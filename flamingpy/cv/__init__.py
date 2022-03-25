@@ -12,13 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """The module for continuous-variable states, noise, and operations.
-
-.. currentmodule:: flamingpy.cv
-.. autosummary::
-    :recursive:
-    :toctree: api
-
-    gkp
-    macro_reduce
-    ops
 """
