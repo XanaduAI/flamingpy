@@ -1,8 +1,8 @@
 fp.cv
 =====
 
-Package Details
----------------
+Module Details
+--------------
 
 .. currentmodule:: flamingpy.cv
 
