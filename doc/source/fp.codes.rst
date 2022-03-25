@@ -1,8 +1,8 @@
 fp.codes
 ========
 
-Package Details
----------------
+Module Details
+--------------
 
 .. currentmodule:: flamingpy.codes
 
