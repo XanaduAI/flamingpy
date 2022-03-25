@@ -3,8 +3,8 @@ fp
 
 This and the following sections contain the Python API details for FlamingPy.
 
-Package Details
----------------
+Module Details
+--------------
 
 .. currentmodule:: flamingpy
 
