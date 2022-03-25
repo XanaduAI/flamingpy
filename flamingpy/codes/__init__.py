@@ -12,27 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """The qubit codes module.
-
-Abstract code modules
----------------------
-
-.. currentmodule:: flamingpy.codes
-.. autosummary::
-    :recursive:
-    :toctree: api
-
-    graphs
-    stabilizer
-
-Specific code implementations
------------------------------
-
-.. currentmodule:: flamingpy.codes
-.. autosummary::
-    :recursive:
-    :toctree: api
-
-    surface_code
 """
 from .stabilizer import Stabilizer
 from .surface_code import alternating_polarity, RHG_graph, SurfaceCode
