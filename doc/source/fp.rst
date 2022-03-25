@@ -1,9 +1,9 @@
 fp
 ==
 
-This and the following sections contain the Python API details for FlamingPy.
+This and the following sections will detail the Python APIs for FlamingPy package.
 
-Module Details
+Module members
 --------------
 
 .. currentmodule:: flamingpy
