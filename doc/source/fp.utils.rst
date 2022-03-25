@@ -1,7 +1,16 @@
 fp.utils
 ========
 
-Module Details
+Available modules
+-----------------
+
+.. currentmodule:: flamingpy.utils
+.. autosummary::
+    :toctree: api
+
+    ~viz
+
+Module members
 --------------
   
 .. currentmodule:: flamingpy.utils
