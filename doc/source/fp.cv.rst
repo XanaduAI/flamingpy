@@ -1,7 +1,19 @@
 fp.cv
 =====
 
-Module Details
+Available modules
+-----------------
+
+.. currentmodule:: flamingpy.cv
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    ~gkp
+    ~macro_reduce
+    ~ops
+
+Module members
 --------------
 
 .. currentmodule:: flamingpy.cv
