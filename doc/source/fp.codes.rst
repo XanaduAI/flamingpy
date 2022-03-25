@@ -1,7 +1,28 @@
 fp.codes
 ========
 
-Module Details
+Abstract code modules
+---------------------
+
+.. currentmodule:: flamingpy.codes
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    ~graphs
+    ~stabilizer
+
+Specific code modules
+---------------------
+
+.. currentmodule:: flamingpy.codes
+.. autosummary::
+    :recursive:
+    :toctree: api
+
+    ~surface_code
+
+Module members
 --------------
 
 .. currentmodule:: flamingpy.codes
