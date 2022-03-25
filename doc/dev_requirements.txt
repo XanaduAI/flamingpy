@@ -1,5 +1,6 @@
 docutils>=0.15.2
 m2r2>=0.3.2
+numpy>=1.21
 sphinx>=4.3.1
 sphinx-autodoc-typehints>=1.10.3
 sphinx-automodapi>=0.13
