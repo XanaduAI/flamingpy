@@ -6,7 +6,6 @@ Available modules
 
 .. currentmodule:: flamingpy.decoders
 .. autosummary::
-    :recursive:
     :toctree: api
 
     ~decoder
