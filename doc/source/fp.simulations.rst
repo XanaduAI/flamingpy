@@ -8,3 +8,4 @@ Module members
 
 .. automodapi:: flamingpy.simulations
     :no-heading:
+    :include-all-objects:
