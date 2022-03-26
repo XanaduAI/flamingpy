@@ -6,7 +6,6 @@ Abstract code modules
 
 .. currentmodule:: flamingpy.codes
 .. autosummary::
-    :recursive:
     :toctree: api
 
     ~graphs
@@ -17,7 +16,6 @@ Specific code modules
 
 .. currentmodule:: flamingpy.codes
 .. autosummary::
-    :recursive:
     :toctree: api
 
     ~surface_code
