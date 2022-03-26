@@ -5,6 +5,7 @@ Available modules
 -----------------
 
 .. currentmodule:: flamingpy.utils
+
 .. autosummary::
     :toctree: api
 
