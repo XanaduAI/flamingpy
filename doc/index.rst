@@ -109,6 +109,7 @@ FlamingPy is the work of `many contributors <https://github.com/XanaduAI/flaming
     `DOI:10.1103/prxquantum.2.040353 <http://dx.doi.org/10.1103/PRXQuantum.2.040353>`__ 
 
 In addition to the authors above, the developers would like to thank Sanchit Bapat, Ashlesha Patil, Michael Vasmer, and Trevor Vincent for their contributions to the pre-release project.
+
 License
 -------
 
