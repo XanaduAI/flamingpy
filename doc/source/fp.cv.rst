@@ -4,14 +4,14 @@ fp.cv
 Available modules
 -----------------
 
-.. currentmodule:: flamingpy
+.. currentmodule:: flamingpy.cv
 
 .. autosummary::
     :toctree: api
 
-    ~cv.gkp
-    ~cv.macro_reduce
-    ~cv.ops
+    ~gkp
+    ~macro_reduce
+    ~ops
 
 Module members
 --------------
