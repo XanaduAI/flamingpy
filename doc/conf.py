@@ -83,7 +83,7 @@ intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
 automodapi_toctreedirnm = "source/api"
 automodsumm_inherited_members = True
 autosummary_generate = True
-autosummary_imported_members = True
+autosummary_imported_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates", "xanadu_theme"]
