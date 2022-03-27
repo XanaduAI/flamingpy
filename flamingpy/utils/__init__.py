@@ -12,11 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for visualizing error correction and plotting, processing, and
-saving data.
-
-.. currentmodule:: flamingpy.utils
-.. autosummary::
-    :toctree: api
-
-    viz
-"""
+saving data."""

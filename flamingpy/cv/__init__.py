@@ -11,14 +11,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The module for continuous-variable states, noise, and operations.
-
-.. currentmodule:: flamingpy.cv
-.. autosummary::
-    :recursive:
-    :toctree: api
-
-    gkp
-    macro_reduce
-    ops
-"""
+"""The module for continuous-variable states, noise, and operations."""
