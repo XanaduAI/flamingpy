@@ -4,9 +4,9 @@
 
 {% if module.split(".")[1:] | length >= 1 %}
    {% set mod = module.split(".")[1:] | join(".") %}
-   {% set mod = "jet." + mod %}
+   {% set mod = "flamingpy." + mod %}
 {% else %}
-   {% set mod = "jet" %}
+   {% set mod = "flamingpy" %}
 {% endif %}
 
 {{ mod }}.{{ objname }}
