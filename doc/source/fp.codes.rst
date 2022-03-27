@@ -1,8 +1,8 @@
 fp.codes
 ========
 
-Abstract code modules
----------------------
+Available modules
+-----------------
 
 .. currentmodule:: flamingpy.codes
 
@@ -11,15 +11,6 @@ Abstract code modules
 
     ~graphs
     ~stabilizer
-
-Specific code modules
----------------------
-
-.. currentmodule:: flamingpy.codes
-
-.. autosummary::
-    :toctree: api
-
     ~surface_code
 
 Module members
