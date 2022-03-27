@@ -5,17 +5,18 @@ Abstract code modules
 ---------------------
 
 .. currentmodule:: flamingpy.codes
+
 .. autosummary::
     :toctree: api
 
-    ~graphs.egraph
-    ~graphs.stabilizer_graph
+    ~graphs
     ~stabilizer
 
 Specific code modules
 ---------------------
 
 .. currentmodule:: flamingpy.codes
+
 .. autosummary::
     :toctree: api
 
