@@ -1,7 +1,7 @@
 fp
 ==
 
-In the following sections, we will detail the Python APIs for FlamingPy package. 
+In the following sections, we will detail the Python APIs for FlamingPy. 
 
 ``fp`` is the top level module from which all basic functions and classes of FlamingPy can be directly imported.
 
