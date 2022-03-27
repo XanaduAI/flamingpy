@@ -8,7 +8,8 @@ Abstract code modules
 .. autosummary::
     :toctree: api
 
-    ~graphs
+    ~graphs.egraph
+    ~graphs.stabilizer_graph
     ~stabilizer
 
 Specific code modules
