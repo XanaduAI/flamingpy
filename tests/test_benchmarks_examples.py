@@ -21,7 +21,7 @@ def test_decoder_example():
 
 
 def test_decoding_benchmark():
-    """Simple tests for decoding module in flamingpy.benchmarks"""
+    """Simple test for the decoding module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import decoding as dc_benchmarks
 
 
