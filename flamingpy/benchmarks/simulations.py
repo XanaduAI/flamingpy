@@ -54,7 +54,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="c
     """
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     if passive_objects is not None:
-        RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
+        # RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
@@ -147,8 +147,8 @@ try:
     )
 # Open the file for appending if it already exists.
 except FileExistsError:
-    file = open(file_name, "a", newline="", encoding="utf8")
-    writer = csv.writer(file)
+    with open(file_name, "a", newline="", encoding="utf8") as file:
+        writer = csv.writer(file)
 current_time = datetime.now().time().strftime("%H:%M:%S")
 writer.writerow(
     [
