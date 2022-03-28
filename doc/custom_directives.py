@@ -86,7 +86,7 @@ class CustomGalleryItemDirective(Directive):
     add_index = False
 
     def run(self):
-        """An auxiliary function to initiate creating the thumbnail"""
+        """An auxiliary function to initiate creating the thumbnail."""
         try:
             if "tooltip" in self.options:
                 tooltip = self.options["tooltip"][:195]
