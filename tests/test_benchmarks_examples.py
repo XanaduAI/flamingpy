@@ -46,7 +46,7 @@ def test_surface_code_example():
 
 
 def test_lemon_benchmark():
-    """Simple tests for lemon module in flamingpy.benchmarks"""
+    """Simple test for the lemon module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import lemon
 
 
