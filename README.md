@@ -38,7 +38,7 @@
 
 ## Features
 
-<img src="doc/_static/RHG_matching.svg" width="330px" align="right">
+<img src="https://user-images.githubusercontent.com/25132802/160343140-8d1f8742-d37a-4f18-aa4c-31b6cce587f3.svg" width="330px" align="right">
 
 * Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. 
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states). 
