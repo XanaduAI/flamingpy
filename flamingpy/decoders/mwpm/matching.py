@@ -50,7 +50,7 @@ class MatchingGraph(ABC):
     Weight = TypeVar("Weight")
 
     def __init__(self, ec, code=None):
-        self.virtual_points = list()
+        self.virtual_points = []
         self.ec = ec
         if code is not None:
             self.with_edges_from(code, ec)
@@ -116,8 +116,7 @@ class MatchingGraph(ABC):
         self = self._with_edges_between_real_odd_nodes(code, ec)
         if stab_graph.has_bound_points():
             return self._with_edges_from_low_or_high_connector(code, ec)
-        else:
-            return self
+        return self
 
     def _with_edges_between_real_odd_nodes(self, code, ec):
         # Get the indices of the odd parity cubes from the stabilizer graph.
@@ -249,8 +248,8 @@ class RxMatchingGraph(MatchingGraph):
 
     def __init__(self, ec, code=None):
         self.graph = rx.PyGraph(multigraph=False)
-        self.node_to_index = dict()
-        self.index_to_node = dict()
+        self.node_to_index = {}
+        self.index_to_node = {}
         MatchingGraph.__init__(self, ec, code)
 
     def node_index(self, node):
@@ -261,11 +260,10 @@ class RxMatchingGraph(MatchingGraph):
         """
         if node in self.node_to_index:
             return self.node_to_index[node]
-        else:
-            index = self.graph.add_node(node)
-            self.node_to_index[node] = index
-            self.index_to_node[index] = node
-            return index
+        index = self.graph.add_node(node)
+        self.node_to_index[node] = index
+        self.index_to_node[index] = node
+        return index
 
     def add_edge(self, edge: Edge, weight: Weight, path: List[Node] = []):
         self.graph.add_edge(
