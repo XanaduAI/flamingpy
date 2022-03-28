@@ -41,7 +41,7 @@ def test_macro_reduce_example():
 
 
 def test_surface_code_example():
-    """Simple tests for surface_code module in flamingpy.examples"""
+    """Simple test for the surface_code module in flamingpy.examples."""
     from flamingpy.examples import surface_code
 
 
