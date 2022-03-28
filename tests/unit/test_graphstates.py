@@ -146,7 +146,7 @@ class TestCVLayer:
         # Test various swap-out probabilities; mean p population
         # should be close to p_swap parameter, within tolerance.
         p_list = []
-        for i in range(1000):
+        for _ in range(1000):
             G = CVLayer(random_graph[0], p_swap=p_swap)
             p_list += [len(G._states["p"]) / n]
         p_prob = sum(p_list) / 1000
