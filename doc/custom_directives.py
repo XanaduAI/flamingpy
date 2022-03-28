@@ -27,11 +27,10 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""Creating custom gallery styles and sections for the documentation"""
 from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 from docutils import nodes
-import re
-import os
 
 try:
     FileNotFoundError
@@ -87,6 +86,7 @@ class CustomGalleryItemDirective(Directive):
     add_index = False
 
     def run(self):
+        """An auxiliary function to initiate creating the thumbnail"""
         try:
             if "tooltip" in self.options:
                 tooltip = self.options["tooltip"][:195]
@@ -155,6 +155,7 @@ class DetailsDirective(Directive):
     add_index = False
 
     def run(self):
+        """An auxiliary function to initiate creating the section"""
         name = self.options.get("name", "Details and conventions")
         rst = DETAILS_TEMPLATE.format(title=name, content="\n".join(self.content))
         string_list = StringList(rst.split("\n"))
