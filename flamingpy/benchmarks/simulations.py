@@ -130,25 +130,25 @@ walltime_cpp = process_time() - tic
 file_name = "./flamingpy/sims_data/sims_benchmark_results.csv"
 # Create a CSV file if it doesn't already exist.
 try:
-    with open(file_name, "x", encoding="utf8") as file:
-        writer = csv.writer(file)
-        writer.writerow(
-            [
-                "distance",
-                "ec",
-                "boundaries",
-                "delta",
-                "p_swap",
-                "errors_py",
-                "trials",
-                "current_time",
-                "cpp_to_py_speedup",
-            ]
-        )
+    file = open(file_name, "x", encoding="utf8")
+    writer = csv.writer(file)
+    writer.writerow(
+        [
+            "distance",
+            "ec",
+            "boundaries",
+            "delta",
+            "p_swap",
+            "errors_py",
+            "trials",
+            "current_time",
+            "cpp_to_py_speedup",
+        ]
+    )
 # Open the file for appending if it already exists.
 except FileExistsError:
-    with open(file_name, "a", newline="", encoding="utf8") as file:
-        writer = csv.writer(file)
+    file = open(file_name, "a", newline="", encoding="utf8")
+    writer = csv.writer(file)
 current_time = datetime.now().time().strftime("%H:%M:%S")
 writer.writerow(
     [
