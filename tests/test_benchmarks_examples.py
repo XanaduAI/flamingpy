@@ -36,7 +36,7 @@ def test_graphstates_example():
 
 
 def test_macro_reduce_example():
-    """Simple tests for macro_reduce module in flamingpy.examples"""
+    """Simple test for the macro_reduce module in flamingpy.examples."""
     from flamingpy.examples import macro_reduce
 
 
