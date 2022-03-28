@@ -9,7 +9,7 @@ on:
     branches:
       - main
       - develop
-      - sims2cloud   
+      - sims2cloud
 
 jobs:
   black-n-docformatter:
