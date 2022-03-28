@@ -155,7 +155,7 @@ class DetailsDirective(Directive):
     add_index = False
 
     def run(self):
-        """An auxiliary function to initiate creating the section"""
+        """An auxiliary function to initiate creating the section."""
         name = self.options.get("name", "Details and conventions")
         rst = DETAILS_TEMPLATE.format(title=name, content="\n".join(self.content))
         string_list = StringList(rst.split("\n"))
