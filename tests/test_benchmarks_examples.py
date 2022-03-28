@@ -31,7 +31,7 @@ def test_gkp_example():
 
 
 def test_graphstates_example():
-    """Simple tests for graphstates module in flamingpy.examples"""
+    """Simple test for the graphstates module in flamingpy.examples."""
     from flamingpy.examples import graphstates
 
 
