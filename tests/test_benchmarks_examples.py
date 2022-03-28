@@ -26,7 +26,7 @@ def test_decoding_benchmark():
 
 
 def test_gkp_example():
-    """Simple tests for gkp module in flamingpy.examples"""
+    """Simple test for the gkp module in flamingpy.examples."""
     from flamingpy.examples import gkp
 
 
