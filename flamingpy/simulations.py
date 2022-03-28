@@ -121,7 +121,7 @@ if __name__ == "__main__":
     RHG_lattice.index_generator()
     if passive:
         # The lattice with macronodes.
-        pad_bool = (boundaries != "periodic")
+        pad_bool = boundaries != "periodic"
         RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
