@@ -42,7 +42,7 @@ class BinaryDistribution(dist.Distribution):
 class CMakeExtension(Extension):
     """A class to define CMake Extensions.
     
-    The following class is an adaptation of Python examples for pybind11:
+    Adapted from Python examples for pybind11:
     https://github.com/pybind/python_example/blob/master/setup.py
     """
     def __init__(self, name, sourcedir=""):
