@@ -51,7 +51,7 @@ def test_lemon_benchmark():
 
 
 def test_matching_benchmark():
-    """Simple tests for matching module in flamingpy.benchmarks"""
+    """Simple test for the matching module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import matching
 
 
