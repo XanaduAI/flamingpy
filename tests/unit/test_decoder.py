@@ -136,7 +136,7 @@ class TestDecoder:
 
     def test_matching_graph(self, match_data):
         """Test the structure of the matching graph."""
-        for _, graph in enumerate(match_data[0]):
+        for graph in match_data[0]:
             virtual_points = graph.virtual_points
             remaining_points = graph.graph.nodes - virtual_points
             n_virt = len(virtual_points)
