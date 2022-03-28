@@ -2,7 +2,7 @@
 # A comma-separated list of package or module names from where C/C++ extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code
-extension-pkg-whitelist=numpy,scipy,networkx,flamingpy.lemonpy,flamingpy.monte_carlo.fast_mc_loop
+extension-pkg-whitelist=numpy,scipy,networkx,flamingpy.cpp
 
 [TYPECHECK]
 # List of module names for which member attributes should not be checked

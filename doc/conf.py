@@ -1,28 +1,38 @@
 # -*- coding: utf-8 -*-
 #
-# Configuration file for the Sphinx documentation builder.
+# flamingpy configuration file for the Sphinx documentation builder.
 #
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
+"""
+flamingpy configuration file for the Sphinx documentation builder.
+"""
+import os, sys, re
+from unittest.mock import MagicMock
+
 
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-import os
-import sys
-import subprocess
-from unittest import mock
-
-# sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath("_ext"))
-sys.path.insert(0, os.path.abspath("/opt/miniconda/envs/pie/lib/python3.9/site-packages"))
-sys.path.append(os.path.abspath("../src/"))
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
+
+class Mock(MagicMock):
+    __name__ = "foo"
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+# MOCK_MODULES = ["flamingpy.cpp.lemonpy", "flamingpy.cpp.cpp_mc_loop"]
+MOCK_MODULES = []
+mock = Mock()
+
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = mock
 
 
 # -- Project information -----------------------------------------------------
@@ -31,17 +41,19 @@ project = "FlamingPy"
 copyright = "2022, Xanadu Inc."
 author = "Xanadu Inc."
 
-# The short X.Y version
-version = ""
-# The full version, including alpha/beta/rc tags
-release = ""
+# The full version, including alpha/beta/rc tags.
+with open("../flamingpy/_version.py") as f:
+    release = f.readlines()[-1].split()[-1].strip("\"'")
+# import flamingpy as fp
+# release = fp.__version__
+# The short X.Y version.
+version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
 
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#
-# needs_sphinx = '1.0'
+needs_sphinx = '3.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -52,22 +64,29 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
+    "sphinx.ext.graphviz",
     "sphinx.ext.imgmath",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
-    "edit_on_github",
+    "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
+    "sphinx.ext.inheritance_diagram",
+    "m2r2",
+    "edit_on_github"
 ]
 
-MOCK_MODULES = [
-    "lemonpy",
-]
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = mock.Mock()
+intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
+ 
+automodapi_toctreedirnm = "source/api"
+automodsumm_inherited_members = True
+autosummary_generate = True
+autosummary_imported_members = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ["_templates", "xanadu_theme"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -93,8 +112,18 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "setup.py"]
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# If true, sectionauthor and moduleauthor directives will be shown in the
+# output. They are ignored by default.
+show_authors = True
 
-# -- Options for HTML output -------------------------------------------------
+
+# -- Options for HTMLHelp output ---------------------------------------------
+
+# Output file base name for HTML help builder.
+htmlhelp_basename = "FlamingPydoc"
+
+
+# -- Options for other HTML outputs ------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -123,15 +152,8 @@ html_theme_options = {
     "download_button": "#b13a59",
 }
 
-edit_on_github_project = "XanaduAI/ft-stack"
+edit_on_github_project = "XanaduAI/flamingpy"
 edit_on_github_branch = "main/doc"
-
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -146,7 +168,6 @@ html_static_path = ["_static"]
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
 html_sidebars = {
     "**": [
         "logo-text.html",
@@ -154,11 +175,6 @@ html_sidebars = {
         "globaltoc.html",
     ]
 }
-
-# -- Options for HTMLHelp output ---------------------------------------------
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = "FlamingPydoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -205,7 +221,7 @@ texinfo_documents = [
         "FlamingPy Documentation",
         author,
         "FlamingPy",
-        "One line description of project.",
+        "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers.",
         "Miscellaneous",
     ),
 ]
@@ -229,21 +245,16 @@ epub_title = project
 epub_exclude_files = ["search.html"]
 
 
-# -- Extension configuration -------------------------------------------------
-
 # -- Options for intersphinx extension ---------------------------------------
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"https://docs.python.org/": None}
 
 # the order in which autodoc lists the documented members
 autodoc_member_order = "bysource"
 
 # inheritance_diagram graphviz attributes
-inheritance_node_attrs = dict(color="lightskyblue1", style="filled")
+inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")
+
 
 from custom_directives import CustomGalleryItemDirective, DetailsDirective
-
 
 def setup(app):
     app.add_directive("customgalleryitem", CustomGalleryItemDirective)

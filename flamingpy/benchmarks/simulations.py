@@ -14,6 +14,7 @@
 """Benchmark for the Monte Carlo simulations estimating FT thresholds and
 comparing python and cpp loops."""
 import csv
+import warnings
 
 from time import process_time
 from datetime import datetime
@@ -22,7 +23,11 @@ from flamingpy.codes import SurfaceCode, alternating_polarity
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
-import flamingpy.cpp.cpp_mc_loop as cmc
+
+try:
+    import flamingpy.cpp.cpp_mc_loop as cmc
+except ImportError:
+    warnings.warn("Failed to import flamingpy.cpp.cpp_mc_loop library.", ImportWarning)
 
 
 def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="cpp"):

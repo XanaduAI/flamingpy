@@ -12,9 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Define max_weight_matching based on the lemonpy module."""
+import warnings
+
 import networkx as nx
 
-import flamingpy.cpp.lemonpy as lp
+try:
+    import flamingpy.cpp.lemonpy as lp
+except ImportError:
+    warnings.warn("Failed to import flamingpy.cpp.lemonpy library.", ImportWarning)
 
 
 def max_weight_matching(G_match, weight):

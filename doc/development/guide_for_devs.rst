@@ -8,15 +8,23 @@ FlamingPy requires the following Python version to be installed:
 
 * `Python <http://python.org/>`_ >= 3.8
 
-as well as the following Python packages:
+as well as the following Python packages for development purposes:
 
-* `NumPy <http://numpy.org/>`_ >= 1.21.0
+* `black <https://pypi.org/project/black/>`_ >= 19.3b0
+* `cmake <https://pypi.org/project/cmake/>`_ >= 3.14
+* `codecov <https://about.codecov.io/language/python/>`_ >= 2.1.12
+* `cython <https://cython.org/>`_ >= 0.29.28
+* `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
 * `networkx <https://networkx.org/>`_ >= 2.5
-* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `NumPy <http://numpy.org/>`_ >= 1.21
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
-* `scipy <https://scipy.org/>`_ >= 1.6.0
-
+* `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
+* `pytest-cov <https://pypi.org/project/pytest-cov/>`_ >= 3.0
+* `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
+* `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
+* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `scipy <https://scipy.org/>`_ >= 1.6
 
 If you currently do not have Python 3 installed, we recommend
 `Anaconda for Python 3 <https://www.anaconda.com/download/>`_, a distributed version
@@ -108,6 +116,8 @@ from the `doc` directory to then build the HTML documentation, run
 
 .. code-block:: bash
 
-    make clean html
+    make html
+
+You may need to run ``make clean`` beforehand. 
 
 The documentation can be found in the :file:`doc/_build/html/` directory.
