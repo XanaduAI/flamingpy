@@ -67,9 +67,9 @@ class StabilizerGraph(ABC):
     def __init__(self, ec, code=None):
         self.add_node("low")
         self.add_node("high")
-        self.stabilizers = list()
-        self.low_bound_points = list()
-        self.high_bound_points = list()
+        self.stabilizers = []
+        self.low_bound_points = []
+        self.high_bound_points = []
         if code is not None:
             self.add_stabilizers(getattr(code, ec + "_stabilizers"))
             bound_points = getattr(code, ec + "_bound_points")
@@ -289,7 +289,7 @@ class StabilizerGraph(ABC):
     def real_edges(self):
         """Returns an iterable of all edges excluding the ones connected to the
         'low' or 'high' points."""
-        is_high_or_low = lambda n: n == "low" or n == "high"
+        is_high_or_low = lambda n: n in ("low", "high")
         return filter(
             lambda edge: not (is_high_or_low(edge[0]) or is_high_or_low(edge[1])),
             self.edges(),
@@ -374,8 +374,8 @@ class RxStabilizerGraph(StabilizerGraph):
 
     def __init__(self, ec, code=None):
         self.graph = rx.PyGraph()
-        self.node_to_index = dict()
-        self.index_to_node = dict()
+        self.node_to_index = {}
+        self.index_to_node = {}
         StabilizerGraph.__init__(self, ec, code)
 
     def add_node(self, node):
@@ -440,7 +440,7 @@ class RxStabilizerGraph(StabilizerGraph):
         }
 
     def _path_nodes(self, path):
-        nodes = list()
+        nodes = []
         for index in path:
             nodes.append(self.index_to_node[index])
         return nodes
@@ -452,7 +452,6 @@ def rx_weight_fn(code):
     def fn(edge):
         if edge["common_vertex"] is not None:
             return float(code.graph.nodes[edge["common_vertex"]]["weight"])
-        else:
-            return 0.0
+        return 0.0
 
     return fn
