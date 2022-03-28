@@ -44,7 +44,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
         errors (integer): the number of errors.
     """
     if passive_objects is not None:
-        RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
+        # RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     RHG_lattice.index_generator()
     if passive:
         # The lattice with macronodes.
-        pad_bool = False if boundaries == "periodic" else True
+        pad_bool = (boundaries != "periodic")
         RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     file_name = "./flamingpy/sims_data/sims_results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
-        file = open(file_name, "x")
+        file = open(file_name, "x", encoding="utf8")
         writer = csv.writer(file)
         writer.writerow(
             [
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         )
     # Open the file for appending if it already exists.
     except FileExistsError:
-        file = open(file_name, "a", newline="")
+        file = open(file_name, "a", newline="", encoding="utf8")
         writer = csv.writer(file)
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
