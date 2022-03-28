@@ -16,7 +16,7 @@ the plots."""
 
 
 def test_decoder_example():
-    """Simple tests for decoding module in flamingpy.examples"""
+    """Simple test for the decoding module in flamingpy.examples."""
     from flamingpy.examples import decoding as dc_examples
 
 
