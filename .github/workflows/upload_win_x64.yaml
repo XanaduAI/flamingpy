@@ -12,7 +12,7 @@ jobs:
         os: [windows-latest]
         arch: [amd64]
     runs-on: ${{ matrix.os }}
-    name: ${{matrix.os}} ${{matrix.python-version}}  
+    name: ${{matrix.os}} ${{matrix.python-version}} 
     steps:
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.4.1
@@ -29,11 +29,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-  
+
       - name: Configure MSVC for amd64
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: ${{ matrix.arch }}   
+          arch: ${{ matrix.arch }}  
 
       - name: install dependencies
         run: |
@@ -46,13 +46,13 @@ jobs:
           python setup.py develop
           python setup.py build_cython --inplace
           python setup.py build_cmake --inplace
-     
+
       - name: Run tests
         run: python -m pytest tests/ --tb=native
-  
+
       - name: Build the wheel
         run: python setup.py bdist_wheel
- 
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: dist
-       
+     
       - name: Display and organize the structure of downloaded files
         run: |
           mv dist/artifact*/* dist
@@ -79,7 +79,7 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
           #password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           #repository_url: https://test.pypi.org/legacy/
-        
+      
       - name: Add a delay for upcoming tests
         run: sleep 5m
 
@@ -98,7 +98,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Pip install flamingpy     
+      - name: Pip install flamingpy    
         run: |
           python -m pip install --upgrade pip
           python -m pip install flamingpy
