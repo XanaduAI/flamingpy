@@ -54,7 +54,6 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="c
     """
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     if passive_objects is not None:
-        # RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
