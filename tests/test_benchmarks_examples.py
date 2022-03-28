@@ -56,7 +56,7 @@ def test_matching_benchmark():
 
 
 def test_shortest_path_benchmark():
-    """Simple tests for shortest_path module in flamingpy.benchmarks"""
+    """Simple test for the shortest_path module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import shortest_path
 
 
