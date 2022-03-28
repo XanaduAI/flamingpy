@@ -107,7 +107,7 @@ RHG_lattice = RHG_code.graph
 RHG_lattice.index_generator()
 if passive:
     # The lattice with macronodes.
-    pad_bool = False if boundaries == "periodic" else True
+    pad_bool = (boundaries != "periodic")
     RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
     RHG_macro.index_generator()
     RHG_macro.adj_generator(sparse=True)
@@ -130,7 +130,7 @@ walltime_cpp = process_time() - tic
 file_name = "./flamingpy/sims_data/sims_benchmark_results.csv"
 # Create a CSV file if it doesn't already exist.
 try:
-    file = open(file_name, "x")
+    file = open(file_name, "x", encoding="utf8")
     writer = csv.writer(file)
     writer.writerow(
         [
@@ -147,7 +147,7 @@ try:
     )
 # Open the file for appending if it already exists.
 except FileExistsError:
-    file = open(file_name, "a", newline="")
+    file = open(file_name, "a", newline="", encoding="utf8")
     writer = csv.writer(file)
 current_time = datetime.now().time().strftime("%H:%M:%S")
 writer.writerow(
