@@ -357,8 +357,7 @@ class CVLayer:
         """array: the noise covariance matrix."""
         if self._sampling_order == "final":
             return self._noise_cov
-        else:
-            return None
+        return None
         print('Sampling order must be "final."')
 
     def draw(self, **kwargs):
