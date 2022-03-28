@@ -53,7 +53,7 @@ class CMakeExtension(Extension):
 class CMakeBuild(build_ext):
     """A class to define, configure, and test build extensions.
     
-    The following class was adapted from pymatching package:
+    Adapted from the pymatching package:
     https://github.com/oscarhiggott/PyMatching/blob/master/setup.py
     """
     def run(self):
