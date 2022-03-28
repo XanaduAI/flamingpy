@@ -1,7 +1,12 @@
 name: Linting Checks
 on:
+  push:
+    branches:
+      - main
+      - develop
+      - sims2cloud
   pull_request:
-    branches:  
+    branches:
       - main
       - develop
       - sims2cloud
