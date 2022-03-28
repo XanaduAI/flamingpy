@@ -229,8 +229,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
             ith_neighbor = list(CVRHG.egraph[ith_vertex])[0]
             ith_body_index = CVRHG.egraph.nodes[ith_neighbor]["body_index"]
             return ith_neighbor, ith_body_index
-        else:
-            return
+        return None
 
     def m(vertex):
         """Measurement outcomes in the macronode containing vertex.
@@ -243,18 +242,17 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         """
         if vertex is None:
             return [0, 0, 0, 0, 0]
-        else:
-            meas = np.zeros(5)
-            # The central node corresponding to the neighboring
-            # macronode.
-            central_node = tuple([round(i) for i in vertex])
-            for micro in CVRHG.egraph.macro_to_micro[central_node]:
-                index = CVRHG.egraph.nodes[micro]["body_index"]
-                # Populate meas with the q-homodyne outcomes for
-                # the planet modes.
-                if index != 1:
-                    meas[index] = CVRHG.egraph.nodes[micro]["hom_val_q"]
-            return meas
+        meas = np.zeros(5)
+        # The central node corresponding to the neighboring
+        # macronode.
+        central_node = tuple([round(i) for i in vertex])
+        for micro in CVRHG.egraph.macro_to_micro[central_node]:
+            index = CVRHG.egraph.nodes[micro]["body_index"]
+            # Populate meas with the q-homodyne outcomes for
+            # the planet modes.
+            if index != 1:
+                meas[index] = CVRHG.egraph.nodes[micro]["hom_val_q"]
+        return meas
 
     def Z(M, neighbor_body_index):
         """Process the homodyne outcomes for neighboring macronode i.
@@ -266,12 +264,14 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         """
         if neighbor_body_index == 1:
             return 0
-        if neighbor_body_index == 2:
+        else if neighbor_body_index == 2:
             return M[2] - M[4]
-        if neighbor_body_index == 3:
+        else if neighbor_body_index == 3:
             return M[3] - M[4]
-        if neighbor_body_index == 4:
+        else if neighbor_body_index == 4:
             return M[2] + M[3]
+        else:
+            return None
 
     # sorted_homodynes = np.empty(N // 4, dtype=np.float32)
     sorted_bits = np.empty(N // 4, dtype=np.float32)
@@ -317,10 +317,8 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
                 gkp_inds += [i]
         if delta > 0:
             p_err += Z_err_cond(2 * (2 + num_p) * delta, outcome, use_hom_val=True)
-        if p_err > 0.5:
-            p_err = 0.5
-        if p_err < 0:
-            p_err = 0
+        p_err = min(p_err, 0.5)
+        p_err = max(p_err, 0)
 
         bitp = GKP_binner([outcome])[0]
         bitq = GKP_binner(Z_arr[gkp_inds].astype(np.float64)) if gkp_inds else 0
