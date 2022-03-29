@@ -1,3 +1,4 @@
+# STATS stuff:
 *.stats
 
 # For the figures
@@ -11,6 +12,7 @@ __pycache__/
 
 # C extensions
 *.so
+flamingpy/cpp/*.so
 
 # Distribution / packaging
 .Python
@@ -142,5 +144,6 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Cython debug symbols
+# Cython stuff:
 cython_debug/
+flamingpy/cpp/cpp_mc_loop.cpp
