@@ -17,7 +17,7 @@ import csv
 import sys
 
 from datetime import datetime
-from flamingpy.codes import SurfaceCode, alternating_polarity
+from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     # The Monte Carlo simulations
 
     # The qubit code
-    RHG_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
+    RHG_code = SurfaceCode(distance, ec, boundaries, backend="retworkx")
     RHG_lattice = RHG_code.graph
     RHG_lattice.index_generator()
     if passive:
@@ -130,6 +130,8 @@ if __name__ == "__main__":
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, RHG_lattice, CVRHG_reduced, bs_network]
+    else:
+        passive_objects = None
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
