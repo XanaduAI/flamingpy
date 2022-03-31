@@ -1,13 +1,15 @@
 name: Formatting Checks
 on:
+  push:
+    branches:
+      - main
+      - develop
+      - sims2cloud
   pull_request:
     branches:
       - main
       - develop
-  push:
-    branches:
-      - main
-      - develop    
+      - sims2cloud
 
 jobs:
   black-n-docformatter:

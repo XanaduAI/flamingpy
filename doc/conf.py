@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
 
 class Mock(MagicMock):
+    """An auxiliary class to create mocked modules"""
     __name__ = "foo"
     @classmethod
     def __getattr__(cls, name):
@@ -79,7 +80,7 @@ extensions = [
 ]
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
- 
+
 automodapi_toctreedirnm = "source/api"
 automodsumm_inherited_members = True
 autosummary_generate = True

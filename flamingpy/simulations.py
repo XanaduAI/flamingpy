@@ -17,7 +17,7 @@ import csv
 import sys
 
 from datetime import datetime
-from flamingpy.codes import SurfaceCode, alternating_polarity
+from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
@@ -44,7 +44,6 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
         errors (integer): the number of errors.
     """
     if passive_objects is not None:
-        RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
@@ -107,7 +106,7 @@ if __name__ == "__main__":
             2,
             "primal",
             "open",
-            0.01,
+            0.04,
             0.5,
             100,
             True,
@@ -116,12 +115,12 @@ if __name__ == "__main__":
     # The Monte Carlo simulations
 
     # The qubit code
-    RHG_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
+    RHG_code = SurfaceCode(distance, ec, boundaries)
     RHG_lattice = RHG_code.graph
     RHG_lattice.index_generator()
     if passive:
         # The lattice with macronodes.
-        pad_bool = False if boundaries == "periodic" else True
+        pad_bool = boundaries != "periodic"
         RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
@@ -131,6 +130,8 @@ if __name__ == "__main__":
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, RHG_lattice, CVRHG_reduced, bs_network]
+    else:
+        passive_objects = None
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     file_name = "./flamingpy/sims_data/sims_results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
-        file = open(file_name, "x")
+        file = open(file_name, "x", newline="", encoding="utf8")
         writer = csv.writer(file)
         writer.writerow(
             [
@@ -154,7 +155,7 @@ if __name__ == "__main__":
         )
     # Open the file for appending if it already exists.
     except FileExistsError:
-        file = open(file_name, "a", newline="")
+        file = open(file_name, "a", newline="", encoding="utf8")
         writer = csv.writer(file)
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
