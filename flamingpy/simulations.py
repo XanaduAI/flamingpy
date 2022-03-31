@@ -106,7 +106,7 @@ if __name__ == "__main__":
             2,
             "primal",
             "open",
-            0.01,
+            0.04,
             0.5,
             100,
             True,
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     # The Monte Carlo simulations
 
     # The qubit code
-    RHG_code = SurfaceCode(distance, ec, boundaries, backend="retworkx")
+    RHG_code = SurfaceCode(distance, ec, boundaries)
     RHG_lattice = RHG_code.graph
     RHG_lattice.index_generator()
     if passive:
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     file_name = "./flamingpy/sims_data/sims_results.csv"
     # Create a CSV file if it doesn't already exist.
     try:
-        file = open(file_name, "x", encoding="utf8")
+        file = open(file_name, "x", newline="", encoding="utf8")
         writer = csv.writer(file)
         writer.writerow(
             [

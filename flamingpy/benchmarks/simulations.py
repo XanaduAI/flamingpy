@@ -101,7 +101,7 @@ trials = 100
 passive = True
 
 # The qubit code
-RHG_code = SurfaceCode(distance, ec, boundaries, backend="retworkx")
+RHG_code = SurfaceCode(distance, ec, boundaries)
 RHG_lattice = RHG_code.graph
 RHG_lattice.index_generator()
 if passive:
@@ -131,7 +131,7 @@ walltime_cpp = process_time() - tic
 file_name = "./flamingpy/sims_data/sims_benchmark_results.csv"
 # Create a CSV file if it doesn't already exist.
 try:
-    file = open(file_name, "x", encoding="utf8")
+    file = open(file_name, "x", newline="", encoding="utf8")
     writer = csv.writer(file)
     writer.writerow(
         [
