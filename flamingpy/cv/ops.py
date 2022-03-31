@@ -306,12 +306,12 @@ class CVLayer:
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
-    def eval_Z_probs(self, inds=None, exact=True, cond=False):
-        """Evaluate the probability of phase errors at nodes inds.
-
-        If inds not specified, compute probabilities for all nodes.
-        """
-        pass
+    # def eval_Z_probs(self, inds=None, exact=True, cond=False):
+    #     """Evaluate the probability of phase errors at nodes inds.
+    #
+    #     If inds not specified, compute probabilities for all nodes.
+    #     """
+    #     pass
 
     def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
@@ -322,9 +322,9 @@ class CVLayer:
         adj = self._adj
         return SCZ_mat(adj)
 
-    def Z_probs(self, inds=None, cond=False):
-        """array: the phase error probabilities of modes inds."""
-        pass
+    # def Z_probs(self, inds=None, cond=False):
+    #     """array: the phase error probabilities of modes inds."""
+    #     pass
 
     def hom_outcomes(self, inds=None, quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
@@ -357,6 +357,7 @@ class CVLayer:
         """array: the noise covariance matrix."""
         if self._sampling_order == "final":
             return self._noise_cov
+        return None
         print('Sampling order must be "final."')
 
     def draw(self, **kwargs):

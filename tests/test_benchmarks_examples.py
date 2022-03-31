@@ -16,40 +16,50 @@ the plots."""
 
 
 def test_decoder_example():
-    from flamingpy.examples import decoding
+    """Simple test for the decoding module in flamingpy.examples."""
+    from flamingpy.examples import decoding as dc_examples
+
+
+def test_decoding_benchmark():
+    """Simple test for the decoding module in flamingpy.benchmarks."""
+    from flamingpy.benchmarks import decoding as dc_benchmarks
 
 
 def test_gkp_example():
+    """Simple test for the gkp module in flamingpy.examples."""
     from flamingpy.examples import gkp
 
 
 def test_graphstates_example():
+    """Simple test for the graphstates module in flamingpy.examples."""
     from flamingpy.examples import graphstates
 
 
 def test_macro_reduce_example():
+    """Simple test for the macro_reduce module in flamingpy.examples."""
     from flamingpy.examples import macro_reduce
 
 
 def test_surface_code_example():
+    """Simple test for the surface_code module in flamingpy.examples."""
     from flamingpy.examples import surface_code
 
 
-def test_decoding_benchmark():
-    from flamingpy.benchmarks import decoding
-
-
 def test_lemon_benchmark():
+    """Simple test for the lemon module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import lemon
 
 
 def test_matching_benchmark():
+    """Simple test for the matching module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import matching
 
 
 def test_shortest_path_benchmark():
+    """Simple test for the shortest_path module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import shortest_path
 
 
 def test_simulations_benchmark():
+    """Simple test for the simulations module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import simulations

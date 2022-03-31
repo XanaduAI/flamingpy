@@ -38,7 +38,7 @@ RHG_code = SurfaceCode(
 RHG_lattice = RHG_code.graph
 
 # CV (inner) code/state
-p_swap = 0.2
+p_swap = 0
 CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
 # Noise model
 delta = 0.1

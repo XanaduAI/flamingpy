@@ -17,7 +17,6 @@ Unit tests for flamingpy top _init_.py functions.
 
 import contextlib
 import io
-import re
 
 import flamingpy as fp
 
