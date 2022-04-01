@@ -32,7 +32,9 @@ class IidNoise:
         self.error_probability = error_probability
 
     def apply_noise(self, rng=default_rng()):
-        """
+        """Apply the noise to the code.
+
+        This fixes the "bit_val" attribute of each nodes in the code egraph.
 
         Args:
             rng (numpy.random.Generator, optional): a random number generator
