@@ -54,9 +54,8 @@ def test_finite_prob_noise():
 
 def test_decoding():
     """Check that we can use the correct function to decode the code
-    after applying iid noise. """
+    after applying iid noise."""
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.1)
     noise.apply_noise()
-    assert correct(code, {"outer": "MWPM"},
-                   weight_options="uniform") in [True, False]
+    assert correct(code, {"outer": "MWPM"}, weight_options="uniform") in [True, False]
