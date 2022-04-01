@@ -58,4 +58,4 @@ def test_decoding():
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.1)
     noise.apply_noise()
-    assert correct(code, {"outer": "MWPM"}, weight_options="uniform") in [True, False]
+    assert correct(code, {"outer": "MWPM"}) in [True, False]
