@@ -48,7 +48,7 @@ if noise == "cv":
     p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
     CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
     # Noise model
-    delta = 0.1 # GKP squeezing parameter
+    delta = 0.1  # GKP squeezing parameter
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     # Apply noise, measure syndrome, translate to bit values
     CVRHG.apply_noise(cv_noise)
@@ -62,7 +62,7 @@ if noise == "cv":
         "delta": delta,
     }
     decoder = {"inner": "basic", "outer": "MWPM"}
-    
+
 if noise == "dv":
     # i.i.d Pauli Z errors with probability p_Z
     p_Z = 0.02
