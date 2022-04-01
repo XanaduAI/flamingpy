@@ -269,7 +269,8 @@ def correct(
             where f is the inner/CV decoding function (GKP_binner by default)
             and s is the string indicating the outer/DV decoder to use
             ('MWPM' by default)
-        weight_options (dict or str, optional): how to assign weights; options are
+        weight_options (dict, optional): how to assign weights; options are
+
             'method': 'unit' or 'blueprint'
             'integer': True (for rounding) or False (for not)
             'multiplier': integer denoting multiplicative factor
