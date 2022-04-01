@@ -17,8 +17,8 @@ from numpy.random import default_rng
 
 
 class IidNoise:
-    """Noise sampler for independent and identically distributed Z errors
-    on the qubits of a cluster state.
+    """Noise sampler for independent and identically distributed Z errors on
+    the qubits of a cluster state.
 
     Args:
         code (SurfaceCode): the code on which to apply the noise.
