@@ -68,7 +68,7 @@ if noise == "dv":
     p_Z = 0.02
     IidNoise(RHG_code, p_Z).apply_noise()
     weight_options = {"method": "unit"}
-    decoder = {"inner": None, "outer": "MWPM"}
+    decoder = {"outer": "MWPM"}
 
 # Drawing options
 node_colors = "state" if noise == "cv" else False
