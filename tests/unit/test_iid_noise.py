@@ -24,7 +24,7 @@ def test_zero_noise():
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.0)
     noise.apply_noise()
-    for _, node_data in code.graph.nodes(data=True):
+    for _, node_data in code.graph.nodes.data():
         assert node_data["bit_val"] == 0
 
 
@@ -33,7 +33,7 @@ def test_full_noise():
     code = SurfaceCode(3)
     noise = IidNoise(code, 1.0)
     noise.apply_noise()
-    for _, node_data in code.graph.nodes(data=True):
+    for _, node_data in code.graph.nodes.data():
         assert node_data["bit_val"] == 1
 
 
@@ -42,10 +42,11 @@ def test_finite_prob_noise():
     is between 0 and 1.
     """
     code = SurfaceCode(3)
-    noise = IidNoise(code, 0.1)
-    noise.apply_noise()
-    for _, node_data in code.graph.nodes(data=True):
-        assert node_data["bit_val"] in [0, 1]
+    for prob in [0.1, 0.5, 0.9]:
+        noise = IidNoise(code, prob)
+        noise.apply_noise()
+        for _, node_data in code.graph.nodes.data():
+            assert node_data["bit_val"] in [0, 1]
 
 
 def test_decoding():
