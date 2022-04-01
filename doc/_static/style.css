@@ -53,7 +53,7 @@ h1, h2, h3 {
 
 h1 {
     font-size: 38px;
-    padding: 10px 10px 10px 10px;
+    padding: 10px;
     margin: 20px 0 35px -45px;
     width: calc(100% + 90px);
 }
@@ -317,7 +317,7 @@ label {
 /* code */
 
 .tab-pane pre code {
-    padding: 0px 40px 0px 40px !important;
+    padding: 0px 40px !important;
     font-size: 120% !important;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.16),0 2px 10px 0 rgba(0,0,0,.12);
     border-radius: 0 0 10px 10px;
@@ -384,7 +384,7 @@ pre {
     }
 
     .footer-relations {
-        padding: 12px 10px 12px 10px;
+        padding: 12px 10px;
         left: 0;
     }
 
