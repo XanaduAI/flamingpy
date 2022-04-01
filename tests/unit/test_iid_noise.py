@@ -13,27 +13,10 @@
 # limitations under the License.
 """Unit tests for iid noise generation and decoding."""
 
-import itertools as it
-
-import networkx as nx
-import numpy as np
-import pytest
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.noise.iid import IidNoise
-from flamingpy.decoders.decoder import (
-    assign_weights,
-    CV_decoder,
-    recovery,
-    check_correction,
-    correct
-)
-from flamingpy.decoders.mwpm.matching import NxMatchingGraph
-
-
-distance = [2, 3, 4]
-error_probabilites = [0.01, 0.05, 0.1]
-code_params = it.product(distance, error_probabilites)
+from flamingpy.decoders.decoder import correct
 
 
 def test_zero_noise():
@@ -73,6 +56,7 @@ def test_decoding(request):
     """Check that we can use the correct function to decode the code
     after applying iid noise. """
     code = SurfaceCode(3)
-    noise = IidNoise(code, 0.1) 
+    noise = IidNoise(code, 0.1)
     noise.apply_noise()
-    assert correct(code, {"outer": "MWPM"}, weight_options="uniform") in [True, False]
+    assert correct(code, {"outer": "MWPM"},
+                   weight_options="uniform") in [True, False]
