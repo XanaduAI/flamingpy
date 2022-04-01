@@ -52,7 +52,7 @@ def test_finite_prob_noise():
         assert node_data["bit_val"] in [0, 1]
 
 
-def test_decoding(request):
+def test_decoding():
     """Check that we can use the correct function to decode the code
     after applying iid noise. """
     code = SurfaceCode(3)
