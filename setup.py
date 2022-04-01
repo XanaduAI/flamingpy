@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""setup.py instructions for FlamingPy installation from Source
+"""
 import os
 import re
 import sys
@@ -27,26 +28,34 @@ from setuptools.command.build_ext import build_ext
 
 
 # Reading the package version number
-with open("flamingpy/_version.py") as f:
+with open("flamingpy/_version.py", encoding="utf8") as f:
     version = f.readlines()[-1].split()[-1].strip("\"'")
 
 
 class BinaryDistribution(dist.Distribution):
+    """A class to define Binary Distribution objects"""
     def has_ext_modules(foo):
+        """Check for external modules."""
         return True
 
 
-# The following class is an adaptation of Python examples for pybind11:
-# https://github.com/pybind/python_example/blob/master/setup.py
 class CMakeExtension(Extension):
+    """A class to define CMake Extensions.
+    
+    Adapted from Python examples for pybind11:
+    https://github.com/pybind/python_example/blob/master/setup.py
+    """
     def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
 
-# The following class was adapted from pymatching package:
-# https://github.com/oscarhiggott/PyMatching/blob/master/setup.py
 class CMakeBuild(build_ext):
+    """A class to define, configure, and test build extensions.
+    
+    Adapted from the pymatching package:
+    https://github.com/oscarhiggott/PyMatching/blob/master/setup.py
+    """
     def run(self):
         try:
             out = subprocess.check_output(["cmake", "--version"])
@@ -95,7 +104,7 @@ class CMakeBuild(build_ext):
 
 # use README.md as long_description
 this_directory = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(this_directory, "README.md")) as f:
+with open(os.path.join(this_directory, "README.md"), encoding="utf8") as f:
     long_description = f.read()
 
 
@@ -137,10 +146,10 @@ classifiers = [
 install_requires = [
     "matplotlib>=3.3.3",
     "networkx>=2.5",
+    "numpy>=1.21",
     "retworkx>=0.10.2",
-    "numpy>=1.21.0",
     "pandas>=1.2.1",
-    "scipy>=1.6.0"
+    "scipy>=1.6"
 ]
 
 description = "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."

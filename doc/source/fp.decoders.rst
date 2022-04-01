@@ -1,7 +1,21 @@
 fp.decoders
 ===========
 
-.. automodule:: flamingpy.decoders
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Available modules
+-----------------
+
+.. currentmodule:: flamingpy.decoders
+.. autosummary::
+    :toctree: api
+
+    ~decoder
+    ~mwpm
+
+Module members
+--------------
+
+.. currentmodule:: flamingpy.decoders
+
+.. automodapi:: flamingpy.decoders
+    :no-heading:
+    :include-all-objects:

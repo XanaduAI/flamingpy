@@ -77,10 +77,8 @@ def dual_neighbours(p, displace=1):
         back = (x, y, z - displace)
         if x % 2:
             return [back, left, front, right]
-        else:
-            return [back, top, front, bottom]
-    else:
-        return [bottom, left, top, right]
+        return [back, top, front, bottom]
+    return [bottom, left, top, right]
 
 
 def str_to_bound(bound_name):

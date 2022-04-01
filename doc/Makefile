@@ -16,7 +16,10 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 # Put it first so that "make" without argument is like "make help".
 help:
-	@echo "Please use \`make docs' to build the documentation"
+	@echo "Please use \`make <target>' where <target> is one of:"
+	@echo "  clean      to remove current _build/ dir"
+	@echo "  html       to make standalone HTML files"
+	@echo "  docs       to perform \`clean' and then \`html' together"
 	
 .PHONY: help
 

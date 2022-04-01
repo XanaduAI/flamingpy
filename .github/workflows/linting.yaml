@@ -1,9 +1,15 @@
 name: Linting Checks
 on:
-  pull_request:
-    branches:    
+  push:
+    branches:
       - main
       - develop
+      - sims2cloud
+  pull_request:
+    branches:
+      - main
+      - develop
+      - sims2cloud
 
 jobs:
   pylint:
@@ -18,17 +24,17 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install pylint
-          
+
       - uses: actions/checkout@v2
-      
+
       - name: Install compilation and testing requirements of flamingpy
-        run: python3 -m pip install -r dev_requirements.txt   
-        
+        run: python3 -m pip install -r dev_requirements.txt
+
       - name: Build flamingpy from Source
         run: |
-          python setup.py develop 
-          python setup.py build_cython --inplace 
-          python setup.py build_cmake --inplace  
+          python setup.py develop
+          python setup.py build_cython --inplace
+          python setup.py build_cmake --inplace
 
       - name: Run pylint
-        run: python3 -m pylint --disable=R,W flamingpy src/flamingpy/benchmarks/*.py src/flamingpy/examples/*.py tests/unit/*.py
+        run: python3 -m pylint --disable=R,W flamingpy flamingpy/benchmarks/*.py flamingpy/examples/*.py tests/unit/*.py

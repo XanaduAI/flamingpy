@@ -11,7 +11,7 @@ body:
         Before posting a feature request
       description: |
         Please first search existing GitHub issues and documentation to make sure this request and relevant resolutions do not already exist:
-        https://github.com/XanaduAI/ft-stack/issues
+        https://github.com/XanaduAI/flamingpy/issues
       options:
         - label: I have searched existing GitHub issues and documentation to make sure the feature request and relevant resolutions do not already exist.
           required: true
@@ -20,7 +20,7 @@ body:
     attributes:
       value: |
           # Feature description
-          A clear and concise description of the desired enhancement -- remember to include references, code snippets, and screenshots below, if relevant.
+          A clear and concise description of the desired enhancement. Remember to include references, code snippets, and screenshots below when relevant.
   - type: textarea
     id: details
     attributes:
@@ -44,7 +44,7 @@ body:
       label: Additional context
       description: |
         Please provide any additional information here.
-   - type: dropdown
+  - type: dropdown
     id: urgency
     attributes:
       label: How important would you say this feature is?

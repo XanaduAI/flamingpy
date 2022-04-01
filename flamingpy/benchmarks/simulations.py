@@ -14,15 +14,20 @@
 """Benchmark for the Monte Carlo simulations estimating FT thresholds and
 comparing python and cpp loops."""
 import csv
+import warnings
 
 from time import process_time
 from datetime import datetime
 
-from flamingpy.codes import SurfaceCode, alternating_polarity
+from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
-import flamingpy.cpp.cpp_mc_loop as cmc
+
+try:
+    import flamingpy.cpp.cpp_mc_loop as cmc
+except ImportError:
+    warnings.warn("Failed to import flamingpy.cpp.cpp_mc_loop library.", ImportWarning)
 
 
 def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="cpp"):
@@ -49,7 +54,6 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="c
     """
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     if passive_objects is not None:
-        RHG_macro, RHG_reduced, CVRHG_reduced, bs_network = passive_objects
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
@@ -97,12 +101,12 @@ trials = 100
 passive = True
 
 # The qubit code
-RHG_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
+RHG_code = SurfaceCode(distance, ec, boundaries)
 RHG_lattice = RHG_code.graph
 RHG_lattice.index_generator()
 if passive:
     # The lattice with macronodes.
-    pad_bool = False if boundaries == "periodic" else True
+    pad_bool = boundaries != "periodic"
     RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
     RHG_macro.index_generator()
     RHG_macro.adj_generator(sparse=True)
@@ -112,6 +116,8 @@ if passive:
     # star at index 0, planets at indices 1-3.
     bs_network = BS_network(4)
     passive_objects = [RHG_macro, RHG_lattice, CVRHG_reduced, bs_network]
+else:
+    passive_objects = None
 
 tic = process_time()
 errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects, backend="python")
@@ -125,7 +131,7 @@ walltime_cpp = process_time() - tic
 file_name = "./flamingpy/sims_data/sims_benchmark_results.csv"
 # Create a CSV file if it doesn't already exist.
 try:
-    file = open(file_name, "x")
+    file = open(file_name, "x", newline="", encoding="utf8")
     writer = csv.writer(file)
     writer.writerow(
         [
@@ -142,7 +148,7 @@ try:
     )
 # Open the file for appending if it already exists.
 except FileExistsError:
-    file = open(file_name, "a", newline="")
+    file = open(file_name, "a", newline="", encoding="utf8")
     writer = csv.writer(file)
 current_time = datetime.now().time().strftime("%H:%M:%S")
 writer.writerow(

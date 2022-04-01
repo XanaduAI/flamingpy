@@ -63,8 +63,7 @@ def assign_weights(code, **kwargs):
                     hom_val = G.nodes[node]["hom_val_p"]
                     err_prob = Z_err_cond(delta_effective, hom_val)
                 # Allow for taking log of 0.
-                if err_prob > 0.5:
-                    err_prob = 0.5
+                err_prob = min(err_prob, 0.5)
                 # TODO: Can I just choose an arbitrary small number?
                 if err_prob == 0:
                     err_prob = smallest_number
@@ -218,8 +217,7 @@ def check_correction(code, sanity_check=False):
         truth_dicts += [truth_dict]
     if sanity_check:
         return ec_checks, truth_dicts
-    else:
-        return ec_checks
+    return ec_checks
 
 
 def build_match_graph(code, ec, matching_backend="networkx"):
@@ -275,7 +273,7 @@ def correct(
             'method': 'unit' or 'blueprint'
             'integer': True (for rounding) or False (for not)
             'multiplier': integer denoting multiplicative factor
-                before rounding
+            before rounding
             Unit weights by default.
             If "uniform" is provided instead, all weights are 1.
         sanity_check (bool, optional): if True, check that the recovery
