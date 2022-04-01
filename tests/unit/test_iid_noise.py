@@ -20,9 +20,7 @@ from flamingpy.decoders.decoder import correct
 
 
 def test_zero_noise():
-    """Check that when the error probability is 0,
-    then all bit values are 0.
-    """
+    """Check that bit values are all 0 when the error probability is 0."""
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.0)
     noise.apply_noise()
@@ -31,9 +29,7 @@ def test_zero_noise():
 
 
 def test_full_noise():
-    """Check that when the error probability is 1
-    then all bit values are 1.
-    """
+    """Check that bit values are all 1 when the error probability is 1."""
     code = SurfaceCode(3)
     noise = IidNoise(code, 1.0)
     noise.apply_noise()
@@ -42,8 +38,8 @@ def test_full_noise():
 
 
 def test_finite_prob_noise():
-    """Check that when the error probability is 0.1
-    then all bit values are either 0 or 1.
+    """Check that all bit values are either 0 or 1 when the error probability
+    is between 0 and 1.
     """
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.1)
