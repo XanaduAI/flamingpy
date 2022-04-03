@@ -85,7 +85,8 @@ for ec in RHG_code.ec:
 
     # The draw_dec_graph function requires the networkx backend. Most backends implement
     # the to_nx() method to perform the conversion if needed.
-    G_stabilizer.draw(title=ec.capitalize() + " stabilizer graph", node_labels=node_labels)
+    RHG_code.draw_stabilizer_graph(ec, title=ec.capitalize() + " stabilizer graph", node_labels=node_labels)
+
     ax = viz.syndrome_plot(RHG_code, ec, drawing_opts=dw, index_dict=node_labels)
     # viz.draw_matching_on_syndrome_plot(ax, matching, G_stabilizer, G_match, dw.get("label_edges"))
     if len(G_match.graph):

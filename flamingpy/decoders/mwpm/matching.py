@@ -113,9 +113,13 @@ class MatchingGraph(ABC):
             code (SurfaceCode): The code from which to build the edges.
         """
         stab_graph = getattr(code, ec + "_stab_graph")
-        self = self._with_edges_between_real_odd_nodes(code, ec)
-        if stab_graph.has_bound_points():
-            return self._with_edges_from_low_or_high_connector(code, ec)
+        odd_stabilizers = list(stab_graph.odd_parity_stabilizers())
+        # If the syndrome is trivial, we don't need to add edges into 
+        # the matching graph.
+        if len(odd_stabilizers) > 0:
+            self = self._with_edges_between_real_odd_nodes(code, ec)
+            if stab_graph.has_bound_points():
+                return self._with_edges_from_low_or_high_connector(code, ec)
         return self
 
     def _with_edges_between_real_odd_nodes(self, code, ec):
