@@ -114,7 +114,7 @@ class MatchingGraph(ABC):
         """
         stab_graph = getattr(code, ec + "_stab_graph")
         odd_stabilizers = list(stab_graph.odd_parity_stabilizers())
-        # If the syndrome is trivial, we don't need to add edges into 
+        # If the syndrome is trivial, we don't need to add edges into
         # the matching graph.
         if len(odd_stabilizers) > 0:
             self = self._with_edges_between_real_odd_nodes(code, ec)
