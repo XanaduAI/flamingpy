@@ -15,7 +15,7 @@
 
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.noise.iid import IidNoise
+from flamingpy.noise import IidNoise
 from flamingpy.decoders.decoder import correct
 
 

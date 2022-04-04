@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
-from flamingpy.noise.iid import IidNoise
+from flamingpy.noise import IidNoise
 from flamingpy.utils import viz
 
 show = __name__ == "__main__"
