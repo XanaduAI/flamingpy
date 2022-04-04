@@ -343,7 +343,7 @@ class NxStabilizerGraph(StabilizerGraph):
         self.assign_weights(code)
         return nx_shortest_paths_from(self.graph, "high")
 
-    def shortest_paths_from_low(self):
+    def shortest_paths_from_low(self, code):
         self.assign_weights(code)
         return nx_shortest_paths_from(self.graph, "low")
 
