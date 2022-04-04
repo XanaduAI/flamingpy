@@ -11,8 +11,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-"""Version number (major.minor.patch[label])"""
-
-
-__version__ = "0.5.0a2"
+"""The noise module."""
+from .iid import IidNoise

@@ -34,6 +34,7 @@ with open("flamingpy/_version.py", encoding="utf8") as f:
 
 class BinaryDistribution(dist.Distribution):
     """A class to define Binary Distribution objects"""
+
     def has_ext_modules(foo):
         """Check for external modules."""
         return True
@@ -41,10 +42,11 @@ class BinaryDistribution(dist.Distribution):
 
 class CMakeExtension(Extension):
     """A class to define CMake Extensions.
-    
+
     Adapted from Python examples for pybind11:
     https://github.com/pybind/python_example/blob/master/setup.py
     """
+
     def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
@@ -52,10 +54,11 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     """A class to define, configure, and test build extensions.
-    
+
     Adapted from the pymatching package:
     https://github.com/oscarhiggott/PyMatching/blob/master/setup.py
     """
+
     def run(self):
         try:
             out = subprocess.check_output(["cmake", "--version"])
@@ -140,7 +143,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Scientific/Engineering :: Physics"
+    "Topic :: Scientific/Engineering :: Physics",
 ]
 
 install_requires = [
@@ -149,7 +152,7 @@ install_requires = [
     "numpy>=1.21",
     "retworkx>=0.10.2",
     "pandas>=1.2.1",
-    "scipy>=1.6"
+    "scipy>=1.6",
 ]
 
 description = "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
@@ -171,7 +174,7 @@ setup(
         "install": install,
         "develop": develop,
         "build_cython": build_ext,
-        "build_cmake": CMakeBuild
+        "build_cmake": CMakeBuild,
     },
     ext_modules=ext_modules,
     distclass=BinaryDistribution,
