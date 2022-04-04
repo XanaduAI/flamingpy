@@ -348,8 +348,8 @@ class NxStabilizerGraph(StabilizerGraph):
         return nx_shortest_paths_from(self.graph, "low", code)
 
     def assign_weights(self, code):
-        """Assign the weights to the graph from the weight common vertex of
-        each stabilizer pair of the code."""
+        """Assign the weights to the graph based on the weight 
+        of the common vertex of each stabilizer pair of the code."""
         for edge in self.graph.edges.data():
             if edge[2].get("common_vertex") is not None:
                 edge[2]["weight"] = code.graph.nodes[edge[2]["common_vertex"]]["weight"]
