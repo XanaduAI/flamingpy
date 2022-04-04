@@ -11,7 +11,7 @@ body:
         Before posting a feature request
       description: |
         Please first search existing GitHub issues and documentation to make sure this request and relevant resolutions do not already exist:
-        https://github.com/XanaduAI/ft-stack/issues
+        https://github.com/XanaduAI/flamingpy/issues
       options:
         - label: I have searched existing GitHub issues and documentation to make sure the feature request and relevant resolutions do not already exist.
           required: true
