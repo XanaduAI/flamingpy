@@ -337,15 +337,15 @@ class NxStabilizerGraph(StabilizerGraph):
         subgraph = self.graph.subgraph(
             self.stabilizers + self.low_bound_points + self.high_bound_points
         )
-        return nx_shortest_paths_from(subgraph, source, code)
+        return nx_shortest_paths_from(subgraph, source)
 
     def shortest_paths_from_high(self, code):
         self.assign_weights(code)
-        return nx_shortest_paths_from(self.graph, "high", code)
+        return nx_shortest_paths_from(self.graph, "high")
 
-    def shortest_paths_from_low(self, code):
+    def shortest_paths_from_low(self):
         self.assign_weights(code)
-        return nx_shortest_paths_from(self.graph, "low", code)
+        return nx_shortest_paths_from(self.graph, "low")
 
     def assign_weights(self, code):
         """Assign the weights to the graph based on the weight 
@@ -357,7 +357,7 @@ class NxStabilizerGraph(StabilizerGraph):
                 edge[2]["weight"] = 0.0
 
 
-def nx_shortest_paths_from(graph, source, code):
+def nx_shortest_paths_from(graph, source):
     """The NetworkX shortest path implementation."""
     (weights, paths) = sp.single_source_dijkstra(graph, source)
     del weights[source]
