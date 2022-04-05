@@ -448,7 +448,7 @@ class SurfaceCode:
 
     def draw_stabilizer_graph(self, ec, **kwargs):
         """Draw the stabilizer graph with matplotlib.
-        
+
         See flamingpy.utils.viz.draw_dec_graph for more details.
         """
         graph = getattr(self, ec + "_stab_graph")

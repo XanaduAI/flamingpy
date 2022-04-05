@@ -87,6 +87,9 @@ def assign_weights(code, **kwargs):
     if weight_options.get("method") == "unit":
         for node in syndrome_coords:
             G.nodes[node]["weight"] = 1
+    # Also assign the weights to the stabilizer graph edges.
+    for ec in code.ec:
+        getattr(code, f"{ec}_stab_graph").assign_weights(code)
 
 
 def CV_decoder(code, translator=GKP_binner):

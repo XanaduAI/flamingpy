@@ -289,11 +289,24 @@ class StabilizerGraph(ABC):
     def real_edges(self):
         """Returns an iterable of all edges excluding the ones connected to the
         'low' or 'high' points."""
-        is_high_or_low = lambda n: n in ("low", "high")
+
+        def is_high_or_low(n):
+            return n in ("low", "high")
+
         return filter(
             lambda edge: not (is_high_or_low(edge[0]) or is_high_or_low(edge[1])),
             self.edges(),
         )
+
+    def assign_weights(self, code):
+        """Assign the weights to the graph based on the weight
+        of the common vertex of each stabilizer pair of the code."""
+        for edge in self.edges():
+            data = self.edge_data(*edge)
+            if data["common_vertex"] is not None:
+                data["weight"] = code.graph.nodes[data["common_vertex"]]["weight"]
+            else:
+                data["weight"] = 0.0
 
     def draw(self, **kwargs):
         """Draw the stabilizer graph with matplotlib.
@@ -333,28 +346,16 @@ class NxStabilizerGraph(StabilizerGraph):
         return self.graph.edges()
 
     def shortest_paths_without_high_low(self, source, code):
-        self.assign_weights(code)
         subgraph = self.graph.subgraph(
             self.stabilizers + self.low_bound_points + self.high_bound_points
         )
         return nx_shortest_paths_from(subgraph, source)
 
     def shortest_paths_from_high(self, code):
-        self.assign_weights(code)
         return nx_shortest_paths_from(self.graph, "high")
 
     def shortest_paths_from_low(self, code):
-        self.assign_weights(code)
         return nx_shortest_paths_from(self.graph, "low")
-
-    def assign_weights(self, code):
-        """Assign the weights to the graph based on the weight 
-        of the common vertex of each stabilizer pair of the code."""
-        for edge in self.graph.edges.data():
-            if edge[2].get("common_vertex") is not None:
-                edge[2]["weight"] = code.graph.nodes[edge[2]["common_vertex"]]["weight"]
-            else:
-                edge[2]["weight"] = 0.0
 
 
 def nx_shortest_paths_from(graph, source):
@@ -457,8 +458,9 @@ def rx_weight_fn(code):
     """A function for returning the weight from the common vertex."""
 
     def fn(edge):
-        if edge["common_vertex"] is not None:
-            return float(code.graph.nodes[edge["common_vertex"]]["weight"])
+        weight = edge.get("weight")
+        if weight is not None:
+            return float(weight)
         return 0.0
 
     return fn
