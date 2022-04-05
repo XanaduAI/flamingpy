@@ -42,9 +42,13 @@ class StabilizerGraph(ABC):
     many nodes in order to construct the matching graph.
 
     Parameters:
-        ec (str): the error complex ("primal" or "dual"). Determines whether
+        ec (str, optional): the error complex ("primal" or "dual"). Determines whether
             the graph is generated from primal or dual stabilizers in the code.
-        code (SurfaceCode): the code from which to initialize the graph.
+        code (SurfaceCode, optional): the code from which to initialize the graph.
+
+    Note:
+        Both ec and code must be provided to initialize the graph with the proper edges. 
+        If one of them is not provided, the graph is left empty.
 
     Attributes:
         stabilizers (List[Stabilizer]): All the stabilizer nodes of the graph.
@@ -64,13 +68,13 @@ class StabilizerGraph(ABC):
         translating the outcomes.
     """
 
-    def __init__(self, ec, code=None):
+    def __init__(self, ec=None, code=None):
         self.add_node("low")
         self.add_node("high")
         self.stabilizers = []
         self.low_bound_points = []
         self.high_bound_points = []
-        if code is not None:
+        if code is not None and ec is not None:
             self.add_stabilizers(getattr(code, ec + "_stabilizers"))
             bound_points = getattr(code, ec + "_bound_points")
             mid = int(len(bound_points) / 2)
@@ -90,6 +94,10 @@ class StabilizerGraph(ABC):
         Returns:
             The updated stabilizer graph.
         """
+        raise NotImplementedError
+
+    def nodes(self):
+        """Return an iterable of all nodes in the graph."""
         raise NotImplementedError
 
     def add_edge(
@@ -308,6 +316,20 @@ class StabilizerGraph(ABC):
             else:
                 data["weight"] = 0.0
 
+    def to_nx(self):
+        """Convert the same graph into a NxStabilizerGraph.
+
+        This involves converting the retworkx graph representation to a
+        networkx graph representation.
+        """
+        if isinstance(self, NxStabilizerGraph):
+            return self
+        nx_graph = NxStabilizerGraph()
+        for edge in self.edges():
+            nx_graph.add_edge(*edge, self.edge_data(*edge)["common_vertex"])
+            nx_graph.edge_data(*edge)["weight"] = self.edge_data(*edge)["weight"]
+        return nx_graph
+
     def draw(self, **kwargs):
         """Draw the stabilizer graph with matplotlib.
 
@@ -315,7 +337,7 @@ class StabilizerGraph(ABC):
         """
         from flamingpy.utils.viz import draw_dec_graph
 
-        draw_dec_graph(self, **kwargs)
+        draw_dec_graph(self.to_nx(), **kwargs)
 
 
 class NxStabilizerGraph(StabilizerGraph):
@@ -327,13 +349,16 @@ class NxStabilizerGraph(StabilizerGraph):
         graph (networkx.Graph): The actual graph backend.
     """
 
-    def __init__(self, ec, code=None):
+    def __init__(self, ec=None, code=None):
         self.graph = nx.Graph()
         StabilizerGraph.__init__(self, ec, code)
 
     def add_node(self, node):
         self.graph.add_node(node)
         return self
+
+    def nodes(self):
+        return self.graph.nodes
 
     def add_edge(self, node1, node2, common_vertex=None):
         self.graph.add_edge(node1, node2, common_vertex=common_vertex)
@@ -380,7 +405,7 @@ class RxStabilizerGraph(StabilizerGraph):
             corresponding nodes.
     """
 
-    def __init__(self, ec, code=None):
+    def __init__(self, ec=None, code=None):
         self.graph = rx.PyGraph()
         self.node_to_index = {}
         self.index_to_node = {}
@@ -391,6 +416,9 @@ class RxStabilizerGraph(StabilizerGraph):
         self.node_to_index[node] = index
         self.index_to_node[index] = node
         return self
+
+    def nodes(self):
+        return self.graph.nodes()
 
     def add_edge(self, node1, node2, common_vertex=None):
         index1 = self.node_to_index[node1]

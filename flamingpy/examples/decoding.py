@@ -33,7 +33,7 @@ boundaries = "open"
 ec = "both"
 
 RHG_code = SurfaceCode(
-    distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity
+    distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity, backend="retworkx"
 )
 RHG_lattice = RHG_code.graph
 
@@ -81,7 +81,7 @@ for ec in RHG_code.ec:
 
     # An integer label for each nodes in the stabilizer and matching graphs.
     # This is useful to identify the nodes in the plots.
-    node_labels = {node: index for index, node in enumerate(G_stabilizer.graph)}
+    node_labels = {node: index for index, node in enumerate(G_stabilizer.nodes())}
 
     # The draw_dec_graph function requires the networkx backend. Most backends implement
     # the to_nx() method to perform the conversion if needed.
