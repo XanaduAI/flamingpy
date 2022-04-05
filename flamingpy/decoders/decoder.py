@@ -275,7 +275,6 @@ def correct(
             'integer': True (for rounding) or False (for not)
             'multiplier': integer denoting multiplicative factor
             before rounding
-
             Unit weights by default.
         sanity_check (bool, optional): if True, check that the recovery
             operation succeeded and verify that parity is conserved

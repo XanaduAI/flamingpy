@@ -21,12 +21,16 @@ sys.path.insert(0, os.path.abspath("_ext"))
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
 
+
 class Mock(MagicMock):
     """An auxiliary class to create mocked modules"""
+
     __name__ = "foo"
+
     @classmethod
     def __getattr__(cls, name):
         return MagicMock()
+
 
 # MOCK_MODULES = ["flamingpy.cpp.lemonpy", "flamingpy.cpp.cpp_mc_loop"]
 MOCK_MODULES = []
@@ -54,7 +58,7 @@ version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '3.0'
+needs_sphinx = "3.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -76,7 +80,7 @@ extensions = [
     "sphinx_automodapi.smart_resolver",
     "sphinx.ext.inheritance_diagram",
     "m2r2",
-    "edit_on_github"
+    "edit_on_github",
 ]
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
@@ -256,6 +260,7 @@ inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", 
 
 
 from custom_directives import CustomGalleryItemDirective, DetailsDirective
+
 
 def setup(app):
     app.add_directive("customgalleryitem", CustomGalleryItemDirective)
