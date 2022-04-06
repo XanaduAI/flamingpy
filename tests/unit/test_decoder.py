@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for decoding funcions in the decoder module."""
 
-# pylint: disable=no-member
+# pylint: disable=no-member,redefined-outer-name
 
 import itertools as it
 
@@ -173,12 +173,12 @@ class TestRecovery:
             odd_cubes = stab_graph.odd_parity_stabilizers()
             assert len(list(odd_cubes)) == 0
 
-    def test_correction_check(self, enc_state_local):
+    def test_correction_check(self, enc_state):
         """Check whether error correction succeeds or fails as expected."""
-        result, surface_dicts = check_correction(enc_state_local[0], sanity_check=True)
-        boundaries = enc_state_local[0].bound_str
+        result, surface_dicts = check_correction(enc_state[0], sanity_check=True)
+        boundaries = enc_state[0].bound_str
         failure_events = []
-        for i, ec in enumerate(enc_state_local[0].ec):
+        for i, ec in enumerate(enc_state[0].ec):
             surface_dict = surface_dicts[i]
             if boundaries == "periodic":
                 planes = ["x", "y", "z"]
@@ -201,3 +201,4 @@ class TestRecovery:
 
     # def test_correct(self):
     # pass
+    
