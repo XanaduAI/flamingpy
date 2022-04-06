@@ -327,7 +327,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
 
         # Update the reduced CVRHG lattice with the effective
         # homodyne value and the phase error probability.
-        central_vert = tuple([round(i) for i in vertex])
+        central_vert = tuple(round(i) for i in vertex)
         RHG_reduced.nodes[central_vert]["bit_val"] = processed_bit_val
         sorted_bits[reduced_indices[central_vert]] = processed_bit_val
         RHG_reduced.nodes[central_vert]["p_phase_cond"] = p_err
