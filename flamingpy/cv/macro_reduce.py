@@ -264,11 +264,11 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         """
         if neighbor_body_index == 1:
             return 0
-        elif neighbor_body_index == 2:
+        if neighbor_body_index == 2:
             return M[2] - M[4]
-        elif neighbor_body_index == 3:
+        if neighbor_body_index == 3:
             return M[3] - M[4]
-        elif neighbor_body_index == 4:
+        if neighbor_body_index == 4:
             return M[2] + M[3]
         return None
 
