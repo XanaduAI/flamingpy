@@ -307,10 +307,9 @@ class StabilizerGraph(ABC):
         of the common vertex of each stabilizer pair of the code."""
         for edge in self.edges():
             data = self.edge_data(*edge)
-            if data["common_vertex"] is not None:
-                data["weight"] = code.graph.nodes[data["common_vertex"]]["weight"]
-            else:
-                data["weight"] = 0.0
+            weight = code.graph.nodes[data["common_vertex"]].get("weight") 
+            if weight is not None:
+                data["weight"] = weight
 
     def to_nx(self):
         """Convert the same graph into a NxStabilizerGraph.
