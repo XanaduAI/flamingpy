@@ -27,4 +27,4 @@ ignored-classes=numpy,scipy,networkx
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=line-too-long,consider-using-f-string
+disable=invalid-name,consider-using-f-string
