@@ -297,12 +297,8 @@ class StabilizerGraph(ABC):
     def real_edges(self):
         """Returns an iterable of all edges excluding the ones connected to the
         'low' or 'high' points."""
-
-        def is_high_or_low(n):
-            return n in ("low", "high")
-
         return filter(
-            lambda edge: not (is_high_or_low(edge[0]) or is_high_or_low(edge[1])),
+            lambda edge: edge[0] not in ("low", "high") and edge[1] not in ("low, "high")
             self.edges(),
         )
 
