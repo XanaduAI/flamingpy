@@ -173,12 +173,12 @@ class TestRecovery:
             odd_cubes = stab_graph.odd_parity_stabilizers()
             assert len(list(odd_cubes)) == 0
 
-    def test_correction_check(self, enc_state):
+    def test_correction_check(self, enc_state_local):
         """Check whether error correction succeeds or fails as expected."""
-        result, surface_dicts = check_correction(enc_state[0], sanity_check=True)
-        boundaries = enc_state[0].bound_str
+        result, surface_dicts = check_correction(enc_state_local[0], sanity_check=True)
+        boundaries = enc_state_local[0].bound_str
         failure_events = []
-        for i, ec in enumerate(enc_state[0].ec):
+        for i, ec in enumerate(enc_state_local[0].ec):
             surface_dict = surface_dicts[i]
             if boundaries == "periodic":
                 planes = ["x", "y", "z"]
