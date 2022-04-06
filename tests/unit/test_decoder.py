@@ -164,7 +164,8 @@ class TestDecoder:
 class TestRecovery:
     """A class that defines recovery and correction tests."""
 
-    def test_recovery(self, enc_state, match_data):
+    @classmethod
+    def test_recovery(cls, enc_state, match_data):
         """Check that there remain no unsatisfied stabilizers after the
         recovery operation."""
         for i, ec in enumerate(enc_state[0].ec):
