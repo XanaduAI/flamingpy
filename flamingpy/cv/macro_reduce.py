@@ -107,9 +107,6 @@ def BS_network(n):
     bs2 = expand(bs5050, [3, 2], 4)
     bs3 = expand(bs5050, [2, 0], 4)
     bs4 = expand(bs5050, [3, 1], 4)
-    # TODO: Data type set to 'single' because there are only 0, +-0.5 entries
-    # but this is really 1/2 of an array that can have dtype=np.int8,
-    # so revisit this.
     bs_network = (bs4 @ bs3 @ bs2 @ bs1).astype(np.single)
     if n < 4:
         print("Too small!")
