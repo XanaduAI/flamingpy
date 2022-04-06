@@ -166,7 +166,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
             micronode = to_points[i + j]
             if CVRHG.egraph.nodes[micronode]["state"] == "GKP":
                 gkps.append(j)
-        centre_point = tuple([round(i) for i in micronode])
+        centre_point = tuple(round(i) for i in micronode)
         if gkps:
             star_ind, reduced_state = i + gkps[0], "GKP"
         else:
@@ -245,7 +245,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         meas = np.zeros(5)
         # The central node corresponding to the neighboring
         # macronode.
-        central_node = tuple([round(i) for i in vertex])
+        central_node = tuple(round(i) for i in vertex)
         for micro in CVRHG.egraph.macro_to_micro[central_node]:
             index = CVRHG.egraph.nodes[micro]["body_index"]
             # Populate meas with the q-homodyne outcomes for
@@ -270,8 +270,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
             return M[3] - M[4]
         elif neighbor_body_index == 4:
             return M[2] + M[3]
-        else:
-            return None
+        return None
 
     # sorted_homodynes = np.empty(N // 4, dtype=np.float32)
     sorted_bits = np.empty(N // 4, dtype=np.float32)
