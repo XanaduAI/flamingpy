@@ -174,7 +174,8 @@ class TestRecovery:
             odd_cubes = stab_graph.odd_parity_stabilizers()
             assert len(list(odd_cubes)) == 0
 
-    def test_correction_check(self, enc_state):
+    @classmethod
+    def test_correction_check(cls, enc_state):
         """Check whether error correction succeeds or fails as expected."""
         result, surface_dicts = check_correction(enc_state[0], sanity_check=True)
         boundaries = enc_state[0].bound_str
