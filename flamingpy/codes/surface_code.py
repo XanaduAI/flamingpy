@@ -315,14 +315,14 @@ class SurfaceCode:
                 self.graph.to_indices[point] for point in perfect_qubits
             ]
 
-        for ec in self.ec:
+        for local_ec in self.ec:
             if backend == "networkx":
-                stabilizer_graph = NxStabilizerGraph(ec, self)
+                stabilizer_graph = NxStabilizerGraph(local_ec, self)
             elif backend == "retworkx":
-                stabilizer_graph = RxStabilizerGraph(ec, self)
+                stabilizer_graph = RxStabilizerGraph(local_ec, self)
             else:
                 raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
-            setattr(self, ec + "_stab_graph", stabilizer_graph)
+            setattr(self, local_ec + "_stab_graph", stabilizer_graph)
 
     def identify_stabilizers(self):
         """Set the stabilizer and syndrome coordinates of self.
@@ -438,7 +438,8 @@ class SurfaceCode:
         default colour options: black for primal nodes, grey for dual
         nodes; blue for weight +1 edges, red for weight -1 edges.
         """
-        edge_colors = {1: "b", -1: "r"} if self.polarity == alternating_polarity else "grey"
+        edge_colors = {1: "b", -1: "r"} if \
+            self.polarity == alternating_polarity.__name__ else "grey"
         default_opts = {
             "color_nodes": {"primal": "k", "dual": "grey"},
             "color_edges": edge_colors,
