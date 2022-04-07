@@ -1,0 +1,10 @@
+# .coveragerc to control coverage files
+[run]
+source = flamingpy
+
+
+[report]
+# Regexes for lines to exclude from consideration
+
+exclude_lines =
+    if __name__ == .__main__.:
