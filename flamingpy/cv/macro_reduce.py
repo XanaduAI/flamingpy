@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for reducing a macronode lattice to a canonical lattice."""
+
+# pylint: disable=protected-access
+
 import numpy as np
 from scipy.linalg import block_diag
 
