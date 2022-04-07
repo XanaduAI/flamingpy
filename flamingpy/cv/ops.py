@@ -43,7 +43,6 @@ def SCZ_mat(adj):
         zeros = np.zeros((N, N), dtype=np.int8)
         block_func = np.block
     else:
-        # TODO: Specify different kind of Scipy sparse matrix?
         identity = sp.identity(N, dtype=np.int8)
         zeros = sp.csr_matrix((N, N), dtype=np.int8)
         block_func = sp.bmat
