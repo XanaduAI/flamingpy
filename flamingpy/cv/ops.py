@@ -365,7 +365,7 @@ class CVLayer:
         if self._sampling_order == "final":
             return self._noise_cov
         return None
-        #print('Sampling order must be "final."')
+        # print('Sampling order must be "final."')
 
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.
