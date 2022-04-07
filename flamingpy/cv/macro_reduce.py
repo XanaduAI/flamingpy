@@ -51,7 +51,8 @@ def beam_splitter(theta, phi, dtype=np.float64):
         phi (float): phase parameter
         dtype (numpy.dtype): datatype to represent the Symplectic matrix
     Returns:
-        array: symplectic-orthogonal transformation matrix of an interferometer with angles theta and phi
+        array: symplectic-orthogonal transformation matrix of an interferometer 
+        with angles theta and phi
     Note:
         This is from thewalrus library.
         https://github.com/XanaduAI/thewalrus/blob/master/thewalrus/symplectic.py

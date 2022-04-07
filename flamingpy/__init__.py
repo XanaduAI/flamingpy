@@ -57,7 +57,8 @@ def about():
 
     # a QuTiP-style infobox
     print(
-        "\nFlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
+        "\nFlamingPy is a cross-platform Python library with a variety of backends",
+        "for efficient simulations of error correction in fault-tolerant quantum computers."
     )
     print("\nCopyright 2022 Xanadu Quantum Technologies Inc.\n")
 
