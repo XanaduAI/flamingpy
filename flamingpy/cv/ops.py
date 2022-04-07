@@ -164,7 +164,7 @@ class CVLayer:
         self._noise_cov = None
         self._init_quads = None
 
-    def apply_noise(self, model={}, rng=default_rng()):
+    def apply_noise(self, model=None, rng=default_rng()):
         """Apply the noise model in model with a random number generator rng.
 
         Args:
@@ -191,6 +191,9 @@ class CVLayer:
                 By default, numpy.random.default_rng is used without a fixed
                 seed.
         """
+        if model is None:
+            model = {}
+
         # Modelling the states.
         perfect_inds = self.egraph.graph.get("perfect_inds")
         default_model = {
