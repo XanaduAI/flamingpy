@@ -320,7 +320,7 @@ class CVLayer:
     #     """
     #     pass
 
-    def SCZ(self, sparse=False):
+    def SCZ(self):
         """Return the symplectic matrix associated with CZ application.
 
         Returns:
