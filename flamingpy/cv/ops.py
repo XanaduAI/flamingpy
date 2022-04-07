@@ -158,6 +158,13 @@ class CVLayer:
                 for ind in self._states[psi]:
                     self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
+        self._delta = None
+        self._sampling_order = None
+        self._perfect_inds = None
+        self._init_noise = None
+        self._noise_cov = None
+        self._init_quads = None
+
     def apply_noise(self, model={}, rng=default_rng()):
         """Apply the noise model in model with a random number generator rng.
 
@@ -358,7 +365,7 @@ class CVLayer:
         if self._sampling_order == "final":
             return self._noise_cov
         return None
-        print('Sampling order must be "final."')
+        #print('Sampling order must be "final."')
 
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.
