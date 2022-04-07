@@ -28,6 +28,7 @@ def test_version():
 
     assert ver_file == fp.version()
 
+
 def test_about():
     """Tests if the about string prints correctly."""
     f = io.StringIO()
