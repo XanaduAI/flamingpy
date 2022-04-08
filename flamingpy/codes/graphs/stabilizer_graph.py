@@ -298,7 +298,7 @@ class StabilizerGraph(ABC):
         """Returns an iterable of all edges excluding the ones connected to the
         'low' or 'high' points."""
         return filter(
-            lambda edge: edge[0] not in ("low", "high") and edge[1] not in ("low, "high")
+            lambda edge: edge[0] not in ("low", "high") and edge[1] not in ("low", "high"),
             self.edges(),
         )
 
@@ -307,14 +307,16 @@ class StabilizerGraph(ABC):
         of the common vertex of each stabilizer pair of the code."""
         for edge in self.edges():
             data = self.edge_data(*edge)
-            weight = code.graph.nodes[data["common_vertex"]].get("weight") 
-            if weight is not None:
-                data["weight"] = weight
+            if data["common_vertex"] is not None:
+                data["weight"] = code.graph.nodes[data["common_vertex"]].get("weight")
+            elif "high" in edge or "low" in edge:
+                data["weight"] = 0
+
 
     def to_nx(self):
         """Convert the same graph into a NxStabilizerGraph.
 
-        This involves converting the retworkx graph representation to a
+        This involves converting the graph representation to a
         networkx graph representation.
         """
         if isinstance(self, NxStabilizerGraph):
@@ -322,7 +324,8 @@ class StabilizerGraph(ABC):
         nx_graph = NxStabilizerGraph()
         for edge in self.edges():
             nx_graph.add_edge(*edge, self.edge_data(*edge)["common_vertex"])
-            nx_graph.edge_data(*edge)["weight"] = self.edge_data(*edge)["weight"]
+            if "weight" in self.edge_data(*edge):
+                nx_graph.edge_data(*edge)["weight"] = self.edge_data(*edge)["weight"]
         return nx_graph
 
     def draw(self, **kwargs):
@@ -448,7 +451,7 @@ class RxStabilizerGraph(StabilizerGraph):
 
     def _shortest_paths_from(self, graph, source, code):
         paths = rx.graph_dijkstra_shortest_paths(
-            graph, self.node_to_index[source], weight_fn=rx_weight_fn(code)
+            graph, self.node_to_index[source], weight_fn=rx_weight_fn
         )
         return self._all_path_weights(paths, code), self._all_path_nodes(paths)
 
@@ -459,10 +462,9 @@ class RxStabilizerGraph(StabilizerGraph):
         }
 
     def _path_weight(self, path, code):
-        weight_fn = rx_weight_fn(code)
         weight = 0
         for e in range(len(path) - 1):
-            weight += int(weight_fn(self.graph.get_edge_data(path[e], path[e + 1])))
+            weight += int(rx_weight_fn(self.graph.get_edge_data(path[e], path[e + 1])))
         return weight
 
     def _all_path_nodes(self, paths):
@@ -477,13 +479,10 @@ class RxStabilizerGraph(StabilizerGraph):
         return nodes
 
 
-def rx_weight_fn(code):
+def rx_weight_fn(edge):
     """A function for returning the weight from the common vertex."""
+    weight = edge.get("weight")
+    if weight is not None:
+        return float(weight)
+    return 0.0
 
-    def fn(edge):
-        weight = edge.get("weight")
-        if weight is not None:
-            return float(weight)
-        return 0.0
-
-    return fn
