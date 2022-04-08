@@ -316,7 +316,7 @@ class SurfaceCode:
             if backend == "networkx":
                 stabilizer_graph = NxStabilizerGraph(error_type, self)
             elif backend == "retworkx":
-                stabilizer_graph = RxStabilizerGraph(local_ec, self)
+                stabilizer_graph = RxStabilizerGraph(error_type, self)
             else:
                 raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
             setattr(self, local_ec + "_stab_graph", stabilizer_graph)
