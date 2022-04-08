@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
+
+# pylint: disable=redefined-outer-name,protected-access
+
 import string
 
 import networkx as nx
@@ -47,14 +50,16 @@ def noise_model(delta, order):
 class TestEGraph:
     """Tests for EGraphs."""
 
-    def test_init(self, random_graph):
+    @classmethod
+    def test_init(cls, random_graph):
         """Check that the adjacency matrix of the random graph matches the
         adjancency matrix of the EGraph."""
         E = EGraph(random_graph[0])
         E_array = nx.to_numpy_array(E)
         assert np.all(random_graph[1] == E_array)
 
-    def test_index(self, random_graph):
+    @classmethod
+    def test_index(cls, random_graph):
         """Tests a graph with nodes from a shuffled alphabet."""
         alph = list(string.ascii_lowercase)
         rand.shuffle(alph)
@@ -85,7 +90,8 @@ class TestEGraph:
 class TestCVHelpers:
     """Tests for CVLayer helper functions."""
 
-    def test_SCZ_mat(self, random_graph):
+    @classmethod
+    def test_SCZ_mat(cls, random_graph):
         """Tests the SCZ_mat function."""
         SCZ = SCZ_mat(random_graph[1])
         SCZ_sparse = SCZ_mat(random_graph[2])
