@@ -13,6 +13,9 @@
 # limitations under the License.
 """Helper functions to draw various graphs and generate plots using
 Matplotlib."""
+
+# pylint: disable=too-many-branches,too-many-statements
+
 import itertools as it
 
 import numpy as np
