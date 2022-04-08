@@ -147,7 +147,6 @@ def draw_EGraph(
     # Recommended to be viewed with IPython.
     # Font properties
     dims = egraph.graph.get("dims")
-    # TODO: automate/improve the following figure size designation
     if dims:
         font_size = 10 * sum(dims) ** (1 / 2)
     else:
@@ -415,8 +414,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
     else:
-        # TODO: Initialize axes based on empty ax object from draw_EGraph
-        # but prevent from draw_EGraph from plotting.
         fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
         ax = fig.gca(projection="3d")
         # ax.tick_params(labelsize=font_props['size'])
@@ -444,9 +441,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # parity and red for odd pariy.
     filled = np.zeros(shape, dtype=object)
     for cube in cubes:
-
-        # TODO: Deal appropriately with cubes on periodic and dual
-        # boundaries.
 
         # Obtain smallest, largest, and middle coordinates for each
         # cube. Divided by 2 becaues voxels are 1X1X1.
