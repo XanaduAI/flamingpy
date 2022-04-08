@@ -130,7 +130,7 @@ message = "Error correction {}".format(outcome)
 print(message)
 ```
 
-See our [Documentation](https://flamingpy.readthedocs.io/en/latest/) for more tutorials.
+See our [Documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutorials.html) for more tutorials.
 
 <!-- ## Performance Demos
   -->
