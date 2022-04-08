@@ -344,6 +344,7 @@ class TestRHGGraph:
 
 code_params = it.product(range(2, 5), ["primal", "dual", "both"], ["open", "periodic"])
 
+
 @pytest.fixture(scope="module", params=code_params)
 def surface_code(request):
     """A handy function to define the surface code for use in this module."""
