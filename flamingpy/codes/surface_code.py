@@ -312,7 +312,7 @@ class SurfaceCode:
                 self.graph.to_indices[point] for point in perfect_qubits
             ]
 
-        for local_ec in self.ec:
+        for error_type in self.ec:
             if backend == "networkx":
                 stabilizer_graph = NxStabilizerGraph(local_ec, self)
             elif backend == "retworkx":
