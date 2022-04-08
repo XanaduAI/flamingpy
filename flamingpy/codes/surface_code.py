@@ -314,7 +314,7 @@ class SurfaceCode:
 
         for error_type in self.ec:
             if backend == "networkx":
-                stabilizer_graph = NxStabilizerGraph(local_ec, self)
+                stabilizer_graph = NxStabilizerGraph(error_type, self)
             elif backend == "retworkx":
                 stabilizer_graph = RxStabilizerGraph(local_ec, self)
             else:
