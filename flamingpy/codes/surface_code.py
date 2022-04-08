@@ -319,7 +319,7 @@ class SurfaceCode:
                 stabilizer_graph = RxStabilizerGraph(error_type, self)
             else:
                 raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
-            setattr(self, local_ec + "_stab_graph", stabilizer_graph)
+            setattr(self, error_type + "_stab_graph", stabilizer_graph)
 
     def identify_stabilizers(self):
         """Set the stabilizer and syndrome coordinates of self.
