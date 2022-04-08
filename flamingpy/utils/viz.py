@@ -25,7 +25,7 @@ from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
 
-def plot_integer_part(xs, ns, fs, alpha, show=True):
+def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
@@ -37,7 +37,7 @@ def plot_integer_part(xs, ns, fs, alpha, show=True):
         plt.show()
 
 
-def plot_fractional_part(xs, ns, fs, alpha, show=True):
+def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
     plt.title("Fractional Part", fontsize="medium")
     plt.plot(xs, fs, ",")
@@ -86,7 +86,7 @@ def draw_EGraph(
     egraph,
     color_nodes=False,
     color_edges=False,
-    state_colors={},
+    state_colors=None,
     label=None,
     title=False,
     legend=False,
@@ -138,6 +138,9 @@ def draw_EGraph(
     Returns:
         A Matplotib Axes object.
     """
+    if state_colors is None:
+        state_colors = {}
+
     # Recommended to be viewed with IPython.
     # Font properties
     dims = egraph.graph.get("dims")
@@ -517,7 +520,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     return ax
 
 
-def draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, label_edges):
+def draw_matching_on_syndrome_plot(ax, matching, G_match):
     """Plot the matching output by MWPM."""
     virtual_points = G_match.virtual_points
     for pair in matching:
