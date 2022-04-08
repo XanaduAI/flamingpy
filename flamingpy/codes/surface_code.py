@@ -102,6 +102,7 @@ def str_to_bound(bound_name):
     return np.array(boundaries)
 
 
+# pylint: disable=too-many-branches
 def RHG_graph(
     dims,
     boundaries="primal",
@@ -169,7 +170,7 @@ def RHG_graph(
         ]
         for (i, j, k) in inds
     ]
-    denested_six_bodies = set([a for b in all_six_bodies for a in b])
+    denested_six_bodies = {a for b in all_six_bodies for a in b}
 
     # Tuple indices corresponding to dual and periodic boundaries.
     dual_inds = set((boundaries == "dual").nonzero()[0])
@@ -274,6 +275,7 @@ class SurfaceCode:
     # TODO: Allow for codes with different aspect ratios.
     # TODO: Check distance convention for periodic boundaries.
     # TODO: Add x-y-but-not-z periodic boundaries.
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         distance,
@@ -315,14 +317,14 @@ class SurfaceCode:
                 self.graph.to_indices[point] for point in perfect_qubits
             ]
 
-        for ec in self.ec:
+        for ec_ in self.ec:
             if backend == "networkx":
-                stabilizer_graph = NxStabilizerGraph(ec, self)
+                stabilizer_graph = NxStabilizerGraph(ec_, self)
             elif backend == "retworkx":
-                stabilizer_graph = RxStabilizerGraph(ec, self)
+                stabilizer_graph = RxStabilizerGraph(ec_, self)
             else:
                 raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
-            setattr(self, ec + "_stab_graph", stabilizer_graph)
+            setattr(self, ec_ + "_stab_graph", stabilizer_graph)
 
     def identify_stabilizers(self):
         """Set the stabilizer and syndrome coordinates of self.
@@ -336,36 +338,26 @@ class SurfaceCode:
         and {ec}_stabilizers attributes (where ec can be 'primal' or
         'dual') as well as all_syndrome_inds and all_syndrome_coords are set.
         """
-        rhg_lattice = self.graph
+
+        all_six_bodies = self.generate_stabilizers()
+
+        # set {ec}_syndrome_coords, {ec}_syndrome_inds, and {ec}_stabilizers
+        self.set_ec_stabilizers_and_syndrome(all_six_bodies)
+
+        # set `all_syndrome_inds` and `all_syndrome_coords`
+        for att in ["_syndrome_inds", "_syndrome_coords"]:
+            new_attr = sum((getattr(self, ec + att) for ec in self.ec), start=[])
+            setattr(self, "all" + att, new_attr)
+
+    def set_ec_stabilizers_and_syndrome(self, all_six_bodies):
+        """Set the {ec}_syndrome_coords, {ec}_syndrome_inds, and {ec}_stabilizers attributes.
+
+        This methos generates a list of Stabilizer objects containing coordinates of
+        all the stabilizer elements according to error complex ec and sets them in self.
+        """
+
         # Dimensions, boundary types, max and min ranges.
-        dims = np.array(self.dims)
-
-        all_six_bodies = {}
-
-        if "primal" in self.ec:
-            all_six_bodies["primal"] = self.graph.graph["primal_cubes"]
-        if "dual" in self.ec:
-            min_dict = {"primal": -1, "dual": 0, "periodic": -1}
-            max_dict = {"primal": 1, "dual": 1, "periodic": 1}
-            range_min = np.array([min_dict[typ] for typ in self.boundaries])
-            range_max = dims - np.array([max_dict[typ] for typ in self.boundaries])
-            ranges = [range(range_min[i], range_max[i]) for i in (0, 1, 2)]
-            inds = it.product(*ranges)
-            # All potential six-body stabilizers
-            stabes = [
-                [
-                    (2 * i + 1, 2 * j + 2, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 1, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 2, 2 * k + 1),
-                    (2 * i + 3, 2 * j + 2, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 3, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 2, 2 * k + 3),
-                ]
-                for (i, j, k) in inds
-            ]
-            all_six_bodies["dual"] = stabes
-
-        periodic_inds = np.where(self.boundaries == "periodic")[0]
+        rhg_lattice = self.graph
 
         for ec in self.ec:
             all_cubes = []
@@ -374,19 +366,7 @@ class SurfaceCode:
                 actual_stabe = list(set(stabe).intersection(rhg_lattice))
                 # Dealing with stabilizers at periodic boundaries
                 if len(actual_stabe) < 6:
-                    for ind in periodic_inds:
-                        if ec == "dual":
-                            highest_point = list(stabe[3 + ind])
-                            if highest_point[ind] == 1:
-                                highest_point[ind] = 2 * dims[ind] - 1
-                                virtual_point = tuple(highest_point)
-                                actual_stabe += [virtual_point]
-                        else:
-                            lowest_point = list(stabe[ind])
-                            if lowest_point[ind] == 2 * dims[ind] - 2:
-                                lowest_point[ind] = 0
-                                virtual_point = tuple(lowest_point)
-                                actual_stabe += [virtual_point]
+                    self.periodic_boundary_stabilizers(ec, stabe, actual_stabe)
                 cube = Stabilizer(rhg_lattice.subgraph(actual_stabe))
                 cube.physical = stabe
                 syndrome_coords += actual_stabe
@@ -398,9 +378,64 @@ class SurfaceCode:
                 [self.graph.to_indices[point] for point in syndrome_coords],
             )
             setattr(self, ec + "_stabilizers", all_cubes)
-        for att in ["_syndrome_inds", "_syndrome_coords"]:
-            new_attr = sum((getattr(self, ec + att) for ec in self.ec), start=[])
-            setattr(self, "all" + att, new_attr)
+
+    def periodic_boundary_stabilizers(self, ec, stabe, actual_stabe):
+        """Dealing with stabilizers at periodic boundaries.
+
+        Note this method is directly modifying the reference of `actual_stabe`.
+        """
+        dims = np.array(self.dims)
+        periodic_inds = np.where(self.boundaries == "periodic")[0]
+
+        for ind in periodic_inds:
+            if ec == "dual":
+                highest_point = list(stabe[3 + ind])
+                if highest_point[ind] == 1:
+                    highest_point[ind] = 2 * dims[ind] - 1
+                    virtual_point = tuple(highest_point)
+                    actual_stabe += [virtual_point]
+            else:
+                lowest_point = list(stabe[ind])
+                if lowest_point[ind] == 2 * dims[ind] - 2:
+                    lowest_point[ind] = 0
+                    virtual_point = tuple(lowest_point)
+                    actual_stabe += [virtual_point]
+
+    def generate_stabilizers(self):
+        """generate primal and dual Stabilizer objects
+
+        Returns
+            dict: "primal" and "dual" stabilizers
+        """
+        all_six_bodies = {}
+        if "primal" in self.ec:
+            all_six_bodies["primal"] = self.graph.graph["primal_cubes"]
+        if "dual" in self.ec:
+            all_six_bodies["dual"] = self.six_body_dual_stabilizers()
+        return all_six_bodies
+
+    def six_body_dual_stabilizers(self):
+        """returns all potential six-body dual stabilizers of self"""
+        min_dict = {"primal": -1, "dual": 0, "periodic": -1}
+        max_dict = {"primal": 1, "dual": 1, "periodic": 1}
+        range_min = np.array([min_dict[typ] for typ in self.boundaries])
+        range_max = self.dims - np.array([max_dict[typ] for typ in self.boundaries])
+        ranges = [range(range_min[i], range_max[i]) for i in (0, 1, 2)]
+        inds = it.product(*ranges)
+            # All potential six-body stabilizers
+        stabes = [
+                [
+                    (2 * i + 1, 2 * j + 2, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 1, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 2, 2 * k + 1),
+                    (2 * i + 3, 2 * j + 2, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 3, 2 * k + 2),
+                    (2 * i + 2, 2 * j + 2, 2 * k + 3),
+                ]
+                for (i, j, k) in inds
+            ]
+
+        return stabes
 
     def identify_boundary(self):
         """Obtain coordinates of syndrome qubits on the boundary.
