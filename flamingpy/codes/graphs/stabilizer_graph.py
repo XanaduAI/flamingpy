@@ -460,7 +460,7 @@ class RxStabilizerGraph(StabilizerGraph):
             for (target, path) in paths.items()
         }
 
-    def _path_weight(self, path, code):
+    def _path_weight(self, path):
         weight = 0
         for e in range(len(path) - 1):
             weight += int(rx_weight_fn(self.graph.get_edge_data(path[e], path[e + 1])))
