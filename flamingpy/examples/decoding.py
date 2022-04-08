@@ -33,7 +33,11 @@ boundaries = "open"
 ec = "both"
 
 RHG_code = SurfaceCode(
-    distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity, backend="retworkx"
+    distance=distance,
+    ec=ec,
+    boundaries=boundaries,
+    polarity=alternating_polarity,
+    backend="retworkx",
 )
 RHG_lattice = RHG_code.graph
 

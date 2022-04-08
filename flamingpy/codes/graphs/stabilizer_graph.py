@@ -47,7 +47,7 @@ class StabilizerGraph(ABC):
         code (SurfaceCode, optional): the code from which to initialize the graph.
 
     Note:
-        Both ec and code must be provided to initialize the graph with the proper edges. 
+        Both ec and code must be provided to initialize the graph with the proper edges.
         If one of them is not provided, the graph is left empty.
 
     Attributes:
@@ -312,7 +312,6 @@ class StabilizerGraph(ABC):
             elif "high" in edge or "low" in edge:
                 data["weight"] = 0
 
-
     def to_nx(self):
         """Convert the same graph into a NxStabilizerGraph.
 
@@ -485,4 +484,3 @@ def rx_weight_fn(edge):
     if weight is not None:
         return float(weight)
     return 0.0
-
