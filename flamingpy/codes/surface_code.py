@@ -154,8 +154,6 @@ def RHG_graph(
     range_max = dims - np.array([max_dict[typ] for typ in boundaries])
     ranges = [range(range_max[i]) for i in (0, 1, 2)]
     inds = it.product(*ranges)
-    # TODO: Possibly change z-direction extent of dual complex for 'both'
-    # option in SurfaceCode.
     # Primal vertices are combined into lists of six to be later usable
     # by the syndrome indentification in SurfaceCode.
     all_six_bodies = [
@@ -271,9 +269,6 @@ class SurfaceCode:
             according to the error complex b ('primal'/'dual').
     """
 
-    # TODO: Allow for codes with different aspect ratios.
-    # TODO: Check distance convention for periodic boundaries.
-    # TODO: Add x-y-but-not-z periodic boundaries.
     def __init__(
         self,
         distance,
@@ -428,9 +423,6 @@ class SurfaceCode:
 
                 setattr(self, ec + "_bound_points", list(final_low_set) + list(final_high_set))
 
-    # TODO: tailored slice_coords function that constructs rather than iterates,
-    # improving over EGraph method.
-
     def draw(self, **kwargs):
         """Draw the cluster state with matplotlib.
 
@@ -438,8 +430,9 @@ class SurfaceCode:
         default colour options: black for primal nodes, grey for dual
         nodes; blue for weight +1 edges, red for weight -1 edges.
         """
-        edge_colors = {1: "b", -1: "r"} if \
-            self.polarity == alternating_polarity.__name__ else "grey"
+        edge_colors = (
+            {1: "b", -1: "r"} if self.polarity == alternating_polarity.__name__ else "grey"
+        )
         default_opts = {
             "color_nodes": {"primal": "k", "dual": "grey"},
             "color_edges": edge_colors,
