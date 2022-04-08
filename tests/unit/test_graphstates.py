@@ -113,7 +113,8 @@ class TestCVHelpers:
 class TestCVLayer:
     """Tests for functions in the CVLayer class."""
 
-    def test_empty_init(self, random_graph):
+    @classmethod
+    def test_empty_init(cls, random_graph):
         """Test the empty initialization of an EGraph."""
         G = CVLayer(random_graph[0], states=None)
         G_array = nx.to_numpy_array(G.egraph)
@@ -127,7 +128,8 @@ class TestCVLayer:
         assert np.array_equal(random_graph[1], H_array)
         assert np.array_equal(random_graph[1], G_array)
 
-    def test_all_GKP_init(self, random_graph):
+    @classmethod
+    def test_all_GKP_init(cls, random_graph):
         """Test the all-GKP initialization of EGraph."""
         G = CVLayer(random_graph[0])
         n = len(random_graph[0])
@@ -139,7 +141,8 @@ class TestCVLayer:
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
     @pytest.mark.parametrize("p_swap", [0, rng().random(), 1])
-    def test_hybridize(self, random_graph, p_swap):
+    @classmethod
+    def test_hybridize(cls, random_graph, p_swap):
         """Test whether CVLayer properly populates p-squeezed states for non-
         zero p-swap."""
         n = len(random_graph[0])
@@ -158,7 +161,8 @@ class TestCVLayer:
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
 
-    def test_state_indices(self, random_graph):
+    @classmethod
+    def test_state_indices(cls, random_graph):
         """Test that _states, p_inds, and GKP_inds are populated with the
         correct indices."""
         n = len(random_graph[0])
@@ -172,7 +176,8 @@ class TestCVLayer:
         assert np.array_equal(G.GKP_inds, gkp_inds)
 
     @pytest.mark.parametrize("order", ["initial", "final", "two-step"])
-    def test_apply_noise(self, random_graph, order):
+    @classmethod
+    def test_apply_noise(cls, random_graph, order):
         """Check _delta, _sampling_order attributes with default noise
         model."""
         G = CVLayer(random_graph[0])
@@ -186,7 +191,8 @@ class TestCVLayer:
         assert H._delta == delta
         assert H._sampling_order == order
 
-    def test_grn_model(self, random_graph):
+    @classmethod
+    def test_grn_model(cls, random_graph):
         """Compare expected noise objects (quadratures, covariance matrix) with
         those obtained through supplying the grn_model dictionary with
         different parameters."""
@@ -223,7 +229,8 @@ class TestCVLayer:
         assert np.isclose(np.min(G._init_quads[:n]), 0)
 
     @pytest.mark.parametrize("order", ["initial", "final"])
-    def test_measure_hom(self, random_graph, order):
+    @classmethod
+    def test_measure_hom(cls, random_graph, order):
         """Test closeness of average homodyne outcomes value to 0 in the all-
         GKP high-squeezing limit."""
         n = len(random_graph[0])
