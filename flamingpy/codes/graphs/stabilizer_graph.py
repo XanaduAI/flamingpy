@@ -480,5 +480,5 @@ class RxStabilizerGraph(StabilizerGraph):
 
 def rx_weight_fn(edge):
     """A function for returning the weight from the common vertex."""
-    return float(egde["weight"])
+    return float(edge["weight"])
     
