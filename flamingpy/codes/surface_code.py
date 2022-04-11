@@ -422,18 +422,18 @@ class SurfaceCode:
         range_max = self.dims - np.array([max_dict[typ] for typ in self.boundaries])
         ranges = [range(range_min[i], range_max[i]) for i in (0, 1, 2)]
         inds = it.product(*ranges)
-            # All potential six-body stabilizers
+        # All potential six-body stabilizers
         stabes = [
-                [
-                    (2 * i + 1, 2 * j + 2, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 1, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 2, 2 * k + 1),
-                    (2 * i + 3, 2 * j + 2, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 3, 2 * k + 2),
-                    (2 * i + 2, 2 * j + 2, 2 * k + 3),
-                ]
-                for (i, j, k) in inds
+            [
+                (2 * i + 1, 2 * j + 2, 2 * k + 2),
+                (2 * i + 2, 2 * j + 1, 2 * k + 2),
+                (2 * i + 2, 2 * j + 2, 2 * k + 1),
+                (2 * i + 3, 2 * j + 2, 2 * k + 2),
+                (2 * i + 2, 2 * j + 3, 2 * k + 2),
+                (2 * i + 2, 2 * j + 2, 2 * k + 3),
             ]
+            for (i, j, k) in inds
+        ]
 
         return stabes
 
