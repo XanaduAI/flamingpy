@@ -20,7 +20,7 @@ import scipy.sparse as sp
 # from flamingpy.cv.gkp import Z_err, Z_err_cond
 
 
-def SCZ_mat(adj):
+def SCZ_mat(adj, sparse=True):
     """Return a symplectic matrix corresponding to CZ gate application.
 
     Give the 2N by 2N symplectic matrix for CZ gate application based on the
@@ -32,6 +32,9 @@ def SCZ_mat(adj):
         adj (array): N by N binary symmetric matrix. If modes i and j are
             linked by a CZ, then entry ij and ji is equal to the weight of the
             edge (1 by default); otherwise 0.
+    Keyword Args:
+        sparse (bool): wheter to return a sparse or dense array when adj
+            input is a sparse array.
     Returns:
         np.array or sp.sparse.csr_matrix: 2N by 2N symplectic matrix.
             sparse if the adjacency matrix is sparse.
@@ -49,6 +52,10 @@ def SCZ_mat(adj):
         block_func = sp.bmat
     # Construct symplectic
     symplectic = block_func([[identity, zeros], [adj, identity]])
+
+    if not sparse and isinstance(symplectic, sp.coo_matrix):
+        return symplectic.todense()
+
     return symplectic
 
 
@@ -121,6 +128,13 @@ class CVLayer:
         """Initialize the CVGraph."""
         self.egraph = g
         self._N = len(g)
+
+        self._init_quads = None
+        self._noise_cov = None
+        self._init_noise = None
+        self._perfect_inds = None
+        self._sampling_order = None
+        self._delta = None
 
         # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
@@ -320,7 +334,7 @@ class CVLayer:
             array: the symplectic matrix.
         """
         adj = self._adj
-        return SCZ_mat(adj)
+        return SCZ_mat(adj, sparse)
 
     # def Z_probs(self, inds=None, cond=False):
     #     """array: the phase error probabilities of modes inds."""
@@ -358,7 +372,6 @@ class CVLayer:
         if self._sampling_order == "final":
             return self._noise_cov
         return None
-        print('Sampling order must be "final."')
 
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.
