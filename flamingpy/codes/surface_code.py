@@ -353,7 +353,7 @@ class SurfaceCode:
         """Set the {ec}_syndrome_coords, {ec}_syndrome_inds, and
         {ec}_stabilizers attributes.
 
-        This methos generates a list of Stabilizer objects containing
+        This method generates a list of Stabilizer objects containing
         coordinates of all the stabilizer elements according to error
         complex ec and sets them in self.
         """
