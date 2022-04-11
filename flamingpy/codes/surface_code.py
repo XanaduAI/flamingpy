@@ -350,7 +350,9 @@ class SurfaceCode:
             setattr(self, "all" + att, new_attr)
 
     def set_ec_stabilizers_and_syndrome(self, all_six_bodies):
-        """Set the {ec}_syndrome_coords, {ec}_syndrome_inds, and
+        """Set syndrome and stabilizers attributes of self.
+
+        Set the {ec}_syndrome_coords, {ec}_syndrome_inds, and
         {ec}_stabilizers attributes.
 
         This method generates a list of Stabilizer objects containing
