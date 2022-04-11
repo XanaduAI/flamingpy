@@ -151,7 +151,7 @@ class CVLayer:
         self._associate_gkp_indices()
 
         # Generate EGraph indices.
-        self.generate_egraph_indices()
+        self._generate_egraph_indices()
 
     def _generate_egraph_indices(self):
         self.egraph.index_generator()
@@ -170,9 +170,8 @@ class CVLayer:
         self._states["GKP"] = np.array(remaining_inds, dtype=int)
 
     def _swap_state_indices(self, p_swap, rng):
-        """Non-zero swap-out probability overrides indices specified
-        in states and hybridizes the lattice. Print a message if
-        both supplied.
+        """Non-zero swap-out probability overrides indices specified in states
+        and hybridizes the lattice. Print a message if both supplied.
 
         Args:
             state (dict, optional): the dictionary of all non-GKP states and their
@@ -184,9 +183,9 @@ class CVLayer:
         """
         if len(self._states["p"]):
             print(
-                    "Both swap-out probability and indices of p-squeezed states supplied. "
-                    "Ignoring the indices."
-                )
+                "Both swap-out probability and indices of p-squeezed states supplied. "
+                "Ignoring the indices."
+            )
         if p_swap == 1:
             self._states["p"] = np.arange(self._N)
         else:
