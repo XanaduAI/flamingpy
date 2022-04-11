@@ -124,7 +124,7 @@ class CVLayer:
             indices to coordinates.
     """
 
-    def __init__(self, g, states={"p": np.empty(0, dtype=int)}, p_swap=0, rng=default_rng()):
+    def __init__(self, g, states=None, p_swap=0, rng=default_rng()):
         """Initialize the CVGraph."""
         self.egraph = g
         self._N = len(g)
@@ -139,40 +139,40 @@ class CVLayer:
         # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
 
-        if states:
-            self._states = states.copy()
-            # Non-zero swap-out probability overrides indices specified
-            # in states and hybridizes the lattice. Print a message if
-            # both supplied.
-            if p_swap:
-                if len(self._states["p"]):
-                    print(
-                        "Both swap-out probability and indices of p-squeezed states supplied. "
-                        "Ignoring the indices."
-                    )
-                if p_swap == 1:
-                    self._states["p"] = np.arange(self._N)
-                else:
-                    num_p = rng.binomial(self._N, p_swap)
-                    inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
-                    self._states["p"] = inds
+        self._states = states or {"p": np.empty(0, dtype=int)}
 
-            # Associate remaining indices with GKP states.
-            used_inds = np.empty(0, dtype=int)
-            for psi in self._states:
-                used_inds = np.concatenate([used_inds, self._states[psi]])
-            remaining_inds = list(set(range(self._N)) - set(used_inds))
-            self._states["GKP"] = np.array(remaining_inds, dtype=int)
+        # Non-zero swap-out probability overrides indices specified
+        # in states and hybridizes the lattice. Print a message if
+        # both supplied.
+        if p_swap:
+            if len(self._states["p"]):
+                print(
+                    "Both swap-out probability and indices of p-squeezed states supplied. "
+                    "Ignoring the indices."
+                )
+            if p_swap == 1:
+                self._states["p"] = np.arange(self._N)
+            else:
+                num_p = rng.binomial(self._N, p_swap)
+                inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
+                self._states["p"] = inds
 
-            # Generate EGraph indices.
-            self.egraph.index_generator()
-            self.to_points = self.egraph.to_points
+        # Associate remaining indices with GKP states.
+        used_inds = np.empty(0, dtype=int)
+        for psi in self._states:
+            used_inds = np.concatenate([used_inds, self._states[psi]])
+        remaining_inds = list(set(range(self._N)) - set(used_inds))
+        self._states["GKP"] = np.array(remaining_inds, dtype=int)
 
-            for psi in self._states:
-                for ind in self._states[psi]:
-                    self.egraph.nodes[self.to_points[ind]]["state"] = psi
+        # Generate EGraph indices.
+        self.egraph.index_generator()
+        self.to_points = self.egraph.to_points
 
-    def apply_noise(self, model={}, rng=default_rng()):
+        for psi in self._states:
+            for ind in self._states[psi]:
+                self.egraph.nodes[self.to_points[ind]]["state"] = psi
+
+    def apply_noise(self, model=None, rng=default_rng()):
         """Apply the noise model in model with a random number generator rng.
 
         Args:
@@ -207,7 +207,7 @@ class CVLayer:
             "sampling_order": "initial",
             "perfect_inds": perfect_inds,
         }
-        model = {**default_model, **model}
+        model = {**default_model, **model} if model else default_model
         self._delta = model["delta"]
         self._sampling_order = model["sampling_order"]
         self._perfect_inds = model["perfect_inds"]
