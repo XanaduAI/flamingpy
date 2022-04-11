@@ -463,8 +463,7 @@ class RxStabilizerGraph(StabilizerGraph):
 
     def _all_path_weights(self, paths):
         return {
-            self.index_to_node[target]: self._path_weight(path)
-            for (target, path) in paths.items()
+            self.index_to_node[target]: self._path_weight(path) for (target, path) in paths.items()
         }
 
     def _path_weight(self, path):
@@ -488,4 +487,3 @@ class RxStabilizerGraph(StabilizerGraph):
 def rx_weight_fn(edge):
     """A function for returning the weight from the common vertex."""
     return float(edge["weight"])
-    
