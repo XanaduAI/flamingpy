@@ -139,11 +139,14 @@ class StabilizerGraph(ABC):
         graph."""
         raise NotImplementedError
 
-    def shortest_paths_without_high_low(self, source, code):
+    def shortest_paths_without_high_low(self, source):
         """Compute the shortest path from source to every other node in the
         graph, except the 'high' and 'low' connector.
 
+        This assumes that the edge weights are asssigned.
+
         Note: a path can't use the 'high' and 'low' node.
+
 
         Arguments:
             source: The source node for each path.
@@ -155,9 +158,11 @@ class StabilizerGraph(ABC):
 
         raise NotImplementedError
 
-    def shortest_paths_from_high(self, code):
+    def shortest_paths_from_high(self):
         """Compute the shortest path from the 'high' node to every other node
         in the graph.
+
+        This assumes that the edge weights are asssigned.
 
         Returns:
             (dict, dict): The first dictionary maps a target node to the weight
@@ -166,9 +171,11 @@ class StabilizerGraph(ABC):
         """
         raise NotImplementedError
 
-    def shortest_paths_from_low(self, code):
+    def shortest_paths_from_low(self):
         """Compute the shortest path from the 'low' node to every other node in
         the graph.
+
+        This assumes that the edge weights are asssigned.
 
         Returns:
             (dict, dict): The first dictionary maps a target node to the weight
@@ -367,16 +374,16 @@ class NxStabilizerGraph(StabilizerGraph):
     def edges(self):
         return self.graph.edges()
 
-    def shortest_paths_without_high_low(self, source, code):
+    def shortest_paths_without_high_low(self, source):
         subgraph = self.graph.subgraph(
             self.stabilizers + self.low_bound_points + self.high_bound_points
         )
         return nx_shortest_paths_from(subgraph, source)
 
-    def shortest_paths_from_high(self, code):
+    def shortest_paths_from_high(self):
         return nx_shortest_paths_from(self.graph, "high")
 
-    def shortest_paths_from_low(self, code):
+    def shortest_paths_from_low(self):
         return nx_shortest_paths_from(self.graph, "low")
 
 
@@ -434,29 +441,29 @@ class RxStabilizerGraph(StabilizerGraph):
             for edge in self.graph.edge_list()
         )
 
-    def shortest_paths_without_high_low(self, source, code):
+    def shortest_paths_without_high_low(self, source):
         subgraph = self.graph.copy()  # This is a shallow copy.
         # We know that nodes 0 and 1 are the 'high' and 'low' nodes.
         subgraph.remove_nodes_from([0, 1])
-        return self._shortest_paths_from(subgraph, source, code)
+        return self._shortest_paths_from(subgraph, source)
 
-    def shortest_paths_from_high(self, code):
-        return self._shortest_paths_from(self.graph, "high", code)
+    def shortest_paths_from_high(self):
+        return self._shortest_paths_from(self.graph, "high")
 
-    def shortest_paths_from_low(self, code):
-        return self._shortest_paths_from(self.graph, "low", code)
+    def shortest_paths_from_low(self):
+        return self._shortest_paths_from(self.graph, "low")
 
     # The following methods are helpers for the shortest paths methods.
 
-    def _shortest_paths_from(self, graph, source, code):
+    def _shortest_paths_from(self, graph, source):
         paths = rx.graph_dijkstra_shortest_paths(
             graph, self.node_to_index[source], weight_fn=rx_weight_fn
         )
-        return self._all_path_weights(paths, code), self._all_path_nodes(paths)
+        return self._all_path_weights(paths), self._all_path_nodes(paths)
 
-    def _all_path_weights(self, paths, code):
+    def _all_path_weights(self, paths):
         return {
-            self.index_to_node[target]: self._path_weight(path, code)
+            self.index_to_node[target]: self._path_weight(path)
             for (target, path) in paths.items()
         }
 

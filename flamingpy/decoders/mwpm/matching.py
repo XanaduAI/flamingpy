@@ -132,7 +132,7 @@ class MatchingGraph(ABC):
             odd_adjacency[pair[0]] += [pair[1]]
         # Find the shortest paths between odd-parity stabs.
         for stab1 in odd_parity_stabs[:-1]:
-            lengths, paths = stab_graph.shortest_paths_without_high_low(stab1, code)
+            lengths, paths = stab_graph.shortest_paths_without_high_low(stab1)
             for stab2 in odd_adjacency[stab1]:
                 length = lengths[stab2]
                 path = paths[stab2]
@@ -143,8 +143,8 @@ class MatchingGraph(ABC):
 
     def _with_edges_from_low_or_high_connector(self, code, ec):
         stab_graph = getattr(code, ec + "_stab_graph")
-        low_lengths, low_paths = stab_graph.shortest_paths_from_low(code)
-        high_lengths, high_paths = stab_graph.shortest_paths_from_high(code)
+        low_lengths, low_paths = stab_graph.shortest_paths_from_low()
+        high_lengths, high_paths = stab_graph.shortest_paths_from_high()
         for i, cube in enumerate(stab_graph.odd_parity_stabilizers()):
             distances = (low_lengths[cube], high_lengths[cube])
             where_shortest = np.argmin(distances)
