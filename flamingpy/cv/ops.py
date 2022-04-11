@@ -90,6 +90,7 @@ def SCZ_apply(adj, quads, one_shot=True):
     return new_quads
 
 
+# pylint: disable=too-many-instance-attributes
 class CVLayer:
     """A class for applying to an EGraph a physical layer of continuous-
     variable states.
@@ -135,6 +136,7 @@ class CVLayer:
         self._perfect_inds = None
         self._sampling_order = None
         self._delta = None
+        self.to_points = None
 
         # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
@@ -280,6 +282,7 @@ class CVLayer:
                 if n_inds > 0:
                     self._init_quads[indices] = val_funcs[state](n_inds)
 
+    # pylint: disable=too-many-arguments,too-many-branches
     def measure_hom(
         self,
         quad="p",
