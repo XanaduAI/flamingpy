@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for decoding funcions in the decoder module."""
 
-# pylint: disable=no-member
+# pylint: disable=no-member,redefined-outer-name,protected-access
 
 import itertools as it
 
@@ -93,7 +93,8 @@ class TestAssignWeights:
 class TestDecoder:
     """A class that defines tests for the CV and MWPM decoder."""
 
-    def test_CV_decoder(self, enc_state):
+    @classmethod
+    def test_CV_decoder(cls, enc_state):
         """Test CV_decoder function."""
         CV_decoder(enc_state[0])
         bits = enc_state[1].bit_values()
@@ -117,7 +118,8 @@ class TestDecoder:
                 for point in cube.egraph:
                     assert cube.egraph.nodes[point].get("bit_val") is not None
 
-    def test_stab_graph(self, enc_state):
+    @classmethod
+    def test_stab_graph(cls, enc_state):
         """Check that edges in a stabilizer grapg contain the coordinates of
         the common vertex between neighbouring stabilizers."""
         for ec in enc_state[0].ec:
@@ -134,7 +136,8 @@ class TestDecoder:
                 if {"high", "low"}.isdisjoint(edge):
                     assert stab_graph.edge_data(*edge)["common_vertex"] is not None
 
-    def test_matching_graph(self, match_data):
+    @classmethod
+    def test_matching_graph(cls, match_data):
         """Test the structure of the matching graph."""
         for graph in match_data[0]:
             virtual_points = graph.virtual_points
@@ -153,7 +156,8 @@ class TestDecoder:
             for edge in virtual_subgraph.edges:
                 assert virtual_subgraph.edges[edge]["weight"] == 0
 
-    def test_MWPM(self, match_data):
+    @classmethod
+    def test_MWPM(cls, match_data):
         """Check that the matching is perfect (the set of all the nodes in the
         matching is the same as the set of all nodes in the matching graph)."""
         for i, graph in enumerate(match_data[0]):
@@ -164,7 +168,8 @@ class TestDecoder:
 class TestRecovery:
     """A class that defines recovery and correction tests."""
 
-    def test_recovery(self, enc_state, match_data):
+    @classmethod
+    def test_recovery(cls, enc_state, match_data):
         """Check that there remain no unsatisfied stabilizers after the
         recovery operation."""
         for i, ec in enumerate(enc_state[0].ec):
@@ -173,7 +178,8 @@ class TestRecovery:
             odd_cubes = stab_graph.odd_parity_stabilizers()
             assert len(list(odd_cubes)) == 0
 
-    def test_correction_check(self, enc_state):
+    @classmethod
+    def test_correction_check(cls, enc_state):
         """Check whether error correction succeeds or fails as expected."""
         result, surface_dicts = check_correction(enc_state[0], sanity_check=True)
         boundaries = enc_state[0].bound_str

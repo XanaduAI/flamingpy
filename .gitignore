@@ -147,3 +147,6 @@ dmypy.json
 # Cython stuff:
 cython_debug/
 flamingpy/cpp/cpp_mc_loop.cpp
+
+# VS Code stuff:
+.vscode/

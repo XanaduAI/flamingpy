@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for reducing a macronode lattice to a canonical lattice."""
+
+# pylint: disable=protected-access
+
 import numpy as np
 from scipy.linalg import block_diag
 
@@ -51,7 +54,8 @@ def beam_splitter(theta, phi, dtype=np.float64):
         phi (float): phase parameter
         dtype (numpy.dtype): datatype to represent the Symplectic matrix
     Returns:
-        array: symplectic-orthogonal transformation matrix of an interferometer with angles theta and phi
+        array: symplectic-orthogonal transformation matrix of an interferometer
+        with angles theta and phi
     Note:
         This is from thewalrus library.
         https://github.com/XanaduAI/thewalrus/blob/master/thewalrus/symplectic.py
@@ -107,9 +111,6 @@ def BS_network(n):
     bs2 = expand(bs5050, [3, 2], 4)
     bs3 = expand(bs5050, [2, 0], 4)
     bs4 = expand(bs5050, [3, 1], 4)
-    # TODO: Data type set to 'single' because there are only 0, +-0.5 entries
-    # but this is really 1/2 of an array that can have dtype=np.int8,
-    # so revisit this.
     bs_network = (bs4 @ bs3 @ bs2 @ bs1).astype(np.single)
     if n < 4:
         print("Too small!")
@@ -166,7 +167,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
             micronode = to_points[i + j]
             if CVRHG.egraph.nodes[micronode]["state"] == "GKP":
                 gkps.append(j)
-        centre_point = tuple([round(i) for i in micronode])
+        centre_point = tuple(round(i) for i in micronode)
         if gkps:
             star_ind, reduced_state = i + gkps[0], "GKP"
         else:
@@ -245,7 +246,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         meas = np.zeros(5)
         # The central node corresponding to the neighboring
         # macronode.
-        central_node = tuple([round(i) for i in vertex])
+        central_node = tuple(round(i) for i in vertex)
         for micro in CVRHG.egraph.macro_to_micro[central_node]:
             index = CVRHG.egraph.nodes[micro]["body_index"]
             # Populate meas with the q-homodyne outcomes for
@@ -264,14 +265,13 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         """
         if neighbor_body_index == 1:
             return 0
-        elif neighbor_body_index == 2:
+        if neighbor_body_index == 2:
             return M[2] - M[4]
-        elif neighbor_body_index == 3:
+        if neighbor_body_index == 3:
             return M[3] - M[4]
-        elif neighbor_body_index == 4:
+        if neighbor_body_index == 4:
             return M[2] + M[3]
-        else:
-            return None
+        return None
 
     # sorted_homodynes = np.empty(N // 4, dtype=np.float32)
     sorted_bits = np.empty(N // 4, dtype=np.float32)
@@ -327,7 +327,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
 
         # Update the reduced CVRHG lattice with the effective
         # homodyne value and the phase error probability.
-        central_vert = tuple([round(i) for i in vertex])
+        central_vert = tuple(round(i) for i in vertex)
         RHG_reduced.nodes[central_vert]["bit_val"] = processed_bit_val
         sorted_bits[reduced_indices[central_vert]] = processed_bit_val
         RHG_reduced.nodes[central_vert]["p_phase_cond"] = p_err

@@ -46,7 +46,6 @@ def SCZ_mat(adj, sparse=True):
         zeros = np.zeros((N, N), dtype=np.int8)
         block_func = np.block
     else:
-        # TODO: Specify different kind of Scipy sparse matrix?
         identity = sp.identity(N, dtype=np.int8)
         zeros = sp.csr_matrix((N, N), dtype=np.int8)
         block_func = sp.bmat
@@ -222,6 +221,9 @@ class CVLayer:
                 By default, numpy.random.default_rng is used without a fixed
                 seed.
         """
+        if model is None:
+            model = {}
+
         # Modelling the states.
         perfect_inds = self.egraph.graph.get("perfect_inds")
         default_model = {
