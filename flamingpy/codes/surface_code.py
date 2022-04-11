@@ -350,10 +350,12 @@ class SurfaceCode:
             setattr(self, "all" + att, new_attr)
 
     def set_ec_stabilizers_and_syndrome(self, all_six_bodies):
-        """Set the {ec}_syndrome_coords, {ec}_syndrome_inds, and {ec}_stabilizers attributes.
+        """Set the {ec}_syndrome_coords, {ec}_syndrome_inds, and
+        {ec}_stabilizers attributes.
 
-        This methos generates a list of Stabilizer objects containing coordinates of
-        all the stabilizer elements according to error complex ec and sets them in self.
+        This methos generates a list of Stabilizer objects containing
+        coordinates of all the stabilizer elements according to error
+        complex ec and sets them in self.
         """
 
         # Dimensions, boundary types, max and min ranges.
@@ -382,7 +384,8 @@ class SurfaceCode:
     def periodic_boundary_stabilizers(self, ec, stabe, actual_stabe):
         """Dealing with stabilizers at periodic boundaries.
 
-        Note this method is directly modifying the reference of `actual_stabe`.
+        Note this method is directly modifying the reference of
+        `actual_stabe`.
         """
         dims = np.array(self.dims)
         periodic_inds = np.where(self.boundaries == "periodic")[0]
@@ -402,7 +405,7 @@ class SurfaceCode:
                     actual_stabe += [virtual_point]
 
     def generate_stabilizers(self):
-        """generate primal and dual Stabilizer objects
+        """generate primal and dual Stabilizer objects.
 
         Returns
             dict: "primal" and "dual" stabilizers
@@ -415,7 +418,7 @@ class SurfaceCode:
         return all_six_bodies
 
     def six_body_dual_stabilizers(self):
-        """returns all potential six-body dual stabilizers of self"""
+        """returns all potential six-body dual stabilizers of self."""
         min_dict = {"primal": -1, "dual": 0, "periodic": -1}
         max_dict = {"primal": 1, "dual": 1, "periodic": 1}
         range_min = np.array([min_dict[typ] for typ in self.boundaries])
