@@ -20,7 +20,7 @@ import scipy.sparse as sp
 # from flamingpy.cv.gkp import Z_err, Z_err_cond
 
 
-def SCZ_mat(adj):
+def SCZ_mat(adj, sparse=True):
     """Return a symplectic matrix corresponding to CZ gate application.
 
     Give the 2N by 2N symplectic matrix for CZ gate application based on the
@@ -32,6 +32,9 @@ def SCZ_mat(adj):
         adj (array): N by N binary symmetric matrix. If modes i and j are
             linked by a CZ, then entry ij and ji is equal to the weight of the
             edge (1 by default); otherwise 0.
+    Keyword Args:
+        sparse (bool): wheter to return a sparse or dense array when adj
+            input is a sparse array.
     Returns:
         np.array or sp.sparse.csr_matrix: 2N by 2N symplectic matrix.
             sparse if the adjacency matrix is sparse.
@@ -48,6 +51,10 @@ def SCZ_mat(adj):
         block_func = sp.bmat
     # Construct symplectic
     symplectic = block_func([[identity, zeros], [adj, identity]])
+
+    if not sparse and isinstance(symplectic, sp.coo_matrix):
+        return symplectic.todense()
+
     return symplectic
 
 
@@ -82,6 +89,7 @@ def SCZ_apply(adj, quads, one_shot=True):
     return new_quads
 
 
+# pylint: disable=too-many-instance-attributes
 class CVLayer:
     """A class for applying to an EGraph a physical layer of continuous-
     variable states.
@@ -116,53 +124,75 @@ class CVLayer:
             indices to coordinates.
     """
 
-    def __init__(self, g, states={"p": np.empty(0, dtype=int)}, p_swap=0, rng=default_rng()):
+    def __init__(self, g, states=None, p_swap=0, rng=default_rng()):
         """Initialize the CVGraph."""
         self.egraph = g
         self._N = len(g)
 
+        self._init_quads = None
+        self._noise_cov = None
+        self._init_noise = None
+        self._perfect_inds = None
+        self._sampling_order = None
+        self._delta = None
+        self.to_points = None
+
         # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
 
-        if states:
-            self._states = states.copy()
-            # Non-zero swap-out probability overrides indices specified
-            # in states and hybridizes the lattice. Print a message if
-            # both supplied.
-            if p_swap:
-                if len(self._states["p"]):
-                    print(
-                        "Both swap-out probability and indices of p-squeezed states supplied. "
-                        "Ignoring the indices."
-                    )
-                if p_swap == 1:
-                    self._states["p"] = np.arange(self._N)
-                else:
-                    num_p = rng.binomial(self._N, p_swap)
-                    inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
-                    self._states["p"] = inds
+        self._states = states or {"p": np.empty(0, dtype=int)}
 
-            # Associate remaining indices with GKP states.
-            used_inds = np.empty(0, dtype=int)
-            for psi in self._states:
-                used_inds = np.concatenate([used_inds, self._states[psi]])
-            remaining_inds = list(set(range(self._N)) - set(used_inds))
-            self._states["GKP"] = np.array(remaining_inds, dtype=int)
+        # Non-zero swap-out probability overrides indices specified
+        # in states and hybridizes the lattice. Print a message if
+        # both supplied.
+        if p_swap:
+            self._swap_state_indices(p_swap, rng)
 
-            # Generate EGraph indices.
-            self.egraph.index_generator()
-            self.to_points = self.egraph.to_points
+        # Associate remaining indices with GKP states.
+        self._associate_gkp_indices()
 
-            for psi in self._states:
-                for ind in self._states[psi]:
-                    self.egraph.nodes[self.to_points[ind]]["state"] = psi
+        # Generate EGraph indices.
+        self._generate_egraph_indices()
 
-        self._delta = None
-        self._sampling_order = None
-        self._perfect_inds = None
-        self._init_noise = None
-        self._noise_cov = None
-        self._init_quads = None
+    def _generate_egraph_indices(self):
+        self.egraph.index_generator()
+        self.to_points = self.egraph.to_points
+
+        for psi in self._states:
+            for ind in self._states[psi]:
+                self.egraph.nodes[self.to_points[ind]]["state"] = psi
+
+    def _associate_gkp_indices(self):
+        """Associate remaining indices with GKP states."""
+        used_inds = np.empty(0, dtype=int)
+        for psi in self._states:
+            used_inds = np.concatenate([used_inds, self._states[psi]])
+        remaining_inds = list(set(range(self._N)) - set(used_inds))
+        self._states["GKP"] = np.array(remaining_inds, dtype=int)
+
+    def _swap_state_indices(self, p_swap, rng):
+        """Non-zero swap-out probability overrides indices specified in states
+        and hybridizes the lattice. Print a message if both supplied.
+
+        Args:
+            state (dict, optional): the dictionary of all non-GKP states and their
+                indices, of the form {'state': []}. By default, all states are
+                GKP states.
+            rng (numpy.random.Generator, optional): a random number generator
+                following the NumPy API. It can be seeded for reproducibility.
+                By default, numpy.random.default_rng is used without a fixed seed.
+        """
+        if len(self._states["p"]):
+            print(
+                "Both swap-out probability and indices of p-squeezed states supplied. "
+                "Ignoring the indices."
+            )
+        if p_swap == 1:
+            self._states["p"] = np.arange(self._N)
+        else:
+            num_p = rng.binomial(self._N, p_swap)
+            inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
+            self._states["p"] = inds
 
     def apply_noise(self, model=None, rng=default_rng()):
         """Apply the noise model in model with a random number generator rng.
@@ -202,7 +232,7 @@ class CVLayer:
             "sampling_order": "initial",
             "perfect_inds": perfect_inds,
         }
-        model = {**default_model, **model}
+        model = {**default_model, **model} if model else default_model
         self._delta = model["delta"]
         self._sampling_order = model["sampling_order"]
         self._perfect_inds = model["perfect_inds"]
@@ -254,6 +284,7 @@ class CVLayer:
                 if n_inds > 0:
                     self._init_quads[indices] = val_funcs[state](n_inds)
 
+    # pylint: disable=too-many-arguments,too-many-branches
     def measure_hom(
         self,
         quad="p",
@@ -315,25 +346,14 @@ class CVLayer:
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
-    # def eval_Z_probs(self, inds=None, exact=True, cond=False):
-    #     """Evaluate the probability of phase errors at nodes inds.
-    #
-    #     If inds not specified, compute probabilities for all nodes.
-    #     """
-    #     pass
-
-    def SCZ(self):
+    def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
 
         Returns:
             array: the symplectic matrix.
         """
         adj = self._adj
-        return SCZ_mat(adj)
-
-    # def Z_probs(self, inds=None, cond=False):
-    #     """array: the phase error probabilities of modes inds."""
-    #     pass
+        return SCZ_mat(adj, sparse)
 
     def hom_outcomes(self, inds=None, quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
@@ -367,7 +387,6 @@ class CVLayer:
         if self._sampling_order == "final":
             return self._noise_cov
         return None
-        # print('Sampling order must be "final."')
 
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.

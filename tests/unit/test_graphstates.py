@@ -90,8 +90,15 @@ class TestEGraph:
 class TestCVHelpers:
     """Tests for CVLayer helper functions."""
 
-    @classmethod
-    def test_SCZ_mat(cls, random_graph):
+    @pytest.mark.parametrize(
+        "sparse, expected_out_type", [(True, sp.coo_matrix), (False, np.ndarray)]
+    )
+    def test_SCZ_mat_sparse_param(self, random_graph, sparse, expected_out_type):
+        """Tests the SCZ_mat function outputs sparse or dense arrays."""
+        SCZ = SCZ_mat(random_graph[2], sparse=sparse)
+        assert isinstance(SCZ, expected_out_type)
+
+    def test_SCZ_mat(self, random_graph):
         """Tests the SCZ_mat function."""
         SCZ = SCZ_mat(random_graph[1])
         SCZ_sparse = SCZ_mat(random_graph[2])
