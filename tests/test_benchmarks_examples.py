@@ -15,6 +15,9 @@
 the plots."""
 
 
+import pytest
+
+
 def test_decoder_example():
     """Simple test for the decoding module in flamingpy.examples."""
     from flamingpy.examples import decoding as dc_examples
@@ -40,9 +43,15 @@ def test_macro_reduce_example():
     from flamingpy.examples import macro_reduce
 
 
-def test_surface_code_example():
+@pytest.mark.parametrize("boundaries", ["periodic", "open"])
+def test_surface_code_example(boundaries):
     """Simple test for the surface_code module in flamingpy.examples."""
-    from flamingpy.examples import surface_code
+    from flamingpy.examples.surface_code import surface_code
+
+    d = 2
+    err = "both"
+    polarity = None
+    surface_code(d, boundaries, err, polarity, show=False)
 
 
 def test_lemon_benchmark():
