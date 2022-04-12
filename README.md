@@ -73,7 +73,7 @@ python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 
 The purpose of the commands is as follows:
 - The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
-- The second command (develop) installs FlamingPy Python libraries without the compiling the optional backends. 
+- The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
 If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git`. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/stable/help/frequently_encountered_errors.html) page in the documentation.
