@@ -67,8 +67,8 @@ class StabilizerGraph(ABC):
         homodyne measurements, computing the phase error probabilities, and
         translating the outcomes.
     """
+
     # pylint: disable=too-many-public-methods
-    
     def __init__(self, ec=None, code=None):
         self.add_node("low")
         self.add_node("high")
@@ -311,8 +311,8 @@ class StabilizerGraph(ABC):
         )
 
     def assign_weights(self, code):
-        """Assign the weights to the graph based on the weight
-        of the common vertex of each stabilizer pair of the code."""
+        """Assign the weights to the graph based on the weight of the common
+        vertex of each stabilizer pair of the code."""
         for edge in self.edges():
             data = self.edge_data(*edge)
             if data["common_vertex"] is not None:
@@ -323,8 +323,8 @@ class StabilizerGraph(ABC):
     def to_nx(self):
         """Convert the same graph into a NxStabilizerGraph.
 
-        This involves converting the graph representation to a
-        networkx graph representation.
+        This involves converting the graph representation to a networkx
+        graph representation.
         """
         if isinstance(self, NxStabilizerGraph):
             return self
