@@ -14,11 +14,12 @@
 """Unit tests for Monte Carlo simulations for estimating FT thresholds."""
 import itertools as it
 import pytest
+import re
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
-from flamingpy.simulations import ec_monte_carlo
+from flamingpy.simulations import ec_monte_carlo, simulate_qubit_code
 
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
@@ -75,3 +76,32 @@ class TestPassive:
         errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
+
+class TestSimulationFrontend:
+    """Test frontend of Monte Carlo simulations for FT threshold"""
+
+    def test_output_file(self, tmpdir):
+        """Check the content of the simulation output file."""
+        f = tmpdir.join("sims_results.csv")
+        # simulation params
+        distance, ec, boundaries, delta, p_swap, trials, passive = (
+            2,
+            "primal",
+            "open",
+            0.04,
+            0.5,
+            10,
+            True,
+        )
+        simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
+
+        file_lines = f.readlines()
+        # file is created with header and result line
+        assert len(file_lines) == 2
+
+        #contains the expected header
+        expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
+        assert file_lines[0] == expected_header
+
+        # contents has the expected number of columns
+        assert len(re.split(",", file_lines[1])) == len(re.split(",", expected_header))
