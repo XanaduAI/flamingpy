@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Unit tests for Monte Carlo simulations for estimating FT thresholds."""
+
+# pylint: disable=no-self-use,protected-access,too-few-public-methods
+
 import itertools as it
-import pytest
 import re
+import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
@@ -60,7 +63,7 @@ class TestPassive:
         delta = 0.001
         trials = 10
 
-        pad_bool = False if code.bound_str == "periodic" else True
+        pad_bool = code.bound_str != "periodic"
         # The lattice with macronodes.
         RHG_macro = code.graph.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
@@ -78,31 +81,29 @@ class TestPassive:
         assert errors_py == 0
 
 
-class TestSimulationFrontend:
-    """Test frontend of Monte Carlo simulations for FT threshold"""
+def test_simulation_output_file(tmpdir):
+    """Check the content of the simulation output file."""
 
-    def test_output_file(self, tmpdir):
-        """Check the content of the simulation output file."""
-        f = tmpdir.join("sims_results.csv")
-        # simulation params
-        distance, ec, boundaries, delta, p_swap, trials, passive = (
-            2,
-            "primal",
-            "open",
-            0.04,
-            0.5,
-            10,
-            True,
-        )
-        simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
+    f = tmpdir.join("sims_results.csv")
+    # simulation params
+    distance, ec, boundaries, delta, p_swap, trials, passive = (
+        2,
+        "primal",
+        "open",
+        0.04,
+        0.5,
+        10,
+        True,
+    )
+    simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
 
-        file_lines = f.readlines()
-        # file is created with header and result line
-        assert len(file_lines) == 2
+    file_lines = f.readlines()
+    # file is created with header and result line
+    assert len(file_lines) == 2
 
-        # contains the expected header
-        expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
-        assert file_lines[0] == expected_header
+    # contains the expected header
+    expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
+    assert file_lines[0] == expected_header
 
-        # contents has the expected number of columns
-        assert len(re.split(",", file_lines[1])) == len(re.split(",", expected_header))
+    # contents has the expected number of columns
+    assert len(re.split(",", file_lines[1])) == len(re.split(",", expected_header))
