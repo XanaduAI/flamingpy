@@ -14,6 +14,7 @@
 """Unit tests for iid noise generation and decoding."""
 
 
+import pytest
 from flamingpy.codes import SurfaceCode
 from flamingpy.noise import IidNoise
 from flamingpy.decoders.decoder import correct
@@ -56,3 +57,14 @@ def test_decoding():
     noise = IidNoise(code, 0.1)
     noise.apply_noise()
     assert correct(code, {"outer": "MWPM"}) in [True, False]
+
+
+@pytest.mark.parametrize("prob", [-0.1, 1.1])
+def test_warning(prob):
+    """Test a waning is raised when the probability is not between 0 and 1."""
+
+    code = SurfaceCode(3)
+    with pytest.raises(Exception) as exc:
+        IidNoise(code, prob)
+
+    assert str(exc.value) == "Probability is not between 0 and 1."
