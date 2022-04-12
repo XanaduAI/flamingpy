@@ -77,6 +77,7 @@ class TestPassive:
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
+
 class TestSimulationFrontend:
     """Test frontend of Monte Carlo simulations for FT threshold"""
 
@@ -99,7 +100,7 @@ class TestSimulationFrontend:
         # file is created with header and result line
         assert len(file_lines) == 2
 
-        #contains the expected header
+        # contains the expected header
         expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
         assert file_lines[0] == expected_header
 

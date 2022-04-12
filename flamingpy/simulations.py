@@ -75,6 +75,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
     errors = trials - successes
     return errors
 
+
 # pylint: disable=too-many-arguments
 def simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive, fname=None):
     """define qubit code and execute the Monte Carlo simulations"""
@@ -128,7 +129,8 @@ def simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive
     writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
     file.close()
 
-if __name__ == "__main__": # pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     if len(sys.argv) != 1:
         print(sys.argv)
         # Parsing input parameters
