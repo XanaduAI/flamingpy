@@ -128,22 +128,24 @@ def test_shortest_paths_have_same_weight(enc_state):
     for ec_str in nx_code.ec:
 
         nx_stab_graph = getattr(nx_code, ec_str + "_stab_graph")
+        nx_stab_graph.assign_weights(nx_code)
         stab_graph = getattr(code, ec_str + "_stab_graph")
+        stab_graph.assign_weights(code)
 
         # Starting from high
-        nx_weights, _ = nx_stab_graph.shortest_paths_from_high(nx_code)
-        weights, _ = stab_graph.shortest_paths_from_high(code)
+        nx_weights, _ = nx_stab_graph.shortest_paths_from_high()
+        weights, _ = stab_graph.shortest_paths_from_high()
         assert_weights(nx_weights, weights)
 
         # Starting from low
-        nx_weights, _ = nx_stab_graph.shortest_paths_from_low(nx_code)
-        weights, _ = stab_graph.shortest_paths_from_low(code)
+        nx_weights, _ = nx_stab_graph.shortest_paths_from_low()
+        weights, _ = stab_graph.shortest_paths_from_low()
         assert_weights(nx_weights, weights)
 
         # Starting from real nodes
         for (nx_source, source) in zip(nx_stab_graph.real_nodes(), stab_graph.real_nodes()):
-            nx_weights, _ = nx_stab_graph.shortest_paths_without_high_low(nx_source, code)
-            weights, _ = stab_graph.shortest_paths_without_high_low(source, code)
+            nx_weights, _ = nx_stab_graph.shortest_paths_without_high_low(nx_source)
+            weights, _ = stab_graph.shortest_paths_without_high_low(source)
             assert_weights(nx_weights, weights)
 
 
