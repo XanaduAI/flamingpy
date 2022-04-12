@@ -67,7 +67,8 @@ class StabilizerGraph(ABC):
         homodyne measurements, computing the phase error probabilities, and
         translating the outcomes.
     """
-
+    # pylint: disable=too-many-public-methods
+    
     def __init__(self, ec=None, code=None):
         self.add_node("low")
         self.add_node("high")
