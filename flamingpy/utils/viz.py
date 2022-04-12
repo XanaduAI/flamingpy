@@ -34,7 +34,7 @@ def plot_integer_part(xs, ns, fs, alpha, show=True):
     plt.title("Integer Part", fontsize="medium")
     plt.xticks(newxticks, newxlabels, fontsize="small")
     if show:
-        plt.show()
+        plt.show()  # pragma: no cover
 
 
 def plot_fractional_part(xs, ns, fs, alpha, show=True):
@@ -50,7 +50,7 @@ def plot_fractional_part(xs, ns, fs, alpha, show=True):
     plt.xticks(newxticks, newxlabels, fontsize="small")
     plt.yticks(newyticks, newylabels)
     if show:
-        plt.show()
+        plt.show()  # pragma: no cover
 
 
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
@@ -63,7 +63,7 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     plt.xticks(newxticks, newxlabels, fontsize="small")
     plt.yticks([0, 1], [0, 1])
     if show:
-        plt.show()
+        plt.show()  # pragma: no cover
 
 
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
@@ -79,7 +79,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
     plt.xticks(newxticks, newxlabels, fontsize="small")
     if show:
-        plt.show()
+        plt.show()  # pragma: no cover
 
 
 def draw_EGraph(
@@ -276,7 +276,7 @@ def plot_binary_mat_heat_map(mat, show=True):
         mat = mat.toarray()
     plt.matshow(mat, 0)
     if show:
-        plt.show()
+        plt.show()  # pragma: no cover
 
 
 def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
