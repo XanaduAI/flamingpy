@@ -46,4 +46,4 @@
 - [ ] I have performed a self-review of these changes. I have checked my code and corrected misspellings to the best of my capacity. I have checked the [CodeFactor score](https://www.codefactor.io/repository/github/xanaduai/flamingpy/branches) in the active branch and ensured it is `A-` or better. I also confirm that I have already merged other branches into this branch as required.
 - [ ] I have added context for corresponding changes in documentation and README.md as needed.
 - [ ] I have added new workflow CI tests for corresponding changes and these pass locally for me.
-- [ ] I have proposed an updated `_version.py` based on [semantic](https://semver.org/) and [PEP440](https://peps.python.org/pep-0440/) versioning. I recognize that the developers may revisit the versioning and create a Special Release including my changes.
+- [ ] I have updated `CHANGELOG.md` following the template. I recognize that the developers may revisit `CHANGELOG.md`, the versioning, and create a Special Release including my changes.
