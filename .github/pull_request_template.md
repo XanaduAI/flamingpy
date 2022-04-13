@@ -2,10 +2,18 @@
 
 < Include a summarized description of the changes and fixed issues in the format below. You cannot place N/A here. >
 
-- **Title 1**: 
-    text goes here
-- **Title 2**: 
-    text goes here   
+- **New features**:
+    * <  text goes here >
+    * <  text goes here >
+- **Houesekeeping chores**: 
+    * <  text goes here >
+    * <  text goes here >
+- **Bug fixes**: 
+    * <  text goes here >
+    * <  text goes here >
+- **Documentation changes**:
+    * <  text goes here >
+    * <  text goes here >
 
 ## Example usage and tests
 
@@ -30,10 +38,10 @@
 < Summarize your justifications for the change and its benefits. Is there any drawback that exists today with the changes or may occur in the future? You cannot place N/A here. >
 
 **Expected benefits:**
-- text goes here
+- < text goes here >
 
 **Possible drawbacks:**
-- text goes here
+- < text goes here >
 
 ## Related Github issues
 
