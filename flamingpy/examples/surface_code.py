@@ -55,7 +55,7 @@ def surface_code(d, boundaries, err, polarity, show=False):
         plt.close()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
 
     # Code distance (an integer)
     d = 2
