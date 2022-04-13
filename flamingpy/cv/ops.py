@@ -381,13 +381,6 @@ class CVLayer:
         """array: the indices of the GKP states."""
         return self._states.get("GKP")
 
-    @property
-    def noise_cov(self):
-        """array: the noise covariance matrix."""
-        if self._sampling_order == "final":
-            return self._noise_cov
-        return None
-
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.
 
