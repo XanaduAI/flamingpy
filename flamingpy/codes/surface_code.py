@@ -471,9 +471,10 @@ class SurfaceCode:
         default colour options: black for primal nodes, grey for dual
         nodes; blue for weight +1 edges, red for weight -1 edges.
         """
-        edge_colors = (
-            {1: "b", -1: "r"} if self.polarity == alternating_polarity.__name__ else "grey"
-        )
+        edge_colors = "grey"
+        if self.polarity is not None:
+            if self.polarity.__name__ == "alternating_polarity":
+                edge_colors = {1: "b", -1: "r"}
         default_opts = {
             "color_nodes": {"primal": "k", "dual": "grey"},
             "color_edges": edge_colors,
