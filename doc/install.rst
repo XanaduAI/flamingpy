@@ -94,7 +94,6 @@ Installation
             $("#version .nav-item a").click(function (e) {
                 const old_version = version;
                 const new_version = this.hash.substr(1);
-                console.log("Checking:", version, );
                 if (old_version != new_version) {
                     $("#" + old_version).hide();
                     $("#" + new_version).show();
@@ -105,7 +104,7 @@ Installation
                 };
             });
 
-            // Change underline highlight to "Install"
+            // Change active navbar element to "Install".
             $(".nav-item.active").removeClass("active");
             $(".nav-item a:contains('Install')").parent().addClass("active");
         });

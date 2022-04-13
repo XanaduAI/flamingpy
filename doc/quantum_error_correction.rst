@@ -25,7 +25,7 @@ Quantum Error Correction
 
     <script type="text/javascript">
         $(function(){
-            // Change underline highlight to "Quantum Error Correction"
+            // Change active navbar element to "Quantum Error Correction".
             $(".nav-item.active").removeClass("active");
             $(".nav-item a:contains('Quantum Error Correction')").parent().addClass("active");
         });
