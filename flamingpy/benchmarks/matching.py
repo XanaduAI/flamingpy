@@ -91,5 +91,6 @@ plt.xscale("log")
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Matching for code distance {distance}")
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma: no cover
     plt.savefig(f"benchmark_matching_distance_{distance}.pdf")

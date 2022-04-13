@@ -58,5 +58,6 @@ plt.xlabel("Nodes")
 plt.ylabel("Time")
 plt.yscale("log")
 plt.legend(loc="best")
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma: no cover
     plt.savefig("lemon_benchmark.pdf")
