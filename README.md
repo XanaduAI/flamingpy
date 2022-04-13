@@ -138,7 +138,7 @@ See our [Documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutoria
 
 ## Contribution
 
-We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the changelog and releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our [`CHANGELOG.md`](.github/CHANGELOG.md) and [release notes](https://github.com/XanaduAI/flamingpy/releases) for details and you can always reach us on FlamingPy [Discussions](https://github.com/XanaduAI/flamingpy/discussions) pages.
+We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the changelog and releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our [`CHANGELOG.md`](.github/CHANGELOG.md) and [release notes](https://github.com/XanaduAI/flamingpy/releases) for details and you can always reach us on FlamingPy [Discussions](https://github.com/XanaduAI/flamingpy/discussions).
 
 
 ## Support
