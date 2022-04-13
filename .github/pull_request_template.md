@@ -5,10 +5,10 @@
 - **New features**:
     * <  text goes here >
     * <  text goes here >
-- **Housekeeping chores**: 
-    * <  text goes here >
-    * <  text goes here >
 - **Bug fixes**: 
+    * <  text goes here >
+    * <  text goes here >
+- **Housekeeping changes**: 
     * <  text goes here >
     * <  text goes here >
 - **Documentation changes**:
