@@ -1,14 +1,12 @@
 # Release 0.5.1a1 (development release)
 
-### New features
+### New features since last release
 
-### Breaking changes
-
-### Improvements
+### Housekeeping chores
 
 ### Bug fixes
 
-### Documentation
+### Documentation changes
 
 ### Contributors
 
