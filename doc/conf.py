@@ -143,12 +143,12 @@ html_theme_options = {
 
     "navbar_left_links": [
         {
-            "name": "Quantum Photonics",
-            "href": "_static/quantumErrorCorrection.html",
+            "name": "Quantum Error Correction",
+            "href": "quantum_error_correction.html",
         },
         {
             "name": "Install",
-            "href": "_static/install.html",
+            "href": "install.html",
         },
         {
             "name": "Documentation",
@@ -160,7 +160,7 @@ html_theme_options = {
     "navbar_right_links": [
         {
             "name": "FAQ",
-            "href": "_static/faq.html",
+            "href": "faq.html",
             "icon": "fas fa-question",
         },
         {
@@ -180,6 +180,7 @@ html_theme_options = {
     "toc_marker_colour": "#f57c00",
     "table_header_background_colour": "#ffdce5",
     "border_colour": "#f57c00",
+    "code_colour": "#ef6c00",
     "text_accent_colour": "#f57c00",
 
     "extra_copyrights": [
