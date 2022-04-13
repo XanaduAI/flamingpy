@@ -5,7 +5,7 @@
 - **New features**:
     * <  text goes here >
     * <  text goes here >
-- **Houesekeeping chores**: 
+- **Housekeeping chores**: 
     * <  text goes here >
     * <  text goes here >
 - **Bug fixes**: 
