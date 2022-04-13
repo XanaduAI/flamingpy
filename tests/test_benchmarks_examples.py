@@ -18,9 +18,16 @@ the plots."""
 import pytest
 
 
-def test_decoder_example():
+@pytest.mark.parametrize("noise", ["cv", "dv"])
+def test_decoder_example(noise):
     """Simple test for the decoding module in flamingpy.examples."""
-    from flamingpy.examples import decoding as dc_examples
+    from flamingpy.examples.decoding import decode_surface_code
+
+    distance = 3
+    boundaries = "open"
+    ec = "primal"
+
+    decode_surface_code(distance, boundaries, ec, noise)
 
 
 def test_decoding_benchmark():
