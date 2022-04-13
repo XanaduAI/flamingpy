@@ -6,7 +6,7 @@
 
 ### Housekeeping changes
 
-* A large number of linting corrections were made to improve the overall pylint report. These were mostly minor but essential modifications including restructuring, re-coding, optimization, updating `.pylintrc`, adding `.coveragerc`. The code quality score is improved to `A-` for the released version. Check ["Files changed"](https://github.com/XanaduAI/flamingpy/pull/11/files) for details.
+* A large number of linting corrections were made to improve the overall pylint report. These were mostly minor but essential modifications including restructuring, re-coding, optimization, updating `.pylintrc`, adding `.coveragerc`. The code quality score is improved to `A` for the released version. Check ["Files changed"](https://github.com/XanaduAI/flamingpy/pull/11/files) for details.
 * `TODO` comments have been removed exclusively from files with low code quality grades. The Dev team has created tickets to be actioned for all removed TODO comments on separate (private) FlamingPy boards.
 * `CONTRIBUTING.md`, `code_of_conduct.md`, and `CHNAGLELOG.md` were imported and modified from the StrawberryFields project. Dev team plans to extend these with customized details in future PRs.
 
