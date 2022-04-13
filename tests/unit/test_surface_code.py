@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for classes and methods in the surface_code module."""
 
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,no-self-use
 
 import itertools as it
 
@@ -237,8 +237,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
 class TestRHGGraph:
     """Test the RHG_graph function."""
 
-    @classmethod
-    def test_boundary_combinations(cls, d):
+    def test_boundary_combinations(self, d):
         """Check that different boundary conditions produce a nonempty
         lattice."""
         for boundaries in it.product(["primal", "dual", "periodic"], repeat=3):
@@ -255,8 +254,7 @@ class TestRHGGraph:
         # since the new method creates a lattice with a different shape.
         # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
-    @classmethod
-    def test_periodic_boundaries(cls, d):
+    def test_periodic_boundaries(self, d):
         """Test whether periodic boundary conditions produce a lattice with the
         expected size."""
         RHG_lattice = RHG_graph(d, "periodic")
@@ -274,8 +272,7 @@ class TestRHGGraph:
         assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
     @pytest.mark.parametrize("boundaries", all_bound_combs)
-    @classmethod
-    def test_polarity(cls, d, boundaries):
+    def test_polarity(self, d, boundaries):
         """Test whether lattice polarity behaves as expected."""
         RHG_reduced = RHG_graph(d, boundaries)
         RHG_macro = RHG_reduced.macronize()
@@ -309,8 +306,7 @@ class TestRHGGraph:
                         assert np.count_nonzero(weights == 1) == 2
                         assert np.count_nonzero(weights == -1) == 2
 
-    @classmethod
-    def test_macronodes(cls, d):
+    def test_macronodes(self, d):
         """Check that the macronode lattice was generated as expected."""
         # Tests for periodic boundaries.
         for boundaries in ["periodic"]:
@@ -355,8 +351,7 @@ def surface_code(request):
 class TestSurfaceCode:
     """Test the SurfaceCode class."""
 
-    @classmethod
-    def test_init(cls, surface_code):
+    def test_init(self, surface_code):
         """Check the proper initialization of SurfaceCode."""
         distance = surface_code.distance
         assert surface_code.dims == (distance, distance, distance)
@@ -376,8 +371,7 @@ class TestSurfaceCode:
             for att in ["all_syndrome_inds", "all_syndrome_coords"]:
                 getattr(surface_code, att)
 
-    @classmethod
-    def test_stabilizers(cls, surface_code):
+    def test_stabilizers(self, surface_code):
         """Check whether all stabilizers were generated as expected."""
         for ec in surface_code.ec:
             d = surface_code.distance
@@ -400,8 +394,7 @@ class TestSurfaceCode:
                 if surface_code.bound_str == "periodic":
                     assert len(cube.egraph) == 6
 
-    @classmethod
-    def test_syndrome(cls, surface_code):
+    def test_syndrome(self, surface_code):
         """Check that the syndrome coordinates have been appropriately
         identified."""
         # Check that syndrome coordinates in the code class match the
@@ -422,8 +415,7 @@ class TestSurfaceCode:
             elif surface_code.bound_str == "periodic":
                 assert len(syndrome_coords) == 3 * d**3
 
-    @classmethod
-    def test_boundary(cls, surface_code):
+    def test_boundary(self, surface_code):
         """Check that the length of boundary coordinates is correct."""
         for ec in surface_code.ec:
             bound_points = getattr(surface_code, ec + "_bound_points")
@@ -440,8 +432,7 @@ class TestSurfaceCode:
 class TestStabilizer:
     """Test the Stabilizer class."""
 
-    @classmethod
-    def test_parity(cls):
+    def test_parity(self):
         """Check that parity is properly computed."""
         n = rng().integers(10)
         random_graph = fast_gnp_random_graph(n, 0.5)

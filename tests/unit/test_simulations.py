@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Unit tests for Monte Carlo simulations for estimating FT thresholds."""
+
+# pylint: disable=no-self-use
+
 import itertools as it
 import pytest
 
