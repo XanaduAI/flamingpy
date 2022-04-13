@@ -14,6 +14,8 @@
 """Check that we can run all the example and benchmark files without showing
 the plots."""
 
+# pylint: disable=import-outside-toplevel
+
 
 def test_decoder_example():
     """Simple test for the decoding module in flamingpy.examples."""
