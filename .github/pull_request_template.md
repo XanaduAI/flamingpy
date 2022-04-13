@@ -51,7 +51,7 @@
 ## Checklist and integration statements
 
 - [ ] My Python and C++ codes follow the coding and commenting styles of this project as indicated by existing files. Specifically, the changes conform to given `black`, `docformatter` and `pylint` configurations. 
-- [ ] I have performed a self-review of these changes. I have checked my code and corrected misspellings to the best of my capacity. I have checked the [CodeFactor score](https://www.codefactor.io/repository/github/xanaduai/flamingpy/branches) in the active branch and ensured it is `A-` or better. I also confirm that I have already merged other branches into this branch as required.
+- [ ] I have performed a self-review of these changes. I have checked my code and corrected misspellings to the best of my capacity. I have checked the [codefactor score](https://www.codefactor.io/repository/github/xanaduai/flamingpy/branches) in the active branch and ensured it is `A-` or better. I also confirm that I have already merged other branches into this branch as required.
 - [ ] I have added context for corresponding changes in documentation and README.md as needed.
 - [ ] I have added new workflow CI tests for corresponding changes and these pass locally for me.
 - [ ] I have updated [`CHANGELOG.md`](.github/CHANGELOG.md) following the template. I recognize that the developers may revisit `CHANGELOG.md`, the versioning, and create a Special Release including my changes.
