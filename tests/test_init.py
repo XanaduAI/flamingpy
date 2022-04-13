@@ -39,3 +39,8 @@ def test_about():
     assert "Matplotlib version:" in out
     assert "lemonpy shared object:" in out
     assert "cpp_mc_loop shared object:" in out
+
+
+def test_version():
+    """Tests if version string is returned correctly"""
+    assert fp.version() == fp._version.__version__
