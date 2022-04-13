@@ -42,9 +42,13 @@ class StabilizerGraph(ABC):
     many nodes in order to construct the matching graph.
 
     Parameters:
-        ec (str): the error complex ("primal" or "dual"). Determines whether
+        ec (str, optional): the error complex ("primal" or "dual"). Determines whether
             the graph is generated from primal or dual stabilizers in the code.
-        code (SurfaceCode): the code from which to initialize the graph.
+        code (SurfaceCode, optional): the code from which to initialize the graph.
+
+    Note:
+        Both ec and code must be provided to initialize the graph with the proper edges.
+        If one of them is not provided, the graph is left empty.
 
     Attributes:
         stabilizers (List[Stabilizer]): All the stabilizer nodes of the graph.
@@ -64,13 +68,14 @@ class StabilizerGraph(ABC):
         translating the outcomes.
     """
 
-    def __init__(self, ec, code=None):
+    # pylint: disable=too-many-public-methods
+    def __init__(self, ec=None, code=None):
         self.add_node("low")
         self.add_node("high")
         self.stabilizers = []
         self.low_bound_points = []
         self.high_bound_points = []
-        if code is not None:
+        if code is not None and ec is not None:
             self.add_stabilizers(getattr(code, ec + "_stabilizers"))
             bound_points = getattr(code, ec + "_bound_points")
             mid = int(len(bound_points) / 2)
@@ -90,6 +95,10 @@ class StabilizerGraph(ABC):
         Returns:
             The updated stabilizer graph.
         """
+        raise NotImplementedError
+
+    def nodes(self):
+        """Return an iterable of all nodes in the graph."""
         raise NotImplementedError
 
     def add_edge(
@@ -131,11 +140,14 @@ class StabilizerGraph(ABC):
         graph."""
         raise NotImplementedError
 
-    def shortest_paths_without_high_low(self, source, code):
+    def shortest_paths_without_high_low(self, source):
         """Compute the shortest path from source to every other node in the
         graph, except the 'high' and 'low' connector.
 
+        This assumes that the edge weights are asssigned.
+
         Note: a path can't use the 'high' and 'low' node.
+
 
         Arguments:
             source: The source node for each path.
@@ -147,9 +159,11 @@ class StabilizerGraph(ABC):
 
         raise NotImplementedError
 
-    def shortest_paths_from_high(self, code):
+    def shortest_paths_from_high(self):
         """Compute the shortest path from the 'high' node to every other node
         in the graph.
+
+        This assumes that the edge weights are asssigned.
 
         Returns:
             (dict, dict): The first dictionary maps a target node to the weight
@@ -158,9 +172,11 @@ class StabilizerGraph(ABC):
         """
         raise NotImplementedError
 
-    def shortest_paths_from_low(self, code):
+    def shortest_paths_from_low(self):
         """Compute the shortest path from the 'low' node to every other node in
         the graph.
+
+        This assumes that the edge weights are asssigned.
 
         Returns:
             (dict, dict): The first dictionary maps a target node to the weight
@@ -289,11 +305,35 @@ class StabilizerGraph(ABC):
     def real_edges(self):
         """Returns an iterable of all edges excluding the ones connected to the
         'low' or 'high' points."""
-        is_high_or_low = lambda n: n in ("low", "high")
         return filter(
-            lambda edge: not (is_high_or_low(edge[0]) or is_high_or_low(edge[1])),
+            lambda edge: edge[0] not in ("low", "high") and edge[1] not in ("low", "high"),
             self.edges(),
         )
+
+    def assign_weights(self, code):
+        """Assign the weights to the graph based on the weight of the common
+        vertex of each stabilizer pair of the code."""
+        for edge in self.edges():
+            data = self.edge_data(*edge)
+            if data["common_vertex"] is not None:
+                data["weight"] = code.graph.nodes[data["common_vertex"]].get("weight")
+            elif "high" in edge or "low" in edge:
+                data["weight"] = 0
+
+    def to_nx(self):
+        """Convert the same graph into a NxStabilizerGraph.
+
+        This involves converting the graph representation to a networkx
+        graph representation.
+        """
+        if isinstance(self, NxStabilizerGraph):
+            return self
+        nx_graph = NxStabilizerGraph()
+        for edge in self.edges():
+            nx_graph.add_edge(*edge, self.edge_data(*edge)["common_vertex"])
+            if "weight" in self.edge_data(*edge):
+                nx_graph.edge_data(*edge)["weight"] = self.edge_data(*edge)["weight"]
+        return nx_graph
 
     def draw(self, **kwargs):
         """Draw the stabilizer graph with matplotlib.
@@ -302,7 +342,7 @@ class StabilizerGraph(ABC):
         """
         from flamingpy.utils.viz import draw_dec_graph
 
-        draw_dec_graph(self, **kwargs)
+        draw_dec_graph(self.to_nx(), **kwargs)
 
 
 class NxStabilizerGraph(StabilizerGraph):
@@ -314,13 +354,16 @@ class NxStabilizerGraph(StabilizerGraph):
         graph (networkx.Graph): The actual graph backend.
     """
 
-    def __init__(self, ec, code=None):
+    def __init__(self, ec=None, code=None):
         self.graph = nx.Graph()
         StabilizerGraph.__init__(self, ec, code)
 
     def add_node(self, node):
         self.graph.add_node(node)
         return self
+
+    def nodes(self):
+        return self.graph.nodes
 
     def add_edge(self, node1, node2, common_vertex=None):
         self.graph.add_edge(node1, node2, common_vertex=common_vertex)
@@ -332,26 +375,21 @@ class NxStabilizerGraph(StabilizerGraph):
     def edges(self):
         return self.graph.edges()
 
-    def shortest_paths_without_high_low(self, source, code):
+    def shortest_paths_without_high_low(self, source):
         subgraph = self.graph.subgraph(
             self.stabilizers + self.low_bound_points + self.high_bound_points
         )
-        return nx_shortest_paths_from(subgraph, source, code)
+        return nx_shortest_paths_from(subgraph, source)
 
-    def shortest_paths_from_high(self, code):
-        return nx_shortest_paths_from(self.graph, "high", code)
+    def shortest_paths_from_high(self):
+        return nx_shortest_paths_from(self.graph, "high")
 
-    def shortest_paths_from_low(self, code):
-        return nx_shortest_paths_from(self.graph, "low", code)
+    def shortest_paths_from_low(self):
+        return nx_shortest_paths_from(self.graph, "low")
 
 
-def nx_shortest_paths_from(graph, source, code):
+def nx_shortest_paths_from(graph, source):
     """The NetworkX shortest path implementation."""
-    for edge in graph.edges.data():
-        if edge[2].get("common_vertex") is not None:
-            edge[2]["weight"] = code.graph.nodes[edge[2]["common_vertex"]]["weight"]
-        else:
-            edge[2]["weight"] = 0.0
     (weights, paths) = sp.single_source_dijkstra(graph, source)
     del weights[source]
     del paths[source]
@@ -372,7 +410,7 @@ class RxStabilizerGraph(StabilizerGraph):
             corresponding nodes.
     """
 
-    def __init__(self, ec, code=None):
+    def __init__(self, ec=None, code=None):
         self.graph = rx.PyGraph()
         self.node_to_index = {}
         self.index_to_node = {}
@@ -383,6 +421,9 @@ class RxStabilizerGraph(StabilizerGraph):
         self.node_to_index[node] = index
         self.index_to_node[index] = node
         return self
+
+    def nodes(self):
+        return self.graph.nodes()
 
     def add_edge(self, node1, node2, common_vertex=None):
         index1 = self.node_to_index[node1]
@@ -401,37 +442,35 @@ class RxStabilizerGraph(StabilizerGraph):
             for edge in self.graph.edge_list()
         )
 
-    def shortest_paths_without_high_low(self, source, code):
+    def shortest_paths_without_high_low(self, source):
         subgraph = self.graph.copy()  # This is a shallow copy.
         # We know that nodes 0 and 1 are the 'high' and 'low' nodes.
         subgraph.remove_nodes_from([0, 1])
-        return self._shortest_paths_from(subgraph, source, code)
+        return self._shortest_paths_from(subgraph, source)
 
-    def shortest_paths_from_high(self, code):
-        return self._shortest_paths_from(self.graph, "high", code)
+    def shortest_paths_from_high(self):
+        return self._shortest_paths_from(self.graph, "high")
 
-    def shortest_paths_from_low(self, code):
-        return self._shortest_paths_from(self.graph, "low", code)
+    def shortest_paths_from_low(self):
+        return self._shortest_paths_from(self.graph, "low")
 
     # The following methods are helpers for the shortest paths methods.
 
-    def _shortest_paths_from(self, graph, source, code):
+    def _shortest_paths_from(self, graph, source):
         paths = rx.graph_dijkstra_shortest_paths(
-            graph, self.node_to_index[source], weight_fn=rx_weight_fn(code)
+            graph, self.node_to_index[source], weight_fn=rx_weight_fn
         )
-        return self._all_path_weights(paths, code), self._all_path_nodes(paths)
+        return self._all_path_weights(paths), self._all_path_nodes(paths)
 
-    def _all_path_weights(self, paths, code):
+    def _all_path_weights(self, paths):
         return {
-            self.index_to_node[target]: self._path_weight(path, code)
-            for (target, path) in paths.items()
+            self.index_to_node[target]: self._path_weight(path) for (target, path) in paths.items()
         }
 
-    def _path_weight(self, path, code):
-        weight_fn = rx_weight_fn(code)
+    def _path_weight(self, path):
         weight = 0
         for e in range(len(path) - 1):
-            weight += int(weight_fn(self.graph.get_edge_data(path[e], path[e + 1])))
+            weight += int(rx_weight_fn(self.graph.get_edge_data(path[e], path[e + 1])))
         return weight
 
     def _all_path_nodes(self, paths):
@@ -446,12 +485,6 @@ class RxStabilizerGraph(StabilizerGraph):
         return nodes
 
 
-def rx_weight_fn(code):
+def rx_weight_fn(edge):
     """A function for returning the weight from the common vertex."""
-
-    def fn(edge):
-        if edge["common_vertex"] is not None:
-            return float(code.graph.nodes[edge["common_vertex"]]["weight"])
-        return 0.0
-
-    return fn
+    return float(edge["weight"])
