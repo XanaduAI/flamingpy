@@ -154,7 +154,7 @@ html_theme_options = {
             "name": "Documentation",
             "href": "index.html",
             "active": True,
-        }
+        },
     ],
 
     "navbar_right_links": [
@@ -172,7 +172,7 @@ html_theme_options = {
             "name": "GitHub",
             "href": "https://github.com/XanaduAI/flamingpy",
             "icon": "fab fa-github",
-        }
+        },
     ],
 
     "prev_next_button_colour": "#f57c00",
@@ -287,4 +287,6 @@ epub_exclude_files = ["search.html"]
 autodoc_member_order = "bysource"
 
 # inheritance_diagram graphviz attributes
-inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")
+inheritance_node_attrs = dict(
+    color="lightskyblue1", fillcolor="lightskyblue1", style="filled"
+)
