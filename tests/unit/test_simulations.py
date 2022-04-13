@@ -23,7 +23,7 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo, simulate_qubit_code
-
+from flamingpy.benchmarks.simulations import run_benchmark
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
 
@@ -104,6 +104,37 @@ def test_simulation_output_file(tmpdir, passive, empty_file):
 
     # contains the expected header
     expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
+    assert file_lines[0] == expected_header
+
+    # contents has the expected number of columns
+    assert len(re.split(",", file_lines[1])) == len(re.split(",", expected_header))
+
+
+@pytest.mark.parametrize("passive", [True, False])
+@pytest.mark.parametrize("empty_file", [True, False])
+def test_benchmark_output_file(tmpdir, passive, empty_file):
+    """Check the content of the simulation benchmark output file."""
+
+    f = tmpdir.join("sims_benchmark_results.csv")
+    if not empty_file:
+        f.write_text(
+            "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time,cpp_to_py_speedup\n"
+            + "2,primal,open,0.04,0.5,1,10,10:06:01,10\n",
+            encoding="UTF-8",
+        )
+
+    # simulation params
+    distance, ec, boundaries, delta, p_swap, trials = (2, "primal", "open", 0.04, 0.5, 10)
+    run_benchmark(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
+
+    file_lines = f.readlines()
+    # file is created with header and result lines
+    assert len(file_lines) > 0
+
+    # contains the expected header
+    expected_header = (
+        "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time,cpp_to_py_speedup\n"
+    )
     assert file_lines[0] == expected_header
 
     # contents has the expected number of columns
