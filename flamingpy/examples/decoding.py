@@ -112,7 +112,7 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
     print(f"Success: {c}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
 
     # QEC code parameters
     distance = 3
