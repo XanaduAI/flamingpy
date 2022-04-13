@@ -22,6 +22,8 @@ from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity
 
 
 def surface_code(d, boundaries, err, polarity, show=False):
+    """Example for building and visualizing RHG lattices and surface codes."""
+
     # Instantiate a surface code.
     RHG_code = SurfaceCode(d, ec=err, boundaries=boundaries, polarity=polarity)
     RHG_lattice = RHG_code.graph

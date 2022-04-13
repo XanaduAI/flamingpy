@@ -26,6 +26,8 @@ from flamingpy.utils import viz
 
 
 def decode_surface_code(distance, boundaries, ec, noise, show=False):
+    """Example of instantiating, applying noise, decoding, recovering, and
+    visualizing this procedure for the measurement-based surface code."""
 
     # Code and code lattice (cluster state)
     RHG_code = SurfaceCode(
