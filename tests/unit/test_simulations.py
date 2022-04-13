@@ -81,25 +81,26 @@ class TestPassive:
         assert errors_py == 0
 
 
-def test_simulation_output_file(tmpdir):
+@pytest.mark.parametrize("passive", [True, False])
+@pytest.mark.parametrize("empty_file", [True, False])
+def test_simulation_output_file(tmpdir, passive, empty_file):
     """Check the content of the simulation output file."""
 
     f = tmpdir.join("sims_results.csv")
+    if not empty_file:
+        f.write_text(
+            "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
+            + "2,primal,open,0.04,0.5,1,10,10:06:01\n",
+            encoding="UTF-8",
+        )
+
     # simulation params
-    distance, ec, boundaries, delta, p_swap, trials, passive = (
-        2,
-        "primal",
-        "open",
-        0.04,
-        0.5,
-        10,
-        True,
-    )
+    distance, ec, boundaries, delta, p_swap, trials = (2, "primal", "open", 0.04, 0.5, 10)
     simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
 
     file_lines = f.readlines()
-    # file is created with header and result line
-    assert len(file_lines) == 2
+    # file is created with header and result lines
+    assert len(file_lines) > 0
 
     # contains the expected header
     expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time\n"
