@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
+
+# pylint: disable=no-self-use,protected-access,redefined-outer-name
+
 import string
 
 import networkx as nx

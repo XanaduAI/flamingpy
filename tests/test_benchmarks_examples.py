@@ -14,6 +14,7 @@
 """Check that we can run all the example and benchmark files without showing
 the plots."""
 
+# pylint: disable=import-outside-toplevel
 
 import pytest
 

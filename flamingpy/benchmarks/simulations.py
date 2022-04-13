@@ -13,6 +13,9 @@
 # limitations under the License.
 """Benchmark for the Monte Carlo simulations estimating FT thresholds and
 comparing python and cpp loops."""
+
+# pylint: disable=no-self-use,protected-access,redefined-outer-name
+
 import csv
 import warnings
 

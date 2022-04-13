@@ -57,14 +57,16 @@ def surface_code(d, boundaries, err, polarity, show=False):
 
 if __name__ == "__main__":  # pragma: no cover
 
-    # Code distance (an integer)
-    d = 2
-    # Boundaries ("open" or "periodic")
-    boundaries = "open"
-    # Error complex ("primal", "dual", or "both")
-    err = "both"
-    # Polarity (edge weight pattern in graph state -- all unit weights by default)
-    polarity = None
-    # polarity = alternating_polarity'
+    params = {
+        # Code distance (an integer)
+        "d": 2,
+        # Boundaries ("open" or "periodic")
+        "boundaries": "open",
+        # Error complex ("primal", "dual", or "both")
+        "err": "both",
+        # Polarity (edge weight pattern in graph state -- all unit weights by default)
+        "polarity": None
+        # polarity = alternating_polarity'
+    }
 
-    surface_code(d, boundaries, err, polarity, show=True)
+    surface_code(**params, show=True)

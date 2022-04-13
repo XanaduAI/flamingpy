@@ -76,10 +76,10 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
 
     # Manual decoding (to plot intermediate results).
     dec.assign_weights(RHG_code, **weight_options)
-    for ec in RHG_code.ec:
-        G_match = dec.build_match_graph(RHG_code, ec)
+    for ec_ in RHG_code.ec:
+        G_match = dec.build_match_graph(RHG_code, ec_)
         matching = G_match.min_weight_perfect_matching()
-        G_stabilizer = getattr(RHG_code, ec + "_stab_graph")
+        G_stabilizer = getattr(RHG_code, ec_ + "_stab_graph")
 
         # An integer label for each nodes in the stabilizer and matching graphs.
         # This is useful to identify the nodes in the plots.
@@ -87,13 +87,13 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
 
         # The draw_dec_graph function requires the networkx backend. Most backends implement
         # the to_nx() method to perform the conversion if needed.
-        G_stabilizer.draw(title=ec.capitalize() + " stabilizer graph", node_labels=node_labels)
-        ax = viz.syndrome_plot(RHG_code, ec, drawing_opts=dw, index_dict=node_labels)
+        G_stabilizer.draw(title=ec_.capitalize() + " stabilizer graph", node_labels=node_labels)
+        ax = viz.syndrome_plot(RHG_code, ec_, drawing_opts=dw, index_dict=node_labels)
         viz.draw_matching_on_syndrome_plot(
             ax, matching, G_stabilizer, G_match, dw.get("label_edges")
         )
         if len(G_match.graph):
-            G_match.draw(title=ec.capitalize() + " matching graph", node_labels=node_labels)
+            G_match.draw(title=ec_.capitalize() + " matching graph", node_labels=node_labels)
         else:
             print("\nMatching graph empty!\n")
 
@@ -114,14 +114,16 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
 
 if __name__ == "__main__":  # pragma: no cover
 
-    # QEC code parameters
-    distance = 3
-    # Boundaries ("open" or "periodic")
-    boundaries = "open"
-    # Error complex ("primal", "dual", or "both")
-    ec = "primal"
-    # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
-    # over a GKP/sqeezed state architecture
-    noise = "cv"
+    params = {
+        # QEC code parameters
+        "distance": 3,
+        # Boundaries ("open" or "periodic")
+        "boundaries": "open",
+        # Error complex ("primal", "dual", or "both")
+        "ec": "primal",
+        # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
+        # over a GKP/sqeezed state architecture
+        "noise": "cv",
+    }
 
-    decode_surface_code(distance, boundaries, ec, noise, show=True)
+    decode_surface_code(**params, show=True)
