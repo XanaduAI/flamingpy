@@ -29,7 +29,7 @@ import pandas
 try:
     import flamingpy.cpp.lemonpy as lp
     import flamingpy.cpp.cpp_mc_loop as cmc
-except ImportError:
+except ImportError:  # pragma: no cover
     warnings.warn("Failed to import flamingpy.cpp libraries.", ImportWarning)
 
 
