@@ -16,7 +16,11 @@
 
 ### Contributors
 
-This release contains contributions from (in alphabetical order) ... See full commit details ...
+This release contains contributions from (in alphabetical order):
+
+Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+
+See full commit details ...
 
 ---
 
@@ -25,39 +29,45 @@ This release contains contributions from (in alphabetical order) ... See full co
 <h3>Housekeeping changes since the last release</h3>
 
 * Minor updates to `README.md` following the start of the public project. This included:
-   * Relative paths cannot be used in README.md logos and were replaced with Github-hosted links.
-* C++ imports are now placed within `try` blocks to avoid interrupting non-compiled installations, such as the ones currently used by readthedocs.
-* Code coverage (quality) score was improved to a more acceptable `B-` level.
+   * Relative paths cannot be used in README.md logos and were replaced with Github-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
+* C++ imports are now placed within `try` blocks to avoid interrupting non-compiled installations, such as the ones currently used by readthedocs. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
+* Code coverage (quality) score was improved to a more acceptable `B-` level. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
 
 ### Bug fixes
 
-* Fixed a bug in [pull_request_template.md](https://github.com/XanaduAI/flamingpy/pull/2/commits/e30f2cb65daffece08b193ffc4b8fe7a8d90b90e). The template was not loading properly due to a whitespace problem.
-* Fixed a bug in [`simulations.py`](flamingpy/simulations.py) and related examples. See [here](https://github.com/XanaduAI/flamingpy/commit/771b0e66e5471c3696ac2e779a2df1cc49e5e684) for details.
+* Fixed a bug in [pull_request_template.md](https://github.com/XanaduAI/flamingpy/pull/2/commits/e30f2cb65daffece08b193ffc4b8fe7a8d90b90e). The template was not loading properly due to a whitespace problem. [(#2)](https://github.com/XanaduAI/flamingpy/pull/2)
+* Fixed a bug in [`simulations.py`](flamingpy/simulations.py) and related examples. See [here](https://github.com/XanaduAI/flamingpy/commit/771b0e66e5471c3696ac2e779a2df1cc49e5e684) for commit details. [(#6)](https://github.com/XanaduAI/flamingpy/pull/6)
 
 ### Documentation changes
 
-* Making Documentation more usable and consistent with other Xanadu projects:
+* Making Documentation more usable and consistent with other Xanadu projects [(#5)](https://github.com/XanaduAI/flamingpy/pull/5):
    * API details and inheritance diagrams should be now correctly displayed.
    * "Edit on Github" links were fixed
    * The general style and section structures made more consistent with the company requirements and other packages such as StrawberryFields.
    * Fixed the documentation links in `README.md`
    * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`. 
 
-<h3>Contributors</h3>
+### Contributors
 
-This release contains contributions from (in alphabetical order) @nariman87 and Ilan Tzitrin. See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1.
+This release contains contributions from (in alphabetical order):
+
+Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+
+See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1.
 
 ## Release 0.4.6a1
 
 ### New features since the last private release
 
-* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for detailes.
+* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for detailes. 
 
-<h3>Housekeeping changes</h3>
+### Improvements
 
 * More options for Installation from Source: 
 `setup.py` was updated to provide a no-compilation option for only installing (purely) Python libraries and separate options to compile `cmake` and `cython`-based codes. See the new [README.md](https://github.com/XanaduAI/ft-stack/blob/mc-cpp/README.md) for details.
 
-<h3>Contributors</h3>
+### Contributors
 
-This release contains contributions from (in alphabetical order) @nariman87 and Ilan Tzitrin.
+This release contains contributions from (in alphabetical order):
+
+Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
