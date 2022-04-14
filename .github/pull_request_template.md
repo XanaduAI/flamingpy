@@ -8,7 +8,7 @@
 - **Bug fixes**: 
     * <  text goes here >
     * <  text goes here >
-- **Housekeeping changes**: 
+- **Improvements**: 
     * <  text goes here >
     * <  text goes here >
 - **Documentation changes**:
