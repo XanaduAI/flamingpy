@@ -175,7 +175,7 @@ class CVLayer:
         and hybridizes the lattice. Print a message if both supplied.
 
         Args:
-            state (dict, optional): the dictionary of all non-GKP states and their
+            state (dict, optional): The dictionary of all non-GKP states and their
                 indices, of the form {'state': []}. By default, all states are
                 GKP states.
             rng (numpy.random.Generator, optional): A random number generator
