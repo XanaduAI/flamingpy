@@ -416,7 +416,7 @@ class SurfaceCode:
         return all_six_bodies
 
     def six_body_dual_stabilizers(self):
-        """returns all potential six-body dual stabilizers of self."""
+        """Returns all potential six-body dual stabilizers of self."""
         min_dict = {"primal": -1, "dual": 0, "periodic": -1}
         max_dict = {"primal": 1, "dual": 1, "periodic": 1}
         range_min = np.array([min_dict[typ] for typ in self.boundaries])
