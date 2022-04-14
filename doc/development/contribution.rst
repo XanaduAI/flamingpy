@@ -1,1 +1,4 @@
-.. include:: ../.github/CONTRIBUTING
+TEST
+====
+
+.. include:: ../.github/CONTRIBUTING.rst
