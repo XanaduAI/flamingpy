@@ -29,7 +29,7 @@ This release contains contributions from (in alphabetical order) ... See full co
 * C++ imports are now placed within `try` blocks to avoid interrupting non-compiled installations, such as the ones currently used by readthedocs.
 * Code coverage (quality) score was improved to a more acceptable `B-` level.
 
-<h3>Bug fixes</h3>
+### Bug fixes
 
 * Fixed a bug in [pull_request_template.md](https://github.com/XanaduAI/flamingpy/pull/2/commits/e30f2cb65daffece08b193ffc4b8fe7a8d90b90e). The template was not loading properly due to a whitespace problem.
 * Fixed a bug in [`simulations.py`](flamingpy/simulations.py) and related examples. See [here](https://github.com/XanaduAI/flamingpy/commit/771b0e66e5471c3696ac2e779a2df1cc49e5e684) for details.
