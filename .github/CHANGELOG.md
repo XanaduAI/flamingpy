@@ -53,7 +53,7 @@ This release contains contributions from (in alphabetical order):
 
 Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
-See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1.
+See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1
 
 ## Release 0.4.6a1
 
