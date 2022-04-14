@@ -138,7 +138,7 @@ See our [Documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutoria
 
 ## Contribution
 
-.. include:: .github/CONTRIBUTING.md
+@[:markdown](.github/CONTRIBUTING.md)
 
 
 ## Support
