@@ -178,7 +178,7 @@ class CVLayer:
             state (dict, optional): the dictionary of all non-GKP states and their
                 indices, of the form {'state': []}. By default, all states are
                 GKP states.
-            rng (numpy.random.Generator, optional): a random number generator
+            rng (numpy.random.Generator, optional): A random number generator
                 following the NumPy API. It can be seeded for reproducibility.
                 By default, numpy.random.default_rng is used without a fixed seed.
         """
