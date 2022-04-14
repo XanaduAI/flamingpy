@@ -28,9 +28,10 @@ See full commit details ...
 
 ### Improvements since the last release
 
-* Minor updates to `README.md` following the start of the public project. This included:
-   * Relative paths cannot be used in README.md logos and were replaced with Github-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
+* Relative paths cannot be used in README.md logos and were replaced with Github-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
+
 * C++ imports are now placed within `try` blocks to avoid interrupting non-compiled installations, such as the ones currently used by readthedocs. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
+
 * Code coverage (quality) score was improved to a more acceptable `B-` level. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
 
 ### Bug fixes
