@@ -383,7 +383,7 @@ class SurfaceCode:
         """Dealing with stabilizers at periodic boundaries.
 
         Note this method is directly modifying the reference of
-        `actual_stabe`.
+        ``actual_stabe``.
         """
         dims = np.array(self.dims)
         periodic_inds = np.where(self.boundaries == "periodic")[0]
