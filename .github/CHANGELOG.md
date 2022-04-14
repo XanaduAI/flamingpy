@@ -26,7 +26,7 @@ See full commit details ...
 
 ## Release 0.4.9a1 (current release)
 
-<h3>Housekeeping changes since the last release</h3>
+### Improvements since the last release
 
 * Minor updates to `README.md` following the start of the public project. This included:
    * Relative paths cannot be used in README.md logos and were replaced with Github-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
