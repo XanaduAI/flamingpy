@@ -132,13 +132,13 @@ print(message)
 
 See our [Documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutorials.html) for more tutorials.
 
-<!-- ## Performance Demos
-  -->
+
+<!-- ## Performance Demos -->
 
 
 ## Contribution
 
-@[:markdown](.github/CONTRIBUTING.md)
+[See our CONTRIBUTING.md](.github/CONTRIBUTING.md) <!-- to be changed from relative paths to links -->
 
 
 ## Support
