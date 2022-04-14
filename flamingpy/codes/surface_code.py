@@ -403,7 +403,7 @@ class SurfaceCode:
                     actual_stabe += [virtual_point]
 
     def generate_stabilizers(self):
-        """generate primal and dual Stabilizer objects.
+        """Generate primal and dual Stabilizer objects.
 
         Returns
             dict: "primal" and "dual" stabilizers
