@@ -37,6 +37,7 @@ See full commit details ...
 ### Bug fixes
 
 * Fixed a bug in [pull_request_template.md](https://github.com/XanaduAI/flamingpy/pull/2/commits/e30f2cb65daffece08b193ffc4b8fe7a8d90b90e). The template was not loading properly due to a whitespace problem. [(#2)](https://github.com/XanaduAI/flamingpy/pull/2)
+
 * Fixed a bug in [`simulations.py`](flamingpy/simulations.py) and related examples. See [here](https://github.com/XanaduAI/flamingpy/commit/771b0e66e5471c3696ac2e779a2df1cc49e5e684) for commit details. [(#6)](https://github.com/XanaduAI/flamingpy/pull/6)
 
 ### Documentation changes
