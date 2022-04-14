@@ -139,7 +139,7 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
 
    development/guide_for_devs
    build_docs
-   ../.github/contribution
+   development/contribution
    
 .. toctree::
    :maxdepth: 2
