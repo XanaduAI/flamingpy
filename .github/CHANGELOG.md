@@ -49,7 +49,7 @@ This release contains contributions from (in alphabetical order) @nariman87 and 
 
 ## Release 0.4.6a1
 
-<h3>New features since the last private release</h3>
+### New features since the last private release
 
 * The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for detailes.
 
