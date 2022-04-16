@@ -145,7 +145,7 @@ class CVLayer:
         # Generate indices of squeezed states based on swap-out
         # probability p_swap.
         if p_swap:
-            self._swap_state_indices(p_swap, rng)
+            self._generate_squeezed_indices(p_swap, rng)
 
         # Associate remaining indices with GKP states.
         self._associate_gkp_indices()
