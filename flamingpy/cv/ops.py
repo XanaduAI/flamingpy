@@ -236,7 +236,7 @@ class CVLayer:
             "sampling_order": "initial",
             "perfect_inds": perfect_inds,
         }
-        model = {**default_model, **model} if model else default_model
+        model = {**default_model, **model}
         self._delta = model["delta"]
         self._sampling_order = model["sampling_order"]
         self._perfect_inds = model["perfect_inds"]
