@@ -179,9 +179,7 @@ class CVLayer:
         Print a message if both p_swap and p indices are supplied.
 
         Args:
-            state (dict, optional): The dictionary of all non-GKP states and their
-                indices, of the form {'state': []}. By default, all states are
-                GKP states.
+            p_swap (float): the swap-out probability.
             rng (numpy.random.Generator, optional): A random number generator
                 following the NumPy API. It can be seeded for reproducibility.
                 By default, numpy.random.default_rng is used without a fixed seed.
