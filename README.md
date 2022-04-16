@@ -139,7 +139,7 @@ See our [documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutoria
 
 ## Contribution
 
-[See our CONTRIBUTING.rst](.github/CONTRIBUTING.rst) <!-- to be changed from relative paths to links -->
+See our contributions policy and list of contributors to FlamingPy [here](.github/CONTRIBUTING.rst). <!-- to be changed from relative paths to links -->
 
 
 ## Support
