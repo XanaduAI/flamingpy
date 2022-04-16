@@ -32,7 +32,6 @@ def SCZ_mat(adj, sparse=True):
         adj (array): N by N binary symmetric matrix. If modes i and j are
             linked by a CZ, then entry ij and ji is equal to the weight of the
             edge (1 by default); otherwise 0.
-    Keyword Args:
         sparse (bool): whether to return a sparse or dense array when adj
             input is a sparse array.
     Returns:
