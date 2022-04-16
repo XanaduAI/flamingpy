@@ -106,7 +106,7 @@ for ec in RHG_code.ec:
     )
 
     ax = viz.syndrome_plot(RHG_code, ec, drawing_opts=dw, index_dict=node_labels)
-    viz.draw_matching_on_syndrome_plot(ax, matching, G_stabilizer, G_match, dw.get("label_edges"))
+    viz.draw_matching_on_syndrome_plot(ax, matching, G_match)
     if len(G_match.graph):
         G_match.draw(title=ec.capitalize() + " matching graph", node_labels=node_labels)
     else:

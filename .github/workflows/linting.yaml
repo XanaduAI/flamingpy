@@ -37,4 +37,4 @@ jobs:
           python setup.py build_cmake --inplace
 
       - name: Run pylint
-        run: python3 -m pylint --disable=R,W flamingpy flamingpy/benchmarks/*.py flamingpy/examples/*.py tests/unit/*.py
+        run: python3 -m pylint --disable=R,W flamingpy/*.py flamingpy/benchmarks/*.py flamingpy/examples/*.py tests/unit/*.py
