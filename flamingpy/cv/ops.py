@@ -33,7 +33,7 @@ def SCZ_mat(adj, sparse=True):
             linked by a CZ, then entry ij and ji is equal to the weight of the
             edge (1 by default); otherwise 0.
     Keyword Args:
-        sparse (bool): wheter to return a sparse or dense array when adj
+        sparse (bool): whether to return a sparse or dense array when adj
             input is a sparse array.
     Returns:
         np.array or sp.sparse.csr_matrix: 2N by 2N symplectic matrix.
