@@ -153,7 +153,7 @@ class CVLayer:
         # Give the EGraph nodes state attributes.
         self._generate_egraph_indices()
 
-    def _generate_egraph_indices(self):
+    def _apply_state_labels(self):
         self.egraph.index_generator()
         self.to_points = self.egraph.to_points
 
