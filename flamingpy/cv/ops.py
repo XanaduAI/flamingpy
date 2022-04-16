@@ -151,7 +151,7 @@ class CVLayer:
         # Associate remaining indices with GKP states.
         self._associate_gkp_indices()
 
-        # Generate EGraph indices.
+        # Give the EGraph nodes state attributes.
         self._generate_egraph_indices()
 
     def _generate_egraph_indices(self):
