@@ -171,8 +171,13 @@ class CVLayer:
         self._states["GKP"] = np.array(remaining_inds, dtype=int)
 
     def _swap_state_indices(self, p_swap, rng):
-        """Non-zero swap-out probability overrides indices specified in states
-        and hybridizes the lattice. Print a message if both supplied.
+        """Use swap-out probability p_swap to hybridize the CV graph state.
+        
+        A non-zero p_swap overrides indices specified in states and uses 
+        a binomial distribution to associate some indices as p-squeezed
+        states. 
+        
+        Print a message if both p_swap and p indices are supplied.
 
         Args:
             state (dict, optional): The dictionary of all non-GKP states and their
