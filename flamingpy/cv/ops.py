@@ -171,11 +171,11 @@ class CVLayer:
 
     def _generate_squeezed_indices(self, p_swap, rng):
         """Use swap-out probability p_swap to hybridize the CV graph state.
-        
-        A non-zero p_swap overrides indices specified in states and uses 
+
+        A non-zero p_swap overrides indices specified in states and uses
         a binomial distribution to associate some indices as p-squeezed
-        states. 
-        
+        states.
+
         Print a message if both p_swap and p indices are supplied.
 
         Args:
