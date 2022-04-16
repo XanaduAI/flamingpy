@@ -18,7 +18,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+[Sebastián Duque Mesa](https://github.com/sduquemesa), [Nariman Saadatmand](https://github.com/nariman87), [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details ...
 
