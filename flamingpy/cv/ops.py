@@ -148,7 +148,7 @@ class CVLayer:
             self._generate_squeezed_indices(p_swap, rng)
 
         # Associate remaining indices with GKP states.
-        self._associate_gkp_indices()
+        self._generate_gkp_indices()
 
         # Give the EGraph nodes state attributes.
         self._apply_state_labels()
