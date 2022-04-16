@@ -142,9 +142,8 @@ class CVLayer:
 
         self._states = states or {"p": np.empty(0, dtype=int)}
 
-        # Non-zero swap-out probability overrides indices specified
-        # in states and hybridizes the lattice. Print a message if
-        # both supplied.
+        # Generate indices of squeezed states based on swap-out
+        # probability p_swap.
         if p_swap:
             self._swap_state_indices(p_swap, rng)
 
