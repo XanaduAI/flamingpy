@@ -161,7 +161,7 @@ class CVLayer:
             for ind in self._states[psi]:
                 self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
-    def _associate_gkp_indices(self):
+    def _generate_gkp_indices(self):
         """Associate remaining indices with GKP states."""
         used_inds = np.empty(0, dtype=int)
         for psi in self._states:
