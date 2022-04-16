@@ -335,7 +335,7 @@ class SurfaceCode:
         'dual') as well as all_syndrome_inds and all_syndrome_coords are set.
         """
 
-        all_six_bodies = self.generate_stabilizers()
+        all_six_bodies = self.generate_stabilizer_coords()
 
         # set {ec}_syndrome_coords, {ec}_syndrome_inds, and {ec}_stabilizers
         self.set_ec_stabilizers_and_syndrome(all_six_bodies)
@@ -402,8 +402,8 @@ class SurfaceCode:
                     virtual_point = tuple(lowest_point)
                     actual_stabe += [virtual_point]
 
-    def generate_stabilizers(self):
-        """Generate primal and dual Stabilizer objects.
+    def generate_stabilizer_coords(self):
+        """Generate primal and dual stabilizer coordinates.
 
         Returns
             dict: "primal" and "dual" stabilizers
