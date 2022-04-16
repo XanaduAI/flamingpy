@@ -169,7 +169,7 @@ class CVLayer:
         remaining_inds = list(set(range(self._N)) - set(used_inds))
         self._states["GKP"] = np.array(remaining_inds, dtype=int)
 
-    def _swap_state_indices(self, p_swap, rng):
+    def _generate_squeezed_indices(self, p_swap, rng):
         """Use swap-out probability p_swap to hybridize the CV graph state.
         
         A non-zero p_swap overrides indices specified in states and uses 
