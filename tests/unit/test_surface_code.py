@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for classes and methods in the surface_code module."""
+
+# pylint: disable=redefined-outer-name,no-self-use
+
 import itertools as it
 
 import networkx as nx
@@ -138,7 +141,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
                 if macronodes:
                     body = planetary_bodies[i]
                     nearby_body = neighbouring_bodies[i]
-                    nearby_body = tuple([round(num, 1) for num in nearby_body])
+                    nearby_body = tuple(round(num, 1) for num in nearby_body)
                     lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
                     lattice.nodes[body]["color"] = "red"
                     lattice.nodes[nearby_body]["color"] = "green"
@@ -159,7 +162,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
                 if macronodes:
                     body = planetary_bodies[i]
                     nearby_body = neighbouring_bodies[i]
-                    nearby_body = tuple([round(num, 1) for num in nearby_body])
+                    nearby_body = tuple(round(num, 1) for num in nearby_body)
                     lattice.add_edge(body, nearby_body, weight=pol, color=color(pol))
                     lattice.nodes[body]["color"] = "green"
                     lattice.nodes[nearby_body]["color"] = "green"

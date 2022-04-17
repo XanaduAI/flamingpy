@@ -42,7 +42,7 @@ body:
     attributes:
       label: How to reproduce
       description: |
-        Steps to reproduce the behavior. (Please provide steps such as 'Go to ...', 'Run commands ...', and 'See the warning ...') 
+        Steps to reproduce the behavior. (Please provide steps such as 'Go to ...', 'Run commands ...', and 'See the warning ...')
         If you have used a specific CLI and/or IDE, you must include it here.
         What percentage of the time does it happen?
     validations:

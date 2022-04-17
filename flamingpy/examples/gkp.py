@@ -24,8 +24,8 @@ alpha = np.sqrt(np.pi)
 xs = np.arange(-10, 10, 0.01)
 
 ns, fs = gkp.integer_fractional(xs, alpha)
-viz.plot_integer_part(xs, ns, fs, alpha, show)
-viz.plot_fractional_part(xs, ns, fs, alpha, show)
+viz.plot_integer_part(xs, ns, alpha, show)
+viz.plot_fractional_part(xs, fs, alpha, show)
 
 bit_values = gkp.GKP_binner(xs)
 viz.plot_GKP_bins(xs, bit_values, alpha, show)

@@ -21,6 +21,14 @@ import io
 import flamingpy as fp
 
 
+def test_version():
+    """Tests if the version string prints correctly."""
+    with open("flamingpy/_version.py", encoding="utf8") as file:
+        ver_file = file.readlines()[-1].split()[-1].strip("\"'")
+
+    assert ver_file == fp.version()
+
+
 def test_about():
     """Tests if the about string prints correctly."""
     f = io.StringIO()
