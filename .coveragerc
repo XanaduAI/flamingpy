@@ -8,3 +8,4 @@ source = flamingpy
 
 exclude_lines =
     if __name__ == .__main__.:
+    pragma: no cover
