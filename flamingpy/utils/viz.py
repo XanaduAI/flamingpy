@@ -13,6 +13,9 @@
 # limitations under the License.
 """Helper functions to draw various graphs and generate plots using
 Matplotlib."""
+
+# pylint: disable=too-many-branches,too-many-statements
+
 import itertools as it
 
 import numpy as np
@@ -25,7 +28,7 @@ from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
 
-def plot_integer_part(xs, ns, fs, alpha, show=True):
+def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
@@ -37,7 +40,7 @@ def plot_integer_part(xs, ns, fs, alpha, show=True):
         plt.show()  # pragma: no cover
 
 
-def plot_fractional_part(xs, ns, fs, alpha, show=True):
+def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
     plt.title("Fractional Part", fontsize="medium")
     plt.plot(xs, fs, ",")
@@ -86,7 +89,7 @@ def draw_EGraph(
     egraph,
     color_nodes=False,
     color_edges=False,
-    state_colors={},
+    state_colors=None,
     label=None,
     title=False,
     legend=False,
@@ -138,10 +141,12 @@ def draw_EGraph(
     Returns:
         A Matplotib Axes object.
     """
+    if state_colors is None:
+        state_colors = {}
+
     # Recommended to be viewed with IPython.
     # Font properties
     dims = egraph.graph.get("dims")
-    # TODO: automate/improve the following figure size designation
     if dims:
         font_size = 10 * sum(dims) ** (1 / 2)
     else:
@@ -409,8 +414,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
     else:
-        # TODO: Initialize axes based on empty ax object from draw_EGraph
-        # but prevent from draw_EGraph from plotting.
         fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
         ax = fig.gca(projection="3d")
         # ax.tick_params(labelsize=font_props['size'])
@@ -438,9 +441,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # parity and red for odd pariy.
     filled = np.zeros(shape, dtype=object)
     for cube in cubes:
-
-        # TODO: Deal appropriately with cubes on periodic and dual
-        # boundaries.
 
         # Obtain smallest, largest, and middle coordinates for each
         # cube. Divided by 2 becaues voxels are 1X1X1.
@@ -517,7 +517,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     return ax
 
 
-def draw_matching_on_syndrome_plot(ax, matching, G_dec, G_match, label_edges):
+def draw_matching_on_syndrome_plot(ax, matching, G_match):
     """Plot the matching output by MWPM."""
     virtual_points = G_match.virtual_points
     for pair in matching:
