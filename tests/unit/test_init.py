@@ -29,6 +29,7 @@ def test_version():
         ver_file = file.readlines()[-1].split()[-1].strip("\"'")
 
     assert ver_file == fp.version()
+    assert fp.version() == fp._version.__version__
 
 
 def test_about():
@@ -49,8 +50,3 @@ def test_about():
     assert "Matplotlib version:" in out
     assert "lemonpy shared object:" in out
     assert "cpp_mc_loop shared object:" in out
-
-
-def test_version():
-    """Tests if version string is returned correctly"""
-    assert fp.version() == fp._version.__version__
