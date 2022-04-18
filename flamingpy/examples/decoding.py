@@ -91,9 +91,7 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
         # the to_nx() method to perform the conversion if needed.
         G_stabilizer.draw(title=ec_.capitalize() + " stabilizer graph", node_labels=node_labels)
         ax = viz.syndrome_plot(RHG_code, ec_, drawing_opts=dw, index_dict=node_labels)
-        viz.draw_matching_on_syndrome_plot(
-            ax, matching, G_stabilizer, G_match, dw.get("label_edges")
-        )
+        viz.draw_matching_on_syndrome_plot(ax, matching, G_match)
         if len(G_match.graph):
             G_match.draw(title=ec_.capitalize() + " matching graph", node_labels=node_labels)
         else:
