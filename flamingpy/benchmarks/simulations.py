@@ -166,7 +166,7 @@ def run_benchmark(distance, ec, boundaries, delta, p_swap, trials, passive, fnam
     file.close()
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
 
     # Arguments
     distance = 2

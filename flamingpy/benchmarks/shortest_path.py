@@ -80,5 +80,5 @@ plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Building matching graph for code distance {distance}")
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     plt.savefig(f"benchmark_shortest_path_distance_{distance}.pdf")

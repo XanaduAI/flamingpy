@@ -130,7 +130,7 @@ def simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive
     file.close()
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     if len(sys.argv) != 1:
         print(sys.argv)
         # Parsing input parameters

@@ -52,12 +52,12 @@ def surface_code(d, boundaries, err, polarity, show=False):
                 RHG_fig.scatter(x, z, y, color=color, s=200)
 
     if show:
-        plt.show()  # pragma: no cover
+        plt.show()
     else:
         plt.close()
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
 
     params = {
         # Code distance (an integer)

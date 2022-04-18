@@ -98,7 +98,7 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
             print("\nMatching graph empty!\n")
 
         if show:
-            plt.show()  # pragma: no cover
+            plt.show()
         else:
             plt.close()
 
@@ -112,7 +112,7 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
     print(f"Success: {c}")
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
 
     params = {
         # QEC code parameters

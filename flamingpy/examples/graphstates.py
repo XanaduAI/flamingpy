@@ -29,7 +29,7 @@ bell_state.add_edge(*edge, color="MidnightBlue")
 bell_state.draw(color_edges="MidnightBlue", color_nodes="magenta", label="index")
 
 if show:
-    plt.show()  # pragma: no cover
+    plt.show()
 else:
     plt.close()
 
@@ -50,7 +50,7 @@ CVbell.draw(label="hom_val_p", **CV_graph_params)
 CVbell.draw(label="hom_val_q", **CV_graph_params)
 
 if show:
-    plt.show()  # pragma: no cover
+    plt.show()
 else:
     plt.close()
 
