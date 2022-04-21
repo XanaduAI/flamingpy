@@ -14,7 +14,7 @@
 """setup.py instructions for FlamingPy installation from Source
 """
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,B607
 
 import os
 import re
