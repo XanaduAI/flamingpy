@@ -88,13 +88,15 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time"
+    dummy_content = "2,primal,open,0.04,0.5,2,10,12:34:56"
     if "benchmark" in sim.__name__:
-        expected_header += "cpp_to_py_speedup"
+        expected_header += ",cpp_to_py_speedup"
+        dummy_content += ",1"
 
     f = tmpdir.join("sims_results.csv")
     if not empty_file:
         f.write_text(
-            f"{expected_header}\n" + "2,primal,open,0.04,0.5,2,10,12:34:56\n",
+            f"{expected_header}\n" + "\n",
             encoding="UTF-8",
         )
 
