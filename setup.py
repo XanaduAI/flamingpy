@@ -69,7 +69,7 @@ class CMakeBuild(build_ext):
             raise RuntimeError(
                 "CMake must be installed to build the following extensions: "
                 + ", ".join(e.name for e in self.extensions)
-            )
+            ) from error
 
         if platform.system() == "Windows":
             cmake_version = LooseVersion(re.search(r"version\s*([\d.]+)", out.decode()).group(1))
