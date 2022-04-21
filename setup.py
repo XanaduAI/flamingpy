@@ -14,7 +14,7 @@
 """setup.py instructions for FlamingPy installation from Source
 """
 
-# pylint: disable=too-few-public-methods,B607
+# pylint: disable=too-few-public-methods
 
 import os
 import re
@@ -64,7 +64,7 @@ class CMakeBuild(build_ext):
 
     def run(self):
         try:
-            out = subprocess.check_output(["cmake", "--version"])
+            out = subprocess.check_output(["cmake", "--version"]) # nosec
         except OSError as exc:
             raise RuntimeError(
                 "CMake must be installed to build the following extensions: "
