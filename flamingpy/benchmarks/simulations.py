@@ -96,10 +96,9 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="c
 
 def run_sims_benchmark(distance, ec, boundaries, delta, p_swap, trials, passive, fname=None):
     """Run full Monte Carlo error-correction simulations benchmarks.
-    
-    Compare the Cython and regular Python backends. Results are 
-    stored in a file in the sims_data directory (with name fname,
-    if supplied).
+
+    Compare the Cython and regular Python backends. Results are stored
+    in a file in the sims_data directory (with name fname, if supplied).
     """
 
     # The qubit code

@@ -80,35 +80,33 @@ class TestPassive:
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
+
 @pytest.mark.parametrize("passive", [True, False])
 @pytest.mark.parametrize("empty_file", [True, False])
 @pytest.mark.parametrize("sim", [run_ec_simulation, run_sims_benchmark])
 def test_simulations_output_file(tmpdir, passive, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
-    expected_header = (
-        "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time"
-    )
+    expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time"
     if "benchmark" in sim.__name__:
         expected_header += "cpp_to_py_speedup"
 
     f = tmpdir.join("sims_results.csv")
     if not empty_file:
         f.write_text(
-            f"{expected_header}\n"
-            + "2,primal,open,0.04,0.5,2,10,12:34:56\n",
+            f"{expected_header}\n" + "2,primal,open,0.04,0.5,2,10,12:34:56\n",
             encoding="UTF-8",
         )
 
     # simulation params
     params = {
         "distance": 2,
-        "ec":"primal",
+        "ec": "primal",
         "boundaries": "open",
         "delta": 0.04,
         "p_swap": 0.5,
         "passive": passive,
-        "trials": 10
+        "trials": 10,
     }
     sim(**params, fname=f)
 
