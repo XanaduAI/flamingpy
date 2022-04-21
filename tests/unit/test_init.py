@@ -29,7 +29,6 @@ def test_version():
         ver_file = file.readlines()[-1].split()[-1].strip("\"'")
 
     assert ver_file == fp.version()
-    assert fp.version() == fp._version.__version__
 
 
 def test_about():
