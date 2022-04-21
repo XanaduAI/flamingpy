@@ -158,8 +158,8 @@ install_requires = [
     "scipy>=1.6",
 ]
 
-description = """FlamingPy is a cross-platform Python library with a variety of backends for efficient 
-simulations of error correction in fault-tolerant quantum computers."""
+description = """FlamingPy is a cross-platform Python library with a variety of backends for
+efficient simulations of error correction in fault-tolerant quantum computers."""
 
 setup(
     name="flamingpy",
