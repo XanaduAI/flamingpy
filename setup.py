@@ -13,6 +13,9 @@
 # limitations under the License.
 """setup.py instructions for FlamingPy installation from Source
 """
+
+# pylint: disable=too-few-public-methods
+
 import os
 import re
 import sys
@@ -35,7 +38,8 @@ with open("flamingpy/_version.py", encoding="utf8") as f:
 class BinaryDistribution(dist.Distribution):
     """A class to define Binary Distribution objects"""
 
-    def has_ext_modules(foo):
+    @classmethod
+    def has_ext_modules(cls, foo):
         """Check for external modules."""
         return True
 
@@ -155,7 +159,8 @@ install_requires = [
     "scipy>=1.6",
 ]
 
-description = "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
+description = """FlamingPy is a cross-platform Python library with a variety of backends for efficient 
+simulations of error correction in fault-tolerant quantum computers."""
 
 setup(
     name="flamingpy",
