@@ -23,7 +23,7 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo, simulate_qubit_code
-from flamingpy.benchmarks.simulations import run_benchmark
+from flamingpy.benchmarks.simulations import run_sims_benchmark
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
 
@@ -125,7 +125,7 @@ def test_benchmark_output_file(tmpdir, passive, empty_file):
 
     # simulation params
     distance, ec, boundaries, delta, p_swap, trials = (2, "primal", "open", 0.04, 0.5, 10)
-    run_benchmark(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
+    run_sims_benchmark(distance, ec, boundaries, delta, p_swap, trials, passive, fname=f)
 
     file_lines = f.readlines()
     # file is created with header and result lines

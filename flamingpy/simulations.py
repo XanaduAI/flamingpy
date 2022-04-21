@@ -77,8 +77,8 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
 
 
 # pylint: disable=too-many-arguments
-def simulate_qubit_code(distance, ec, boundaries, delta, p_swap, trials, passive, fname=None):
-    """define qubit code and execute the Monte Carlo simulations"""
+def run_ec_simulation(distance, ec, boundaries, delta, p_swap, trials, passive, fname=None):
+    """Run full Monte Carlo error-correction simulations for the surface code."""
 
     # The qubit code
     RHG_code = SurfaceCode(distance, ec, boundaries)
@@ -167,4 +167,4 @@ if __name__ == "__main__":
         }
 
     # The Monte Carlo simulations
-    simulate_qubit_code(**params)
+    run_ec_simulation(**params)

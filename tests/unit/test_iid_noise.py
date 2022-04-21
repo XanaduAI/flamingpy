@@ -61,7 +61,7 @@ def test_decoding():
 
 @pytest.mark.parametrize("prob", [-0.1, 1.1])
 def test_warning(prob):
-    """Test a waning is raised when the probability is not between 0 and 1."""
+    """Test that a warning is raised when the probability is not between 0 and 1."""
 
     code = SurfaceCode(3)
     with pytest.raises(Exception) as exc:

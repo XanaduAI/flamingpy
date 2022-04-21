@@ -113,7 +113,7 @@ class TestCVHelpers:
 
     @pytest.mark.parametrize("one_shot", [True, False])
     def test_SCZ_apply(self, random_graph, one_shot):
-        """test SCZ application with `one_shot` parameter"""
+        """Test SCZ application with the `one_shot` parameter."""
         delta = rng().random()
         model_init = noise_model(delta, "initial")
         model_fin = noise_model(delta, "final")
