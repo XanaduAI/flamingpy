@@ -58,7 +58,7 @@ Installation
                 <pre>
                     <code class="bash">
     # Install the latest released version of FlamingPy, all in a single package.
-    pip install flamingpy
+    python -m pip install flamingpy
                     </code>
                 </pre>
             </div>
