@@ -38,8 +38,7 @@ with open("flamingpy/_version.py", encoding="utf8") as f:
 class BinaryDistribution(dist.Distribution):
     """A class to define Binary Distribution objects"""
 
-    @classmethod
-    def has_ext_modules(cls, foo):
+    def has_ext_modules(foo):
         """Check for external modules."""
         return True
 
