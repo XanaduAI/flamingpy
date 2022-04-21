@@ -180,4 +180,4 @@ if __name__ == "__main__":
     trials = 100
     passive = True
 
-    run_benchmark(ec_monte_carlo, distance, ec, boundaries, delta, p_swap, trials, passive)
+    run_sims_benchmark(ec_monte_carlo, distance, ec, boundaries, delta, p_swap, trials, passive)
