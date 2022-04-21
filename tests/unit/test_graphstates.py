@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
+
+# pylint: disable=redefined-outer-name,protected-access,no-self-use
+
 import string
 
 import networkx as nx
@@ -84,6 +87,14 @@ class TestEGraph:
 
 class TestCVHelpers:
     """Tests for CVLayer helper functions."""
+
+    @pytest.mark.parametrize(
+        "sparse, expected_out_type", [(True, sp.coo_matrix), (False, np.ndarray)]
+    )
+    def test_SCZ_mat_sparse_param(self, random_graph, sparse, expected_out_type):
+        """Tests the SCZ_mat function outputs sparse or dense arrays."""
+        SCZ = SCZ_mat(random_graph[2], sparse=sparse)
+        assert isinstance(SCZ, expected_out_type)
 
     def test_SCZ_mat(self, random_graph):
         """Tests the SCZ_mat function."""
@@ -207,7 +218,6 @@ class TestCVLayer:
         noise_cov_all_p = SCZ_apply(H._adj, np.diag(init_noise_all_p) ** 2)
         assert np.array_equal(G._noise_cov.toarray(), noise_cov_all_GKP)
         assert np.array_equal(H._noise_cov.toarray(), noise_cov_all_p)
-        assert G.noise_cov is not None
 
         G.apply_noise(model_two_step)
         H.apply_noise(model_two_step)

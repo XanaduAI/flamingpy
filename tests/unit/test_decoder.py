@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for decoding funcions in the decoder module."""
 
-# pylint: disable=no-member
+# pylint: disable=no-member,redefined-outer-name,protected-access,no-self-use
 
 import itertools as it
 

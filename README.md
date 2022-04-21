@@ -73,7 +73,7 @@ python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 
 The purpose of the commands is as follows:
 - The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
-- The second command (develop) installs FlamingPy Python libraries without the compiling the optional backends. 
+- The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
 If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git`. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/stable/help/frequently_encountered_errors.html) page in the documentation.
@@ -130,15 +130,16 @@ message = "Error correction {}".format(outcome)
 print(message)
 ```
 
-See our [Documentation](https://flamingpy.readthedocs.io/en/latest/) for more tutorials.
+See our [documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutorials.html) for more tutorials.
 
-<!-- ## Performance Demos
-  -->
+
+
+<!-- ## Performance Demos -->
 
 
 ## Contribution
 
-We welcome new contributions -- simply fork the FlamingPy repository and make a pull request (PR) containing your contribution. All contributors to FlamingPy will be listed as authors on the releases. Users who contribute significantly to the code (new plugins, functionalities, etc.) may be listed on the arXiv preprints for FlamingPy. See our [release notes and changelogs](https://github.com/XanaduAI/flamingpy/releases) for more details.
+See our contributions policy and list of contributors to FlamingPy [here](.github/CONTRIBUTING.rst). <!-- to be changed from relative paths to links -->
 
 
 ## Support
