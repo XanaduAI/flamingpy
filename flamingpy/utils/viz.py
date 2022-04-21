@@ -14,7 +14,7 @@
 """Helper functions to draw various graphs and generate plots using
 Matplotlib."""
 
-# pylint: disable=too-many-branches,too-many-statements
+# pylint: disable=too-many-statements
 
 import itertools as it
 
