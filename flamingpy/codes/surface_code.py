@@ -104,7 +104,6 @@ def str_to_bound(bound_name):
     return np.array(boundaries)
 
 
-# pylint: disable=too-many-branches
 def RHG_graph(
     dims,
     boundaries="primal",

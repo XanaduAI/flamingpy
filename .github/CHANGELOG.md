@@ -14,11 +14,16 @@
 
 ### Documentation changes
 
+* The new Xanadu Sphinx theme has been applied. Currently, most Xanadu OSS projects include their own version of the Xanadu Sphinx theme; however, the Xanadu Sphinx Theme repository is now publicly available and is the preferred way to access the Xanadu CSS theme and Sphinx directives. [(#17)](https://github.com/XanaduAI/flamingpy/pull/17) 
+  * Deleted the doc/xanadu_theme directory
+  * Updated doc/requirements.txt and doc/conf.py to reference and use the (centralized) Xanadu Sphinx Theme.
+  * Replaced the Quantum Error Correction, Install, and FAQ static HTML files with reST ones.
+
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa), [Nariman Saadatmand](https://github.com/nariman87), [Ilan Tzitrin](https://github.com/ilan-tz)
+[Mikhail Andrenkov](https://github.com/Mandrenkov), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details ...
 

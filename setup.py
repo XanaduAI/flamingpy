@@ -13,6 +13,9 @@
 # limitations under the License.
 """setup.py instructions for FlamingPy installation from Source
 """
+
+# pylint: disable=too-few-public-methods
+
 import os
 import re
 import sys
@@ -61,12 +64,12 @@ class CMakeBuild(build_ext):
 
     def run(self):
         try:
-            out = subprocess.check_output(["cmake", "--version"])
-        except OSError:
+            out = subprocess.check_output(["cmake", "--version"]) # nosec
+        except OSError as exc:
             raise RuntimeError(
                 "CMake must be installed to build the following extensions: "
                 + ", ".join(e.name for e in self.extensions)
-            )
+            ) from exc
 
         if platform.system() == "Windows":
             cmake_version = LooseVersion(re.search(r"version\s*([\d.]+)", out.decode()).group(1))
@@ -155,7 +158,8 @@ install_requires = [
     "scipy>=1.6",
 ]
 
-description = "FlamingPy is a cross-platform Python library with a variety of backends for efficient simulations of error correction in fault-tolerant quantum computers."
+description = """FlamingPy is a cross-platform Python library with a variety of backends for
+efficient simulations of error correction in fault-tolerant quantum computers."""
 
 setup(
     name="flamingpy",

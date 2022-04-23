@@ -21,10 +21,10 @@ ignored-classes=numpy,scipy,networkx
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time.
-#enable=line-too-long,invalid-name,too-many-lines,redefined-builtin,too-many-locals,duplicate-code
+#enable=line-too-long,invalid-name,too-many-lines,redefined-builtin,too-many-locals
 
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=invalid-name,consider-using-f-string
+disable=invalid-name,consider-using-f-string,too-many-branches

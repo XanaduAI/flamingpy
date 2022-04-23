@@ -43,14 +43,13 @@ for mod_name in MOCK_MODULES:
 # -- Project information -----------------------------------------------------
 
 project = "FlamingPy"
-copyright = "2022, Xanadu Inc."
+copyright = "2022, Xanadu Quantum Technologies"
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
 with open("../flamingpy/_version.py") as f:
     release = f.readlines()[-1].split()[-1].strip("\"'")
-# import flamingpy as fp
-# release = fp.__version__
+
 # The short X.Y version.
 version = re.match(r"^(\d+\.\d+)", release).expand(r"\1")
 
@@ -64,6 +63,8 @@ needs_sphinx = "3.0"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "edit_on_github",
+    "m2r2",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
@@ -79,8 +80,6 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
     "sphinx.ext.inheritance_diagram",
-    "m2r2",
-    "edit_on_github",
 ]
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
@@ -91,12 +90,10 @@ autosummary_generate = True
 autosummary_imported_members = False
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates", "xanadu_theme"]
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-#
-# source_suffix = ['.rst', '.md']
 source_suffix = ".rst"
 
 # The master toctree document.
@@ -121,6 +118,11 @@ pygments_style = None
 # output. They are ignored by default.
 show_authors = True
 
+# The name of an image file (relative to this directory) to use as a favicon of
+# the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "_static/favicon.ico"
+
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -132,29 +134,59 @@ htmlhelp_basename = "FlamingPydoc"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-# html_theme = 'alabaster'
-html_theme = "xanadu_theme"
-html_theme_path = ["."]
+html_theme = "xanadu"
 
-# Register the theme as an extension to generate a sitemap.xml
-# extensions.append("guzzle_sphinx_theme")
-
-# xanadu theme options (see theme.conf for more information)
+# Xanadu theme options (see theme.conf for more information).
 html_theme_options = {
-    # Set the path to a special layout to include for the homepage
-    # "homepage": "special_index.html",
-    # Set the name of the project to appear in the left sidebar.
-    "project_nav_name": "flamingpy",
-    "touch_icon": "_static/logo_new.png",
-    # colors
-    "navigation_button": "#b13a59",
-    "navigation_button_hover": "#712b3d",
-    "toc_caption": "#b13a59",
-    "toc_hover": "#b13a59",
-    "table_header_bg": "#ffdce5",
-    "table_header_border": "#b13a59",
-    "download_button": "#b13a59",
+    "navbar_name": "FlamingPy",
+    "navbar_logo_colour": "#f57c00",
+
+    "navbar_left_links": [
+        {
+            "name": "Quantum Error Correction",
+            "href": "quantum_error_correction.html",
+        },
+        {
+            "name": "Install",
+            "href": "install.html",
+        },
+        {
+            "name": "Documentation",
+            "href": "index.html",
+            "active": True,
+        },
+    ],
+
+    "navbar_right_links": [
+        {
+            "name": "FAQ",
+            "href": "faq.html",
+            "icon": "fas fa-question",
+        },
+        {
+            "name": "Support",
+            "href": "https://github.com/XanaduAI/flamingpy/issues",
+            "icon": "fab fa-discourse",
+        },
+        {
+            "name": "GitHub",
+            "href": "https://github.com/XanaduAI/flamingpy",
+            "icon": "fab fa-github",
+        },
+    ],
+
+    "prev_next_button_colour": "#f57c00",
+    "prev_next_button_hover_colour": "#bb4d00",
+    "toc_marker_colour": "#f57c00",
+    "table_header_background_colour": "#ffdce5",
+    "border_colour": "#f57c00",
+    "code_colour": "#ef6c00",
+    "text_accent_colour": "#f57c00",
+
+    "extra_copyrights": [
+        "TensorFlow, the TensorFlow logo, and any related marks are trademarks "
+        "of Google Inc."
+    ],
 }
 
 edit_on_github_project = "XanaduAI/flamingpy"
@@ -175,7 +207,6 @@ html_static_path = ["_static"]
 #
 html_sidebars = {
     "**": [
-        "logo-text.html",
         "searchbox.html",
         "globaltoc.html",
     ]
@@ -256,13 +287,6 @@ epub_exclude_files = ["search.html"]
 autodoc_member_order = "bysource"
 
 # inheritance_diagram graphviz attributes
-inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")
-
-
-from custom_directives import CustomGalleryItemDirective, DetailsDirective
-
-
-def setup(app):
-    app.add_directive("customgalleryitem", CustomGalleryItemDirective)
-    app.add_directive("details", DetailsDirective)
-    app.add_css_file("xanadu_gallery.css")
+inheritance_node_attrs = dict(
+    color="lightskyblue1", fillcolor="lightskyblue1", style="filled"
+)
