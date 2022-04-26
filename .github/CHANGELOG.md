@@ -1,8 +1,32 @@
-## Release 0.6.0a3 (development release)
+## Release 0.6.1a3 (development release)
 
 ### New features since the last release
 
 ### Bug fixes
+
+### Improvements
+
+### Documentation changes
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+See full commit details ...
+
+---
+
+
+## Release 0.6.1a3 (current release)
+
+### New features since the last release
+
+* Fixed drawing of stabilizer graph for zero syndrome: [(#9 | compatible feature)](https://github.com/XanaduAI/flamingpy/pull/9)
+  * Previously, the drawing function for a stabilizer graph relied on a non-documented feature. That is, it was assumed that when building the matching graph, all edges of a Networkx-based stabilizer graph were assigned a weight. This, however, was not a fair assumption for many reasons. 
+  * As a solution, we have added a new method to the SurfaceCode class to draw the primal or dual stabilizer graph, which makes sure that each edge has a weight. Now, using that method, the user does not have to rely on unfair assumptions.
+  * Furthermore, we added a quick check to not add any edges to the matching graph when the syndrome is trivial. In this case, the cost of decoding should be almost zero.
+
+* Pauli noise: have added a new noise model sampling i.i.d Z error for each qubit. [(#8 | compatible feature)](https://github.com/XanaduAI/flamingpy/pull/8)
 
 ### Improvements
 
@@ -19,17 +43,18 @@
   * Updated doc/requirements.txt and doc/conf.py to reference and use the (centralized) Xanadu Sphinx Theme.
   * Replaced the Quantum Error Correction, Install, and FAQ static HTML files with reST ones.
 
+* Updated old FT-Stack links in docs header to correct FlamingPy pages. [(#7)](https://github.com/XanaduAI/flamingpy/pull/7)
+
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Mikhail Andrenkov](https://github.com/Mandrenkov), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+[Mikhail Andrenkov](https://github.com/Mandrenkov), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
 
-See full commit details ...
+See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1...v0.6.1a3
 
----
 
-## Release 0.4.9a1 (current release)
+## Release 0.4.9a1
 
 ### Improvements since the last release
 
@@ -41,7 +66,7 @@ See full commit details ...
 
 ### Bug fixes
 
-* Fixed a bug in [pull_request_template.md](https://github.com/XanaduAI/flamingpy/pull/2/commits/e30f2cb65daffece08b193ffc4b8fe7a8d90b90e). The template was not loading properly due to a whitespace problem. [(#2)](https://github.com/XanaduAI/flamingpy/pull/2)
+* Fixed a bug in [`pull_request_template.md`](https://github.com/XanaduAI/flamingpy/pull/2/commits/e30f2cb65daffece08b193ffc4b8fe7a8d90b90e). The template was not loading properly due to a whitespace problem. [(#2)](https://github.com/XanaduAI/flamingpy/pull/2)
 
 * Fixed a bug in [`simulations.py`](flamingpy/simulations.py) and related examples. See [here](https://github.com/XanaduAI/flamingpy/commit/771b0e66e5471c3696ac2e779a2df1cc49e5e684) for commit details. [(#6)](https://github.com/XanaduAI/flamingpy/pull/6)
 
@@ -62,11 +87,12 @@ Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1
 
+
 ## Release 0.4.6a1
 
 ### New features since the last private release
 
-* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for detailes. 
+* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for detailes. (breaking feature) 
 
 ### Improvements
 
