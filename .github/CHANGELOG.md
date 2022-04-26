@@ -21,12 +21,12 @@ See full commit details ...
 
 ### New features since the last release
 
-* Fixed drawing of stabilizer graph for zero syndrome: [(#9 | backward compatible)](https://github.com/XanaduAI/flamingpy/pull/9)
+* Fixed drawing of stabilizer graph for zero syndrome: [(#9 | backward incompatible)](https://github.com/XanaduAI/flamingpy/pull/9)
   * Previously, the drawing function for a stabilizer graph relied on a non-documented feature. That is, it was assumed that when building the matching graph, all edges of a Networkx-based stabilizer graph were assigned a weight. This, however, was not a fair assumption for many reasons. 
   * As a solution, we have added a new method to the `SurfaceCode` class to draw the primal or dual stabilizer graph, which makes sure that each edge has a weight. Now, using that method, the user does not have to rely on unfair assumptions.
   * Furthermore, we added a quick check to not add any edges to the matching graph when the syndrome is trivial. In this case, the cost of decoding should be almost zero.
 
-* Pauli noise: have added a new noise model sampling i.i.d Z error for each qubit. [(#8 | backward compatible)](https://github.com/XanaduAI/flamingpy/pull/8)
+* Pauli noise: have added a new noise model sampling i.i.d Z error for each qubit. [(#8 | backward incompatible)](https://github.com/XanaduAI/flamingpy/pull/8)
 
 ### Improvements
 
