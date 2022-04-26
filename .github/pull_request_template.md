@@ -55,4 +55,3 @@
 - [ ] I have added context for corresponding changes in documentation and README.md as needed.
 - [ ] I have added new workflow CI tests for corresponding changes and these pass locally for me.
 - [ ] I have updated [`CHANGELOG.md`](.github/CHANGELOG.md) following the template. I recognize that the developers may revisit `CHANGELOG.md` and the versioning, and create a Special Release including my changes.
-
