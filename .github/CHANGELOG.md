@@ -58,7 +58,7 @@ See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1..
 
 ### Improvements since the last release
 
-* Relative paths cannot be used in README.md logos and were replaced with Github-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
+* Relative paths cannot be used in README.md logos and were replaced with GitHub-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
 
 * C++ imports are now placed within `try` blocks to avoid interrupting non-compiled installations, such as the ones currently used by readthedocs. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
 
@@ -92,7 +92,7 @@ See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1..
 
 ### New features since the last private release
 
-* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for detailes. (backward incompatible) 
+* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for details. (backward incompatible) 
 
 ### Improvements
 
