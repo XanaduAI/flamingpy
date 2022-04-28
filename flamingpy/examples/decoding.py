@@ -25,7 +25,7 @@ from flamingpy.noise import IidNoise
 from flamingpy.utils import viz
 
 
-def decode_surface_code(distance, boundaries, ec, noise, show=False):
+def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
     """Example of instantiating, applying noise, decoding, recovering, and
     visualizing this procedure for the measurement-based surface code."""
 
@@ -62,45 +62,47 @@ def decode_surface_code(distance, boundaries, ec, noise, show=False):
         weight_options = {"method": "unit"}
         decoder = {"outer": "MWPM"}
 
-    # Drawing options
-    node_colors = "state" if noise == "cv" else False
-    dw = {
-        "show_nodes": True,
-        "color_nodes": node_colors,
-        "label": None,
-        "legend": True,
-        "title": True,
-        "display_axes": True,
-        "label_edges": True,
-        "label_cubes": False,
-        "label_boundary": False,
-    }
+    # draw intermediate results
+    if draw:
+        # Drawing options
+        node_colors = "state" if noise == "cv" else False
+        dw = {
+            "show_nodes": True,
+            "color_nodes": node_colors,
+            "label": None,
+            "legend": True,
+            "title": True,
+            "display_axes": True,
+            "label_edges": True,
+            "label_cubes": False,
+            "label_boundary": False,
+        }
 
-    # Manual decoding (to plot intermediate results).
-    dec.assign_weights(RHG_code, **weight_options)
-    for ec_ in RHG_code.ec:
-        G_match = dec.build_match_graph(RHG_code, ec_)
-        matching = G_match.min_weight_perfect_matching()
-        G_stabilizer = getattr(RHG_code, ec_ + "_stab_graph")
+        # Manual decoding (to plot intermediate results).
+        dec.assign_weights(RHG_code, **weight_options)
+        for ec_ in RHG_code.ec:
+            G_match = dec.build_match_graph(RHG_code, ec_)
+            matching = G_match.min_weight_perfect_matching()
+            G_stabilizer = getattr(RHG_code, ec_ + "_stab_graph")
 
-        # An integer label for each nodes in the stabilizer and matching graphs.
-        # This is useful to identify the nodes in the plots.
-        node_labels = {node: index for index, node in enumerate(G_stabilizer.graph)}
+            # An integer label for each nodes in the stabilizer and matching graphs.
+            # This is useful to identify the nodes in the plots.
+            node_labels = {node: index for index, node in enumerate(G_stabilizer.graph)}
 
-        # The draw_dec_graph function requires the networkx backend. Most backends implement
-        # the to_nx() method to perform the conversion if needed.
-        G_stabilizer.draw(title=ec_.capitalize() + " stabilizer graph", node_labels=node_labels)
-        ax = viz.syndrome_plot(RHG_code, ec_, drawing_opts=dw, index_dict=node_labels)
-        viz.draw_matching_on_syndrome_plot(ax, matching, G_match)
-        if len(G_match.graph):
-            G_match.draw(title=ec_.capitalize() + " matching graph", node_labels=node_labels)
-        else:
-            print("\nMatching graph empty!\n")
+            # The draw_dec_graph function requires the networkx backend. Most backends implement
+            # the to_nx() method to perform the conversion if needed.
+            G_stabilizer.draw(title=ec_.capitalize() + " stabilizer graph", node_labels=node_labels)
+            ax = viz.syndrome_plot(RHG_code, ec_, drawing_opts=dw, index_dict=node_labels)
+            viz.draw_matching_on_syndrome_plot(ax, matching, G_match)
+            if len(G_match.graph):
+                G_match.draw(title=ec_.capitalize() + " matching graph", node_labels=node_labels)
+            else:
+                print("\nMatching graph empty!\n")
 
-        if show:
-            plt.show()
-        else:
-            plt.close()
+            if show:
+                plt.show()
+            else:
+                plt.close()
 
     # Automatic decoding
     c = dec.correct(

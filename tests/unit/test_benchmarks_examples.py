@@ -28,7 +28,7 @@ def test_decoder_example(noise):
     boundaries = "open"
     ec = "primal"
 
-    decode_surface_code(distance, boundaries, ec, noise)
+    decode_surface_code(distance, boundaries, ec, noise, draw=True)
 
 
 def test_decoding_benchmark():
