@@ -112,21 +112,36 @@ class TestCVHelpers:
             assert np.array_equal(mat[N:, N:], np.identity(N))
 
     @pytest.mark.parametrize("one_shot", [True, False])
-    def test_SCZ_apply(self, random_graph, one_shot):
-        """Test SCZ application with the `one_shot` parameter."""
-        delta = rng().random()
-        model_init = noise_model(delta, "initial")
-        model_fin = noise_model(delta, "final")
+    @pytest.mark.parametrize("n", [1, 2])
+    def test_SCZ_apply(self, random_graph, one_shot, n):
+        """Test SCZ matrix application."""
 
-        n = len(random_graph[0])
-        G = CVLayer(random_graph[0])
-        G.apply_noise(model_init)
-        init_noise_all_GKP = np.full(2 * n, (delta / 2) ** 0.5, dtype=np.float32)
-        assert np.array_equal(G._init_noise, init_noise_all_GKP)
+        adj = random_graph[1]
+        SCZ = SCZ_mat(adj)
+        N = adj.shape[0]
+        quads = np.ones([N * 2] * n)
 
-        G.apply_noise(model_fin)
-        noise_cov_all_GKP = SCZ_apply(G._adj, np.diag(init_noise_all_GKP) ** 2, one_shot=one_shot)
-        assert np.array_equal(G._noise_cov.toarray(), noise_cov_all_GKP)
+        if n == 1:
+            expected_quads = SCZ_mat(adj).dot(quads)
+        else:
+            expected_quads = SCZ.dot(SCZ.dot(quads).T).T
+
+        new_quads = SCZ_apply(adj, quads, one_shot=one_shot)
+
+        assert np.allclose(new_quads, expected_quads)
+
+    @pytest.mark.parametrize("one_shot", [True, False])
+    def test_SCZ_apply_twodimensional(self, random_graph, one_shot):
+        """Test SCZ matrix application to two-dimensional arrays."""
+
+        adj = random_graph[1]
+        N = adj.shape[0]
+        quads = np.ones((N * 2, N * 2))
+
+        new_quads = SCZ_apply(adj, quads, one_shot=one_shot)
+        SCZ = SCZ_mat(adj)
+        expected_quads = SCZ.dot(SCZ.dot(quads).T).T
+        assert np.allclose(new_quads, expected_quads)
 
 
 class TestCVLayer:
