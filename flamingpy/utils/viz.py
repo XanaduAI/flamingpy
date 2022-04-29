@@ -20,12 +20,26 @@ import itertools as it
 
 import numpy as np
 import networkx as nx
+import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
 from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
+
+plot_params = {
+    "font.size": 15,
+    "font.family": "serif",
+    "axes.labelsize": 15,
+    "axes.titlesize": 15,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
+    "legend.fontsize": 15,
+    "grid.color": "lightgray",
+    "lines.markersize": 15,
+    "figure.figsize": (6.4, 4.8),
+}
 
 
 def plot_integer_part(xs, ns, alpha, show=True):
@@ -85,6 +99,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
         plt.show()
 
 
+@mpl.rc_context(plot_params)
 def draw_EGraph(
     egraph,
     color_nodes=False,
@@ -153,19 +168,6 @@ def draw_EGraph(
         dims = (5, 5, 5)
         font_size = 14
     xmax, ymax, zmax = dims
-    # Set plotting options
-    plot_params = {
-        "font.size": font_size,
-        "font.family": "serif",
-        "axes.labelsize": font_size,
-        "axes.titlesize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "legend.fontsize": font_size,
-        "grid.color": "lightgray",
-        "lines.markersize": font_size,
-    }
-    plt.rcParams.update(plot_params)
 
     fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
     ax = fig.add_subplot(111, projection="3d")
@@ -284,6 +286,7 @@ def plot_binary_mat_heat_map(mat, show=True):
         plt.show()
 
 
+@mpl.rc_context(plot_params)
 def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     """Draw a stabilizer or matching graph with a color legend.
 
@@ -301,9 +304,10 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     if not isinstance(graph.graph, nx.Graph):
         raise ValueError("The graph must be implemented with the networkx backend.")
     graph = graph.graph
+
     plt.figure()
     if title != "":
-        plt.title(title, family="serif", size=10)
+        plt.title(title)
     # NetworkX drawing function for circular embedding of graphs.
     if node_labels is not None:
         node_labels = {node: label for node, label in node_labels.items() if node in graph}
@@ -313,7 +317,7 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
         with_labels=node_labels is not None,
         labels=node_labels,
         node_color="k",
-        font_size=7,
+        font_size=plot_params.get("font.size", 7),
         font_color="w",
         font_family="serif",
     )
@@ -322,11 +326,15 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     weight_dict = {edge: "{:.2f}".format(graph.edges[edge]["weight"]) for edge in graph.edges}
     if label_edges:
         nx.draw_networkx_edge_labels(
-            graph, nx.circular_layout(graph), edge_labels=weight_dict, font_size=7
+            graph,
+            nx.circular_layout(graph),
+            edge_labels=weight_dict,
+            font_size=plot_params.get("font.size", 7) * 0.7,
+            verticalalignment="top",
         )
     r = nx.draw_networkx_edges(graph, nx.circular_layout(graph), edge_color=weight_list)
     cbar = plt.colorbar(r)
-    cbar.ax.tick_params(labelsize=10)
+    cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10))
 
 
 def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
