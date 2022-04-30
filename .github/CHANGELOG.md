@@ -50,7 +50,7 @@ This release contains contributions from (in alphabetical order):
 
 [Mikhail Andrenkov](https://github.com/Mandrenkov), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
 
-See full commit details https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1...v0.6.1a3
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1...v0.6.1a3).
 
 
 ## Release 0.4.9a1
