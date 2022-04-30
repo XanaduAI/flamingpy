@@ -14,4 +14,4 @@ sphinx-copybutton>=0.4
 sphinxcontrib-bibtex>=0.4.2
 toml>=0.10.2
 # TODO: Use the Xanadu-Sphinx-Theme package on PyPI once it has been released.
-git+https://github.com/XanaduAI/xanadu-sphinx-theme@phoenix#egg=xanadu_sphinx_theme
+git+git://github.com/XanaduAI/xanadu-sphinx-theme#egg=xanadu-sphinx-theme
