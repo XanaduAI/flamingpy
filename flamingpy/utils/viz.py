@@ -42,21 +42,23 @@ plot_params = {
 }
 
 
+@mpl.rc_context(plot_params)
 def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     plt.plot(xs, ns, ",")
-    plt.title("Integer Part", fontsize="medium")
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    plt.title("Integer Part")
+    plt.xticks(newxticks, newxlabels)
     if show:
         plt.show()
 
 
+@mpl.rc_context(plot_params)
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
-    plt.title("Fractional Part", fontsize="medium")
+    plt.title("Fractional Part")
     plt.plot(xs, fs, ",")
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
@@ -64,25 +66,27 @@ def plot_fractional_part(xs, fs, alpha, show=True):
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    plt.xticks(newxticks, newxlabels)
     plt.yticks(newyticks, newylabels)
     if show:
         plt.show()
 
 
+@mpl.rc_context(plot_params)
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     plt.plot(outcomes, bit_values, ",")
-    plt.title("Binned values", fontsize="medium")
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    plt.title("Binned values")
+    plt.xticks(newxticks, newxlabels)
     plt.yticks([0, 1], [0, 1])
     if show:
         plt.show()
 
 
+@mpl.rc_context(plot_params)
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
     _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
@@ -93,8 +97,8 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     plt.plot(val, error, ",")
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
-    plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    plt.title("Conditional phase probabilities: " + addendum)
+    plt.xticks(newxticks, newxlabels)
     if show:
         plt.show()
 
@@ -226,16 +230,16 @@ def draw_EGraph(
             if value is not None:
                 x, z, y = point
                 # Raise negative sign above node.
-                sign = "^{-}" * (-int(np.sign(value)))
+                sign = "^{-}" if value < 0 else " "
                 if not isinstance(value, int):
                     value = r"${}{:.2g}$".format(sign, np.abs(value))
                 ax.text(
-                    x,
+                    x + 0.05,
                     y,
                     z,
                     value,
                     color="MediumBlue",
-                    backgroundcolor="w",
+                    # backgroundcolor="w",
                     zorder=2,
                 )
             else:
@@ -277,6 +281,7 @@ def draw_EGraph(
     return ax
 
 
+@mpl.rc_context(plot_params)
 def plot_binary_mat_heat_map(mat, show=True):
     """Plot the heat map of a matrix."""
     plt.figure()
