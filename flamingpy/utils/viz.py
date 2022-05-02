@@ -282,12 +282,20 @@ def draw_EGraph(
 
 
 @mpl.rc_context(plot_params)
-def plot_binary_mat_heat_map(mat, show=True):
+def plot_binary_mat_heat_map(mat, title=None, show=True):
     """Plot the heat map of a matrix."""
     plt.figure()
     if not isinstance(mat, np.ndarray):
         mat = mat.toarray()
-    plt.matshow(mat, 0)
+    cmap = mpl.colors.ListedColormap(["C0", "C1"])
+    plt.matshow(mat, 0, cmap=cmap)
+    if title:
+        plt.title(title)
+    cbar = plt.colorbar(ticks=[0.25, 0.75])
+    cbar.ax.set_yticklabels(["0", "1"])
+    cbar.set_label(
+        "value", rotation=270, fontsize=plot_params.get("axes.labelsize", 10) * 1.2, labelpad=20
+    )
     if show:
         plt.show()
 
