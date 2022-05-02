@@ -166,11 +166,6 @@ def draw_EGraph(
     # Recommended to be viewed with IPython.
     # Font properties
     dims = egraph.graph.get("dims")
-    if dims:
-        font_size = 10 * sum(dims) ** (1 / 2)
-    else:
-        dims = (5, 5, 5)
-        font_size = 14
     xmax, ymax, zmax = dims
 
     fig = plt.figure()
