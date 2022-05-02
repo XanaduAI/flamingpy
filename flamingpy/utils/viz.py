@@ -186,6 +186,7 @@ def draw_EGraph(
         n_uncomputed = 0
         if title:
             ax.set_title(name)
+            ax.title.set_size(plot_params.get("axes.titlesize"))
         if label == "index":
             indices = egraph.index_generator()
 
@@ -344,6 +345,7 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     )
 
 
+@mpl.rc_context(plot_params)
 def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     """Draw the syndrome plot for a code.
 
@@ -373,21 +375,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     Returns:
         matplotlib.pyplot.axes: the 'axes' object
     """
-    # Font properties
-    font_size = 10 * sum(code.dims) ** (1 / 2)
-    # Set plotting options
-    plot_params = {
-        "font.size": font_size,
-        "font.family": "serif",
-        "axes.labelsize": font_size,
-        "axes.titlesize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "legend.fontsize": font_size,
-        "grid.color": "lightgray",
-        "lines.markersize": font_size,
-    }
-    plt.rcParams.update(plot_params)
 
     cubes = getattr(code, ec + "_stabilizers")
     # Default drawing options.
@@ -411,7 +398,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
     # Shape and font properties from the original graph.
     shape = np.array(code.dims)
-    # font_props = state.font_props
     # If show_nodes is True, get the axes object and legend from
     # draw_EGraph (this also plots the graph in the console).
     if drawing_opts["show_nodes"]:
@@ -429,28 +415,23 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
     else:
-        fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
+        fig = plt.figure()
         ax = fig.gca(projection="3d")
-        # ax.tick_params(labelsize=font_props['size'])
         plt.xticks(range(0, 2 * shape[0] + 1))
         plt.yticks(range(0, 2 * shape[1] + 1))
         ax.set_zticks(range(0, 2 * shape[2] + 1))
         ax.set_xlabel(
             "x",
-            # fontdict=font_props,
             labelpad=20,
         )
         ax.set_ylabel(
             "z",
-            # fontdict=font_props,
             labelpad=20,
         )
         ax.set_zlabel(
             "y",
-            # fontdict=font_props,
             labelpad=20,
         )
-        plt.rcParams["grid.color"] = "lightgray"
         leg = None
     # Illustrate stabilizers with voxels colored green for even
     # parity and red for odd pariy.
@@ -529,9 +510,12 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         ax.add_artist(leg)
     if drawing_opts["title"]:
         ax.set_title(ec.capitalize() + " syndrome")
+
+    ax.autoscale()
     return ax
 
 
+@mpl.rc_context(plot_params)
 def draw_matching_on_syndrome_plot(ax, matching, G_match):
     """Plot the matching output by MWPM."""
     virtual_points = G_match.virtual_points
@@ -548,6 +532,6 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
                 xlist += [x]
                 ylist += [y]
                 zlist += [z]
-            ax.set_title("Minimum-weight perfect matching", family="serif", size=20)
+            ax.set_title("Minimum-weight perfect matching")
             ax.plot(xlist, ylist, zlist, "o-", ms=20, linewidth=5, c=np.random.rand(3))
     return ax
