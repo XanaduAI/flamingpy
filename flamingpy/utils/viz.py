@@ -32,13 +32,13 @@ plot_params = {
     "font.size": 15,
     "font.family": "serif",
     "axes.labelsize": 15,
-    "axes.titlesize": 15,
+    "axes.titlesize": 20,
     "xtick.labelsize": 15,
     "ytick.labelsize": 15,
     "legend.fontsize": 15,
     "grid.color": "lightgray",
     "lines.markersize": 15,
-    "figure.figsize": (6.4, 4.8),
+    "figure.figsize": (12, 9),
 }
 
 
@@ -169,7 +169,7 @@ def draw_EGraph(
         font_size = 14
     xmax, ymax, zmax = dims
 
-    fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
+    fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
 
     if label:
@@ -316,6 +316,7 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
         edgelist=[],
         with_labels=node_labels is not None,
         labels=node_labels,
+        node_size=600,
         node_color="k",
         font_size=plot_params.get("font.size", 7),
         font_color="w",
@@ -329,12 +330,18 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
             graph,
             nx.circular_layout(graph),
             edge_labels=weight_dict,
-            font_size=plot_params.get("font.size", 7) * 0.7,
-            verticalalignment="top",
+            font_size=plot_params.get("font.size", 7) * 0.75,
+            clip_on=False,
+            alpha=0.7,
+            verticalalignment="center_baseline",
+            bbox={"alpha": 0},
         )
     r = nx.draw_networkx_edges(graph, nx.circular_layout(graph), edge_color=weight_list)
     cbar = plt.colorbar(r)
-    cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10))
+    cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
+    cbar.set_label(
+        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10) * 1.2, labelpad=40
+    )
 
 
 def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
