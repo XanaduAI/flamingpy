@@ -119,7 +119,8 @@ class TestCVHelpers:
         adj = random_graph[1]
         SCZ = SCZ_mat(adj)
         N = adj.shape[0]
-        quads = np.ones([N * 2] * n)
+        quads_shape = [N * 2] * n
+        quads = np.random.rand(*quads_shape)
 
         if n == 1:
             expected_quads = SCZ_mat(adj).dot(quads)
@@ -128,19 +129,6 @@ class TestCVHelpers:
 
         new_quads = SCZ_apply(adj, quads, one_shot=one_shot)
 
-        assert np.allclose(new_quads, expected_quads)
-
-    @pytest.mark.parametrize("one_shot", [True, False])
-    def test_SCZ_apply_twodimensional(self, random_graph, one_shot):
-        """Test SCZ matrix application to two-dimensional arrays."""
-
-        adj = random_graph[1]
-        N = adj.shape[0]
-        quads = np.ones((N * 2, N * 2))
-
-        new_quads = SCZ_apply(adj, quads, one_shot=one_shot)
-        SCZ = SCZ_mat(adj)
-        expected_quads = SCZ.dot(SCZ.dot(quads).T).T
         assert np.allclose(new_quads, expected_quads)
 
 
