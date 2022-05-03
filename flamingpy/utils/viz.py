@@ -536,3 +536,25 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
             ax.set_title("Minimum-weight perfect matching", family="serif", size=20)
             ax.plot(xlist, ylist, zlist, "o-", ms=20, linewidth=5, c=np.random.rand(3))
     return ax
+
+
+def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
+    """Draw the stabilizer and matching graphs, and the plot the syndrome."""
+    G_stabilizer = getattr(code, ec + "_stab_graph")
+    # An integer label for each node in the stabilizer and matching
+    # graphs. This is useful to identify the nodes in the plots.
+    node_labels = {node: index for index, node in enumerate(G_stabilizer.nodes())}
+
+    if drawing_opts is None:
+        drawing_opts = {}
+
+    code.draw_stabilizer_graph(
+        ec, title=ec.capitalize() + " stabilizer graph", node_labels=node_labels
+    )
+    if len(G_match.graph):
+        G_match.draw(title=ec.capitalize() + " matching graph", node_labels=node_labels)
+    else:
+        print("\nMatching graph empty!\n")
+
+    ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    draw_matching_on_syndrome_plot(ax, matching, G_match)
