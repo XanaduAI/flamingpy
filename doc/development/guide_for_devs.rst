@@ -95,7 +95,7 @@ Test coverage can be checked by running
 
 .. code-block:: bash
 
-    python3 -m pytest tests --cov=ft_stack --cov-report=xml --cov-report=term-missing -p no:warnings
+    python -m pytest tests --cov=ft_stack --cov-report=xml --cov-report=term-missing -p no:warnings
 
 The output of the above command will show the coverage percentage of each
 file, as well as the line numbers of any lines missing test coverage.
