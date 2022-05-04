@@ -323,30 +323,32 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     if not isinstance(graph.graph, nx.Graph):
         raise ValueError("The graph must be implemented with the networkx backend.")
     graph = graph.graph
+    layout = nx.circular_layout(graph)
 
-    plt.figure()
+    fig, ax = plt.subplots()
     if title != "":
-        plt.title(title)
+        ax.set_title(title)
     # NetworkX drawing function for circular embedding of graphs.
+
+    # Color edges based on weight, and draw a colobar.
+
+    # divider = make_axes_locatable(ax)
+    ax.axis("off")
+    cmap, norm = draw_curved_edges(graph, layout, ax)
+    nx.draw_networkx_nodes(graph, pos=layout, node_color="#202020", ax=ax)
+
+    # Draw node labels
     if node_labels is not None:
         node_labels = {node: label for node, label in node_labels.items() if node in graph}
-    nx.draw_circular(
-        graph,
-        edgelist=[],
-        with_labels=node_labels is not None,
-        labels=node_labels,
-        node_color="#202020",
-        font_size=plot_params.get("font.size", 7),
-        font_color="w",
-        width=3,
-    )
-    # Color edges based on weight, and draw a colobar.
-    weight_list = [graph.edges[edge]["weight"] for edge in graph.edges]
-    weight_dict = {edge: "{:.2f}".format(graph.edges[edge]["weight"]) for edge in graph.edges}
+        nx.draw_networkx_labels(
+            graph, pos=layout, labels=node_labels, font_color="white", font_weight=100, ax=ax
+        )
+
     if label_edges:
+        weight_dict = {edge: "{:.2f}".format(graph.edges[edge]["weight"]) for edge in graph.edges}
         nx.draw_networkx_edge_labels(
             graph,
-            nx.circular_layout(graph),
+            layout,
             edge_labels=weight_dict,
             font_size=plot_params.get("font.size", 7) * 0.75,
             clip_on=False,
@@ -354,12 +356,35 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
             verticalalignment="center_baseline",
             bbox={"alpha": 0},
         )
-    r = nx.draw_networkx_edges(graph, nx.circular_layout(graph), edge_color=weight_list)
-    cbar = plt.colorbar(r)
+
+    cax, kw = mpl.colorbar.make_axes(ax, location="right", fraction=0.15)
+    cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, **kw)
     cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
     cbar.set_label(
-        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=40
+        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
     )
+
+
+def draw_curved_edges(graph, layout, ax, rad=0.5):
+
+    edges = graph.edges
+    edge_weights = [edges[edge]["weight"] for edge in edges]
+
+    cmap = mpl.cm.get_cmap("Spectral")
+    norm = mpl.colors.Normalize(vmin=np.min(edge_weights), vmax=np.max(edge_weights))
+    for edge in graph.edges():
+        source, target = edge
+        arrowprops = dict(
+            arrowstyle="-",
+            color=cmap(norm(edges[edge]["weight"])),
+            connectionstyle=f"arc3,rad={rad}",
+            linestyle="-",
+            linewidth=plot_params.get("lines.linewidth", 1) / 2,
+            alpha=0.8,
+        )
+        mpl.patches.FancyArrowPatch(layout[source], layout[target])
+        ax.annotate("", xy=layout[source], xytext=layout[target], arrowprops=arrowprops)
+    return cmap, norm
 
 
 @mpl.rc_context(plot_params)
