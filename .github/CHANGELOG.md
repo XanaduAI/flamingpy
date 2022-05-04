@@ -10,6 +10,12 @@
   `.coveragerc` as well as the refactoring of some examples to allow for proper
   imports from testing modules. Code coverage is now above 95% and
   the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
+* Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes.
+  * A function was added to the `viz` module and new options added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial. 
+  * Appearances and presence of node labels (specifically the virtual nodes of the matching graph) were fixed. 
+  * The `label_cubes` argument was renamed to the more accurate `label_stabilizers`.
+  * One can now plot a non-NetworkX matching graph (by an automatic conversion to a NetworkX graph).
+  * The above changes allowed for a significant simplification to the decoding example.
 
 ### Documentation changes
 
