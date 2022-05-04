@@ -547,7 +547,13 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     # An integer label for each node in the stabilizer and matching
     # graphs. This is useful to identify the nodes in the plots.
     if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):
+        # Node labels for the stabilizer graph
         node_labels = {node: index for index, node in enumerate(G_stabilizer.nodes())}
+        # Update node labels to work with the matching graph---needs to be done
+        # because virtual boundary nodes are of the form ((x, y, z), i).
+        for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
+            index = node_labels[virtual_node[0]]
+            node_labels[virtual_node] = index  
     else:
         node_labels = None
     label_edges = True if drawing_opts.get("label_edges") else False
@@ -559,7 +565,6 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
         node_labels=node_labels,
     )
     if len(G_match.graph):
-        print(G_match.graph.nodes.data())
         G_match.draw(
             title=ec.capitalize() + " matching graph",
             label_edges=label_edges,
