@@ -366,6 +366,16 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
 
 
 def draw_curved_edges(graph, layout, ax, rad=0.5):
+    """Draw curved edges using matplotlib directly instead of networkx.
+
+    This requires that the graph is implemented with the NetworkX backend.
+
+    Args:
+        graph (NxGraph): The graph to draw.
+        layout (dict): A dictionary of positions keyed by node.
+        ax (matplotlib.pyplot.Axis): The axis on which arrows should be drawn.
+        rad (float, optional): Curvature of the arrows in radians.
+    """
 
     edges = graph.edges
     edge_weights = [edges[edge]["weight"] for edge in edges]
@@ -382,7 +392,6 @@ def draw_curved_edges(graph, layout, ax, rad=0.5):
             linewidth=plot_params.get("lines.linewidth", 1) / 2,
             alpha=0.8,
         )
-        mpl.patches.FancyArrowPatch(layout[source], layout[target])
         ax.annotate("", xy=layout[source], xytext=layout[target], arrowprops=arrowprops)
     return cmap, norm
 
