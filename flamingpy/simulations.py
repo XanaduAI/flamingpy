@@ -76,43 +76,9 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
     return errors
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 1:
-        print(sys.argv)
-        # Parsing input parameters
-        parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
-        parser.add_argument("distance", type=int)
-        parser.add_argument("ec", type=str)
-        parser.add_argument("boundaries", type=str)
-        parser.add_argument("delta", type=float)
-        parser.add_argument("p_swap", type=float)
-        parser.add_argument("trials", type=int)
-        parser.add_argument("passive", type=bool)
-
-        args = parser.parse_args()
-        distance, ec, boundaries, delta, p_swap, trials, passive = (
-            args.distance,
-            args.ec,
-            args.boundaries,
-            args.delta,
-            args.p_swap,
-            args.trials,
-            args.passive,
-        )
-
-    else:
-        # User-specified values, if not using command line.
-        distance, ec, boundaries, delta, p_swap, trials, passive = (
-            2,
-            "primal",
-            "open",
-            0.04,
-            0.5,
-            100,
-            True,
-        )
-
-    # The Monte Carlo simulations
+# pylint: disable=too-many-arguments
+def run_ec_simulation(distance, ec, boundaries, delta, p_swap, trials, passive, fname=None):
+    """Run full Monte Carlo error-correction simulations for the surface code."""
 
     # The qubit code
     RHG_code = SurfaceCode(distance, ec, boundaries)
@@ -135,9 +101,11 @@ if __name__ == "__main__":
 
     errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
 
-    # Store results in a sims_data directory in the file simulations_results.csv.
-    file_name = "./flamingpy/sims_data/sims_results.csv"
+    # Store results in the provided file-path or by default in
+    # a sims_data directory in the file simulations_results.csv.
+    file_name = fname or "./flamingpy/sims_data/sims_results.csv"
     # Create a CSV file if it doesn't already exist.
+    # pylint: disable=consider-using-with
     try:
         file = open(file_name, "x", newline="", encoding="utf8")
         writer = csv.writer(file)
@@ -160,3 +128,43 @@ if __name__ == "__main__":
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
     file.close()
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 1:
+        print(sys.argv)
+        # Parsing input parameters
+        parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
+        parser.add_argument("distance", type=int)
+        parser.add_argument("ec", type=str)
+        parser.add_argument("boundaries", type=str)
+        parser.add_argument("delta", type=float)
+        parser.add_argument("p_swap", type=float)
+        parser.add_argument("trials", type=int)
+        parser.add_argument("passive", type=bool)
+
+        args = parser.parse_args()
+        params = {
+            "distance": args.distance,
+            "ec": args.ec,
+            "boundaries": args.boundaries,
+            "delta": args.delta,
+            "p_swap": args.p_swap,
+            "trials": args.trials,
+            "passive": args.passive,
+        }
+
+    else:
+        # User-specified values, if not using command line.
+        params = {
+            "distance": 2,
+            "ec": "primal",
+            "boundaries": "open",
+            "delta": 0.04,
+            "p_swap": 0.5,
+            "trials": 100,
+            "passive": True,
+        }
+
+    # The Monte Carlo simulations
+    run_ec_simulation(**params)

@@ -15,6 +15,8 @@
 Unit tests for flamingpy top _init_.py functions.
 """
 
+# pylint: disable=protected-access
+
 import contextlib
 import io
 
