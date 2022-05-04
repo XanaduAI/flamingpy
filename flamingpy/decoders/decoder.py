@@ -313,7 +313,7 @@ def correct(
             if draw:
                 from flamingpy.utils.viz import draw_mwpm_decoding
 
-                draw_mwpm_decoding(code, ec, matching_graph, matching, drawing_opts=None)
+                draw_mwpm_decoding(code, ec, matching_graph, matching, drawing_opts)
 
             recovery(code, matching_graph, matching, ec, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
