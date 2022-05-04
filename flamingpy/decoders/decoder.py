@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Decoding and recovery functions."""
+
+# pylint: disable=import-outside-toplevel
+
 import itertools as it
 import sys
 

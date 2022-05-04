@@ -556,7 +556,7 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
             node_labels[virtual_node] = index
     else:
         node_labels = None
-    label_edges = True if drawing_opts.get("label_edges") else False
+    label_edges = bool(drawing_opts.get("label_edges"))
 
     code.draw_stabilizer_graph(
         ec,

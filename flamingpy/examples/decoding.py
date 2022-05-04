@@ -16,6 +16,8 @@ visualizing this procedure for the measurement-based surface code."""
 
 # pylint: disable=no-member
 
+import matplotlib.pyplot as plt
+
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
@@ -87,10 +89,15 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
         decoder=decoder,
         weight_options=weight_options,
         sanity_check=True,
-        draw=True,
+        draw=draw,
         drawing_opts=dw,
     )
     print(f"Success: {c}")
+
+    if show:
+        plt.show()
+    else:
+        plt.close()
 
 
 if __name__ == "__main__":
