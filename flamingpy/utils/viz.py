@@ -228,7 +228,7 @@ def draw_EGraph(
         else:
             color = egraph.nodes[point].get("color") if color_nodes else "k"
 
-        ax.scatter(x, y, z, c=color, s=plt.rcParams["lines.markersize"] * 5)
+        ax.scatter(x, y, z, c=color, s=plot_params.get("lines.markersize", 3))
 
         if label:
             value = egraph.nodes[point].get(label) if label != "index" else indices[point]
@@ -268,7 +268,7 @@ def draw_EGraph(
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
-        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color)
+        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=1)
 
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
@@ -545,10 +545,10 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
                     x, y, z = node.midpoint()
                 else:
                     x, y, z = node
-                    plt.plot(x, y, z, marker="2", ms=50, c="k")
+                    plt.plot(x, y, z, marker="2", c="k")
                 xlist += [x]
                 ylist += [y]
                 zlist += [z]
             ax.set_title("Minimum-weight perfect matching")
-            ax.plot(xlist, ylist, zlist, "o-", ms=20, linewidth=5, c=np.random.rand(3))
+            ax.plot(xlist, ylist, zlist, "o-", c=np.random.rand(3))
     return ax
