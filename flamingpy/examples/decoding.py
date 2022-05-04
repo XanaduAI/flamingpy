@@ -76,9 +76,9 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
         "legend": True,
         "title": True,
         "display_axes": True,
-        "label_edges": True,
-        "label_cubes": False,
+        "label_stabilizers": True,
         "label_boundary": False,
+        "label_edges": False,
     }
 
     # Decode and plot
