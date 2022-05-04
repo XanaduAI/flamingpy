@@ -17,6 +17,7 @@ Matplotlib."""
 # pylint: disable=too-many-statements
 
 import itertools as it
+from matplotlib import markers
 
 import numpy as np
 import networkx as nx
@@ -29,16 +30,17 @@ from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
 plot_params = {
-    "font.size": 15,
-    "font.family": "serif",
-    "axes.labelsize": 15,
-    "axes.titlesize": 20,
-    "xtick.labelsize": 15,
-    "ytick.labelsize": 15,
-    "legend.fontsize": 15,
+    "font.size": 12,
+    "font.family": "sans-serif",
+    "axes.labelsize": 13,
+    "axes.titlesize": 17,
+    "xtick.labelsize": 13,
+    "ytick.labelsize": 13,
+    "legend.fontsize": 13,
     "grid.color": "lightgray",
-    "lines.markersize": 15,
-    "figure.figsize": (12, 9),
+    "lines.markersize": 5,
+    "lines.linewidth": 5,
+    "figure.figsize": (8, 6),
 }
 
 
@@ -48,9 +50,11 @@ def plot_integer_part(xs, ns, alpha, show=True):
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.plot(xs, ns, ",")
+    plt.plot(xs, ns, ".")
     plt.title("Integer Part")
+    plt.xlabel("$x$")
     plt.xticks(newxticks, newxlabels)
+    plt.ylabel(r"$\mathrm{int}(x)$")
     if show:
         plt.show()
 
@@ -59,7 +63,7 @@ def plot_integer_part(xs, ns, alpha, show=True):
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
     plt.title("Fractional Part")
-    plt.plot(xs, fs, ",")
+    plt.plot(xs, fs, ".", linewidth=10)
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
@@ -67,7 +71,9 @@ def plot_fractional_part(xs, fs, alpha, show=True):
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
     plt.xticks(newxticks, newxlabels)
+    plt.xlabel("$x$")
     plt.yticks(newyticks, newylabels)
+    plt.ylabel(r"$\mathrm{frac}(x)$")
     if show:
         plt.show()
 
@@ -78,10 +84,12 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.plot(outcomes, bit_values, ",")
+    plt.plot(outcomes, bit_values, ".")
     plt.title("Binned values")
     plt.xticks(newxticks, newxlabels)
+    plt.xlabel("Outcomes")
     plt.yticks([0, 1], [0, 1])
+    plt.ylabel("Bit values")
     if show:
         plt.show()
 
@@ -95,7 +103,9 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     print(xmin, xmax, min(val), max(val))
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.plot(val, error, ",")
+    plt.plot(val, error, ".")
+    plt.xlabel("Homodyne value")
+    plt.ylabel("Error")
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
     plt.title("Conditional phase probabilities: " + addendum)
     plt.xticks(newxticks, newxlabels)
@@ -277,7 +287,7 @@ def draw_EGraph(
 
 
 @mpl.rc_context(plot_params)
-def plot_binary_mat_heat_map(mat, title=None, show=True):
+def plot_binary_mat_heat_map(mat, show=True, title=None):
     """Plot the heat map of a matrix."""
     plt.figure()
     if not isinstance(mat, np.ndarray):
@@ -296,15 +306,15 @@ def plot_binary_mat_heat_map(mat, title=None, show=True):
 
 
 @mpl.rc_context(plot_params)
-def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
+def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     """Draw a stabilizer or matching graph with a color legend.
 
     This requires that the graph is implemented with the NetworkX backend.
 
     Args:
         graph (NxStabilizerGraph or NxMatchingGraph): the graph to draw.
-        label_edges (bool, optional): if True (the default), label the edges
-            of the graph with their weight.
+        label_edges (bool, optional): if `True`, label the edges
+            of the graph with their weight. Defaults to False.
         node_labels (dict of node to label, optional): if provided, the nodes
             will be identified with the given labels. Else, there will be no
             label for the nodes.
@@ -325,11 +335,10 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
         edgelist=[],
         with_labels=node_labels is not None,
         labels=node_labels,
-        node_size=600,
-        node_color="k",
+        node_color="#202020",
         font_size=plot_params.get("font.size", 7),
         font_color="w",
-        font_family="serif",
+        width=3,
     )
     # Color edges based on weight, and draw a colobar.
     weight_list = [graph.edges[edge]["weight"] for edge in graph.edges]
@@ -349,7 +358,7 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     cbar = plt.colorbar(r)
     cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
     cbar.set_label(
-        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10) * 1.2, labelpad=40
+        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=40
     )
 
 

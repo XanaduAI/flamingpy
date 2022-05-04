@@ -36,6 +36,7 @@ polarity = None
 RHG_code = SurfaceCode(d, ec=err, boundaries=boundaries, polarity=polarity)
 RHG_lattice = RHG_code.graph
 RHG_fig = RHG_code.draw()
+RHG_fig.set_title("Surface code", fontsize=17)
 
 # Check edges between boundaries for periodic boundary conditions.
 if boundaries == "periodic":
