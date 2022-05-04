@@ -553,7 +553,7 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
         # because virtual boundary nodes are of the form ((x, y, z), i).
         for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
             index = node_labels[virtual_node[0]]
-            node_labels[virtual_node] = index  
+            node_labels[virtual_node] = index
     else:
         node_labels = None
     label_edges = True if drawing_opts.get("label_edges") else False
