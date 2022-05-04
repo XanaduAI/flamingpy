@@ -6,6 +6,11 @@
 
 ### Improvements
 
+* Test were added to improve the overall test coverage. These included changes to
+  `.coveragerc` as well as the refactoring of some examples to allow for proper
+  imports from testing modules. Code coverage is now above 95% and
+  the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
+
 ### Documentation changes
 
 ### Contributors
@@ -22,7 +27,7 @@ See full commit details ...
 ### New features since the last release
 
 * Fixed drawing of stabilizer graph for zero syndrome: [(#9)](https://github.com/XanaduAI/flamingpy/pull/9)(backward incompatible)
-  * Previously, the drawing function for a stabilizer graph relied on a non-documented feature. That is, it was assumed that when building the matching graph, all edges of a Networkx-based stabilizer graph were assigned a weight. This, however, was not a fair assumption for many reasons. 
+  * Previously, the drawing function for a stabilizer graph relied on a non-documented feature. That is, it was assumed that when building the matching graph, all edges of a Networkx-based stabilizer graph were assigned a weight. This, however, was not a fair assumption for many reasons.
   * As a solution, we have added a new method to the `SurfaceCode` class to draw the primal or dual stabilizer graph, which makes sure that each edge has a weight. Now, using that method, the user does not have to rely on unfair assumptions.
   * Furthermore, we added a quick check to not add any edges to the matching graph when the syndrome is trivial. In this case, the cost of decoding should be almost zero.
 * Pauli noise: have added a new noise model sampling i.i.d Z error for each qubit. [(#8)](https://github.com/XanaduAI/flamingpy/pull/8)(backward incompatible)
@@ -37,7 +42,7 @@ See full commit details ...
 
 ### Documentation changes
 
-* The new Xanadu Sphinx theme has been applied. Currently, most Xanadu OSS projects include their own version of the Xanadu Sphinx theme; however, the Xanadu Sphinx Theme repository is now publicly available and is the preferred way to access the Xanadu CSS theme and Sphinx directives. [(#17)](https://github.com/XanaduAI/flamingpy/pull/17) 
+* The new Xanadu Sphinx theme has been applied. Currently, most Xanadu OSS projects include their own version of the Xanadu Sphinx theme; however, the Xanadu Sphinx Theme repository is now publicly available and is the preferred way to access the Xanadu CSS theme and Sphinx directives. [(#17)](https://github.com/XanaduAI/flamingpy/pull/17)
   * Deleted the doc/xanadu_theme directory
   * Updated doc/requirements.txt and doc/conf.py to reference and use the (centralized) Xanadu Sphinx Theme.
   * Replaced the Quantum Error Correction, Install, and FAQ static HTML files with reST ones.
@@ -76,7 +81,7 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
    * "Edit on Github" links were fixed
    * The general style and section structures made more consistent with the company requirements and other packages such as StrawberryFields.
    * Fixed the documentation links in `README.md`
-   * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`. 
+   * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`.
 
 ### Contributors
 
@@ -92,11 +97,11 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 ### New features since the last private release
 
 * This is the initial public release started from the private template and our sister project [FT-Stack](https://github.com/XanaduAI/ft-stack).
-* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for details. (backward incompatible) 
+* The first Cython function for Monte Carlo sampling, mostly to provide cythonization samples and testbeds, has been added. See [`cpp_mc_loop.pyx`](flamingpy/cpp/cpp_mc_loop.pyx) and [`simulations.py`](flamingpy/benchmarks/simulations.py) for details. (backward incompatible)
 
 ### Improvements
 
-* More options for Installation from Source: 
+* More options for Installation from Source:
 `setup.py` was updated to provide a no-compilation option for only installing (purely) Python libraries and separate options to compile `cmake` and `cython`-based codes. See the new [README.md](https://github.com/XanaduAI/ft-stack/blob/mc-cpp/README.md) for details.
 
 ### Contributors

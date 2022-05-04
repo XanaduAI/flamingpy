@@ -21,77 +21,90 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 from flamingpy.noise import IidNoise
 
-show = __name__ == "__main__"
 
-# QEC code parameters
-distance = 3
-# Boundaries ("open" or "periodic")
-boundaries = "open"
-# Error complex ("primal", "dual", or "both")
-ec = "primal"
+def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
+    """Example of instantiating, applying noise, decoding, recovering, and
+    visualizing this procedure for the measurement-based surface code."""
 
-# Code and code lattice (cluster state)
-RHG_code = SurfaceCode(
-    distance=distance,
-    ec=ec,
-    boundaries=boundaries,
-    polarity=alternating_polarity,
-    backend="retworkx",
-)
-RHG_lattice = RHG_code.graph
+    # Code and code lattice (cluster state)
+    RHG_code = SurfaceCode(
+        distance=distance,
+        ec=ec,
+        boundaries=boundaries,
+        polarity=alternating_polarity,
+        backend="retworkx",
+    )
+    RHG_lattice = RHG_code.graph
 
-# Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
-# over a GKP/sqeezed state architecture
-noise = "cv"
+    # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
+    # over a GKP/sqeezed state architecture
+    noise = "cv"
 
-if noise == "cv":
-    # CV (inner) code / state preparation
-    p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
-    CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
-    # Noise model
-    delta = 0.1  # GKP squeezing parameter
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
-    # Apply noise, measure syndrome, translate to bit values
-    CVRHG.apply_noise(cv_noise)
-    CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
-    dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
-    # Decoding options
-    weight_options = {
-        "method": "blueprint",
-        "integer": True,
-        "multiplier": 100,
-        "delta": delta,
+    if noise == "cv":
+        # CV (inner) code / state preparation
+        p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
+        CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
+        # Noise model
+        delta = 0.1  # GKP squeezing parameter
+        cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+        # Apply noise, measure syndrome, translate to bit values
+        CVRHG.apply_noise(cv_noise)
+        CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
+        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
+        # Decoding options
+        weight_options = {
+            "method": "blueprint",
+            "integer": True,
+            "multiplier": 100,
+            "delta": delta,
+        }
+        decoder = {"inner": "basic", "outer": "MWPM"}
+
+    if noise == "dv":
+        # i.i.d Pauli Z errors with probability p_Z
+        p_Z = 0.02
+        IidNoise(RHG_code, p_Z).apply_noise()
+        weight_options = {"method": "unit"}
+        decoder = {"outer": "MWPM"}
+
+    # Drawing options
+    node_colors = "state" if noise == "cv" else False
+    dw = {
+        "show_nodes": True,
+        "color_nodes": node_colors,
+        "label": None,
+        "legend": True,
+        "title": True,
+        "display_axes": True,
+        "label_edges": True,
+        "label_cubes": False,
+        "label_boundary": False,
     }
-    decoder = {"inner": "basic", "outer": "MWPM"}
 
-if noise == "dv":
-    # i.i.d Pauli Z errors with probability p_Z
-    p_Z = 0.02
-    IidNoise(RHG_code, p_Z).apply_noise()
-    weight_options = {"method": "unit"}
-    decoder = {"outer": "MWPM"}
+    # Decode and plot
+    c = dec.correct(
+        code=RHG_code,
+        decoder=decoder,
+        weight_options=weight_options,
+        sanity_check=True,
+        draw=True,
+        drawing_opts=dw,
+    )
+    print(f"Success: {c}")
 
-# Drawing options
-node_colors = "state" if noise == "cv" else False
-dw = {
-    "show_nodes": True,
-    "color_nodes": node_colors,
-    "label": None,
-    "legend": True,
-    "title": True,
-    "display_axes": True,
-    "label_edges": True,
-    "label_cubes": False,
-    "label_boundary": False,
-}
 
-# Decode and plot
-c = dec.correct(
-    code=RHG_code,
-    decoder=decoder,
-    weight_options=weight_options,
-    sanity_check=True,
-    draw=True,
-    drawing_opts=dw,
-)
-print(f"Success: {c}")
+if __name__ == "__main__":
+
+    params = {
+        # QEC code parameters
+        "distance": 3,
+        # Boundaries ("open" or "periodic")
+        "boundaries": "open",
+        # Error complex ("primal", "dual", or "both")
+        "ec": "primal",
+        # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
+        # over a GKP/sqeezed state architecture
+        "noise": "cv",
+    }
+
+    decode_surface_code(**params, show=True)
