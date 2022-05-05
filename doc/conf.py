@@ -80,9 +80,37 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
     "sphinx.ext.inheritance_diagram",
+    "sphinx_gallery.gen_gallery",
 ]
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
+
+sphinx_gallery_conf = {
+    # path to your example scripts
+    "examples_dirs": ["tutorials"],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["tutorials/_out"],
+    # execute files that match the following filename pattern,
+    # and skip those that don't. If the following option is not provided,
+    # all example scripts in the 'examples_dirs' folder will be skiped.
+    "filename_pattern": r"/run_",
+    "pypandoc": True,
+    # first notebook cell in generated Jupyter notebooks
+    "first_notebook_cell": (
+        "# This cell is added by sphinx-gallery\n"
+        "# It can be customized to whatever you like\n"
+        "%matplotlib inline"
+    ),
+    # thumbnail size
+    "thumbnail_size": (400, 400),
+    'reference_url': {
+         # The module you locally document uses None
+        'flamingpy': "https://flamingpy.readthedocs.io/en/stable/",
+    },
+    'backreferences_dir'  : 'backreferences',
+    'doc_module'          : ('flamingpy'),
+    'junit': '../test-results/sphinx-gallery/junit.xml',
+}
 
 automodapi_toctreedirnm = "source/api"
 automodsumm_inherited_members = True
