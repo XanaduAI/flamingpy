@@ -203,4 +203,5 @@ class EGraph(nx.Graph):
         """
         from flamingpy.utils.viz import draw_EGraph
 
-        return draw_EGraph(self, **kwargs)
+        _, ax = draw_EGraph(self, **kwargs)
+        return ax

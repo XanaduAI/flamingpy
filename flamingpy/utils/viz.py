@@ -50,6 +50,8 @@ def plot_integer_part(xs, ns, alpha, show=True):
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+    fig = plt.figure()
+    ax = plt.gca()
     plt.plot(xs, ns, ".")
     plt.title("Integer Part")
     plt.xlabel("$x$")
@@ -57,6 +59,8 @@ def plot_integer_part(xs, ns, alpha, show=True):
     plt.ylabel(r"$\mathrm{int}(x)$")
     if show:
         plt.show()
+
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
@@ -84,6 +88,8 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+    fig = plt.figure()
+    ax = plt.gca()
     plt.plot(outcomes, bit_values, ".")
     plt.title("Binned values")
     plt.xticks(newxticks, newxlabels)
@@ -92,6 +98,8 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     plt.ylabel("Bit values")
     if show:
         plt.show()
+
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
@@ -103,6 +111,8 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     print(xmin, xmax, min(val), max(val))
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+    fig = plt.figure()
+    ax = plt.gca()
     plt.plot(val, error, ".")
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
@@ -111,6 +121,8 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     plt.xticks(newxticks, newxlabels)
     if show:
         plt.show()
+
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
@@ -283,13 +295,14 @@ def draw_EGraph(
         ax.axis("off")
     plt.tight_layout(pad=5)
     plt.draw()
-    return ax
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
 def plot_binary_mat_heat_map(mat, show=True, title=None):
     """Plot the heat map of a matrix."""
-    plt.figure()
+    fig = plt.figure()
+    ax = plt.gca()
     if not isinstance(mat, np.ndarray):
         mat = mat.toarray()
     cmap = mpl.colors.ListedColormap(["C0", "C1"])
@@ -303,6 +316,9 @@ def plot_binary_mat_heat_map(mat, show=True, title=None):
     )
     if show:
         plt.show()
+
+    axs = [ax, cbar.ax]
+    return fig, axs
 
 
 @mpl.rc_context(plot_params)
@@ -363,6 +379,9 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     cbar.set_label(
         "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
     )
+
+    axs = [ax, cax]
+    return fig, axs
 
 
 def draw_curved_edges(graph, layout, ax, rad=0.5):
@@ -461,7 +480,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             "display_axes",
         ]
         egraph_opts = {k: drawing_opts[k] for k in egraph_args}
-        ax = draw_EGraph(code.graph, **egraph_opts)
+        fig, ax = draw_EGraph(code.graph, **egraph_opts)
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
@@ -563,7 +582,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         ax.set_title(ec.capitalize() + " syndrome")
 
     ax.autoscale()
-    return ax
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
