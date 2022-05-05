@@ -392,3 +392,10 @@ class CVLayer:
         cv_opts = {"color_nodes": "state", "state_colors": {"GKP": "gold", "p": "blue"}}
         updated_opts = {**cv_opts, **kwargs}
         return self.egraph.draw(**updated_opts)
+
+    def draw_adjacency(self, **kwargs):
+        """Draw the adjacency matrix of a CV graph state with matplotlib.
+
+        See flamingpy.utils.viz.plot_mat_heat_map for more details.
+        """
+        return self.egraph.draw_adjacency(**kwargs)

@@ -45,6 +45,7 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
         # Apply noise, measure syndrome, translate to bit values
         CVRHG.apply_noise(cv_noise)
         CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
+        CVRHG.draw_adjacency(title="CV code adjacency matrix")
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         # Decoding options
         weight_options = {
@@ -118,7 +119,7 @@ if __name__ == "__main__":
 
     params = {
         # QEC code parameters
-        "distance": 3,
+        "distance": 4,
         # Boundaries ("open" or "periodic")
         "boundaries": "open",
         # Error complex ("primal", "dual", or "both")
