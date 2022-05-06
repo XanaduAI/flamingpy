@@ -160,7 +160,7 @@ class TestCVLayer:
         assert np.array_equal(G._states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
-    @pytest.mark.parametrize("p_swap", [0, rng().random(), 1])
+    @pytest.mark.parametrize("p_swap", [0, 0.99 * rng().random() + 0.01, 1])
     def test_hybridize(self, random_graph, p_swap):
         """Test whether CVLayer properly populates p-squeezed states for non-
         zero p-swap."""
