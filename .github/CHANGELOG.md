@@ -14,6 +14,7 @@
   in addition to an `EGraph`. This makes more semantic sense (applying a noise model
   to a code) and makes it easier for the user.
  * The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. 
+ * PR template has been changed to inform user about 95% + codecov requirement.
 
 ### Documentation changes
 
