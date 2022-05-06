@@ -12,7 +12,8 @@
   the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
 
 * The visualizations produced from FlamingPy have been improved and made more consistent
-  -- that includes the figure, marker, line, label and title size, font family and colormaps. When drawing FlamingPy does not modify the global matplotlib's `rcParams`
+  -- that includes the figure, marker, line, label and title size, font family and colormaps.
+  When drawing FlamingPy does not modify the global matplotlib's `rcParams`
   but uses `rc_context` together with the plot parameters defined within the `viz` module.
 
   To modify such parameters just use
@@ -21,7 +22,10 @@
 
   fp_plot_params["font.size"] = 20
   ```
-  and every new plot produced by FlamingPy will use them accordingly. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
+  and every new plot produced by FlamingPy will use them accordingly.
+
+  All function in the visualization module now return the figure and axes for further processing.
+  [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
 
 ### Documentation changes
 
