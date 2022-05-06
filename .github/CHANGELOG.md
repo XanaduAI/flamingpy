@@ -10,6 +10,10 @@
   `.coveragerc` as well as the refactoring of some examples to allow for proper
   imports from testing modules. Code coverage is now above 95% and
   the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
+ * `CVLayer` has been modified to allow for instantiation with a code object
+  in addition to an `EGraph`. This makes more semantic sense (applying a noise model
+  to a code) and makes it easier for the user.
+ * The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. 
 
 ### Documentation changes
 
