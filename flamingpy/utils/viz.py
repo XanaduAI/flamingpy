@@ -36,6 +36,7 @@ import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
@@ -296,9 +297,9 @@ def draw_EGraph(
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
 
-    plt.xticks(range(0, 2 * xmax + 1))
-    plt.yticks(range(0, 2 * zmax + 1))
-    ax.set_zticks(range(0, 2 * ymax + 1))
+    plt.xticks(range(0, 2 * xmax - 1))
+    plt.yticks(range(0, 2 * zmax - 1))
+    ax.set_zticks(range(0, 2 * ymax - 1))
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
@@ -519,9 +520,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     else:
         fig = plt.figure()
         ax = fig.gca(projection="3d")
-        plt.xticks(range(0, 2 * shape[0] + 1))
-        plt.yticks(range(0, 2 * shape[1] + 1))
-        ax.set_zticks(range(0, 2 * shape[2] + 1))
+        plt.xticks(range(0, 2 * shape[0] - 1))
+        plt.yticks(range(0, 2 * shape[1] - 1))
+        ax.set_zticks(range(0, 2 * shape[2] - 1))
         ax.set_xlabel(
             "x",
             labelpad=20,
@@ -537,20 +538,29 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         leg = None
     # Illustrate stabilizers with voxels colored green for even
     # parity and red for odd pariy.
-    filled = np.zeros(shape, dtype=object)
+    positions, colors, sizes = [], [], []
     for cube in cubes:
 
         # Obtain smallest, largest, and middle coordinates for each
-        # cube. Divided by 2 becaues voxels are 1X1X1.
-        xmin, xmax = np.array(cube.xlims(), dtype=int) // 2
-        ymin, ymax = np.array(cube.ylims(), dtype=int) // 2
-        zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
+        # cube. Divided by 2 because voxels are 1X1X1.
+        xmin, xmax = np.array(cube.xlims())
+        ymin, ymax = np.array(cube.ylims())
+        zmin, zmax = np.array(cube.zlims())
         xmid, ymid, zmid = np.array(cube.midpoint())
         # Fill in the color arrays depending on parity.
         if cube.parity:
-            filled[xmin:xmax, ymin:ymax, zmin:zmax] = "#FF000015"
+            color = "#FF000015"
         else:
-            filled[xmin:xmax, ymin:ymax, zmin:zmax] = "#00FF0015"
+            color = "#00FF0015"
+
+        # gap defines the distance between adjacent cubes
+        gap = 0.15
+        positions.append(np.array([xmin, ymin, zmin]) + gap)
+        sizes.append(
+            np.array([np.abs(xmax - xmin), np.abs(ymax - ymin), np.abs(zmax - zmin)]) - 2 * gap
+        )
+        colors.append(color)
+
         if drawing_opts["label_cubes"] and index_dict:
             if cube in index_dict:
                 ax.text(
@@ -561,27 +571,14 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
                     # fontdict=font_props
                 )
 
-    # This portion adapted from a Matplotlib official example to fix
-    # an issue with filling in the insides of voxels: the code
-    # expands the indices and creates small gaps between the voxels.
+    # draw cubes
+    pc = _plot_cube_at(positions, colors=colors, sizes=sizes)
+    ax.add_collection3d(pc)
 
-    def explode(data):
-        size = np.array(data.shape) * 2
-        data_e = np.zeros(size - 1, dtype=data.dtype)
-        data_e[::2, ::2, ::2] = data
-        return data_e
-
-    # upscale the above voxel image, leaving gaps
-    filled_e = explode(filled)
-    # Shrink the gaps
-    x, y, z = np.indices(np.array(filled_e.shape) + 1, dtype=float)
-    x[0::2, :, :] += 0.05
-    y[:, 0::2, :] += 0.05
-    z[:, :, 0::2] += 0.05
-    x[1::2, :, :] += 0.95
-    y[:, 1::2, :] += 0.95
-    z[:, :, 1::2] += 0.95
-    ax.voxels(x, y, z, filled_e, facecolors=filled_e)
+    # setting plot limits to give some room to the boxes
+    ax.set_xlim(-2, 2 * shape[0] + 1)
+    ax.set_ylim(-2, 2 * shape[1] + 1)
+    ax.set_zlim(-2, 2 * shape[2] + 1)
 
     if drawing_opts["label_boundary"]:
         bound_points = getattr(code, ec + "_bound_points")
@@ -613,8 +610,39 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     if drawing_opts["title"]:
         ax.set_title(ec.capitalize() + " syndrome")
 
-    ax.autoscale()
     return fig, ax
+
+
+def _plot_cube_at(positions, sizes=None, colors=None, **kwargs):
+
+    g = [_cuboid_data(p, size=s) for p, s in zip(positions, sizes)]
+    return Poly3DCollection(np.concatenate(g), facecolors=np.repeat(colors, 6, axis=0), **kwargs)
+
+
+def _cuboid_data(origin, size=(1, 1, 1)):
+    """This functions defines an array containing the corners of cube of size
+    one.
+
+    The cube is scaled by `size` in each direction and tranlated by
+    `origin`.
+    """
+    X = np.array(
+        [
+            [[0, 1, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]],
+            [[0, 0, 0], [0, 0, 1], [1, 0, 1], [1, 0, 0]],
+            [[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]],
+            [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]],
+            [[0, 1, 0], [0, 1, 1], [1, 1, 1], [1, 1, 0]],
+            [[0, 1, 1], [0, 0, 1], [1, 0, 1], [1, 1, 1]],
+        ]
+    ).astype(float)
+    # scale the sides of the cube
+    for i in range(3):
+        X[:, :, i] *= size[i]
+    # displace the cube origin
+    X += np.array(origin)
+
+    return X
 
 
 @mpl.rc_context(plot_params)
