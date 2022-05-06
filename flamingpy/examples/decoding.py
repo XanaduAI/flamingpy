@@ -33,12 +33,11 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
     RHG_code = SurfaceCode(
         distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity
     )
-    RHG_lattice = RHG_code.graph
 
     if noise == "cv":
         # CV (inner) code / state preparation
         p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
-        CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
+        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
         # Noise model
         delta = 0.1  # GKP squeezing parameter
         cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}

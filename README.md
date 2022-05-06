@@ -99,7 +99,7 @@ RHG = SurfaceCode(3)
 The integer denotes the code distance. By default, the boundaries are set to "open". Next, let us associate the nodes in the RHG lattice with CV states:
 
 ```
-CVRHG = CVLayer(RHG.graph, p_swap=0.5)
+CVRHG = CVLayer(RHG, p_swap=0.5)
 ```
 
 Now, half the lattice (on average) will be labelled a GKP state, and the other half a p-squeezed state. Next, we can apply a noise model to the states:

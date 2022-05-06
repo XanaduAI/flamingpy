@@ -68,9 +68,8 @@ def compute_enc_state(request):
     nx_DVRHG = SurfaceCode(
         distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity
     )
-    nx_RHG_lattice = nx_DVRHG.graph
     # CV (inner) code/state
-    nx_CVRHG = CVLayer(nx_RHG_lattice, p_swap=p_swap)
+    nx_CVRHG = CVLayer(nx_DVRHG, p_swap=p_swap)
     # Apply noise
     nx_CVRHG.apply_noise(cv_noise, default_rng(seed))
     # Measure syndrome
@@ -87,10 +86,9 @@ def compute_enc_state(request):
         polarity=alternating_polarity,
         backend=backend,
     )
-    RHG_lattice = DVRHG.graph
     # CV (inner) code/state
     states = {"p": nx_CVRHG._states["p"]}
-    CVRHG = CVLayer(RHG_lattice, states)
+    CVRHG = CVLayer(DVRHG, states)
     # Apply noise
     CVRHG.apply_noise(cv_noise, default_rng(seed))
     # Measure syndrome
