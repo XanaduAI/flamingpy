@@ -34,7 +34,6 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
         ec=ec,
         boundaries=boundaries,
         polarity=alternating_polarity,
-        backend="retworkx",
     )
     RHG_lattice = RHG_code.graph
 
