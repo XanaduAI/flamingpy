@@ -40,8 +40,6 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
 
     # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
     # over a GKP/sqeezed state architecture
-    noise = "cv"
-
     if noise == "cv":
         # CV (inner) code / state preparation
         p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
