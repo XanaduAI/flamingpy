@@ -13,9 +13,9 @@
 # limitations under the License.
 """Helper functions to draw various graphs and generate plots using Matplotlib.
 
-Plots are configured via the `plot_params` dictionary. This parameters
+Plots are configured via the `plot_params` dictionary. These parameters
 are associated with Matplolib's rc settings and are modified within the
-plotting functions using `rc_context` context manager. This approach
+plotting functions using the `rc_context` context manager. This approach
 avoids having to modify the global Matplotlib `rc_params`.
 
 To modify the plot parameters use, for example,
@@ -49,7 +49,7 @@ plot_params = {
     "ytick.labelsize": 13,
     "legend.fontsize": 13,
     "grid.color": "lightgray",
-    "lines.markersize": 5,
+    "lines.markersize": 2,
     "lines.linewidth": 5,
     "figure.figsize": (8, 6),
 }
@@ -78,7 +78,7 @@ def plot_integer_part(xs, ns, alpha, show=True):
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
     plt.title("Fractional Part")
-    plt.plot(xs, fs, ".", linewidth=10)
+    plt.plot(xs, fs, ".")
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
