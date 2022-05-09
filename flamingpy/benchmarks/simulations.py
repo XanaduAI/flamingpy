@@ -62,7 +62,6 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="c
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
-        code_lattice = code.graph
         # Noise model
         # Decoding options
         decoder = {"inner": "basic", "outer": "MWPM"}
@@ -79,7 +78,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None, backend="c
                 reduce_macro_and_simulate(*passive_objects, p_swap, delta)
             else:
                 # Apply noise
-                CVRHG = CVLayer(code_lattice, p_swap=p_swap)
+                CVRHG = CVLayer(code, p_swap=p_swap)
                 CVRHG.apply_noise(cv_noise)
                 # Measure syndrome
                 CVRHG.measure_hom("p", code.all_syndrome_inds)
@@ -112,7 +111,7 @@ def run_sims_benchmark(distance, ec, boundaries, delta, p_swap, trials, passive,
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
         # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(RHG_lattice)
+        CVRHG_reduced = CVLayer(RHG_code)
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
