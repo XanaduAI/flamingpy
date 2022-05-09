@@ -60,7 +60,7 @@ print("p indices: ", CVbell.p_inds)
 print("GKP indices: ", CVbell.GKP_inds)
 print("\nSymplectic CZ matrix: ", CVbell.SCZ(), "\n")
 
-viz.plot_mat_heat_map(CVbell.SCZ(), show, title="Symplectic CZ matrix")
+CVbell.draw_SCZ(show=show, title="Symplectic CZ matrix")
 
 if not show:
     plt.close()

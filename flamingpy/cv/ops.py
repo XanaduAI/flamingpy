@@ -13,6 +13,8 @@
 # limitations under the License.
 """Continuous-variable operations, states, and noise models."""
 
+# pylint: disable=import-outside-toplevel
+
 import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
@@ -393,9 +395,11 @@ class CVLayer:
         updated_opts = {**cv_opts, **kwargs}
         return self.egraph.draw(**updated_opts)
 
-    def draw_adjacency(self, **kwargs):
+    def draw_SCZ(self, **kwargs):
         """Draw the adjacency matrix of a CV graph state with matplotlib.
 
         See flamingpy.utils.viz.plot_mat_heat_map for more details.
         """
-        return self.egraph.draw_adjacency(**kwargs)
+        from flamingpy.utils.viz import plot_mat_heat_map
+
+        return plot_mat_heat_map(self.SCZ(), **kwargs)
