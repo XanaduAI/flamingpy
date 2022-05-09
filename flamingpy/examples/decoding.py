@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     params = {
         # QEC code parameters
-        "distance": 4,
+        "distance": 3,
         # Boundaries ("open" or "periodic")
         "boundaries": "open",
         # Error complex ("primal", "dual", or "both")

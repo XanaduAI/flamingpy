@@ -42,16 +42,16 @@ from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
 plot_params = {
-    "font.size": 12,
+    "font.size": 10,
     "font.family": "sans-serif",
-    "axes.labelsize": 13,
-    "axes.titlesize": 17,
-    "xtick.labelsize": 13,
-    "ytick.labelsize": 13,
-    "legend.fontsize": 13,
+    "axes.labelsize": 12,
+    "axes.titlesize": 14,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 12,
     "grid.color": "lightgray",
-    "lines.markersize": 2,
-    "lines.linewidth": 5,
+    "lines.markersize": 5,
+    "lines.linewidth": 4,
     "figure.figsize": (8, 6),
 }
 
@@ -252,7 +252,7 @@ def draw_EGraph(
         else:
             color = egraph.nodes[point].get("color") if color_nodes else "k"
 
-        ax.scatter(x, y, z, c=color, s=plot_params.get("lines.markersize", 3))
+        ax.scatter(x, y, z, c=color)
 
         if label:
             value = egraph.nodes[point].get(label) if label != "index" else indices[point]
@@ -292,7 +292,7 @@ def draw_EGraph(
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
-        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=1)
+        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
 
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
@@ -453,7 +453,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             all possibilities described above.
 
     Returns:
-        matplotlib.pyplot.axes: the 'axes' object
+        tuple: figure and axes
     """
 
     cubes = getattr(code, ec + "_stabilizers")
@@ -554,9 +554,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     ax.add_collection3d(pc)
 
     # setting plot limits to give some room to the boxes
-    ax.set_xlim(-1, 2 * shape[0])
-    ax.set_ylim(-1, 2 * shape[1])
-    ax.set_zlim(-1, 2 * shape[2])
+    ax.set_xlim(0, 2 * shape[0])
+    ax.set_ylim(0, 2 * shape[1])
+    ax.set_zlim(0, 2 * shape[2])
 
     if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
@@ -658,7 +658,14 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
                 ylist += [y]
                 zlist += [z]
             ax.set_title("Minimum-weight perfect matching")
-            ax.plot(xlist, ylist, zlist, "o-", c=np.random.rand(3))
+            ax.plot(
+                xlist,
+                ylist,
+                zlist,
+                "o-",
+                c=np.random.rand(3),
+                linewidth=plot_params.get("lines.linewidth", None) * 0.9,
+            )
     return ax
 
 
@@ -697,6 +704,6 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     else:
         print("\nMatching graph empty!\n")
 
-    ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_matching"):
         draw_matching_on_syndrome_plot(ax, matching, G_match)
