@@ -622,9 +622,6 @@ def _plot_cube_at(positions, sizes=None, colors=None, **kwargs):
 def _cuboid_data(origin, size=(1, 1, 1)):
     """Return an array with the corners of a cube of size 1."""
 
-    The cube is scaled by `size` in each direction and tranlated by
-    `origin`.
-    """
     X = np.array(
         [
             [[0, 1, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]],
