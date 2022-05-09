@@ -12,9 +12,10 @@
   the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
  * `CVLayer` has been modified to allow for instantiation with a code object
   in addition to an `EGraph`. This makes more semantic sense (applying a noise model
-  to a code) and makes it easier for the user.
- * The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. 
- * PR template has been changed to inform user about 95% + codecov requirement.
+  to a code) and makes it easier for the user. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+ * The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+ * PR template has been changed to inform user about 95% + codecov requirement. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+ * Introduced `codecov.yml` to customize codecov automated tests. For this version, we have added a `threshold: %0.01` to avoid undesired failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
 
 ### Documentation changes
 
