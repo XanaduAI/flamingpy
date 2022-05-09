@@ -56,10 +56,9 @@ for backend in ["networkx", "retworkx"]:
     RHG_code = SurfaceCode(
         distance=distance, boundaries=boundaries, polarity=alternating_polarity, backend=backend
     )
-    RHG_lattice = RHG_code.graph
     for i in range(num_trials):
         print(f"-- {i} --")
-        CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
+        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome

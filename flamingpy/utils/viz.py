@@ -435,7 +435,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
                 'show_nodes' -> the underlying graph displayed
                 'label_nodes' -> node labels, as per draw_EGraph
-                'label_cubes' -> indices of the stabilizers
+                'label_stabilizers' -> indices of the stabilizers
                 'label_boundary'-> indices of the boundary points
                 'legend' -> legends for the nodes and stabilizers
 
@@ -467,7 +467,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         "title": True,
         "state_colors": {"p": None, "GKP": None},
         "display_axes": True,
-        "label_cubes": True,
+        "label_stabilizers": True,
         "label_boundary": False,
     }
     # Combine default dictionary with supplied dictionary, duplicates
@@ -539,6 +539,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         colors.append(color)
 
         if drawing_opts["label_cubes"] and index_dict:
+
             if cube in index_dict:
                 ax.text(
                     xmid,
@@ -557,7 +558,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     ax.set_ylim(-1, 2 * shape[1])
     ax.set_zlim(-1, 2 * shape[2])
 
-    if drawing_opts["label_boundary"]:
+    if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
         for point in bound_points:
             ax.scatter(point[0], point[1], point[2], s=70, c="k")
@@ -659,3 +660,43 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
             ax.set_title("Minimum-weight perfect matching")
             ax.plot(xlist, ylist, zlist, "o-", c=np.random.rand(3))
     return ax
+
+
+def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
+    """Draw the stabilizer and matching graphs, and the plot the syndrome."""
+    if drawing_opts is None:
+        drawing_opts = {}
+
+    G_stabilizer = getattr(code, ec + "_stab_graph")
+    # An integer label for each node in the stabilizer and matching
+    # graphs. This is useful to identify the nodes in the plots.
+    if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):
+        # Node labels for the stabilizer graph
+        node_labels = {node: index for index, node in enumerate(G_stabilizer.nodes())}
+        # Update node labels to work with the matching graph---needs to be done
+        # because virtual boundary nodes are of the form ((x, y, z), i).
+        for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
+            index = node_labels[virtual_node[0]]
+            node_labels[virtual_node] = index
+    else:
+        node_labels = None
+    label_edges = bool(drawing_opts.get("label_edges"))
+
+    code.draw_stabilizer_graph(
+        ec,
+        title=ec.capitalize() + " stabilizer graph",
+        label_edges=label_edges,
+        node_labels=node_labels,
+    )
+    if len(G_match.graph):
+        G_match.draw(
+            title=ec.capitalize() + " matching graph",
+            label_edges=label_edges,
+            node_labels=node_labels,
+        )
+    else:
+        print("\nMatching graph empty!\n")
+
+    ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    if drawing_opts.get("show_matching"):
+        draw_matching_on_syndrome_plot(ax, matching, G_match)

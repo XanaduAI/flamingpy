@@ -42,9 +42,8 @@ def enc_state(request):
     """An RHGCode object and an encoded CVLayer for use in this module."""
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity)
-    RHG_lattice = DVRHG.graph
     # CV (inner) code/state
-    CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
+    CVRHG = CVLayer(DVRHG, p_swap=p_swap)
     # Noise model
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     # Apply noise

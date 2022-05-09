@@ -153,9 +153,10 @@ install_requires = [
     "matplotlib>=3.3.3",
     "networkx>=2.5",
     "numpy>=1.21",
-    "retworkx>=0.10.2",
     "pandas>=1.2.1",
+    "retworkx>=0.10.2",
     "scipy>=1.6",
+    "thewalrus>=0.19.0"
 ]
 
 description = """FlamingPy is a cross-platform Python library with a variety of backends for

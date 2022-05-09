@@ -17,6 +17,7 @@ The FlamingPy documentation is built using `sphinx`. To build the documentation 
 * `sphinx-autodoc-typehints <https://pypi.org/project/sphinx-autodoc-typehints/>`_ >= 1.10.3
 * `sphinx-automodapi <https://sphinx-automodapi.readthedocs.io/en/latest/>`_ >= 0.13
 * `sphinx-copybutton <https://sphinx-copybutton.readthedocs.io/en/latest/>`_ >= 0.4
+* `thewalrus <https://the-walrus.readthedocs.io/en/latest/>`_ >= 0.19.0
 * `toml <https://pypi.org/project/toml/>`_ >= 0.10.2
 
 All required packages can be installed via:

@@ -125,10 +125,13 @@ class CVLayer:
             indices to coordinates.
     """
 
-    def __init__(self, g, states=None, p_swap=0, rng=default_rng()):
+    def __init__(self, code, states=None, p_swap=0, rng=default_rng()):
         """Initialize the CVGraph."""
-        self.egraph = g
-        self._N = len(g)
+        if code.__class__.__name__ == "EGraph":
+            self.egraph = code
+        else:
+            self.egraph = code.graph
+        self._N = len(self.egraph)
 
         self._init_quads = None
         self._noise_cov = None
