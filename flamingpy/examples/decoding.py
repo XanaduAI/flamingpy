@@ -71,13 +71,14 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
     dw = {
         "show_nodes": True,
         "color_nodes": node_colors,
+        "show_matching": False,
+        "label_stabilizers": True,
+        "label_boundary": False,
+        "label_edges": False,
         "label": None,
         "legend": True,
         "title": True,
         "display_axes": True,
-        "label_stabilizers": True,
-        "label_boundary": False,
-        "label_edges": False,
     }
 
     # Decode and plot
