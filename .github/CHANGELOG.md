@@ -18,6 +18,13 @@
 * Introduced `codecov.yml` to customize codecov automated tests. For this version, we have added a `threshold: %0.01` to avoid undesired failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
 * The Walrus is re-added as a dependency and its functions used instead of a verbatim
   copy of the code. [(#27)](https://github.com/XanaduAI/flamingpy/pull/27)
+* Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [(#23)](https://github.com/XanaduAI/flamingpy/pull/23)
+  * A function was added to the `viz` module and new options added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial. 
+  * Appearances and presence of node labels (specifically the virtual nodes of the matching graph) were fixed. 
+  * The `label_cubes` argument was renamed to the more accurate `label_stabilizers`.
+  * The argument `show_matching` was added to the drawing options be able to turn the matching plot on or off.
+  * One can now plot a non-NetworkX matching graph (by an automatic conversion to a NetworkX graph).
+  * The above changes allowed for a significant simplification to the decoding example.
 
 ### Documentation changes
 
