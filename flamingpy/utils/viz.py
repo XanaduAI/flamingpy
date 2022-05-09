@@ -572,7 +572,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
                 )
 
     # draw cubes
-    pc = _plot_cube_at(positions, colors=colors, sizes=sizes)
+    pc = _plot_cubes_at(positions, colors=colors, sizes=sizes)
     ax.add_collection3d(pc)
 
     # setting plot limits to give some room to the boxes
@@ -613,7 +613,28 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     return fig, ax
 
 
-def _plot_cube_at(positions, sizes=None, colors=None, **kwargs):
+def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
+    """Plot cubes with their origin located at ``positions``.
+
+    Note cubes are located by displacing them from the origin. In that sense,
+    the location is defined by the corner matching the origin of the coordinate
+    system before displacement.
+
+    Args:
+        positions (Iterable): An interable of dimension ``(N,3)`` containing the
+            position of the corner of the cube.
+        sizes (Iterable): An interable of dimension ``(N,3)`` containing the size of
+            the cube in the coordinate directions.
+        colors (Iterable): An iterable of size ``N`` containing the colors of the cube.
+            This can be any of the option allowed by matplolib.
+
+    Keyword arguments:
+        **kwargs: all other parameters are forwarded to
+            ```Poly3DColletion`` <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
+
+    Returs:
+        Poly3DCollection: A collection of 3D polygons defining the cubes.
+    """
 
     g = [_cuboid_data(p, size=s) for p, s in zip(positions, sizes)]
     return Poly3DCollection(np.concatenate(g), facecolors=np.repeat(colors, 6, axis=0), **kwargs)
