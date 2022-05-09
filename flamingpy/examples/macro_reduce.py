@@ -39,7 +39,7 @@ RHG_macro.index_generator()
 RHG_macro.adj_generator(sparse=True)
 
 # The empty CV layer, uninitiated with any error model.
-CVRHG_reduced = CVLayer(RHG_reduced)
+CVRHG_reduced = CVLayer(RHG_code)
 # Define the 4X4 beamsplitter network for a given macronode.
 # star at index 0, planets at indices 1-3.
 bs_network = BS_network(4)

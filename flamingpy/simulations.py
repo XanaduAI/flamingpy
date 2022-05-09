@@ -47,7 +47,6 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
         decoder = {"outer": "MWPM"}
         weight_options = {"method": "blueprint", "prob_precomputed": True}
     else:
-        code_lattice = code.graph
         # Noise model
         cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
         # Decoding options
@@ -65,7 +64,7 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
             reduce_macro_and_simulate(*passive_objects, p_swap, delta)
         else:
             # Apply noise
-            CVRHG = CVLayer(code_lattice, p_swap=p_swap)
+            CVRHG = CVLayer(code, p_swap=p_swap)
             # Measure syndrome
             CVRHG.apply_noise(cv_noise)
             CVRHG.measure_hom("p", code.all_syndrome_inds)
