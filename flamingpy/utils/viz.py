@@ -542,7 +542,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     for cube in cubes:
 
         # Obtain smallest, largest, and middle coordinates for each
-        # cube. Divided by 2 because voxels are 1X1X1.
+        # cube.
         xmin, xmax = np.array(cube.xlims())
         ymin, ymax = np.array(cube.ylims())
         zmin, zmax = np.array(cube.zlims())
@@ -555,10 +555,10 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
         # gap defines the distance between adjacent cubes
         gap = 0.15
-        positions.append(np.array([xmin, ymin, zmin]) + gap)
-        sizes.append(
-            np.array([np.abs(xmax - xmin), np.abs(ymax - ymin), np.abs(zmax - zmin)]) - 2 * gap
-        )
+        min_arr = np.array([xmin, ymin, zmin])
+        max_arr = np.array([xmax, ymax, zmax])
+        positions.append(min_arr + gap)
+        sizes.append(np.abs(max_arr - min_arr) - 2 * gap)
         colors.append(color)
 
         if drawing_opts["label_cubes"] and index_dict:
@@ -620,8 +620,7 @@ def _plot_cube_at(positions, sizes=None, colors=None, **kwargs):
 
 
 def _cuboid_data(origin, size=(1, 1, 1)):
-    """This functions defines an array containing the corners of cube of size
-    one.
+    """Return an array with the corners of a cube of size 1."""
 
     The cube is scaled by `size` in each direction and tranlated by
     `origin`.
