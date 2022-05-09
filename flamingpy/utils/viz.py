@@ -576,9 +576,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     ax.add_collection3d(pc)
 
     # setting plot limits to give some room to the boxes
-    ax.set_xlim(-2, 2 * shape[0] + 1)
-    ax.set_ylim(-2, 2 * shape[1] + 1)
-    ax.set_zlim(-2, 2 * shape[2] + 1)
+    ax.set_xlim(-1, 2 * shape[0])
+    ax.set_ylim(-1, 2 * shape[1])
+    ax.set_zlim(-1, 2 * shape[2])
 
     if drawing_opts["label_boundary"]:
         bound_points = getattr(code, ec + "_bound_points")
