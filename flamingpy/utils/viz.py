@@ -538,7 +538,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         sizes.append(np.abs(max_arr - min_arr) - 2 * gap)
         colors.append(color)
 
-        if drawing_opts["label_cubes"] and index_dict:
+        if drawing_opts["label_stabilizers"] and index_dict:
 
             if cube in index_dict:
                 ax.text(
