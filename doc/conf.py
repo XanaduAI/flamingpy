@@ -83,7 +83,7 @@ extensions = [
     "sphinx_gallery.gen_gallery",
 ]
 
-intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/stable/": None}
+intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/latest/": None}
 
 sphinx_gallery_conf = {
     # path to your example scripts
@@ -105,7 +105,7 @@ sphinx_gallery_conf = {
     "thumbnail_size": (400, 400),
     'reference_url': {
          # The module you locally document uses None
-        'flamingpy': "https://flamingpy.readthedocs.io/en/stable/",
+        'flamingpy': "https://flamingpy.readthedocs.io/en/latest/",
     },
     'backreferences_dir'  : 'backreferences',
     'doc_module'          : ('flamingpy'),
