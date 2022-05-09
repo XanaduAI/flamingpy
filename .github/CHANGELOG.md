@@ -13,9 +13,11 @@
 * `CVLayer` has been modified to allow for instantiation with a code object
   in addition to an `EGraph`. This makes more semantic sense (applying a noise model
   to a code) and makes it easier for the user. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
- * The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
- * PR template has been changed to inform user about 95% + codecov requirement. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
- * Introduced `codecov.yml` to customize codecov automated tests. For this version, we have added a `threshold: %0.01` to avoid undesired failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* PR template has been changed to inform user about 95% + codecov requirement. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* Introduced `codecov.yml` to customize codecov automated tests. For this version, we have added a `threshold: %0.01` to avoid undesired failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* The Walrus is re-added as a dependency and its functions used instead of a verbatim
+  copy of the code. [(#27)](https://github.com/XanaduAI/flamingpy/pull/27)
 * Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [(#23)](https://github.com/XanaduAI/flamingpy/pull/23)
   * A function was added to the `viz` module and new options added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial. 
   * Appearances and presence of node labels (specifically the virtual nodes of the matching graph) were fixed. 
