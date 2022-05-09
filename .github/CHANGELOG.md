@@ -11,6 +11,9 @@
   imports from testing modules. Code coverage is now above 95% and
   the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
 
+* The walrus is re-added as a dependency and its functions used instead of a verbatim
+  copy of the code. [(#27)](https://github.com/XanaduAI/flamingpy/pull/27)
+
 ### Documentation changes
 
 ### Contributors
