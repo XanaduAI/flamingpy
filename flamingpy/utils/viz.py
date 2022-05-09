@@ -574,4 +574,5 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
         print("\nMatching graph empty!\n")
 
     ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
-    draw_matching_on_syndrome_plot(ax, matching, G_match)
+    if drawing_opts.get("show_matching"):
+        draw_matching_on_syndrome_plot(ax, matching, G_match)
