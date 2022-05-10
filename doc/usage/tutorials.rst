@@ -30,4 +30,9 @@ FlamingPy tutorials.
     :figure: tutorials/_out/images/thumb/sphx_glr_run_tutorial_test_thumb.png
     :description: :doc:`../tutorials/_out/run_tutorial_test`
 
+.. gallery-item::
+    :tooltip: Graph states turtorial.
+    :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
+    :description: :doc:`../tutorials/_out/run_graph_states`
+
 :html:`</div></div><div style='clear:both'>`
