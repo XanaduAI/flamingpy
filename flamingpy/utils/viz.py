@@ -43,12 +43,12 @@ from flamingpy.cv import gkp
 
 plot_params = {
     "font.size": 10,
-    "font.family": "sans-serif",
-    "axes.labelsize": 12,
-    "axes.titlesize": 14,
-    "xtick.labelsize": 12,
-    "ytick.labelsize": 12,
-    "legend.fontsize": 12,
+    "font.family": "serif",
+    "axes.labelsize": 11,
+    "axes.titlesize": 13,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "legend.fontsize": 10,
     "grid.color": "lightgray",
     "lines.markersize": 5,
     "lines.linewidth": 4,
@@ -358,7 +358,7 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     fig, ax = plt.subplots()
     if title != "":
         ax.set_title(title)
-        
+
     # Color edges based on weight, and draw a colobar.
     # divider = make_axes_locatable(ax)
     ax.axis("off")
@@ -543,13 +543,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         if drawing_opts["label_stabilizers"] and index_dict:
 
             if cube in index_dict:
-                ax.text(
-                    xmid,
-                    ymid,
-                    zmid,
-                    index_dict[cube],
-                    # fontdict=font_props
-                )
+                ax.text(xmid, ymid, zmid, index_dict[cube])
 
     # draw cubes
     pc = _plot_cubes_at(positions, colors=colors, sizes=sizes)
@@ -574,11 +568,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         Patch(facecolor="#FF000050", label="odd parity"),
     ]
     if drawing_opts["legend"]:
-        ax.legend(
-            handles=legend_elements,
-            # prop=font_props,
-            loc="upper left",
-        )
+        ax.legend(handles=legend_elements, loc="upper left")
     # Since draw_EGraph legend has been overwritten, re-add
     # it to the plot.
     if leg:
