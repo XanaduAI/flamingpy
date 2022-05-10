@@ -27,25 +27,25 @@ from flamingpy.codes.surface_code import SurfaceCode
 from flamingpy.noise.iid import IidNoise
 
 
-@pytest.fixture(scope="module", params=it.product(["networkx", "lemon", "retworkx"], ["networkx", "retworkx"]))
+@pytest.fixture(scope="module", params=it.product(["networkx", "lemon", "retworkx"]))
 def backends(request):
     return request.param
 
 def test_compare_success_to_nx(backends):
-    code = SurfaceCode(distance=5, boundaries="open", backend=backends[1])    
+    code = SurfaceCode(distance=3, boundaries="open")    
     noise = IidNoise(code, error_probability=0.1)
-    rng = np.random.default_rng(123)
 
-    nx_code = SurfaceCode(distance=5, boundaries="open", backend="networkx")    
-    nx_noise = IidNoise(nx_code, error_probability=0.1)
+    rng = np.random.default_rng(123)
     nx_rng = np.random.default_rng(123)
 
     for _ in range(5):
         noise.apply_noise(rng)
         assign_weights(code, method="unit")
-        result = correct(code, {"outer": "MWPM"}, matching_backend=backends[0])
+        result, matching = correct(code, {"outer": "MWPM"}, matching_backend=backends[0])
 
-        nx_noise.apply_noise(nx_rng)
-        assign_weights(nx_code, method="unit")
-        nx_result = correct(nx_code, {"outer": "MWPM"}, matching_backend="networkx")
+        noise.apply_noise(nx_rng)
+        assign_weights(code, method="unit")
+        nx_result, nx_matching = correct(code, {"outer": "MWPM"}, matching_backend="networkx")
+
+        # assert matching == nx_matching
         assert result == nx_result
