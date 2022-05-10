@@ -25,6 +25,7 @@ as well as the following Python packages for development purposes:
 * `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
 * `scipy <https://scipy.org/>`_ >= 1.6
+* `thewalrus <https://the-walrus.readthedocs.io/en/latest/>`_ >= 0.19.0
 
 If you currently do not have Python 3 installed, we recommend
 `Anaconda for Python 3 <https://www.anaconda.com/download/>`_, a distributed version

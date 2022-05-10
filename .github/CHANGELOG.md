@@ -2,7 +2,15 @@
 
 ### New features since the last release
 
+* The voxel plotting function has been refactored to allow for easy location in space as well 
+as resizing (the latter being important for stabilizers at boundaries that are represented by incomplete cubes). 
+These changes are reflected in two new functions into the viz module: _plot_cube_ and _cuboid_data. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
+
 ### Bug fixes
+
+* Voxel plots of dual stabilizers used to be drawn incorrectly, since only integer 
+locations and cube sizes were allowed. Furthermore, no cube could be placed in a coordinate 
+less than zero. This has been fixed. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
 
 ### Improvements
 
@@ -10,7 +18,41 @@
   `.coveragerc` as well as the refactoring of some examples to allow for proper
   imports from testing modules. Code coverage is now above 95% and
   the fail treshold is bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
+* `CVLayer` has been modified to allow for instantiation with a code object
+  in addition to an `EGraph`. This makes more semantic sense (applying a noise model
+  to a code) and makes it easier for the user. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* The sometimes failing `test_hybridize` in `test_graphstates.py` has been fixed. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* PR template has been changed to inform user about 95% + codecov requirement. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* Introduced `codecov.yml` to customize codecov automated tests. For this version, we have added a `threshold: %0.01` to avoid undesired failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* The Walrus is re-added as a dependency and its functions used instead of a verbatim
+  copy of the code. [(#27)](https://github.com/XanaduAI/flamingpy/pull/27)
+* Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [(#23)](https://github.com/XanaduAI/flamingpy/pull/23)
+  * A function was added to the `viz` module and new options added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial. 
+  * Appearances and presence of node labels (specifically the virtual nodes of the matching graph) were fixed. 
+  * The `label_cubes` argument was renamed to the more accurate `label_stabilizers`.
+  * The argument `show_matching` was added to the drawing options be able to turn the matching plot on or off.
+  * One can now plot a non-NetworkX matching graph (by an automatic conversion to a NetworkX graph).
+  * The above changes allowed for a significant simplification to the decoding example.
+* The visuals produced by FlamingPy have been improved and made more consistent. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
+  * The figure, marker, line, label and title size, font family and colormaps where modified.
+  When drawing, FlamingPy no longer changes the global matplotlib's `rcParams`,
+  but uses `rc_context` together with the plot parameters defined within the `viz` module.
 
+  To modify such parameters just use
+  ```python
+  from flamingpy.utils.viz import plot_params as fp_plot_params
+
+  fp_plot_params["font.size"] = 20
+  ```
+  and every new plot produced by FlamingPy will use them accordingly.
+
+  * All functions in the visualization module now return the figure and axes for further processing.
+  * The offered method to draw voxels is much more clear and has an easier to use API.
+  * Graphs of decoding objects (stabilizer and matching graphs) are prettier and easier
+  to parse, thanks partially to a new function, `draw_curved_edges`.
+  * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
+
+  
 ### Documentation changes
 
 ### Contributors
