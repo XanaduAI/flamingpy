@@ -73,7 +73,6 @@ for backend in ["lemon", "retworkx"]:
             decoder=decoder,
             weight_options=weight_options,
             sanity_check=False,
-            matching_backend=backend
+            matching_backend=backend,
         )
     print(f"{backend}: {num_successes}")
-

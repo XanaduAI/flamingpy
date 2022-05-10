@@ -1,4 +1,4 @@
-    # Copyright 2022 Xanadu Quantum Technologies Inc.
+# Copyright 2022 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class Stabilizer:
         """Initialize the Stabilizer with its associated egraph."""
         self.egraph = G
         self.physical = None
-    
+
     def __repr__(self):
         return f"Stabilizer{self.coords()}"
 
