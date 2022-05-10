@@ -348,16 +348,19 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     """
     if not isinstance(graph.graph, nx.Graph):
         raise ValueError("The graph must be implemented with the networkx backend.")
+
+    # Remove 'low' and 'high' nodes, which are not important for visualization.
+    if graph.__class__.__name__ == "NxStabilizerGraph":
+        graph.graph.remove_nodes_from({"low", "high"})
+
     graph = graph.graph
     layout = nx.circular_layout(graph)
 
     fig, ax = plt.subplots()
     if title != "":
         ax.set_title(title)
-    # NetworkX drawing function for circular embedding of graphs.
-
+        
     # Color edges based on weight, and draw a colobar.
-
     # divider = make_axes_locatable(ax)
     ax.axis("off")
     cmap, norm = draw_curved_edges(graph, layout, ax)
@@ -678,8 +681,8 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     # An integer label for each node in the stabilizer and matching
     # graphs. This is useful to identify the nodes in the plots.
     if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):
-        # Node labels for the stabilizer graph
-        node_labels = {node: index for index, node in enumerate(G_stabilizer.nodes())}
+        # Node labels for the stabilizer graph (avoid "low" / "high" nodes)
+        node_labels = {node: index for index, node in enumerate(list(G_stabilizer.nodes())[2:])}
         # Update node labels to work with the matching graph---needs to be done
         # because virtual boundary nodes are of the form ((x, y, z), i).
         for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
