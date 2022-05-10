@@ -70,5 +70,3 @@ def test_shortest_path_benchmark():
 def test_simulations_benchmark():
     """Simple test for the simulations module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import simulations
-
-

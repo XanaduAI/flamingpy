@@ -63,8 +63,9 @@ def test_matching_has_same_weight(matching_graphs):
     matching = graph.min_weight_perfect_matching()
     nx_matching = nx_graph.min_weight_perfect_matching()
     assert graph.total_weight_of(matching) == nx_graph.total_weight_of(nx_matching)
-    assert len(matching) == len(nx_matching)    
+    assert len(matching) == len(nx_matching)
     # assert False
+
 
 # Test parameters
 matching_graph_types = [LemonMatchingGraph]
@@ -115,4 +116,4 @@ def test_code_matching_has_same_weight(code_matching_graphs):
     matching = graph.min_weight_perfect_matching()
     nx_matching = nx_graph.min_weight_perfect_matching()
     assert graph.total_weight_of(matching) == nx_graph.total_weight_of(nx_matching)
-    assert len(matching) == len(nx_matching)    
+    assert len(matching) == len(nx_matching)
