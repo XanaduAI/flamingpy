@@ -27,7 +27,7 @@ FlamingPy tutorials.
 
 .. gallery-item::
     :tooltip: Test tutorial tooltip.
-    :figure: _static/thumbs/sphx_glr_run_tutorial_test_thumb.png
+    :figure: tutorials/_out/images/thumb/sphx_glr_run_tutorial_test_thumb.png
     :description: :doc:`../tutorials/_out/run_tutorial_test`
 
 :html:`</div></div><div style='clear:both'>`
