@@ -297,9 +297,9 @@ def draw_EGraph(
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
 
-    plt.xticks(range(0, 2 * xmax - 1))
-    plt.yticks(range(0, 2 * zmax - 1))
-    ax.set_zticks(range(0, 2 * ymax - 1))
+    plt.xticks(range(0, 2 * xmax))
+    plt.yticks(range(0, 2 * zmax))
+    ax.set_zticks(range(0, 2 * ymax))
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
@@ -557,8 +557,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     ax.add_collection3d(pc)
 
     # setting plot limits to give some room to the boxes
+    ymin = 0 if ec == "primal" else -2
     ax.set_xlim(0, 2 * shape[0])
-    ax.set_ylim(0, 2 * shape[1])
+    ax.set_ylim(ymin, 2 * shape[1])
     ax.set_zlim(0, 2 * shape[2])
 
     if drawing_opts["label_boundary"] and index_dict:
