@@ -1,3 +1,6 @@
+ .. role:: html(raw)
+   :format: html
+
 Tutorials
 =========
 
@@ -18,4 +21,13 @@ FlamingPy tutorials.
 
 .. raw:: html
 
-        <div style='clear:both'></div>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/css/mdb.min.css" rel="stylesheet">
+
+:html:`<div class="gallery-grid row">`
+
+.. gallery-item::
+    :tooltip: Test tutorial tooltip.
+    :figure: _static/thumbs/sphx_glr_run_tutorial_test_thumb.png
+    :description: `Text Goes Here </tutorials/_out/run_tutorial_test.html>`_
+
+:html:`</div></div><div style='clear:both'>`
