@@ -10,3 +10,4 @@ exclude_lines =
     pragma: no cover
     plt.show()
     except ImportError:
+    raise NotImplementedError
