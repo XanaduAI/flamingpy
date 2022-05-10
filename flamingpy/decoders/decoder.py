@@ -307,4 +307,4 @@ def correct(
             matching = matching_graph.min_weight_perfect_matching()
             recovery(code, matching_graph, matching, ec, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
-    return np.all(result), matching
+    return np.all(result)

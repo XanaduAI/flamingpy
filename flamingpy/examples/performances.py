@@ -58,11 +58,11 @@ weight_options = {
 
 decoder = {"inner": "basic", "outer": "MWPM"}
 
-print("Number of successes for 500 samples")
+print("Number of successes for 50 samples")
 for backend in ["lemon", "retworkx"]:
     num_successes = 0
     rng = default_rng(123)
-    for i in range(500):
+    for i in range(50):
         CVRHG.apply_noise(cv_noise, rng)
         CVRHG.measure_hom("p", code.all_syndrome_inds, rng)
         dec.CV_decoder(code, translator=dec.GKP_binner)

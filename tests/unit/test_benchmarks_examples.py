@@ -49,7 +49,8 @@ def test_surface_code_example():
 
 def test_performance_example():
     """Simple test for the decoding module in flamingpy.examples."""
-    from flamingpy.examples import performance
+    from flamingpy.examples import performances
+
 
 def test_lemon_benchmark():
     """Simple test for the lemon module in flamingpy.benchmarks."""
