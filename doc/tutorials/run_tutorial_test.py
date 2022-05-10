@@ -1,7 +1,7 @@
 r"""
 .. _run_tutorial_test:
-Basic tutorial: qubit rotation
-==============================
+Basic tutorial: qubit translation
+=================================
 
 *Author: PennyLane dev team. Last updated: 19 Jan 2021.*
 To see how PennyLane allows the easy construction and optimization of quantum functions, let's
