@@ -257,7 +257,6 @@ def draw_EGraph(
         if label:
             value = egraph.nodes[point].get(label) if label != "index" else indices[point]
             if value is not None:
-                x, z, y = point
                 # Raise negative sign above node.
                 sign = "^{-}" if value < 0 else " "
                 if not isinstance(value, int):
@@ -565,14 +564,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
         for point in bound_points:
-            ax.scatter(point[0], point[1], point[2], s=70, c="k")
-            ax.text(
-                point[0],
-                point[1],
-                point[2],
-                index_dict[point],
-                # fontdict=font_props
-            )
+            x, z, y = point
+            ax.scatter(x, y, z, s=5, c="k")
+            ax.text(x, y, z, index_dict[point])
 
     # Define a legend for red/green cubes.
     legend_elements = [
