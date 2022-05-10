@@ -502,18 +502,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         plt.xticks(range(0, 2 * shape[0] - 1))
         plt.yticks(range(0, 2 * shape[1] - 1))
         ax.set_zticks(range(0, 2 * shape[2] - 1))
-        ax.set_xlabel(
-            "x",
-            labelpad=20,
-        )
-        ax.set_ylabel(
-            "z",
-            labelpad=20,
-        )
-        ax.set_zlabel(
-            "y",
-            labelpad=20,
-        )
+        ax.set_xlabel("x", labelpad=20)
+        ax.set_ylabel("z", labelpad=20)
+        ax.set_zlabel("y", labelpad=20)
         leg = None
     # Illustrate stabilizers with voxels colored green for even
     # parity and red for odd pariy.
@@ -558,9 +549,8 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
         for point in bound_points:
-            x, z, y = point
-            ax.scatter(x, y, z, s=5, c="k")
-            ax.text(x, y, z, index_dict[point])
+            ax.scatter(*point, s=5, c="k")
+            ax.text(*point, index_dict[point])
 
     # Define a legend for red/green cubes.
     legend_elements = [
@@ -641,7 +631,7 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
                     x, y, z = node.midpoint()
                 else:
                     x, y, z = node
-                    plt.plot(x, y, z, marker="2", c="k")
+                    plt.plot(x, y, z, marker="2", markersize=15, c="k")
                 xlist += [x]
                 ylist += [y]
                 zlist += [z]
