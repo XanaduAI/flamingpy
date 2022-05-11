@@ -16,10 +16,19 @@ the plots."""
 
 # pylint: disable=import-outside-toplevel
 
+import pytest
 
-def test_decoder_example():
+
+@pytest.mark.parametrize("noise", ["cv", "dv"])
+def test_decoder_example(noise):
     """Simple test for the decoding module in flamingpy.examples."""
-    from flamingpy.examples import decoding as dc_examples
+    from flamingpy.examples.decoding import decode_surface_code
+
+    distance = 3
+    boundaries = "open"
+    ec = "primal"
+
+    decode_surface_code(distance, boundaries, ec, noise, draw=True)
 
 
 def test_decoding_benchmark():
@@ -42,9 +51,15 @@ def test_macro_reduce_example():
     from flamingpy.examples import macro_reduce
 
 
-def test_surface_code_example():
+@pytest.mark.parametrize("boundaries", ["periodic", "open"])
+def test_surface_code_example(boundaries):
     """Simple test for the surface_code module in flamingpy.examples."""
-    from flamingpy.examples import surface_code
+    from flamingpy.examples.surface_code import surface_code
+
+    d = 2
+    err = "both"
+    polarity = None
+    surface_code(d, boundaries, err, polarity, show=False)
 
 
 def test_performance_example():

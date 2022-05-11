@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Decoding and recovery functions."""
+
+# pylint: disable=import-outside-toplevel
+
 import itertools as it
 import sys
 
@@ -255,6 +258,8 @@ def correct(
     weight_options=None,
     sanity_check=False,
     matching_backend="retworkx",
+    draw=False,
+    drawing_opts=None,
 ):
     """Run through all the error-correction steps.
 
@@ -304,6 +309,14 @@ def correct(
         for ec in code.ec:
             matching_graph = build_match_graph(code, ec, matching_backend)
             matching = matching_graph.min_weight_perfect_matching()
+
+            # Draw the stabilizer graph, matching graph, and syndrome, if
+            # desired.
+            if draw:
+                from flamingpy.utils.viz import draw_mwpm_decoding
+
+                draw_mwpm_decoding(code, ec, matching_graph, matching, drawing_opts)
+
             recovery(code, matching_graph, matching, ec, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
     return np.all(result)

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Continuous-variable operations, states, and noise models."""
 
+# pylint: disable=import-outside-toplevel
+
 import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
@@ -123,10 +125,13 @@ class CVLayer:
             indices to coordinates.
     """
 
-    def __init__(self, g, states=None, p_swap=0, rng=default_rng()):
+    def __init__(self, code, states=None, p_swap=0, rng=default_rng()):
         """Initialize the CVGraph."""
-        self.egraph = g
-        self._N = len(g)
+        if code.__class__.__name__ == "EGraph":
+            self.egraph = code
+        else:
+            self.egraph = code.graph
+        self._N = len(self.egraph)
 
         self._init_quads = None
         self._noise_cov = None
@@ -392,3 +397,12 @@ class CVLayer:
         cv_opts = {"color_nodes": "state", "state_colors": {"GKP": "gold", "p": "blue"}}
         updated_opts = {**cv_opts, **kwargs}
         return self.egraph.draw(**updated_opts)
+
+    def draw_SCZ(self, **kwargs):
+        """Draw the adjacency matrix of a CV graph state with matplotlib.
+
+        See flamingpy.utils.viz.plot_mat_heat_map for more details.
+        """
+        from flamingpy.utils.viz import plot_mat_heat_map
+
+        return plot_mat_heat_map(self.SCZ(), **kwargs)

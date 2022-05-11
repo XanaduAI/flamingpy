@@ -5,6 +5,9 @@ source = flamingpy
 
 [report]
 # Regexes for lines to exclude from consideration
-
 exclude_lines =
     if __name__ == .__main__.:
+    pragma: no cover
+    plt.show()
+    except ImportError:
+    raise NotImplementedError

@@ -18,7 +18,7 @@ import networkx as nx
 
 try:
     import flamingpy.cpp.lemonpy as lp
-except ImportError:
+except ImportError:  # pragma: no cover
     warnings.warn("Failed to import flamingpy.cpp.lemonpy library.", ImportWarning)
 
 

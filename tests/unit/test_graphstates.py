@@ -24,6 +24,7 @@ from numpy.random import default_rng as rng
 import pytest
 import scipy.sparse as sp
 
+from flamingpy.codes import SurfaceCode
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import CVLayer, SCZ_mat, SCZ_apply
 
@@ -111,15 +112,32 @@ class TestCVHelpers:
             assert np.array_equal(mat[N:, :N], random_graph[1])
             assert np.array_equal(mat[N:, N:], np.identity(N))
 
-    # def test_SCZ_apply(self):
-    # pass
+    @pytest.mark.parametrize("one_shot", [True, False])
+    @pytest.mark.parametrize("n", [1, 2])
+    def test_SCZ_apply(self, random_graph, one_shot, n):
+        """Test SCZ matrix application."""
+
+        adj = random_graph[1]
+        SCZ = SCZ_mat(adj)
+        N = adj.shape[0]
+        quads_shape = [N * 2] * n
+        quads = np.random.rand(*quads_shape)
+
+        if n == 1:
+            expected_quads = SCZ_mat(adj).dot(quads)
+        else:
+            expected_quads = SCZ.dot(SCZ.dot(quads).T).T
+
+        new_quads = SCZ_apply(adj, quads, one_shot=one_shot)
+
+        assert np.allclose(new_quads, expected_quads)
 
 
 class TestCVLayer:
     """Tests for functions in the CVLayer class."""
 
     def test_empty_init(self, random_graph):
-        """Test the empty initialization of an EGraph."""
+        """Test the instantiation of CVLayer from codes and EGraphs."""
         G = CVLayer(random_graph[0], states=None)
         G_array = nx.to_numpy_array(G.egraph)
         H = CVLayer(EGraph(random_graph[0]), states=None)
@@ -131,6 +149,8 @@ class TestCVLayer:
         # a regular NetworkX graph has the same effect.
         assert np.array_equal(random_graph[1], H_array)
         assert np.array_equal(random_graph[1], G_array)
+        CVRHG = CVLayer(SurfaceCode(2))
+        assert CVRHG._N == len(SurfaceCode(2).graph)
 
     def test_all_GKP_init(self, random_graph):
         """Test the all-GKP initialization of EGraph."""
@@ -143,7 +163,7 @@ class TestCVLayer:
         assert np.array_equal(G._states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
-    @pytest.mark.parametrize("p_swap", [0, rng().random(), 1])
+    @pytest.mark.parametrize("p_swap", [0, 0.99 * rng().random() + 0.01, 1])
     def test_hybridize(self, random_graph, p_swap):
         """Test whether CVLayer properly populates p-squeezed states for non-
         zero p-swap."""

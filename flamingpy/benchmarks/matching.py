@@ -33,7 +33,6 @@ num_trials = 10
 distance = 3
 boundaries = "periodic"
 RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
-RHG_lattice = RHG_code.graph
 
 # Noise model parameters
 p_swap = 0.2
@@ -67,7 +66,7 @@ for alg in ["networkx", "lemon", "retworkx"]:
     for i in range(num_trials):
         print(f"-- {i} --")
         # Instantiate the CV layer
-        CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
+        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
         # Apply noise
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
@@ -91,5 +90,6 @@ plt.xscale("log")
 plt.xlabel("Times [seconds]")
 plt.ylabel("Count")
 plt.title(f"Matching for code distance {distance}")
+
 if __name__ == "__main__":
     plt.savefig(f"benchmark_matching_distance_{distance}.pdf")
