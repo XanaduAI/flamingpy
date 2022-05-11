@@ -71,7 +71,7 @@ python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backen
 python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 ``` 
 
-The purpose of the commands is as follows:
+Note you will need to remove the comments manually if you use Windows prompt. The purpose of the commands is as follows:
 - The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
 - The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
