@@ -66,9 +66,9 @@ def decode_surface_code(distance, boundaries, ec, noise, polarity=None, draw=Tru
         decoder = {"outer": "MWPM"}
 
     # Drawing options
-    node_colors = ("state", {"GKP": "gold", "p": "blue"}) if noise == "cv" else False
+    node_colors = ("state", {"GKP": "gold", "p": "blue"}) if noise == "cv" else True
     edge_colors = (
-        ("weight", {"GKP": "gold", "p": "blue"}) if polarity == alternating_polarity else False
+        ("weight", {"GKP": "gold", "p": "blue"}) if polarity == alternating_polarity else True
     )
     dw = {
         "show_nodes": True,
