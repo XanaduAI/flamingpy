@@ -66,7 +66,7 @@ def compute_enc_state(request):
 
     # NX reference code
     nx_DVRHG = SurfaceCode(
-        distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity
+        distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity, backend="networkx"
     )
     nx_RHG_lattice = nx_DVRHG.graph
     # CV (inner) code/state
