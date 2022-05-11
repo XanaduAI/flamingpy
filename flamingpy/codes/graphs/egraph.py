@@ -170,7 +170,6 @@ class EGraph(nx.Graph):
         else:
             adj = nx.to_numpy_array(self, nodelist=sorted_nodes, dtype=np.int8)
         self.adj_mat = adj
-        # TODO: Draw heat map, if user desires?
         return adj
 
     def slice_coords(self, plane, number):
@@ -203,4 +202,15 @@ class EGraph(nx.Graph):
         """
         from flamingpy.utils.viz import draw_EGraph
 
-        return draw_EGraph(self, **kwargs)
+        _, ax = draw_EGraph(self, **kwargs)
+        return ax
+
+    def draw_adj(self, **kwargs):
+        """Draw the adjacency matrix with matplotlib.
+
+        See flamingpy.utils.viz.plot_mat_heat_map for more details.
+        """
+        from flamingpy.utils.viz import plot_mat_heat_map
+
+        adj = self.adj_mat or self.adj_generator(sparse=False)
+        return plot_mat_heat_map(adj, **kwargs)

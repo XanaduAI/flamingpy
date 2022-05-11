@@ -11,8 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helper functions to draw various graphs and generate plots using
-Matplotlib."""
+"""Helper functions to draw various graphs and generate plots using Matplotlib.
+
+Plots are configured via the `plot_params` dictionary. These parameters
+are associated with Matplolib's rc settings and are modified within the
+plotting functions using the `rc_context` context manager. This approach
+avoids having to modify the global Matplotlib `rc_params`.
+
+To modify the plot parameters use, for example,
+
+  .. code::
+
+    from flamingpy.utils.viz import plot_params as fp_plot_params
+    fp_plot_params["font.size"] = 20
+"""
 
 # pylint: disable=too-many-statements
 
@@ -20,55 +32,89 @@ import itertools as it
 
 import numpy as np
 import networkx as nx
+import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
+plot_params = {
+    "font.size": 10,
+    "font.family": "serif",
+    "axes.labelsize": 11,
+    "axes.titlesize": 13,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "legend.fontsize": 10,
+    "grid.color": "lightgray",
+    "lines.markersize": 5,
+    "lines.linewidth": 4,
+    "figure.figsize": (8, 6),
+}
 
+
+@mpl.rc_context(plot_params)
 def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.plot(xs, ns, ",")
-    plt.title("Integer Part", fontsize="medium")
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    fig = plt.figure()
+    ax = plt.gca()
+    plt.plot(xs, ns, ".")
+    plt.title("Integer Part")
+    plt.xlabel("$x$")
+    plt.xticks(newxticks, newxlabels)
+    plt.ylabel(r"$\mathrm{int}(x)$")
     if show:
         plt.show()
 
+    return fig, ax
 
+
+@mpl.rc_context(plot_params)
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
-    plt.title("Fractional Part", fontsize="medium")
-    plt.plot(xs, fs, ",")
+    plt.title("Fractional Part")
+    plt.plot(xs, fs, ".")
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    plt.xticks(newxticks, newxlabels)
+    plt.xlabel("$x$")
     plt.yticks(newyticks, newylabels)
+    plt.ylabel(r"$\mathrm{frac}(x)$")
     if show:
         plt.show()
 
 
+@mpl.rc_context(plot_params)
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.plot(outcomes, bit_values, ",")
-    plt.title("Binned values", fontsize="medium")
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    fig = plt.figure()
+    ax = plt.gca()
+    plt.plot(outcomes, bit_values, ".")
+    plt.title("Binned values")
+    plt.xticks(newxticks, newxlabels)
+    plt.xlabel("Outcomes")
     plt.yticks([0, 1], [0, 1])
+    plt.ylabel("Bit values")
     if show:
         plt.show()
 
+    return fig, ax
 
+
+@mpl.rc_context(plot_params)
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
     _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
@@ -77,14 +123,21 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     print(xmin, xmax, min(val), max(val))
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.plot(val, error, ",")
+    fig = plt.figure()
+    ax = plt.gca()
+    plt.plot(val, error, ".")
+    plt.xlabel("Homodyne value")
+    plt.ylabel("Error")
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
-    plt.title("Conditional phase probabilities: " + addendum, fontsize="small")
-    plt.xticks(newxticks, newxlabels, fontsize="small")
+    plt.title("Conditional phase probabilities: " + addendum)
+    plt.xticks(newxticks, newxlabels)
     if show:
         plt.show()
 
+    return fig, ax
 
+
+@mpl.rc_context(plot_params)
 def draw_EGraph(
     egraph,
     color_nodes=False,
@@ -147,27 +200,9 @@ def draw_EGraph(
     # Recommended to be viewed with IPython.
     # Font properties
     dims = egraph.graph.get("dims")
-    if dims:
-        font_size = 10 * sum(dims) ** (1 / 2)
-    else:
-        dims = (5, 5, 5)
-        font_size = 14
     xmax, ymax, zmax = dims
-    # Set plotting options
-    plot_params = {
-        "font.size": font_size,
-        "font.family": "serif",
-        "axes.labelsize": font_size,
-        "axes.titlesize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "legend.fontsize": font_size,
-        "grid.color": "lightgray",
-        "lines.markersize": font_size,
-    }
-    plt.rcParams.update(plot_params)
 
-    fig = plt.figure(figsize=((2 * (sum(dims) + 2), 2 * (sum(dims) + 2))))
+    fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
 
     if label:
@@ -184,6 +219,7 @@ def draw_EGraph(
         n_uncomputed = 0
         if title:
             ax.set_title(name)
+            ax.title.set_size(plot_params.get("axes.titlesize"))
         if label == "index":
             indices = egraph.index_generator()
 
@@ -216,23 +252,22 @@ def draw_EGraph(
         else:
             color = egraph.nodes[point].get("color") if color_nodes else "k"
 
-        ax.scatter(x, y, z, c=color, s=plt.rcParams["lines.markersize"] * 5)
+        ax.scatter(x, y, z, c=color)
 
         if label:
             value = egraph.nodes[point].get(label) if label != "index" else indices[point]
             if value is not None:
-                x, z, y = point
                 # Raise negative sign above node.
-                sign = "^{-}" * (-int(np.sign(value)))
+                sign = "^{-}" if value < 0 else " "
                 if not isinstance(value, int):
                     value = r"${}{:.2g}$".format(sign, np.abs(value))
                 ax.text(
-                    x,
+                    x + 0.05,
                     y,
                     z,
                     value,
                     color="MediumBlue",
-                    backgroundcolor="w",
+                    # backgroundcolor="w",
                     zorder=2,
                 )
             else:
@@ -256,14 +291,14 @@ def draw_EGraph(
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
-        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color)
+        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
 
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
 
-    plt.xticks(range(0, 2 * xmax + 1))
-    plt.yticks(range(0, 2 * zmax + 1))
-    ax.set_zticks(range(0, 2 * ymax + 1))
+    plt.xticks(range(0, 2 * xmax))
+    plt.yticks(range(0, 2 * zmax))
+    ax.set_zticks(range(0, 2 * ymax))
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
@@ -271,28 +306,40 @@ def draw_EGraph(
         ax.axis("off")
     plt.tight_layout(pad=5)
     plt.draw()
-    return ax
+    return fig, ax
 
 
-def plot_binary_mat_heat_map(mat, show=True):
+@mpl.rc_context(plot_params)
+def plot_mat_heat_map(mat, show=True, title=None):
     """Plot the heat map of a matrix."""
-    plt.figure()
+    fig = plt.figure()
+    ax = plt.gca()
     if not isinstance(mat, np.ndarray):
         mat = mat.toarray()
     plt.matshow(mat, 0)
+    if title:
+        plt.title(title)
+    cbar = plt.colorbar()
+    cbar.set_label(
+        "value", rotation=270, fontsize=plot_params.get("axes.labelsize", 10) * 1.2, labelpad=20
+    )
     if show:
         plt.show()
 
+    axs = [ax, cbar.ax]
+    return fig, axs
 
-def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
+
+@mpl.rc_context(plot_params)
+def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     """Draw a stabilizer or matching graph with a color legend.
 
     This requires that the graph is implemented with the NetworkX backend.
 
     Args:
         graph (NxStabilizerGraph or NxMatchingGraph): the graph to draw.
-        label_edges (bool, optional): if True (the default), label the edges
-            of the graph with their weight.
+        label_edges (bool, optional): if `True`, label the edges
+            of the graph with their weight. Defaults to False.
         node_labels (dict of node to label, optional): if provided, the nodes
             will be identified with the given labels. Else, there will be no
             label for the nodes.
@@ -300,35 +347,87 @@ def draw_dec_graph(graph, label_edges=True, node_labels=None, title=""):
     """
     if not isinstance(graph.graph, nx.Graph):
         raise ValueError("The graph must be implemented with the networkx backend.")
+
+    # Remove 'low' and 'high' nodes, which are not important for visualization.
+    if graph.__class__.__name__ == "NxStabilizerGraph":
+        graph.graph.remove_nodes_from({"low", "high"})
+
     graph = graph.graph
-    plt.figure()
+    layout = nx.circular_layout(graph)
+
+    fig, ax = plt.subplots()
     if title != "":
-        plt.title(title, family="serif", size=10)
-    # NetworkX drawing function for circular embedding of graphs.
+        ax.set_title(title)
+
+    # Color edges based on weight, and draw a colobar.
+    # divider = make_axes_locatable(ax)
+    ax.axis("off")
+    cmap, norm = draw_curved_edges(graph, layout, ax)
+    nx.draw_networkx_nodes(graph, pos=layout, node_color="#202020", ax=ax)
+
+    # Draw node labels
     if node_labels is not None:
         node_labels = {node: label for node, label in node_labels.items() if node in graph}
-    nx.draw_circular(
-        graph,
-        edgelist=[],
-        with_labels=node_labels is not None,
-        labels=node_labels,
-        node_color="k",
-        font_size=7,
-        font_color="w",
-        font_family="serif",
-    )
-    # Color edges based on weight, and draw a colobar.
-    weight_list = [graph.edges[edge]["weight"] for edge in graph.edges]
-    weight_dict = {edge: "{:.2f}".format(graph.edges[edge]["weight"]) for edge in graph.edges}
-    if label_edges:
-        nx.draw_networkx_edge_labels(
-            graph, nx.circular_layout(graph), edge_labels=weight_dict, font_size=7
+        nx.draw_networkx_labels(
+            graph, pos=layout, labels=node_labels, font_color="white", font_weight=100, ax=ax
         )
-    r = nx.draw_networkx_edges(graph, nx.circular_layout(graph), edge_color=weight_list)
-    cbar = plt.colorbar(r)
-    cbar.ax.tick_params(labelsize=10)
+
+    if label_edges:
+        weight_dict = {edge: "{:.2f}".format(graph.edges[edge]["weight"]) for edge in graph.edges}
+        nx.draw_networkx_edge_labels(
+            graph,
+            layout,
+            edge_labels=weight_dict,
+            font_size=plot_params.get("font.size", 7) * 0.75,
+            clip_on=False,
+            alpha=0.7,
+            verticalalignment="center_baseline",
+            bbox={"alpha": 0},
+        )
+
+    cax, kw = mpl.colorbar.make_axes(ax, location="right", fraction=0.15)
+    cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, **kw)
+    cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
+    cbar.set_label(
+        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
+    )
+
+    axs = [ax, cax]
+    return fig, axs
 
 
+def draw_curved_edges(graph, layout, ax, rad=0.5):
+    """Draw curved edges using matplotlib directly instead of networkx.
+
+    This requires that the graph is implemented with the NetworkX backend.
+
+    Args:
+        graph (NxGraph): The graph to draw.
+        layout (dict): A dictionary of positions keyed by node.
+        ax (matplotlib.pyplot.Axis): The axis on which arrows should be drawn.
+        rad (float, optional): Curvature of the arrows in radians.
+    """
+
+    edges = graph.edges
+    edge_weights = [edges[edge]["weight"] for edge in edges]
+
+    cmap = mpl.cm.get_cmap("Spectral")
+    norm = mpl.colors.Normalize(vmin=np.min(edge_weights), vmax=np.max(edge_weights))
+    for edge in graph.edges():
+        source, target = edge
+        arrowprops = dict(
+            arrowstyle="-",
+            color=cmap(norm(edges[edge]["weight"])),
+            connectionstyle=f"arc3,rad={rad}",
+            linestyle="-",
+            linewidth=plot_params.get("lines.linewidth", 1) / 2,
+            alpha=0.8,
+        )
+        ax.annotate("", xy=layout[source], xytext=layout[target], arrowprops=arrowprops)
+    return cmap, norm
+
+
+@mpl.rc_context(plot_params)
 def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     """Draw the syndrome plot for a code.
 
@@ -356,23 +455,8 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             all possibilities described above.
 
     Returns:
-        matplotlib.pyplot.axes: the 'axes' object
+        tuple: figure and axes
     """
-    # Font properties
-    font_size = 10 * sum(code.dims) ** (1 / 2)
-    # Set plotting options
-    plot_params = {
-        "font.size": font_size,
-        "font.family": "serif",
-        "axes.labelsize": font_size,
-        "axes.titlesize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "legend.fontsize": font_size,
-        "grid.color": "lightgray",
-        "lines.markersize": font_size,
-    }
-    plt.rcParams.update(plot_params)
 
     cubes = getattr(code, ec + "_stabilizers")
     # Default drawing options.
@@ -396,7 +480,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
     # Shape and font properties from the original graph.
     shape = np.array(code.dims)
-    # font_props = state.font_props
     # If show_nodes is True, get the axes object and legend from
     # draw_EGraph (this also plots the graph in the console).
     if drawing_opts["show_nodes"]:
@@ -409,93 +492,65 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             "display_axes",
         ]
         egraph_opts = {k: drawing_opts[k] for k in egraph_args}
-        ax = draw_EGraph(code.graph, **egraph_opts)
+        fig, ax = draw_EGraph(code.graph, **egraph_opts)
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
     else:
-        fig = plt.figure(figsize=(2 * (np.sum(shape) + 2), 2 * (np.sum(shape) + 2)))
+        fig = plt.figure()
         ax = fig.gca(projection="3d")
-        # ax.tick_params(labelsize=font_props['size'])
-        plt.xticks(range(0, 2 * shape[0] + 1))
-        plt.yticks(range(0, 2 * shape[1] + 1))
-        ax.set_zticks(range(0, 2 * shape[2] + 1))
-        ax.set_xlabel(
-            "x",
-            # fontdict=font_props,
-            labelpad=20,
-        )
-        ax.set_ylabel(
-            "z",
-            # fontdict=font_props,
-            labelpad=20,
-        )
-        ax.set_zlabel(
-            "y",
-            # fontdict=font_props,
-            labelpad=20,
-        )
-        plt.rcParams["grid.color"] = "lightgray"
+        plt.xticks(range(0, 2 * shape[0] - 1))
+        plt.yticks(range(0, 2 * shape[1] - 1))
+        ax.set_zticks(range(0, 2 * shape[2] - 1))
+        ax.set_xlabel("x", labelpad=20)
+        ax.set_ylabel("z", labelpad=20)
+        ax.set_zlabel("y", labelpad=20)
         leg = None
     # Illustrate stabilizers with voxels colored green for even
     # parity and red for odd pariy.
-    filled = np.zeros(shape, dtype=object)
+    positions, colors, sizes = [], [], []
     for cube in cubes:
 
         # Obtain smallest, largest, and middle coordinates for each
-        # cube. Divided by 2 becaues voxels are 1X1X1.
-        xmin, xmax = np.array(cube.xlims(), dtype=int) // 2
-        ymin, ymax = np.array(cube.ylims(), dtype=int) // 2
-        zmin, zmax = np.array(cube.zlims(), dtype=int) // 2
+        # cube.
+        xmin, xmax = np.array(cube.xlims())
+        ymin, ymax = np.array(cube.ylims())
+        zmin, zmax = np.array(cube.zlims())
         xmid, ymid, zmid = np.array(cube.midpoint())
         # Fill in the color arrays depending on parity.
         if cube.parity:
-            filled[xmin:xmax, ymin:ymax, zmin:zmax] = "#FF000015"
+            color = "#FF000015"
         else:
-            filled[xmin:xmax, ymin:ymax, zmin:zmax] = "#00FF0015"
+            color = "#00FF0015"
+
+        # gap defines the distance between adjacent cubes
+        gap = 0.15
+        min_arr = np.array([xmin, ymin, zmin])
+        max_arr = np.array([xmax, ymax, zmax])
+        positions.append(min_arr + gap)
+        sizes.append(np.abs(max_arr - min_arr) - 2 * gap)
+        colors.append(color)
+
         if drawing_opts["label_stabilizers"] and index_dict:
+
             if cube in index_dict:
-                ax.text(
-                    xmid,
-                    ymid,
-                    zmid,
-                    index_dict[cube],
-                    # fontdict=font_props
-                )
+                ax.text(xmid, ymid, zmid, index_dict[cube])
 
-    # This portion adapted from a Matplotlib official example to fix
-    # an issue with filling in the insides of voxels: the code
-    # expands the indices and creates small gaps between the voxels.
+    # draw cubes
+    pc = _plot_cubes_at(positions, colors=colors, sizes=sizes)
+    ax.add_collection3d(pc)
 
-    def explode(data):
-        size = np.array(data.shape) * 2
-        data_e = np.zeros(size - 1, dtype=data.dtype)
-        data_e[::2, ::2, ::2] = data
-        return data_e
-
-    # upscale the above voxel image, leaving gaps
-    filled_e = explode(filled)
-    # Shrink the gaps
-    x, y, z = np.indices(np.array(filled_e.shape) + 1, dtype=float)
-    x[0::2, :, :] += 0.05
-    y[:, 0::2, :] += 0.05
-    z[:, :, 0::2] += 0.05
-    x[1::2, :, :] += 0.95
-    y[:, 1::2, :] += 0.95
-    z[:, :, 1::2] += 0.95
-    ax.voxels(x, y, z, filled_e, facecolors=filled_e)
+    # setting plot limits to give some room to the boxes
+    ymin = 0 if ec == "primal" else -2
+    ax.set_xlim(0, 2 * shape[0])
+    ax.set_ylim(ymin, 2 * shape[1])
+    ax.set_zlim(0, 2 * shape[2])
 
     if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
         for point in bound_points:
-            ax.scatter(point[0], point[1], point[2], s=70, c="k")
-            ax.text(
-                point[0],
-                point[1],
-                point[2],
-                index_dict[point],
-                # fontdict=font_props
-            )
+            ax.scatter(*point, s=5, c="k")
+            ax.text(*point, index_dict[point])
 
     # Define a legend for red/green cubes.
     legend_elements = [
@@ -503,20 +558,67 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         Patch(facecolor="#FF000050", label="odd parity"),
     ]
     if drawing_opts["legend"]:
-        ax.legend(
-            handles=legend_elements,
-            # prop=font_props,
-            loc="upper left",
-        )
+        ax.legend(handles=legend_elements, loc="upper left")
     # Since draw_EGraph legend has been overwritten, re-add
     # it to the plot.
     if leg:
         ax.add_artist(leg)
     if drawing_opts["title"]:
         ax.set_title(ec.capitalize() + " syndrome")
-    return ax
+
+    return fig, ax
 
 
+def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
+    """Plot cubes with their origin located at ``positions``.
+
+    Note cubes are located by displacing them from the origin. In that sense,
+    the location is defined by the corner matching the origin of the coordinate
+    system before displacement.
+
+    Args:
+        positions (Iterable): An interable of dimension ``(N,3)`` containing the
+            position of the corner of the cube.
+        sizes (Iterable): An interable of dimension ``(N,3)`` containing the size of
+            the cube in the coordinate directions.
+        colors (Iterable): An iterable of size ``N`` containing the colors of the cube.
+            This can be any of the option allowed by matplolib.
+
+    Keyword arguments:
+        **kwargs: all other parameters are forwarded to
+            ```Poly3DColletion`` <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
+
+    Returs:
+        Poly3DCollection: A collection of 3D polygons defining the cubes.
+    """
+
+    g = [_cuboid_data(p, size=s) for p, s in zip(positions, sizes)]
+    return Poly3DCollection(np.concatenate(g), facecolors=np.repeat(colors, 6, axis=0), **kwargs)
+
+
+def _cuboid_data(origin, size=(1, 1, 1)):
+    """Return an array with the corners of a cube of size 1."""
+
+    X = np.array(
+        [
+            [[0, 1, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]],
+            [[0, 0, 0], [0, 0, 1], [1, 0, 1], [1, 0, 0]],
+            [[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]],
+            [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]],
+            [[0, 1, 0], [0, 1, 1], [1, 1, 1], [1, 1, 0]],
+            [[0, 1, 1], [0, 0, 1], [1, 0, 1], [1, 1, 1]],
+        ]
+    ).astype(float)
+    # scale the sides of the cube
+    for i in range(3):
+        X[:, :, i] *= size[i]
+    # displace the cube origin
+    X += np.array(origin)
+
+    return X
+
+
+@mpl.rc_context(plot_params)
 def draw_matching_on_syndrome_plot(ax, matching, G_match):
     """Plot the matching output by MWPM."""
     virtual_points = G_match.virtual_points
@@ -529,12 +631,19 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
                     x, y, z = node.midpoint()
                 else:
                     x, y, z = node
-                    plt.plot(x, y, z, marker="2", ms=50, c="k")
+                    plt.plot(x, y, z, marker="2", markersize=15, c="k")
                 xlist += [x]
                 ylist += [y]
                 zlist += [z]
-            ax.set_title("Minimum-weight perfect matching", family="serif", size=20)
-            ax.plot(xlist, ylist, zlist, "o-", ms=20, linewidth=5, c=np.random.rand(3))
+            ax.set_title("Minimum-weight perfect matching")
+            ax.plot(
+                xlist,
+                ylist,
+                zlist,
+                "o-",
+                c=np.random.rand(3),
+                linewidth=plot_params.get("lines.linewidth", None) * 0.9,
+            )
     return ax
 
 
@@ -547,8 +656,8 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     # An integer label for each node in the stabilizer and matching
     # graphs. This is useful to identify the nodes in the plots.
     if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):
-        # Node labels for the stabilizer graph
-        node_labels = {node: index for index, node in enumerate(G_stabilizer.nodes())}
+        # Node labels for the stabilizer graph (avoid "low" / "high" nodes)
+        node_labels = {node: index for index, node in enumerate(list(G_stabilizer.nodes())[2:])}
         # Update node labels to work with the matching graph---needs to be done
         # because virtual boundary nodes are of the form ((x, y, z), i).
         for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
@@ -573,6 +682,6 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     else:
         print("\nMatching graph empty!\n")
 
-    ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_matching"):
         draw_matching_on_syndrome_plot(ax, matching, G_match)
