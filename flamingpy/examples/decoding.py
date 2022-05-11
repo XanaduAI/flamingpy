@@ -91,7 +91,7 @@ dw = {
 # Manual decoding (to plot intermediate results).
 dec.assign_weights(RHG_code, **weight_options)
 for ec in RHG_code.ec:
-    G_match = dec.build_match_graph(RHG_code, ec)
+    G_match = dec.build_match_graph(RHG_code, ec, matching_backend="networkx")
     matching = G_match.min_weight_perfect_matching()
     G_stabilizer = getattr(RHG_code, ec + "_stab_graph")
 

@@ -223,7 +223,7 @@ def check_correction(code, sanity_check=False):
     return ec_checks
 
 
-def build_match_graph(code, ec, matching_backend="networkx"):
+def build_match_graph(code, ec, matching_backend="retworkx"):
     """Build the matching graph for the given code.
 
     Args:
@@ -231,11 +231,10 @@ def build_match_graph(code, ec, matching_backend="networkx"):
         ec (string): the error complex ("primal" or "dual")
         matching_backend (str or flamingpy.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
-            it must be either "networkx", "retworkx" or "lemon" to pick one
+            it must be either "retworkx", "networkx" or "lemon" to pick one
             of the already implemented backends. Else, the provided type should
             inherit from the MatchingGraph abstract base class and have an empty init.
-            The default is the networkx backend since it is the reference implementation.
-            However, both retworkx and lemon and orders of magnitude faster.
+            The default is the retworkx backend.
     Returns:
         MatchingGraph: The matching graph.
     """
@@ -255,7 +254,7 @@ def correct(
     decoder,
     weight_options=None,
     sanity_check=False,
-    matching_backend="networkx",
+    matching_backend="retworkx",
 ):
     """Run through all the error-correction steps.
 
