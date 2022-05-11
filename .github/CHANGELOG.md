@@ -1,36 +1,3 @@
-## Release ??? (??? release)
-
-### New features since the last release
-
-None
-
-### Bug fixes
-
-There was a bug in when using the lemon backend for matching. 
-The problem was that missing edges in the graph were translated to edges with 
-weight 0 leading to them always having the minimal weight and making them
-indistinguishable from edges with actual weight 0.
-The missing edges are now assigned a really large weight.
-
-### Improvements
-
-Since retworkx and lemon are the fastest backends and retworkx follow the same convention as networkx,
-this change the default backend when matching and building a surface code to retworkx.
-
-### Documentation changes
-
-The doc now mentions that retworkx is the default backend.
-
-### Contributors
-
-This release contains contributions from (in alphabetical order):
-
-[Nariman Saadatmand](https://github.com/nariman87), 
-[Maxime Tremblay](https://github.com/maxtremblay), 
-[Ilan Tzitrin](https://github.com/ilan-tz)
-
-See full commit details ...
-
 ## Release 0.6.1a3 (development release)
 
 ### New features since the last release
@@ -44,6 +11,12 @@ These changes are reflected in two new functions into the viz module: _plot_cube
 * Voxel plots of dual stabilizers used to be drawn incorrectly, since only integer 
 locations and cube sizes were allowed. Furthermore, no cube could be placed in a coordinate 
 less than zero. This has been fixed. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
+* `lemon` was performing worse compared to the other matching backends. The problem 
+was that missing edges in the graph were associated with 0-entries in the adjacency
+matrix, leading to them always having the minimal weight and making them
+indistinguishable from edges with actual weight 0. The missing edges are now 
+assigned a really large weight. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
+
 
 ### Improvements
 
@@ -84,9 +57,12 @@ less than zero. This has been fixed. [(#20)](https://github.com/XanaduAI/flaming
   * Graphs of decoding objects (stabilizer and matching graphs) are prettier and easier
   to parse, thanks partially to a new function, `draw_curved_edges`.
   * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
+* Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention 
+  as `networkx`, the default backend for stabilizer graphs and MWPM has been changed to `retworkx`. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
 
-  
 ### Documentation changes
+
+* The documentation now mentions that `retworkx` is the default backend. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
 
 ### Contributors
 
