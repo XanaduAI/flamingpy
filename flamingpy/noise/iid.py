@@ -14,6 +14,7 @@
 """An implementation of IID Pauli noise."""
 
 from numpy.random import default_rng
+import numpy as np
 
 
 class IidNoise:
@@ -25,21 +26,23 @@ class IidNoise:
         error_probability (float): the probability of a Z error.
     """
 
-    def __init__(self, code, error_probability):
+    def __init__(self, length, error_probability):
         if error_probability < 0.0 or error_probability > 1.0:
             raise ValueError("Probability is not between 0 and 1.")
-        self.graph = code.graph
+        self.length = length
         self.error_probability = error_probability
 
-    def apply_noise(self, rng=default_rng()):
-        """Apply the noise to the code.
-
-        This fixes the "bit_val" attribute of each node in the code egraph.
+    def sample(self, rng=default_rng()):
+        """Generate a random error.
 
         Args:
             rng (numpy.random.Generator, optional): a random number generator
                 following the NumPy API. It can be seeded for reproducibility.
                 By default, numpy.random.default_rng is used without a fixed seed.
+
+        Returns (numpy.ndarray):
+            A bit string where each 1 represents
+            a Z error on the corresponding qubit.
+        
         """
-        for _, node_data in self.graph.nodes.data():
-            node_data["bit_val"] = int(rng.random() < self.error_probability)
+        return np.array(rng.random(self.length) < self.error_probability, dtype=int)

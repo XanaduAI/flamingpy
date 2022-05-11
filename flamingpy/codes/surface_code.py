@@ -321,6 +321,9 @@ class SurfaceCode:
                 raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
             setattr(self, error_type + "_stab_graph", stabilizer_graph)
 
+    def __len__(self):
+        return len(self.graph.nodes)
+    
     def identify_stabilizers(self):
         """Set the stabilizer and syndrome coordinates of self.
 
@@ -462,6 +465,17 @@ class SurfaceCode:
                 final_high_set = set(high_bound_points).intersection(syndrome_coords)
 
                 setattr(self, ec + "_bound_points", list(final_low_set) + list(final_high_set))
+    
+    def apply_error(self, error):
+        """Update the "bit_val" attribute of each node in the graph of the code
+        from the error bitstring.
+        
+        Args:
+            error (sequence of 0s and 1s):
+                The element at index i is set as the "bit_val" attribute of node i.
+        """
+        for (err, (_, node_data)) in zip(error, self.graph.nodes.data()):
+            node_data["bit_val"] = err
 
     def draw(self, **kwargs):
         """Draw the cluster state with matplotlib.
