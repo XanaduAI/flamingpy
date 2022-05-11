@@ -33,7 +33,7 @@ import itertools as it
 import numpy as np
 import networkx as nx
 import matplotlib as mpl
-from matplotlib.patches import Patch
+from matplotlib.patches import Patch, Circle
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -180,8 +180,8 @@ def draw_EGraph(
         title (bool): if True, display the title, depending on the label.
             For default labels, the titles are converted from attribute
             name to plane English and capitalized.
-        legend (bool): if True and label is set to 'state', display
-            the state color legend.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
         display_axes (bool): if False, turn off the axes.
 
     Returns:
@@ -235,7 +235,9 @@ def draw_EGraph(
                     "the dictionary keys to valid attribute values and"
                     "dictionary values to valid matplotlib color strings."
                 )
-            color = color_dict.get(egraph.nodes[point].get(node_attribute))
+            node_property = egraph.nodes[point].get(node_attribute)
+            color = color_dict.get(node_property)
+
         elif isinstance(color_nodes, bool) and color_nodes == True:
             color = egraph.nodes[point].get("color") if color_nodes else "k"
         else:
@@ -282,7 +284,14 @@ def draw_EGraph(
         x2, z2, y2 = edge[1]
         plt.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
 
-    if color_nodes == "state" and legend:
+    if isinstance(color_nodes, tuple) and legend:
+        # this two lines are just a handy way to create a legend for
+        # the node colors and attributes by generating handles of empty lines
+        # with the label and color of the node property
+        handles = [
+            mlines.Line2D([], [], marker="o", linewidth=0, color=color, label=node_property)
+            for node_property, color in color_nodes[1].items()
+        ]
         ax.legend(handles=handles)
 
     plt.xticks(range(0, 2 * xmax))
