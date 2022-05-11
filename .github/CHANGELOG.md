@@ -1,3 +1,37 @@
+## Release ??? (??? release)
+
+### New features since the last release
+
+None
+
+### Bug fixes
+
+There was a bug in when using the lemon backend for matching. 
+The problem was that missing edges in the graph were translated to edges with 
+weight 0 leading to them always having the minimal weight and making them
+indistinguishable from edges with actual weight 0.
+The missing edges are now assigned a really large weight.
+
+### Improvements
+
+Since retworkx and lemon are the fastest backends and retworkx follow the same convention as networkx,
+this change the default backend when matching and building a surface code to retworkx.
+
+### Documentation changes
+
+The doc now mentions that retworkx is the default backend.
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+[Nariman Saadatmand](https://github.com/nariman87), 
+[Maxime Tremblay](https://github.com/maxtremblay), 
+[Ilan Tzitrin](https://github.com/ilan-tz)
+
+See full commit details ...
+
+---
 ## Release 0.6.0a3 (development release)
 
 ### New features since the last release
