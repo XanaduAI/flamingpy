@@ -166,10 +166,11 @@ def draw_EGraph(
             True: color the edges based on the 'color' attribute
                 attached to the node. If unavailable, color nodes grey.
             string: color all edges with the color specified by the stirng
-            dict: color edges based on the 'weight' attribute of the node,
-                with the dictionary specifying the colours. For example,
-                if the weight can be +1 or -1, the dictionary should
-                be of the form: ``{-1: minus_color, +1: plus_color}``.
+            dict: color edges based on attribute and defined colour
+                string by providing a tuple with [attribute, color_dictionary],
+                for example: if the edge attribute "weight" can be +1 or -1,
+                the tuple should be of the form:
+                ``("weight",{-1: minus_color, +1: plus_color})``.
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -219,7 +220,8 @@ def draw_EGraph(
     for point in egraph.nodes:
         x, z, y = point
 
-        # Color nodes based on color_nodes if `color_nodes` is a string,
+        # Color nodes based on color_nodes:
+        # if `color_nodes` is a string use it as color,
         # using the attribute and color dict if `color_nodes` is a tuple(str,dict)
         # or based on color attribute (when available) if `color_nodes` is bool and True;
         # black otherwise.
@@ -271,14 +273,29 @@ def draw_EGraph(
     # Plotting edges.
     for edge in egraph.edges:
 
-        # Color edges based on color_edges if string, or based on
-        # color attribute if True; black otherwise.
+        # Color edges based on `color_eges`:
+        #  if `color_edges` is a string use it as color,
+        # using the attribute and color dict if `color_edges` is a tuple(str,dict)
+        # or based on color attribute (when available) if `color_edges` is bool and True;
+        # black otherwise.
         if isinstance(color_edges, str):
             color = color_edges
-        elif isinstance(color_edges, dict):
-            color = color_edges.get(egraph.edges[edge].get("weight"))
-        else:
+        elif isinstance(color_edges, tuple):
+            edge_attribute, color_dict = color_edges
+            if not (isinstance(edge_attribute, str) and isinstance(color_dict, dict)):
+                raise ValueError(
+                    "Inappropiate value for `color_edges` argument:"
+                    "Check it complies with the type `tuple(str, dict)`"
+                    "where the string corresponds to a valid edge attribute,"
+                    "the dictionary keys to valid attribute values and"
+                    "dictionary values to valid matplotlib color strings."
+                )
+            edge_property = egraph.edges[edge].get(edge_attribute)
+            color = color_dict.get(edge_property)
+        elif isinstance(color_edges, bool) and color_edges == True:
             color = egraph.edges[edge].get("color") if color_edges else "grey"
+        else:
+            color = "k"
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]

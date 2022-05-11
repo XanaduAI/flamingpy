@@ -473,7 +473,7 @@ class SurfaceCode:
         edge_colors = "grey"
         if self.polarity is not None:
             if self.polarity.__name__ == "alternating_polarity":
-                edge_colors = {1: "b", -1: "r"}
+                edge_colors = ("weight", {1: "b", -1: "r"})
         default_opts = {
             "color_nodes": ("type", {"primal": "k", "dual": "grey"}),
             "color_edges": edge_colors,
