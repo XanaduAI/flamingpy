@@ -33,7 +33,7 @@ import itertools as it
 import numpy as np
 import networkx as nx
 import matplotlib as mpl
-from matplotlib.patches import Patch, Circle
+from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -322,32 +322,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
     # z goes into the page; however, the axes labels are correct.
     for point in egraph.nodes:
         x, z, y = point
-
-        # Color nodes based on color_nodes:
-        # if `color_nodes` is a string use it as color,
-        # using the attribute and color dict if `color_nodes` is a tuple(str,dict)
-        # or based on color attribute (when available) if `color_nodes` is bool and True;
-        # black otherwise.
-        if isinstance(color_nodes, str):
-            color = color_nodes
-        elif isinstance(color_nodes, tuple):
-            node_attribute, color_dict = color_nodes
-            if not (isinstance(node_attribute, str) and isinstance(color_dict, dict)):
-                raise ValueError(
-                    "Inappropiate value for `color_nodes` argument:"
-                    "Check it complies with the type `tuple(str, dict)`"
-                    "where the string corresponds to a valid node attribute,"
-                    "the dictionary keys to valid attribute values and"
-                    "dictionary values to valid matplotlib color strings."
-                )
-            node_property = egraph.nodes[point].get(node_attribute)
-            color = color_dict.get(node_property)
-
-        elif isinstance(color_nodes, bool) and color_nodes == True:
-            color = egraph.nodes[point].get("color") if color_nodes else "k"
-        else:
-            color = "k"
-
+        color = _get_node_color(egraph, color_nodes, point)
         ax.scatter(x, y, z, c=color)
 
         if label:
@@ -363,7 +338,6 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
                     z,
                     value,
                     color="MediumBlue",
-                    # backgroundcolor="w",
                     zorder=2,
                 )
             else:
@@ -373,7 +347,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         message = "{} at {} node(s) have not yet been computed."
         print(message.format(name.lower(), n_uncomputed))
 
-    # Plotting point labels
+    # Plotting nodes legend
     if isinstance(color_nodes, tuple) and legend:
         # this two lines are just a handy way to create a legend for
         # the node colors and attributes by generating handles of empty lines
@@ -385,6 +359,36 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         ax.legend(handles=handles)
 
     return ax
+
+
+def _get_node_color(egraph, color_nodes, point):
+    """Color nodes based on ``color_nodes`` arg:
+
+    - if `color_nodes` is a string use the string as color,
+    - using the attribute and color dict if `color_nodes` is a tuple(str,dict),
+    - or based on color attribute (when available) if `color_nodes` is bool and True;
+    - black otherwise.
+    """
+    if isinstance(color_nodes, str):
+        color = color_nodes
+    elif isinstance(color_nodes, tuple):
+        node_attribute, color_dict = color_nodes
+        if not (isinstance(node_attribute, str) and isinstance(color_dict, dict)):
+            raise ValueError(
+                "Inappropiate value for `color_nodes` argument:"
+                "Check it complies with the type `tuple(str, dict)`"
+                "where the string corresponds to a valid node attribute,"
+                "the dictionary keys to valid attribute values and"
+                "dictionary values to valid matplotlib color strings."
+            )
+        node_property = egraph.nodes[point].get(node_attribute)
+        color = color_dict.get(node_property)
+
+    elif isinstance(color_nodes, bool) and color_nodes == True:
+        color = egraph.nodes[point].get("color") if color_nodes else "k"
+    else:
+        color = "k"
+    return color
 
 
 @mpl.rc_context(plot_params)
