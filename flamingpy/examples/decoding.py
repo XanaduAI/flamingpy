@@ -73,6 +73,7 @@ def decode_surface_code(distance, boundaries, ec, noise, polarity=None, draw=Tru
     dw = {
         "show_nodes": True,
         "color_nodes": node_colors,
+        "color_edges": edge_colors,
         "show_matching": False,
         "label_stabilizers": True,
         "label_boundary": False,
