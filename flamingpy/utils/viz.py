@@ -142,7 +142,6 @@ def draw_EGraph(
     egraph,
     color_nodes=False,
     color_edges=False,
-    state_colors=None,
     label=None,
     title=False,
     legend=False,
@@ -155,18 +154,14 @@ def draw_EGraph(
 
             True: color the nodes based on the 'color' attribute
                 attached to the node. If unavailable, color nodes black.
-            'state': color nodes based on the 'state' attribute. Uses
-                the color wheel by default, but colors can also be
-                specified via a dictionary in the state_colors argument.
-            string: color all nodes with the color specified by the stirng
-            dict: color nodes based on the 'type' attribute of the node,
-                with the dictionary specifying the colours. For example,
-                if the type can be primal or dual, the dictionary should
-                be of the form:
+            string: color all nodes with the color specified by the string
+            tuple[str, dict]: color nodes based on attribute and defined colour
+                string by providing a tuple with [attribute, color_dictionary],
+                for example: ``["state", {"GKP": "b", "p": "r"}]``
+                will look at the "state" attribute of the node, and colour
+                according to the dictionary.
 
-                    {"primal": primal_color, "dual": dual_color}.
-
-        color_edges (bool):
+        color_edges (bool or string or dict):
 
             True: color the edges based on the 'color' attribute
                 attached to the node. If unavailable, color nodes grey.
@@ -174,9 +169,7 @@ def draw_EGraph(
             dict: color edges based on the 'weight' attribute of the node,
                 with the dictionary specifying the colours. For example,
                 if the weight can be +1 or -1, the dictionary should
-                be of the form:
-
-                    {-1: minus_color, +1: plus_color}.
+                be of the form: ``{-1: minus_color, +1: plus_color}``.
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -194,8 +187,6 @@ def draw_EGraph(
     Returns:
         A Matplotib Axes object.
     """
-    if state_colors is None:
-        state_colors = {}
 
     # Recommended to be viewed with IPython.
     # Font properties
@@ -223,34 +214,32 @@ def draw_EGraph(
         if label == "index":
             indices = egraph.index_generator()
 
-    if color_nodes == "state":
-        handles = []
-        color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-        i = 0
-        for state in state_colors.keys():
-            color = state_colors.get(state)
-            if not color:
-                color = color_cycle[i]
-            line = mlines.Line2D([], [], color=color, marker=".", label=state)
-            handles += [line]
-            state_colors[state] = color
-            i += 1
-
     # Plotting points. y and z are swapped in the loops so that
     # z goes into the page; however, the axes labels are correct.
     for point in egraph.nodes:
         x, z, y = point
 
-        # Color nodes based on color_nodes if string, or based on
-        # color attribute if True; black otherwise.
-        if color_nodes == "state":
-            color = state_colors.get(egraph.nodes[point].get("state"))
-        elif isinstance(color_nodes, dict):
-            color = color_nodes.get(egraph.nodes[point].get("type"))
-        elif isinstance(color_nodes, str):
+        # Color nodes based on color_nodes if `color_nodes` is a string,
+        # using the attribute and color dict if `color_nodes` is a tuple(str,dict)
+        # or based on color attribute (when available) if `color_nodes` is bool and True;
+        # black otherwise.
+        if isinstance(color_nodes, str):
             color = color_nodes
-        else:
+        elif isinstance(color_nodes, tuple):
+            node_attribute, color_dict = color_nodes
+            if not (isinstance(node_attribute, str) and isinstance(color_dict, dict)):
+                raise ValueError(
+                    "Inappropiate value for `color_nodes` argument:"
+                    "Check it complies with the type `tuple(str, dict)`"
+                    "where the string corresponds to a valid node attribute,"
+                    "the dictionary keys to valid attribute values and"
+                    "dictionary values to valid matplotlib color strings."
+                )
+            color = color_dict.get(egraph.nodes[point].get(node_attribute))
+        elif isinstance(color_nodes, bool) and color_nodes == True:
             color = egraph.nodes[point].get("color") if color_nodes else "k"
+        else:
+            color = "k"
 
         ax.scatter(x, y, z, c=color)
 
@@ -462,12 +451,11 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # Default drawing options.
     draw_dict = {
         "show_nodes": False,
-        "color_nodes": "state",
+        "color_nodes": ("state", {"p": None, "GKP": None}),
         "color_edges": "k",
         "label": None,
         "legend": True,
         "title": True,
-        "state_colors": {"p": None, "GKP": None},
         "display_axes": True,
         "label_stabilizers": True,
         "label_boundary": False,
@@ -486,7 +474,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         egraph_args = [
             "color_nodes",
             "color_edges",
-            "state_colors",
             "label",
             "legend",
             "display_axes",

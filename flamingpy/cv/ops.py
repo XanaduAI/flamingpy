@@ -394,7 +394,7 @@ class CVLayer:
         colours: gold for GKP states and blue for p-squeezed
         states.
         """
-        cv_opts = {"color_nodes": "state", "state_colors": {"GKP": "gold", "p": "blue"}}
+        cv_opts = {"color_nodes": ("state", {"GKP": "gold", "p": "blue"})}
         updated_opts = {**cv_opts, **kwargs}
         return self.egraph.draw(**updated_opts)
 

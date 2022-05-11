@@ -475,7 +475,7 @@ class SurfaceCode:
             if self.polarity.__name__ == "alternating_polarity":
                 edge_colors = {1: "b", -1: "r"}
         default_opts = {
-            "color_nodes": {"primal": "k", "dual": "grey"},
+            "color_nodes": ("type", {"primal": "k", "dual": "grey"}),
             "color_edges": edge_colors,
         }
         updated_opts = {**default_opts, **kwargs}

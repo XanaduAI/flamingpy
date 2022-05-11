@@ -66,7 +66,7 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
         decoder = {"outer": "MWPM"}
 
     # Drawing options
-    node_colors = "state" if noise == "cv" else False
+    node_colors = ("state", {"GKP": "gold", "p": "blue"}) if noise == "cv" else False
     dw = {
         "show_nodes": True,
         "color_nodes": node_colors,
