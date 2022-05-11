@@ -17,10 +17,12 @@ the plots."""
 # pylint: disable=import-outside-toplevel
 
 import pytest
+from flamingpy.codes import alternating_polarity
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])
-def test_decoder_example(noise):
+@pytest.mark.parametrize("polarity", [None, alternating_polarity])
+def test_decoder_example(noise, polarity):
     """Simple test for the decoding module in flamingpy.examples."""
     from flamingpy.examples.decoding import decode_surface_code
 
@@ -28,7 +30,7 @@ def test_decoder_example(noise):
     boundaries = "open"
     ec = "primal"
 
-    decode_surface_code(distance, boundaries, ec, noise, draw=True)
+    decode_surface_code(distance, boundaries, ec, noise, polarity, draw=True)
 
 
 def test_decoding_benchmark():
