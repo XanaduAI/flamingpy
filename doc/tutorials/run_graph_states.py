@@ -154,4 +154,4 @@ bell_state.draw(**drawing_opts)
 #
 bell_state.adj_generator(sparse=False)
 adj = bell_state.adj_mat
-viz.plot_binary_mat_heat_map(adj)
+viz.plot_mat_heat_map(adj)
