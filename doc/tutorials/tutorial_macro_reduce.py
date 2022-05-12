@@ -40,7 +40,7 @@ RHG_reduced = RHG_code.graph
 
 
 ######################################################################
-# We can generate indices for the nodes (qubits) with ``index_generator``
+# We can generate indices for the nodes with ``index_generator``
 # as below. Note that I used ``;`` to suppress the output (this can be
 # pretty large if there are a lot of qubits).
 #
@@ -60,11 +60,9 @@ plt.show()
 
 ######################################################################
 # From the reduced RHG lattice, we can generated a so-called macronized
-# version of it, see `this
-# paper <https://journals.aps.org/prxquantum/abstract/10.1103/PRXQuantum.2.040353>`__
-# for more details. Essentially, we replace every node with 4 nodes. This
-# is particularly useful, because it allows for a physical implementation
-# with **static** optics!
+# version of it, see [this paper](https://journals.aps.org/prxquantum/abstract/10.1103/PRXQuantum.2.040353)
+# for more details. Essentially, we replace every node with 4 nodes. This is particularly useful,
+# because it allows for a physical implementation with _static optics_!
 #
 
 # The lattice with macronodes
@@ -92,7 +90,6 @@ bs_network = BS_network(4)
 
 ######################################################################
 # Let's see how well our encoding works. To do so, we run a simulation
-#
 # ``n_trials``, and see how many times we corrected it truthfully.
 #
 
@@ -118,6 +115,7 @@ for trial in range(n_trials):
 
 # Results
 error = (n_trials - successes) / n_trials
+
 print("Trials: ", n_trials)
 print("Successes: ", successes)
 print("Error rate: ", error)
