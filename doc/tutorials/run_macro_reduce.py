@@ -1,5 +1,5 @@
 r"""
-.. _tutorial_macro_reduce:
+.. _run_macro_reduce:
 Macronodes
 =================================
 
