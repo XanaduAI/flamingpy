@@ -35,4 +35,9 @@ FlamingPy tutorials.
     :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
     :description: :doc:`../tutorials/_out/run_graph_states`
 
+.. gallery-item::
+    :tooltip: Macronode tutorial.
+    :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
+    :description: :doc:`../tutorials/_out/tutorial_macro_reduce`
+
 :html:`</div></div><div style='clear:both'>`
