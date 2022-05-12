@@ -119,18 +119,32 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
     _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
     val = hom_val if use_hom_val else frac
-    xmin, xmax = alpha * (hom_val[0] // alpha), alpha * (hom_val[-1] // alpha) + alpha
+
+    # bounds for the plot
+    if use_hom_val:
+        xmin, xmax = alpha * np.array([hom_val[0] // alpha, hom_val[-1] // alpha + 1])
+    else:
+        xmin, xmax = -alpha/2, alpha/2
+
     print(xmin, xmax, min(val), max(val))
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+
     fig = plt.figure()
     ax = plt.gca()
+
     plt.plot(val, error, ".")
+
+    # labels
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
     plt.title("Conditional phase probabilities: " + addendum)
+
+    # axis ticks
+    n_ticks = int((xmax - xmin) // alpha) + 1 if use_hom_val else 3
+    newxticks = np.linspace(xmin, xmax, n_ticks)
+    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     plt.xticks(newxticks, newxlabels)
+
     if show:
         plt.show()
 
