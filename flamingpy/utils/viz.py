@@ -124,7 +124,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     if use_hom_val:
         xmin, xmax = alpha * np.array([hom_val[0] // alpha, hom_val[-1] // alpha + 1])
     else:
-        xmin, xmax = -alpha/2, alpha/2
+        xmin, xmax = -alpha / 2, alpha / 2
 
     print(xmin, xmax, min(val), max(val))
 
