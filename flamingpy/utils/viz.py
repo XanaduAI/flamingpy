@@ -443,8 +443,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
     Stabilizers are shown as transparent voxels, green for even parity and
     red for odd. For now, stabilizers on periodic boundaries are not
-    drawn in a special way, stabilizers on dual boundaries are unshifted
-    from the primal stabilizer location, and incomplete stabilizers
+    drawn in a special way and incomplete stabilizers for periodic boundaries
     are still represented as complete cubes.
 
     Args:
@@ -459,6 +458,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     """
 
     cubes = getattr(code, ec + "_stabilizers")
+    boundaries = "open" if "open" in code.bound_str else "periodic"
     # Default drawing options.
     draw_dict = {
         "show_nodes": False,
@@ -511,30 +511,47 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     positions, colors, sizes = [], [], []
     for cube in cubes:
 
-        # Obtain smallest, largest, and middle coordinates for each
-        # cube.
+        # Obtain smallest and largest coordinates for each
+        # cube and calculate its position.
         xmin, xmax = np.array(cube.xlims())
         ymin, ymax = np.array(cube.ylims())
         zmin, zmax = np.array(cube.zlims())
-        xmid, ymid, zmid = np.array(cube.midpoint())
+        midpoint = np.array(cube.midpoint())
+
+        gap = 0.15  # gap defines the distance between adjacent cubes
+        min_arr = np.array([xmin, ymin, zmin])
+        max_arr = np.array([xmax, ymax, zmax])
+
+        # Find the size of the cube: if it corresponds to an incomplete
+        # stabilizer, draw a rectangular prism
+        size = np.abs(max_arr - min_arr) - 2 * gap
+
+        in_low_boundary = midpoint == 1
+        in_high_boundary = midpoint == 2 * shape - 1
+        midpoint_coord_in_boundary = np.logical_or(in_low_boundary, in_high_boundary)
+        print(f"{midpoint}:\t {cube.egraph.nodes}")
+        if boundaries == "open" and (midpoint_coord_in_boundary.any()):
+            midpoint_coord_in_boundary[0] = False
+            in_low_boundary[0] = False
+            size[midpoint_coord_in_boundary] = size[midpoint_coord_in_boundary] / 2 - gap
+            sizes.append(size)
+            min_arr[in_low_boundary] += 1
+        else:
+            sizes.append(size)
+
+        positions.append(min_arr + gap)
+
         # Fill in the color arrays depending on parity.
         if cube.parity:
             color = "#FF000015"
         else:
             color = "#00FF0015"
 
-        # gap defines the distance between adjacent cubes
-        gap = 0.15
-        min_arr = np.array([xmin, ymin, zmin])
-        max_arr = np.array([xmax, ymax, zmax])
-        positions.append(min_arr + gap)
-        sizes.append(np.abs(max_arr - min_arr) - 2 * gap)
         colors.append(color)
 
         if drawing_opts["label_stabilizers"] and index_dict:
-
             if cube in index_dict:
-                ax.text(xmid, ymid, zmid, index_dict[cube])
+                ax.text(*cube.midpoint(), index_dict[cube])
 
     # draw cubes
     pc = _plot_cubes_at(positions, colors=colors, sizes=sizes)
