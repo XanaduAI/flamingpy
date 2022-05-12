@@ -29,6 +29,7 @@ To modify the plot parameters use, for example,
 # pylint: disable=too-many-statements
 
 import itertools as it
+import warnings
 
 import numpy as np
 import networkx as nx
@@ -649,6 +650,11 @@ def draw_matching_on_syndrome_plot(ax, matching, G_match):
 
 def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     """Draw the stabilizer and matching graphs, and the plot the syndrome."""
+    if code.graph.number_of_nodes()>400:
+        warnings.warn(f"The number of nodes ({code.graph.number_of_nodes()}) of this code"+
+         " is too large. The generated plots might be too crowded.",
+          stacklevel=2)
+
     if drawing_opts is None:
         drawing_opts = {}
 
