@@ -136,8 +136,10 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     # labels
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
-    addendum = "Full homodyne value" if use_hom_val else "Central peak"
-    plt.title("Conditional phase probabilities: " + addendum)
+    plt.title(
+        "Conditional phase probabilities: "
+        + ("Full homodyne value" if use_hom_val else "Central peak")
+    )
 
     # axis ticks
     n_ticks = int((xmax - xmin) // alpha) + 1 if use_hom_val else 3
