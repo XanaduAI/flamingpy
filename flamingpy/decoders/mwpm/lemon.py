@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover
 
 
 def min_weight_matching(G_match):
-    """Compute the maximum weighted matching graph using lemon.
+    """Compute the minimum-weight perfect matching using lemon.
 
     Assumptions:
         1. Symmetric adjacency matrix.

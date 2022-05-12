@@ -66,7 +66,11 @@ def compute_enc_state(request):
 
     # NX reference code
     nx_DVRHG = SurfaceCode(
-        distance=distance, ec=ec, boundaries=boundaries, polarity=alternating_polarity, backend="networkx"
+        distance=distance,
+        ec=ec,
+        boundaries=boundaries,
+        polarity=alternating_polarity,
+        backend="networkx",
     )
     # CV (inner) code/state
     nx_CVRHG = CVLayer(nx_DVRHG, p_swap=p_swap)

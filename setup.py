@@ -156,7 +156,7 @@ install_requires = [
     "pandas>=1.2.1",
     "retworkx>=0.10.2",
     "scipy>=1.6",
-    "thewalrus>=0.19.0"
+    "thewalrus>=0.19.0",
 ]
 
 description = """FlamingPy is a cross-platform Python library with a variety of backends for
