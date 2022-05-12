@@ -9,7 +9,7 @@ Macronodes
 
 ######################################################################
 # First, we import the relevant modules and functions
-
+#
 #
 
 from flamingpy.codes import SurfaceCode
@@ -22,9 +22,7 @@ import matplotlib.pyplot as plt
 
 ######################################################################
 # Next, we set the number of trials and the code and noise parameters. You
-
 # are encouraged to play around with these!
-
 #
 
 # Code parameters
@@ -43,11 +41,9 @@ RHG_reduced = RHG_code.graph
 
 ######################################################################
 # We can generate indices for the nodes (qubits) with ``index_generator``
-
 # as below. Note that I used ``;`` to suppress the output (this can be
-
 # pretty large if there are a lot of qubits).
-
+#
 #
 
 RHG_reduced.index_generator()
@@ -55,7 +51,7 @@ RHG_reduced.index_generator()
 
 ######################################################################
 # Let's draw the lattice to see what it looks like.
-
+#
 #
 
 RHG_reduced.draw()
@@ -64,17 +60,11 @@ plt.show()
 
 ######################################################################
 # From the reduced RHG lattice, we can generated a so-called macronized
-
 # version of it, see `this
-
 # paper <https://journals.aps.org/prxquantum/abstract/10.1103/PRXQuantum.2.040353>`__
-
 # for more details. Essentially, we replace every node with 4 nodes. This
-
 # is particularly useful, because it allows for a physical implementation
-
 # with **static** optics!
-
 #
 
 # The lattice with macronodes
@@ -89,9 +79,7 @@ plt.show()
 
 ######################################################################
 # As you can see, we replaced every node with a group of four nodes,
-
 # sweet!
-
 #
 
 # The empty CV layer, uninitiated with any error model.
@@ -104,9 +92,8 @@ bs_network = BS_network(4)
 
 ######################################################################
 # Let's see how well our encoding works. To do so, we run a simulation
-
+#
 # ``n_trials``, and see how many times we corrected it truthfully.
-
 #
 
 # Number of trials
