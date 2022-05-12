@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 
 ######################################################################
-# Next, we set the number of trials and the code and noise parameters. You
+# Next, we set the code and noise parameters. You
 # are encouraged to play around with these!
 #
 
