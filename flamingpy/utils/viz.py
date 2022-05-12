@@ -529,12 +529,14 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         in_low_boundary = midpoint == 1
         in_high_boundary = midpoint == 2 * shape - 1
         midpoint_coord_in_boundary = np.logical_or(in_low_boundary, in_high_boundary)
-        print(f"{midpoint}:\t {cube.egraph.nodes}")
+        # "open" will always have incomplete stabs in the boundaries
         if boundaries == "open" and (midpoint_coord_in_boundary.any()):
-            midpoint_coord_in_boundary[0] = False
-            in_low_boundary[0] = False
+            # values corresponding to the x-axis shouldn't be modified
+            midpoint_coord_in_boundary[0], in_low_boundary[0] = False, False
+            # resize voxel
             size[midpoint_coord_in_boundary] = size[midpoint_coord_in_boundary] / 2 - gap
             sizes.append(size)
+            # displace voxel if needed
             min_arr[in_low_boundary] += 1
         else:
             sizes.append(size)
