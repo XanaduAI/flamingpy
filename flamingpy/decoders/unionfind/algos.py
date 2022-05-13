@@ -83,13 +83,9 @@ def initialize_cluster_trees(stabilizer_graph):
                 else:
                     # Adding all nodes (not just erasure nodes) is important to
                     # initialize the single node clusters along with erasures
-                    vertices.append(
-                        erasure_graph.add_node(edge[i])
-                    )
+                    vertices.append(erasure_graph.add_node(edge[i]))
                     stab_to_index[edge[i]] = vertices[i]
-            if (
-                stabilizer_graph.edge_data(edge[0], edge[1])["weight"] == -1
-            ):
+            if stabilizer_graph.edge_data(edge[0], edge[1])["weight"] == -1:
                 # edge_with_indices[2] is a dictionary containing the qubit
                 # coordinate corresponding to the edge
                 erasure_graph.add_edge(vertices[0], vertices[1], None)
@@ -111,8 +107,9 @@ def initialize_cluster_trees(stabilizer_graph):
         root_stabilizer = erasure_graph_nodes[component.pop()]
         cluster_root = Root(
             node_dict[root_stabilizer],
-            parity = root_stabilizer.parity if \
-                isinstance(root_stabilizer, Stabilizer) else "boundary",
+            parity=root_stabilizer.parity
+            if isinstance(root_stabilizer, Stabilizer)
+            else "boundary",
         )  # boundary nodes are represented by tuples
         for vertex in component:
             vertex_stabilizer = erasure_graph_nodes[vertex]
