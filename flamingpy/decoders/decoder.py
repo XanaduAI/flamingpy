@@ -281,12 +281,14 @@ def correct(
 
             Uniform weights by default.
         sanity_check (bool, optional): if True, check that the recovery
-            operation succeeded and verify that parity is conserved
+            operation has succeeded and verify that parity is conserved
             among all correlation surfaces
         decoder_opts (dict, optional): a dictionary of decoding options,
-            including the backend
-        draw (bool, optional):
-        drawing_opts (dict, optional):
+            including the backend ("networkx" or "retworkx" for "MWPM")
+        draw (bool, optional): set to True to illustrate the decoding
+            procedure, including the stabilizer graph, syndrome plot, and recovery.
+        drawing_opts (dict, optional): the drawing options to be fed into
+            viz.draw_decoding (see that function for more details).
     Returns:
         result (bool): True if error correction succeded, False if not.
     """
