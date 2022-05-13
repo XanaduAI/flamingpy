@@ -16,6 +16,7 @@
 # pylint: disable=too-many-locals
 
 import itertools as it
+import warnings
 
 import numpy as np
 
@@ -488,4 +489,9 @@ class SurfaceCode:
         """
         graph = getattr(self, ec + "_stab_graph")
         graph.assign_weights(self)
+
+        n_nodes = len(graph.nodes())
+        if n_nodes>75:
+            warnings.warn(f"The number of nodes ({n_nodes}) of the {ec} stabilizer graph is too"\
+                " large. The generated plots might be too crowded.",stacklevel=2)
         return graph.draw(**kwargs)
