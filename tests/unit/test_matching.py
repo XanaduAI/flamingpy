@@ -94,7 +94,7 @@ def code_matching_graphs(request):
         "multiplier": 100,
         "delta": 0.1,
     }
-    assign_weights(code, **weight_options)
+    assign_weights(code, "MWPM", **weight_options)
     nx_code = deepcopy(code)
 
     graph = MatchingGraphType("primal", code)
