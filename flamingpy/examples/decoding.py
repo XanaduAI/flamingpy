@@ -55,7 +55,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
                 "delta": delta,
             }
         else:
-            weight_options = {}
+            weight_options = None
         decoder = {"inner": "basic", "outer": decoder}
 
     if noise == "dv":
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         "noise": "cv",
         # Decoder: set to "MWPM" for minimum-weight perfect matching, or
         # "UF" for Union-Find
-        "decoder": "MWPM",
+        "decoder": "UF",
     }
 
     c = decode_surface_code(**params, show=True)
