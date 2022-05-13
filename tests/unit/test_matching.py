@@ -22,10 +22,10 @@ import numpy as np
 import pytest
 import networkx as nx
 
-from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 from flamingpy.codes.surface_code import SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import CV_decoder, GKP_binner, assign_weights
+from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 
 
 # Test parameters
@@ -74,10 +74,9 @@ distances = [3, 5]
 
 @pytest.fixture(scope="module", params=it.product(matching_graph_types, distances))
 def code_matching_graphs(request):
-    """Return an instance of the given matching graph type built from a surface code
-    with given distance.
+    """Return a matching graph type built from a surface code with given distance.
 
-    Also return the same graph as a NxMatchingGraph for comparison.
+    Also return the corresponding NxMatchingGraph for comparison.
     """
     MatchingGraphType, distance = request.param
 
@@ -110,9 +109,8 @@ def test_code_matching_conversion(code_matching_graphs):
 
 
 def test_code_matching_has_same_weight(code_matching_graphs):
-    """Test that different backends return matching similar to networkx."""
+    """Test that different backends return a matching similar to networkx."""
     graph, nx_graph = code_matching_graphs
-    adjacency = nx.to_numpy_array(nx_graph.graph, weight="inverse_weight")
     matching = graph.min_weight_perfect_matching()
     nx_matching = nx_graph.min_weight_perfect_matching()
     assert graph.total_weight_of(matching) == nx_graph.total_weight_of(nx_matching)
