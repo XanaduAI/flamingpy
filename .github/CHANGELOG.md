@@ -5,6 +5,7 @@
 * The voxel plotting function has been refactored to allow for easy location in space as well 
 as resizing (the latter being important for stabilizers at boundaries that are represented by incomplete cubes). 
 These changes are reflected in two new functions into the viz module: _plot_cube_ and _cuboid_data. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
+* The Union-Find decoder (arXiv:1709.06218 and arXiv:1703.01517) -- a fast and logically well-performing qubit decoder -- has been implemented. [(#37)](https://github.com/XanaduAI/flamingpy/pull/20)
 
 ### Bug fixes
 
@@ -60,6 +61,12 @@ assigned a really large weight. [(#28)](https://github.com/XanaduAI/flamingpy/pu
 * Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention 
   as `networkx`, the default backend for stabilizer graphs and MWPM has been changed to `retworkx`. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
 * A couple more tests were added to `test_matching.py` to compare the output of different matching backends. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
+* Decoders have become more organized and compartmentalized.  [(#37)](https://github.com/XanaduAI/flamingpy/pull/20)
+  * They are located in a directory with their name, with separate modules for decoding objects and algorithms. The latter -- algos.py -- has 
+  a cumulative decoding function imported by `decoder.py` (the latter of which is now a more general module).
+ * The `draw_decoding` function in `viz` can now accommodate plotting generic decoding procedures: a stabilizer graph, a syndrome plot, and the recovery.
+* The display_axes option has been changed to show_axes and title to show_title for consistency. The show_title option is now respected.
+
 
 ### Documentation changes
 
