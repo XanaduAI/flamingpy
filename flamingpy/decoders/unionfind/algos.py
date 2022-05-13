@@ -30,7 +30,7 @@ def union(root1, root2):
         root2: root of the second of the two clusters whose union needs to be performed
 
     Returns:
-        If root1 and root2 are same, it returns None; else, it returns the big root 
+        If root1 and root2 are same, it returns None; else, it returns the big root
         node and the small root node after the union
     """
     if root1 != root2:
@@ -58,7 +58,7 @@ def initialize_cluster_trees(stabilizer_graph):
     """Initialize the cluster trees (Algo 2, step 1 in arXiv:1709.06218).
 
     Args:
-        stabilizer_graph (StabilizerGraph): stabilizer graph that contains the 
+        stabilizer_graph (StabilizerGraph): stabilizer graph that contains the
             syndrome data from measurement outcomes
 
     Returns:
@@ -79,7 +79,7 @@ def initialize_cluster_trees(stabilizer_graph):
                 if edge[i] in stab_to_index:
                     vertices.append(stab_to_index[edge[i]])
                 else:
-                    # Adding all nodes (not just erasure nodes) is important to 
+                    # Adding all nodes (not just erasure nodes) is important to
                     # initialize the single node clusters along with erasures
                     vertices.append(
                         erasure_graph.add_node(edge[i])
@@ -88,7 +88,7 @@ def initialize_cluster_trees(stabilizer_graph):
             if (
                 stabilizer_graph.edge_data(edge[0], edge[1])["weight"] == -1
             ):
-                # edge_with_indices[2] is a dictionary containing the qubit 
+                # edge_with_indices[2] is a dictionary containing the qubit
                 # coordinate corresponding to the edge
                 erasure_graph.add_edge(vertices[0], vertices[1], None)
 
@@ -109,7 +109,7 @@ def initialize_cluster_trees(stabilizer_graph):
         root_stabilizer = erasure_graph_nodes[component.pop()]
         cluster_root = Root(
             node_dict[root_stabilizer],
-            parity=root_stabilizer.parity if type(root_stabilizer) == Stabilizer else "boundary",
+            parity=root_stabilizer.parity if isinstance(root_stabilizer, Stabilizer) else "boundary",
         )  # boundary nodes are represented by tuples
         for vertex in component:
             vertex_stabilizer = erasure_graph_nodes[vertex]
@@ -118,7 +118,7 @@ def initialize_cluster_trees(stabilizer_graph):
                 Root(
                     node_dict[vertex_stabilizer],
                     parity=vertex_stabilizer.parity
-                    if type(vertex_stabilizer) == Stabilizer
+                    if isinstance(vertex_stabilizer, Stabilizer)
                     else "boundary",
                 ),
             )
@@ -204,10 +204,10 @@ def obtain_spanning_forest(stabilizer_graph, support):
         boundary_node = None
         for node_index in tree:
             node = spanning_forest_nodes[node_index]
-            if type(node) == tuple:
+            if isinstance(node, tuple):
                 boundary_node = node_index
                 parity_dict[node_index] = 0
-            elif type(node) == Stabilizer:
+            elif isinstance(node, Stabilizer):
                 parity = node.parity
                 parity_dict[node_index] = parity
                 if parity == 1:

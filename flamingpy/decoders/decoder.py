@@ -13,7 +13,7 @@
 # limitations under the License.
 """Decoding and recovery functions."""
 
-# pylint: disable=import-outside-toplevel,too-many-locals
+# pylint: disable=import-outside-toplevel,too-many-locals,too-many-arguments
 
 import sys
 import numpy as np
@@ -306,7 +306,7 @@ def correct(
     outer_decoder_str = updated_decoder["outer"]
     assign_weights(code, outer_decoder_str, **weight_options)
 
-    if decoder_opts == None:
+    if decoder_opts is None:
         decoder_opts = {}
     default_decoder_opts = {"backend": "retworkx", "draw": draw, "drawing_opts": drawing_opts}
     updated_decoder_opts = {**default_decoder_opts, **decoder_opts}
