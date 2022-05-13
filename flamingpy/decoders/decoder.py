@@ -53,7 +53,7 @@ def assign_weights(code, decoder, **kwargs):
     # Get the set of qubits that are used for parity check measurements.
     qubit_coords = set(code.all_syndrome_coords)
 
-    # Blueprint weight assignment or weighted-union-find weight assignment 
+    # Blueprint weight assignment or weighted-union-find weight assignment
     # dependent on the type of neighbours.
     if weight_options.get("method") == "blueprint" and decoder == "MWPM":
         for node in qubit_coords:
