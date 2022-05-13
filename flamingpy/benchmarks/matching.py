@@ -13,9 +13,6 @@
 # limitations under the License.
 """Benchmark minimum-weight matching via NetworkX, retworkx, and lemon
 backends."""
-
-# pylint: disable=no-member
-
 import time
 
 import matplotlib.pyplot as plt
@@ -23,8 +20,7 @@ import matplotlib.pyplot as plt
 from flamingpy.cv.ops import CVLayer
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.decoders import decoder as dec
-from flamingpy.decoders.mwpm import matching as mt
-
+from flamingpy.decoders.mwpm.algos import build_match_graph
 
 # How many simulations to do for each algorithm
 num_trials = 10
@@ -54,13 +50,6 @@ times = {
     "retworkx": [],
 }
 
-matching_graph = {
-    "networkx": mt.NxMatchingGraph,
-    "lemon": mt.LemonMatchingGraph,
-    "retworkx": mt.RxMatchingGraph,
-}
-
-
 for alg in ["networkx", "lemon", "retworkx"]:
     print(f"\n* {alg}")
     for i in range(num_trials):
@@ -73,9 +62,9 @@ for alg in ["networkx", "lemon", "retworkx"]:
         CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
 
         # Manually decode so as to benchmark just the matching portion
-        dec.assign_weights(RHG_code, **weight_options)
+        dec.assign_weights(RHG_code, "MWPM", **weight_options)
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
-        G_match = dec.build_match_graph(RHG_code, "primal", matching_backend=matching_graph[alg])
+        G_match = build_match_graph(RHG_code, "primal", alg)
         before = time.time()
         matching = G_match.min_weight_perfect_matching()
         after = time.time()

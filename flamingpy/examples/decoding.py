@@ -13,9 +13,6 @@
 # limitations under the License.
 """Example of instantiating, applying noise, decoding, recovering, and
 visualizing this procedure for the measurement-based surface code."""
-
-# pylint: disable=no-member
-
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
@@ -24,7 +21,7 @@ from flamingpy.decoders import decoder as dec
 from flamingpy.noise import IidNoise
 
 
-def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
+def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=True, show=False):
     """Example of instantiating, applying noise, decoding, recovering, and
     visualizing this procedure for the measurement-based surface code."""
 
@@ -50,34 +47,37 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
         CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         # Decoding options
-        weight_options = {
-            "method": "blueprint",
-            "integer": True,
-            "multiplier": 100,
-            "delta": delta,
-        }
-        decoder = {"inner": "basic", "outer": "MWPM"}
+        if decoder == "MWPM":
+            weight_options = {
+                "method": "blueprint",
+                "integer": True,
+                "multiplier": 100,
+                "delta": delta,
+            }
+        else:
+            weight_options = None
+        decoder = {"inner": "basic", "outer": decoder}
 
     if noise == "dv":
         # i.i.d Pauli Z errors with probability p_Z
         p_Z = 0.02
         IidNoise(RHG_code, p_Z).apply_noise()
-        weight_options = {"method": "unit"}
+        weight_options = {"method": "uniform"}
         decoder = {"outer": "MWPM"}
 
     # Drawing options
     node_colors = "state" if noise == "cv" else False
     dw = {
-        "show_nodes": True,
+        "show_nodes": False,
         "color_nodes": node_colors,
-        "show_matching": False,
-        "label_stabilizers": True,
+        "show_recovery": True,
+        "label_stabilizers": False,
         "label_boundary": False,
         "label_edges": False,
         "label": None,
         "legend": True,
-        "title": True,
-        "display_axes": True,
+        "show_title": True,
+        "show_axes": True,
     }
 
     # Decode and plot
@@ -96,6 +96,8 @@ def decode_surface_code(distance, boundaries, ec, noise, draw=True, show=False):
     else:
         plt.close()
 
+    return c
+
 
 if __name__ == "__main__":
 
@@ -103,12 +105,15 @@ if __name__ == "__main__":
         # QEC code parameters
         "distance": 3,
         # Boundaries ("open" or "periodic")
-        "boundaries": "open",
+        "boundaries": "periodic",
         # Error complex ("primal", "dual", or "both")
         "ec": "primal",
         # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
         # over a GKP/sqeezed state architecture
         "noise": "cv",
+        # Decoder: set to "MWPM" for minimum-weight perfect matching, or
+        # "UF" for Union-Find
+        "decoder": "UF",
     }
 
-    decode_surface_code(**params, show=True)
+    c = decode_surface_code(**params, show=True)

@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""""Unit tests for StablizerGraph classes in stab_graph.py.
+"""
+Unit tests for StablizerGraph classes in stab_graph.py.
 
 The networkx implementation is used as a reference.
 """
-
-# pylint: disable=no-member
-
 import itertools as it
 
 from numpy.random import default_rng
@@ -78,7 +76,7 @@ def compute_enc_state(request):
     nx_CVRHG.apply_noise(cv_noise, default_rng(seed))
     # Measure syndrome
     nx_CVRHG.measure_hom("p", nx_DVRHG.all_syndrome_inds, rng=default_rng(seed))
-    assign_weights(nx_DVRHG, **weight_options)
+    assign_weights(nx_DVRHG, "MWPM", **weight_options)
     CV_decoder(nx_DVRHG, translator=GKP_binner)
 
     print(f"rx + {ec}")
@@ -97,7 +95,7 @@ def compute_enc_state(request):
     CVRHG.apply_noise(cv_noise, default_rng(seed))
     # Measure syndrome
     CVRHG.measure_hom("p", DVRHG.all_syndrome_inds, rng=default_rng(seed))
-    assign_weights(DVRHG, **weight_options)
+    assign_weights(DVRHG, "MWPM", **weight_options)
     CV_decoder(DVRHG, translator=GKP_binner)
 
     return nx_DVRHG, nx_CVRHG, DVRHG, CVRHG

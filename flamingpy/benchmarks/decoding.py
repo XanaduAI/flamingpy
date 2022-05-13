@@ -13,9 +13,6 @@
 # limitations under the License.
 """Benchmark for the complete decoding procedure comparing NetworkX and
 retworkx."""
-
-# pylint: disable=no-member
-
 import time
 
 import matplotlib.pyplot as plt
@@ -70,7 +67,7 @@ for backend in ["networkx", "retworkx"]:
             RHG_code,
             decoder,
             weight_options,
-            matching_backend=backend,
+            decoder_opts={"backend": backend},
         )
         after = time.time()
         times[backend].append(after - before)
