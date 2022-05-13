@@ -15,8 +15,8 @@
 
 # pylint: disable=import-outside-toplevel,too-many-locals
 
-import numpy as np
 import sys
+import numpy as np
 
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
@@ -53,7 +53,8 @@ def assign_weights(code, decoder, **kwargs):
     # Get the set of qubits that are used for parity check measurements.
     qubit_coords = set(code.all_syndrome_coords)
 
-    # Blueprint weight assignment or weighted-union-find weight assignment dependent on the type of neighbours.
+    # Blueprint weight assignment or weighted-union-find weight assignment 
+    # dependent on the type of neighbours.
     if weight_options.get("method") == "blueprint" and decoder == "MWPM":
         for node in qubit_coords:
             neighbors = G[node]
@@ -317,5 +318,4 @@ def correct(
     result = check_correction(code, sanity_check=sanity_check)
     if sanity_check:
         return np.all(result[0])
-    else:
-        return np.all(result)
+    return np.all(result)
