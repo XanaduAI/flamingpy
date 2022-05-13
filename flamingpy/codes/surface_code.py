@@ -252,8 +252,9 @@ class SurfaceCode:
 
             If not supplied, assumes all edges have weight 1.
         backend (string): The backend to use for the stabilizer graph.
-            Can be "networkx" (the default) or "retworkx".
+            Can be "retworkx" (the default) or "networkx".
             The retworkx backend should be used when speed is a concern.
+            The networkx backend is provided for historical reasons.
 
         graph (EGraph): the EGraph corresponding to the code, representing the
             graph state.
@@ -277,7 +278,7 @@ class SurfaceCode:
         ec="primal",
         boundaries="open",
         polarity=None,
-        backend="networkx",
+        backend="retworkx",
     ):
         self.distance = distance
         self.dims = (distance, distance, distance)
