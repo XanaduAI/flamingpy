@@ -109,7 +109,8 @@ def initialize_cluster_trees(stabilizer_graph):
         root_stabilizer = erasure_graph_nodes[component.pop()]
         cluster_root = Root(
             node_dict[root_stabilizer],
-            parity=root_stabilizer.parity if isinstance(root_stabilizer, Stabilizer) else "boundary",
+            parity = root_stabilizer.parity if \
+                isinstance(root_stabilizer, Stabilizer) else "boundary",
         )  # boundary nodes are represented by tuples
         for vertex in component:
             vertex_stabilizer = erasure_graph_nodes[vertex]
@@ -146,7 +147,7 @@ def union_find(odd_clusters, boundary, stabilizer_graph, support, node_dict):
 
     # Growing the clusters until they all become even
     while odd_clusters:
-        # Growing each cluster by half an edge or by a part of an edge based 
+        # Growing each cluster by half an edge or by a part of an edge based
         # on the type of weight used
         fusion_list = []
         for cluster in odd_clusters:
