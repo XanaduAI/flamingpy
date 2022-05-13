@@ -180,7 +180,7 @@ html_theme_options = {
     "code_colour": "#ef6c00",
     "text_accent_colour": "#f57c00",
     "extra_copyrights": [
-        "TensorFlow, the TensorFlow logo, and any related marks are trademarks " "of Google Inc."
+        "TensorFlow, the TensorFlow logo, and any related marks are trademarks of Google Inc."
     ],
 }
 
