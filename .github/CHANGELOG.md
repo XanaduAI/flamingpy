@@ -59,6 +59,7 @@ assigned a really large weight. [(#28)](https://github.com/XanaduAI/flamingpy/pu
   * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
 * Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention 
   as `networkx`, the default backend for stabilizer graphs and MWPM has been changed to `retworkx`. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
+* A couple more tests were added to `test_matching.py` to compare the output of different matching backends. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
 
 ### Documentation changes
 
