@@ -37,6 +37,9 @@ class Stabilizer:
         self.egraph = G
         self.physical = None
 
+    def __repr__(self):
+        return f"Stabilizer at nodes {self.coords()}"
+
     @property
     def parity(self):
         """Compute total parity of the cube.

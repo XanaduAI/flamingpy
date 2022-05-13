@@ -13,30 +13,31 @@
 # limitations under the License.
 """Decoding and recovery functions."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-locals,too-many-arguments
 
-import itertools as it
 import sys
-
 import numpy as np
 
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
-from flamingpy.decoders.mwpm.matching import NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
+
+from flamingpy.decoders.mwpm import mwpm_decoder
+from flamingpy.decoders.unionfind import uf_decoder
 
 # Smallest and largest numbers representable.
 smallest_number = sys.float_info.min
 largest_number = sys.float_info.max
 
 
-def assign_weights(code, **kwargs):
+def assign_weights(code, decoder, **kwargs):
     """Assign weights, reflecting error probabilities, to qubits in code.
 
     Args:
         code (SurfaceCode): the qubit QEC code
+        decoder (str): the decoder used
         method (str, optional): the method for weight assignment. By
-            default, 'unit', denoting edges of weight 1 everywhere. For
-            heuristic and analog weight assignment from Xanadu's blueprint,
-            use 'blueprint'
+            default, 'uniform', denoting equal weights everywhere. For
+            heuristic and analog weight assignment from Xanadu's blueprint, use
+            'blueprint' (compatible with the MWPM decoder).
         integer (bool, optional): whether to convert weights to
             integers using Python's round function; False by default
         multiplier (int, optional): multiply the weight by multiplier
@@ -46,16 +47,18 @@ def assign_weights(code, **kwargs):
     Returns:
         None
     """
-    default_options = {"method": "unit", "integer": False, "multiplier": 1}
+    default_options = {"method": "uniform", "integer": False, "multiplier": 1}
     weight_options = {**default_options, **kwargs}
     G = code.graph
+    # Get the set of qubits that are used for parity check measurements.
+    qubit_coords = set(code.all_syndrome_coords)
 
-    syndrome_coords = code.all_syndrome_coords
-    # Blueprint weight assignment dependent on type of neighbour.
-    if weight_options.get("method") == "blueprint":
-        for node in syndrome_coords:
+    # Blueprint weight assignment or weighted-union-find weight assignment
+    # dependent on the type of neighbours.
+    if weight_options.get("method") == "blueprint" and decoder == "MWPM":
+        for node in qubit_coords:
             neighbors = G[node]
-            # List and number of p-squeezed states in neighborhood of node.
+            # Obtain the list and the number of p-squeezed states in the neighborhood of the node.
             p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
             p_count = len(p_list)
             if p_count in (0, 1):
@@ -86,10 +89,28 @@ def assign_weights(code, **kwargs):
                 else:
                     weight = -np.log(err_prob)
                 G.nodes[node]["weight"] = weight
+        if decoder == "UF":
+            raise Exception("Incompatible decoder/weight options.")
     # Naive weight assignment, unity weights.
-    if weight_options.get("method") == "unit":
-        for node in syndrome_coords:
-            G.nodes[node]["weight"] = 1
+    elif weight_options.get("method") == "uniform":
+        if decoder == "UF":
+            # Weight assignment for Union-Find decoder
+            for node in qubit_coords:
+                neighbors = G[node]
+                # List and number of p-squeezed states in neighborhood of node.
+                p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
+                p_count = len(p_list)
+                if p_count in (0, 1):
+                    G.nodes[node]["weight"] = 2  # we consider weight-2 edges as we need half edges
+                else:
+                    G.nodes[node][
+                        "weight"
+                    ] = (
+                        -1
+                    )  # these edges correspond to the erased edges fed to the union-find decoder
+        else:
+            for node in qubit_coords:
+                G.nodes[node]["weight"] = 1
     # Also assign the weights to the stabilizer graph edges.
     for ec in code.ec:
         getattr(code, f"{ec}_stab_graph").assign_weights(code)
@@ -115,18 +136,17 @@ def CV_decoder(code, translator=GKP_binner):
         code.graph.nodes[point]["bit_val"] = bit_val
 
 
-def recovery(code, G_match, matching, ec, sanity_check=False):
-    """Run recovery on code.
+def recovery(qubits_to_flip, code, ec, sanity_check=False):
+    """Run recovery operations based on code based on qubits_to_flip.
 
-    Fip the bit values of all the vertices in the path connecting each
-    pair of stabilizers according to matching. If sanity_check is True, verify
-    that there are no odd-parity cubes remaining, or display their
-    indices of there are.
+    Fip the bit values of all the vertices in qubits_to_flip.
+    If sanity_check is True, verify that there are no odd-parity cubes
+    remaining, or display their indices of there are.
 
     Args:
+        qubits_to_flip (iterable): the set of nodes of the code EGraph
+            whose bit values oughtto be flipped
         code (SurfaceCode): the qubit QEC code
-        G_match (MatchingGraph): the matching graph
-        matching (set of tuples): the minimum weight perfect matching
         ec (string): the error complex ('primal' or 'dual')
         sanity_check (bool): if True, check if the recovery has succeeded
             and print a message.
@@ -134,17 +154,10 @@ def recovery(code, G_match, matching, ec, sanity_check=False):
     Returns:
         None
     """
-    virtual_points = G_match.virtual_points
-    stab_graph = getattr(code, ec + "_stab_graph")
-    for match in matching:
-        if match not in it.product(virtual_points, virtual_points):
-            path = G_match.edge_path(match)
-            pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
-            for pair in pairs:
-                common_vertex = stab_graph.edge_data(*pair)["common_vertex"]
-                code.graph.nodes[common_vertex]["bit_val"] ^= 1
-
+    for qubit in qubits_to_flip:
+        code.graph.nodes[qubit]["bit_val"] ^= 1
     if sanity_check:
+        stab_graph = getattr(code, ec + "_stab_graph")
         odd_cubes = list(stab_graph.odd_parity_stabilizers())
         if odd_cubes:
             print("Unsatisfied " + ec + " stabilizers:", odd_cubes)
@@ -226,98 +239,85 @@ def check_correction(code, sanity_check=False):
     return ec_checks
 
 
-def build_match_graph(code, ec, matching_backend="networkx"):
-    """Build the matching graph for the given code.
-
-    Args:
-        code (code): the code class to decode and correct
-        ec (string): the error complex ("primal" or "dual")
-        matching_backend (str or flamingpy.matching.MatchingGraph, optional):
-            The type of matching graph to build. If providing a string,
-            it must be either "networkx", "retworkx" or "lemon" to pick one
-            of the already implemented backends. Else, the provided type should
-            inherit from the MatchingGraph abstract base class and have an empty init.
-            The default is the networkx backend since it is the reference implementation.
-            However, both retworkx and lemon and orders of magnitude faster.
-    Returns:
-        MatchingGraph: The matching graph.
-    """
-    default_backends = {
-        "networkx": NxMatchingGraph,
-        "retworkx": RxMatchingGraph,
-        "lemon": LemonMatchingGraph,
-    }
-    if matching_backend in default_backends:
-        matching_backend = default_backends[matching_backend]
-
-    return matching_backend(ec, code)
-
-
 def correct(
     code,
-    decoder,
+    decoder=None,
     weight_options=None,
     sanity_check=False,
-    matching_backend="networkx",
+    decoder_opts=None,
     draw=False,
     drawing_opts=None,
 ):
     """Run through all the error-correction steps.
 
-    Combines weight assignment, inner decoding and outer decoding, The last
-    of these includes matching graph creation, minimum-weight-perfect matching,
-    recovery, and correctness check.
+    Combines weight assignment, inner decoding and outer decoding. The last
+    of these includes matching graph creation, minimum-weight-perfect matching
+    or union find decoding, recovery, and correctness check.
 
     Args:
         code (code): the code class to decode and correct
-        decoder (dict): a dictionary of the form
+        decoder (dict, optional): a dictionary of the form
 
             {"inner": f, "outer": s},
 
-            where f is the inner/CV decoding function (GKP_binner by default)
-            and s is the string indicating the outer/DV decoder to use
-            ('MWPM' by default)
-        weight_options (dict, optional): how to assign weights; options are
+            where f is the string indicating inner/CV decoder and s is the
+            string indicating the outer/DV decoder to use.
 
-            'method': 'unit' or 'blueprint'
+            Currently available inner decoders are:
+
+                "basic": standard GKP binning function
+
+            and outer decoders:
+
+                "MWPM": minimum-weight perfect matching (the default)
+                "UF": Union-Find.
+        weight_options (dict, optional): how to assign weights for the outer
+            decoder; options are
+
+            'method': 'uniform' or 'blueprint' (latter for MWPM decoder)
             'integer': True (for rounding) or False (for not)
             'multiplier': integer denoting multiplicative factor
             before rounding
-            Unit weights by default.
+
+            Uniform weights by default.
         sanity_check (bool, optional): if True, check that the recovery
-            operation succeeded and verify that parity is conserved
+            operation has succeeded and verify that parity is conserved
             among all correlation surfaces
-        matching_backend (str or flamingpy.matching.MatchingGraph, optional):
-            The backend to generate the matching graph. See build_match_graph
-            for more details.
+        decoder_opts (dict, optional): a dictionary of decoding options,
+            including the backend ("networkx" or "retworkx" for "MWPM")
+        draw (bool, optional): set to True to illustrate the decoding
+            procedure, including the stabilizer graph, syndrome plot, and recovery.
+        drawing_opts (dict, optional): the drawing options to be fed into
+            viz.draw_decoding (see that function for more details).
     Returns:
-        bool: True if error correction succeded, False if not.
+        result (bool): True if error correction succeded, False if not.
     """
+    if decoder is None:
+        decoder = {}
 
-    inner_dict = {"basic": GKP_binner}
-    outer_dict = {"MWPM": "MWPM"}
+    default_decoder = {"inner": None, "outer": "MWPM"}
+    updated_decoder = {**default_decoder, **decoder}
+    outer_dict = {"MWPM": mwpm_decoder, "UF": uf_decoder}
 
-    inner_decoder = decoder.get("inner")
-    outer_decoder = decoder.get("outer")
-    if inner_decoder:
-        CV_decoder(code, translator=inner_dict[inner_decoder])
+    if updated_decoder["inner"] == "basic":
+        CV_decoder(code, translator=GKP_binner)
 
     if weight_options is None:
         weight_options = {}
-    assign_weights(code, **weight_options)
 
-    if outer_dict[outer_decoder] == "MWPM":
-        for ec in code.ec:
-            matching_graph = build_match_graph(code, ec, matching_backend)
-            matching = matching_graph.min_weight_perfect_matching()
+    outer_decoder_str = updated_decoder["outer"]
+    assign_weights(code, outer_decoder_str, **weight_options)
 
-            # Draw the stabilizer graph, matching graph, and syndrome, if
-            # desired.
-            if draw:
-                from flamingpy.utils.viz import draw_mwpm_decoding
+    if decoder_opts is None:
+        decoder_opts = {}
+    default_decoder_opts = {"backend": "retworkx", "draw": draw, "drawing_opts": drawing_opts}
+    updated_decoder_opts = {**default_decoder_opts, **decoder_opts}
+    outer_decoder = outer_dict[outer_decoder_str]
 
-                draw_mwpm_decoding(code, ec, matching_graph, matching, drawing_opts)
-
-            recovery(code, matching_graph, matching, ec, sanity_check=sanity_check)
+    for ec in code.ec:
+        recovery_set = outer_decoder(code, ec, **updated_decoder_opts)
+        recovery(recovery_set, code, ec, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
+    if sanity_check:
+        return np.all(result[0])
     return np.all(result)

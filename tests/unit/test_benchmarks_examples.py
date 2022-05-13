@@ -20,7 +20,8 @@ import pytest
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])
-def test_decoder_example(noise):
+@pytest.mark.parametrize("decoder", ["MWPM", "UF"])
+def test_decoder_example(noise, decoder):
     """Simple test for the decoding module in flamingpy.examples."""
     from flamingpy.examples.decoding import decode_surface_code
 
@@ -28,7 +29,8 @@ def test_decoder_example(noise):
     boundaries = "open"
     ec = "primal"
 
-    decode_surface_code(distance, boundaries, ec, noise, draw=True)
+    result = decode_surface_code(distance, boundaries, ec, noise, decoder, draw=True)
+    assert result.__class__.__name__ == "bool_"
 
 
 def test_decoding_benchmark():
@@ -75,8 +77,3 @@ def test_matching_benchmark():
 def test_shortest_path_benchmark():
     """Simple test for the shortest_path module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import shortest_path
-
-
-def test_simulations_benchmark():
-    """Simple test for the simulations module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import simulations

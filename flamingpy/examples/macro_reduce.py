@@ -53,7 +53,10 @@ for trial in range(total):
         "prob_precomputed": True,
     }
     decoder = {"outer": "MWPM"}
-    c = correct(code=RHG_code, decoder=decoder, weight_options=weight_options)
+    decoder_opts = {"backend": "networkx"}
+    c = correct(
+        code=RHG_code, decoder=decoder, weight_options=weight_options, decoder_opts=decoder_opts
+    )
     successes += int(c)
 
 error = (total - successes) / total
