@@ -36,9 +36,7 @@ import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import retworkx as rx
 
 from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
