@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
+
+# pylint: disable=too-many-locals,too-many-arguments
+
 import argparse
 import csv
 import os
