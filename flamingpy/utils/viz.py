@@ -526,13 +526,20 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         # stabilizer, draw a rectangular prism
         size = np.abs(max_arr - min_arr) - 2 * gap
 
-        in_low_boundary = midpoint == 1
-        in_high_boundary = midpoint == 2 * shape - 1
+        dual_factor = 1 if ec == "dual" else 0
+
+        in_low_boundary = midpoint == 1 - dual_factor
+        in_high_boundary = midpoint == 2 * shape - 1 - dual_factor
         midpoint_coord_in_boundary = np.logical_or(in_low_boundary, in_high_boundary)
         # "open" will always have incomplete stabs in the boundaries
         if boundaries == "open" and (midpoint_coord_in_boundary.any()):
-            # values corresponding to the x-axis shouldn't be modified
-            midpoint_coord_in_boundary[0], in_low_boundary[0] = False, False
+            # values corresponding to the x-axis shouldn't be resized/displaced
+            # if ec is primal to draw voxels correctly
+            if ec == "primal":
+                midpoint_coord_in_boundary[0], in_low_boundary[0] = False, False
+            else:  # dual
+                midpoint_coord_in_boundary[1], in_low_boundary[1] = False, False
+                midpoint_coord_in_boundary[2], in_low_boundary[2] = False, False
             # resize voxel
             size[midpoint_coord_in_boundary] = size[midpoint_coord_in_boundary] / 2 - gap
             sizes.append(size)
