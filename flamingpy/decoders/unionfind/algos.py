@@ -26,12 +26,12 @@ def union(root1, root2):
     """Perform a weighted union between root1 and root2.
 
     Args:
-        root1: root of the first of the two clusters whose union needs to be performed
-        root2: root of the second of the two clusters whose union needs to be performed
+        root1 (Root): root of the first cluster in the union
+        root2 (Root): root of the second cluster in the union
 
     Returns:
-        If root1 and root2 are same, it returns None; else, it returns the big root
-        node and the small root node after the union
+        NoneType or (Root, Root): If root1 and root2 are same, returns None;
+            else, the big and small root node after the union.
     """
     if root1 != root2:
         # The equal case is important here, given the use in initialize_cluster_trees
@@ -64,8 +64,9 @@ def initialize_cluster_trees(stabilizer_graph):
             syndrome data from measurement outcomes
 
     Returns:
-        node_dict : dictionary of the nodes
-        cluster_trees : list of roots of the various cluster trees
+        dict, list[Root], list[Root]: a dictionary of the nodes, a list of
+            roots of the various cluster trees, and a list of roots with
+            odd parity.
     """
 
     # Generate the erasure graph
@@ -130,18 +131,22 @@ def initialize_cluster_trees(stabilizer_graph):
 
 
 def union_find(odd_clusters, boundary, stabilizer_graph, support, node_dict):
-    """To perform the find and union operations.
+    """Perform the 'find' and 'union' operations.
 
-    Each odd cluster is grown by an half edge in all the directions, odd clusters that
-    have common nodes after the growth are found, and the union operation is performed
-    to merge the clusters. This operation is repeated till all clusters become even.
+    Each odd cluster is grown by a half edge in all the directions; odd clusters
+    that have common nodes after the growth are found; and the union operation
+    is performed to merge the clusters. This operation is repeated until all
+    clusters become even.
 
     Args:
         odd_clusters (list): list of clusters with odd parity
         boundary (Boundary): dictionary of the Boundary objects of all clusters
         stabilizer_graph (StabilizerGraph): the stabilizer graph
         support (Support): the support table
-        node_dict (dict): A dictionary of nodes
+        node_dict (dict): a dictionary of nodes.
+
+    Returns:
+        NoneType
     """
 
     # Growing the clusters until they all become even
@@ -191,8 +196,9 @@ def obtain_spanning_forest(stabilizer_graph, support):
         support (Support): the support table containing the grown edges
 
     Returns:
-        spanning_forest (rx.PyGraph): a graph containing the edges grown in the support table
-        parity_dict (dict): a dictionary containing the parity of all nodes in the spanning_forest
+        rx.PyGraph, parity_dict: a graph containing the edges grown in
+            the support table and a dictionary containing the parity of all
+            nodes in the spanning_forest.
     """
 
     spanning_forest = support.span_forest(stabilizer_graph)
@@ -225,8 +231,9 @@ def uf_decode(code, ec):
         ec (str): the error complex ("primal" or "dual")
 
     Returns:
-        spanning_forest (rx.PyGraph): a graph containing the edges grown in the support table
-        parity_dict (dict): a dictionary containing the parity of all nodes in the spanning_forest
+        rx.PyGraph, parity_dict: a graph containing the edges grown in
+            the support table and a dictionary containing the parity of all
+            nodes in the spanning_forest.
     """
 
     # Obtain the stabilizer graph
@@ -251,10 +258,13 @@ def trim_forest(spanning_forest, leaf, parity_dict, recovery):
     """Trim leaves in spanning_forest.
 
     Args:
-        spanning_forest (rx.PyGraph): graph containing the cluster edges
+        spanning_forest (rx.PyGraph): a graph containing the cluster edges
         leaf (int): index of a leaf node in spanning_forest
-        parity_dict (dict): dictionary of parity of the nodes in the spanning forest
-        recovery (set): set of recovery edges that need to be updated
+        parity_dict (dict): dictionary of parity of the nodes in the spanning
+            forest
+        recovery (set): set of recovery edges that need to be updated.
+    Returns:
+        NoneType
     """
     edges = list(spanning_forest.out_edges(leaf))
     if edges:
@@ -276,14 +286,16 @@ def trim_forest(spanning_forest, leaf, parity_dict, recovery):
 
 
 def peeling(spanning_forest, parity_dict):
-    """Runs the peeling decoding algorithm for the surface code.
+    """Runs the peeling decoding algorithm.
 
     Args:
-        spanning_forest (rx.PyGraph): Graph containing the spanning forest,
-        parity_dict (dict): dictionary of parity of the nodes in the spanning forest
+        spanning_forest (rx.PyGraph): graph containing the spanning forest,
+        parity_dict (dict): dictionary of parity of the nodes in the spanning
+            forest
 
     Returns:
-        recovery : set of qubits to flip
+        set[tuples]: the nodes (representing qubits) be fed into the recovery
+            (i.e. whose bit values must be flipped).
     """
 
     recovery_set = set()
@@ -298,7 +310,7 @@ def peeling(spanning_forest, parity_dict):
 
 
 def uf_decoder(code, ec, **kwargs):
-    """Run the Union-Find decoder on code.
+    """Run the full Union-Find and peeling decoder on code.
 
     Args:
         code (SurfaceCode): the code class to decode and correct
