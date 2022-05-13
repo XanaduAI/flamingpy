@@ -59,6 +59,8 @@ def ec_monte_carlo(
         decoder = {"outer": decoder}
         if decoder["outer"] == "MWPM":
             weight_options = {"method": "blueprint", "prob_precomputed": True}
+        else:
+            weight_options = None
     else:
         # Noise model
         cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
@@ -71,6 +73,8 @@ def ec_monte_carlo(
                 "multiplier": 1,
                 "delta": delta,
             }
+        else:
+            weight_options = None
 
     successes = 0
     if return_decoding_time:
@@ -185,7 +189,6 @@ def run_ec_simulation(
 
 if __name__ == "__main__":
     if len(sys.argv) != 1:
-        print(sys.argv)
         # Parsing input parameters
         parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
         parser.add_argument("-distance", type=int)
@@ -195,7 +198,7 @@ if __name__ == "__main__":
         parser.add_argument("-p_swap", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-passive", type=lambda s: s == "True")
-        parser.add_argument("-decoder", type=str)  # Available type of decoders are "MWPM" and "UF"
+        parser.add_argument("-decoder", type=str)
         parser.add_argument(
             "-dir", type=str, help="The directory where the result file should be stored"
         )
@@ -224,7 +227,6 @@ if __name__ == "__main__":
             "passive": True,
             "decoder": "MWPM",
         }
-
     # Checking that a valid decoder choice is provided
     if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
         params["decoder"] = "UF"
@@ -238,4 +240,4 @@ if __name__ == "__main__":
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
 
     # The Monte Carlo simulations
-    run_ec_simulation(**params, fname=os.path.join(args.dir, "sims_results.csv"))
+    run_ec_simulation(**params)
