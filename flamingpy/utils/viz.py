@@ -461,9 +461,12 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
     cubes = getattr(code, ec + "_stabilizers")
 
-    if len(cubes)>40:
-        warnings.warn(f"The number of {ec} stabilizers ({len(cubes)}) is too"\
-            " large. The generated plots might be too crowded.",stacklevel=2)
+    if len(cubes) > 40:
+        warnings.warn(
+            f"The number of {ec} stabilizers ({len(cubes)}) is too"
+            " large. The generated plots might be too crowded.",
+            stacklevel=2,
+        )
     # Default drawing options.
     draw_dict = {
         "show_nodes": False,
@@ -681,8 +684,11 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     if len(G_match.graph):
         n_nodes_matching = len(G_match.graph.nodes())
         if n_nodes_matching > 75:
-            warnings.warn(f"The number of nodes ({n_nodes_matching}) of the {ec} matching graph"\
-                " is too large. The generated plots might be too crowded.",stacklevel=2)
+            warnings.warn(
+                f"The number of nodes ({n_nodes_matching}) of the {ec} matching graph"
+                " is too large. The generated plots might be too crowded.",
+                stacklevel=2,
+            )
         G_match.draw(
             title=ec.capitalize() + " matching graph",
             label_edges=label_edges,
