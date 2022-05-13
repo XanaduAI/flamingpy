@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""A collection of classes used for UnionFind decoder"""
+
+# pylint: disable=too-few-public-methods
 
 import retworkx as rx
 
@@ -64,6 +67,8 @@ class Node:
         """Find the parity of the cluster."""
         if self.find_root():
             return self.find_root().parity
+
+        return None
 
 
 class Root:

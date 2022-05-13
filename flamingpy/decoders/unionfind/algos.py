@@ -53,6 +53,8 @@ def union(root1, root2):
 
         return big_root.node, small_root.node
 
+    return None
+
 
 def initialize_cluster_trees(stabilizer_graph):
     """Initialize the cluster trees (Algo 2, step 1 in arXiv:1709.06218).
