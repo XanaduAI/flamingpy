@@ -14,7 +14,7 @@
 """Implementation of the Union-Find decoder, adapted from arXiv:1709.06218 and
 arXiv:1703.01517 ."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-locals
 
 import retworkx as rx
 
@@ -30,7 +30,8 @@ def union(root1, root2):
         root2: root of the second of the two clusters whose union needs to be performed
 
     Returns:
-        If root1 and root2 are same, it returns None; else, it returns the big root node and the small root node after the union
+        If root1 and root2 are same, it returns None; else, it returns the big root 
+        node and the small root node after the union
     """
     if root1 != root2:
         # The equal case is important here, given the use in initialize_cluster_trees
@@ -57,7 +58,8 @@ def initialize_cluster_trees(stabilizer_graph):
     """Initialize the cluster trees (Algo 2, step 1 in arXiv:1709.06218).
 
     Args:
-        stabilizer_graph (StabilizerGraph): stabilizer graph that contains the syndrome data from measurement outcomes
+        stabilizer_graph (StabilizerGraph): stabilizer graph that contains the 
+            syndrome data from measurement outcomes
 
     Returns:
         node_dict : dictionary of the nodes
@@ -77,13 +79,17 @@ def initialize_cluster_trees(stabilizer_graph):
                 if edge[i] in stab_to_index:
                     vertices.append(stab_to_index[edge[i]])
                 else:
+                    # Adding all nodes (not just erasure nodes) is important to 
+                    # initialize the single node clusters along with erasures
                     vertices.append(
                         erasure_graph.add_node(edge[i])
-                    )  # Adding all nodes (not just erasure nodes) is important to initialize the single node clusters along with erasures
+                    )
                     stab_to_index[edge[i]] = vertices[i]
             if (
                 stabilizer_graph.edge_data(edge[0], edge[1])["weight"] == -1
-            ):  # edge_with_indices[2] is a dictionary containing the qubit coordinate corresponding to the edge
+            ):
+                # edge_with_indices[2] is a dictionary containing the qubit 
+                # coordinate corresponding to the edge
                 erasure_graph.add_edge(vertices[0], vertices[1], None)
 
     # Create a dictionary of nodes for stabilizers
@@ -140,7 +146,8 @@ def union_find(odd_clusters, boundary, stabilizer_graph, support, node_dict):
 
     # Growing the clusters until they all become even
     while odd_clusters:
-        # Growing each cluster by half an edge or by a part of an edge based on the type of weight used
+        # Growing each cluster by half an edge or by a part of an edge based 
+        # on the type of weight used
         fusion_list = []
         for cluster in odd_clusters:
             for node in boundary[cluster.node].nodes:
