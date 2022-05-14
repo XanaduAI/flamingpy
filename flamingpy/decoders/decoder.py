@@ -105,9 +105,9 @@ def assign_weights(code, decoder, **kwargs):
                         p_count += 1
                 if p_count in (0, 1):
                     # We consider weight-2 edges as we need half edges
-                    G.nodes[node]["weight"] = 2  
+                    G.nodes[node]["weight"] = 2
                 else:
-                    # These edges correspond to the erased edges fed toUnion-Find 
+                    # These edges correspond to the erased edges fed toUnion-Find
                     G.nodes[node]["weight"] = -1
         else:
             for node in qubit_coords:
