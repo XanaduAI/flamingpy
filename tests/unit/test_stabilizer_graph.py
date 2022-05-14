@@ -34,7 +34,7 @@ stab_graph_backend = ["retworkx"]
 code_params = it.product(
     [2, 3, 4],
     ["open", "periodic"],
-    ["primal", "dual", "both"],
+    ["primal", "dual"],
     [1, 0.1, 0.01],
     [0, 0.5, 1],
     stab_graph_backend,

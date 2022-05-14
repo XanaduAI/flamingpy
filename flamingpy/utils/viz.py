@@ -21,7 +21,6 @@ avoids having to modify the global Matplotlib `rc_params`.
 To modify the plot parameters use, for example,
 
   .. code::
-
     from flamingpy.utils.viz import plot_params as fp_plot_params
     fp_plot_params["font.size"] = 20
 """
@@ -197,8 +196,6 @@ def draw_EGraph(
     if state_colors is None:
         state_colors = {}
 
-    # Recommended to be viewed with IPython.
-    # Font properties
     dims = egraph.graph.get("dims")
     xmax, ymax, zmax = dims
 
@@ -277,7 +274,6 @@ def draw_EGraph(
         message = "{} at {} node(s) have not yet been computed."
         print(message.format(name.lower(), n_uncomputed))
 
-    # Plotting edges.
     for edge in egraph.edges:
 
         # Color edges based on color_edges if string, or based on
