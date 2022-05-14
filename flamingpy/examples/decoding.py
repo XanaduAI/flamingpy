@@ -68,7 +68,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
     # Drawing options
     node_colors = "state" if noise == "cv" else False
     dw = {
-        "show_nodes": False,
+        "show_nodes": True,
         "color_nodes": node_colors,
         "show_recovery": True,
         "label_stabilizers": False,
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         # QEC code parameters
         "distance": 3,
         # Boundaries ("open" or "periodic")
-        "boundaries": "periodic",
+        "boundaries": "open",
         # Error complex ("primal" or "dual")
         "ec": "primal",
         # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         "noise": "cv",
         # Decoder: set to "MWPM" for minimum-weight perfect matching, or
         # "UF" for Union-Find
-        "decoder": "UF",
+        "decoder": "MWPM",
     }
 
     c = decode_surface_code(**params, show=True)
