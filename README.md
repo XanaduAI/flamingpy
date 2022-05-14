@@ -38,7 +38,7 @@
 
 ## Features
 
-<img src="https://user-images.githubusercontent.com/57886357/168403376-d67d86ca-ca7c-4099-a310-1bc2d3aa6deb.svg" width="330px" align="right">
+<img src="https://user-images.githubusercontent.com/25132802/168440346-9e285190-9527-482e-8877-b64c348df3b5.svg" width="330px" align="right">
 
 * Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. 
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states). 
