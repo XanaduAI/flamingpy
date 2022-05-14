@@ -59,7 +59,7 @@ def test_surface_code_example(boundaries):
     from flamingpy.examples.surface_code import surface_code
 
     d = 2
-    err = "both"
+    err = "primal"
     polarity = None
     surface_code(d, boundaries, err, polarity, show=False)
 

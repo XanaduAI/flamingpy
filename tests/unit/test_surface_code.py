@@ -338,7 +338,7 @@ class TestRHGGraph:
             assert len(macronode_lattice) == 4 * len(RHG_reduced)
 
 
-code_params = it.product(range(2, 5), ["primal", "dual", "both"], ["open", "periodic"])
+code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "periodic"])
 
 
 @pytest.fixture(scope="module", params=code_params)

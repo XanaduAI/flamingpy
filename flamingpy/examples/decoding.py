@@ -106,7 +106,7 @@ if __name__ == "__main__":
         "distance": 3,
         # Boundaries ("open" or "periodic")
         "boundaries": "periodic",
-        # Error complex ("primal", "dual", or "both")
+        # Error complex ("primal" or "dual")
         "ec": "primal",
         # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
         # over a GKP/sqeezed state architecture
