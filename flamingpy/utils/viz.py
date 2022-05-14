@@ -54,6 +54,7 @@ plot_params = {
     "figure.figsize": (8, 6),
 }
 
+
 @mpl.rc_context(plot_params)
 def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
@@ -71,6 +72,7 @@ def plot_integer_part(xs, ns, alpha, show=True):
         plt.show()
 
     return fig, ax
+
 
 @mpl.rc_context(plot_params)
 def plot_fractional_part(xs, fs, alpha, show=True):
@@ -90,6 +92,7 @@ def plot_fractional_part(xs, fs, alpha, show=True):
     if show:
         plt.show()
 
+
 @mpl.rc_context(plot_params)
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
@@ -108,6 +111,7 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
         plt.show()
 
     return fig, ax
+
 
 @mpl.rc_context(plot_params)
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
@@ -130,6 +134,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
         plt.show()
 
     return fig, ax
+
 
 @mpl.rc_context(plot_params)
 def draw_EGraph(
@@ -299,6 +304,7 @@ def draw_EGraph(
     plt.draw()
     return fig, ax
 
+
 @mpl.rc_context(plot_params)
 def plot_mat_heat_map(mat, show=True, title=None):
     """Plot the heat map of a matrix."""
@@ -318,6 +324,7 @@ def plot_mat_heat_map(mat, show=True, title=None):
 
     axs = [ax, cbar.ax]
     return fig, axs
+
 
 @mpl.rc_context(plot_params)
 def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
@@ -384,6 +391,7 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
     axs = [ax, cax]
     return fig, axs
 
+
 def draw_curved_edges(graph, layout, ax, rad=0.5):
     """Draw curved edges using matplotlib directly instead of networkx.
 
@@ -413,6 +421,7 @@ def draw_curved_edges(graph, layout, ax, rad=0.5):
         )
         ax.annotate("", xy=layout[source], xytext=layout[target], arrowprops=arrowprops)
     return cmap, norm
+
 
 @mpl.rc_context(plot_params)
 def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
@@ -555,6 +564,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
     return fig, ax
 
+
 def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
     """Plot cubes with their origin located at ``positions``.
 
@@ -581,6 +591,7 @@ def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
     g = [_cuboid_data(p, size=s) for p, s in zip(positions, sizes)]
     return Poly3DCollection(np.concatenate(g), facecolors=np.repeat(colors, 6, axis=0), **kwargs)
 
+
 def _cuboid_data(origin, size=(1, 1, 1)):
     """Return an array with the corners of a cube of size 1."""
 
@@ -601,6 +612,7 @@ def _cuboid_data(origin, size=(1, 1, 1)):
     X += np.array(origin)
 
     return X
+
 
 @mpl.rc_context(plot_params)
 def draw_recovery(ax, **kwargs):
@@ -637,6 +649,7 @@ def draw_recovery(ax, **kwargs):
                     linewidth=plot_params.get("lines.linewidth", None) * 0.9,
                 )
     return ax
+
 
 def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     """Draw the stabilizer and matching graphs, and the plot the syndrome."""
