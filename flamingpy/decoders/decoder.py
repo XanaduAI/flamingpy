@@ -98,16 +98,17 @@ def assign_weights(code, decoder, **kwargs):
             for node in qubit_coords:
                 neighbors = G[node]
                 # List and number of p-squeezed states in neighborhood of node.
-                p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
-                p_count = len(p_list)
+                p_count = 0
+                for neighbor in neighbors:
+                    state_name = G.nodes[neighbor].get("state")
+                    if state_name == "p":
+                        p_count += 1
                 if p_count in (0, 1):
-                    G.nodes[node]["weight"] = 2  # we consider weight-2 edges as we need half edges
+                    # We consider weight-2 edges as we need half edges
+                    G.nodes[node]["weight"] = 2  
                 else:
-                    G.nodes[node][
-                        "weight"
-                    ] = (
-                        -1
-                    )  # these edges correspond to the erased edges fed to the union-find decoder
+                    # These edges correspond to the erased edges fed toUnion-Find 
+                    G.nodes[node]["weight"] = -1
         else:
             for node in qubit_coords:
                 G.nodes[node]["weight"] = 1

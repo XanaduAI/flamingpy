@@ -63,7 +63,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         p_Z = 0.02
         IidNoise(RHG_code, p_Z).apply_noise()
         weight_options = {"method": "uniform"}
-        decoder = {"outer": "MWPM"}
+        decoder = {"outer": decoder}
 
     # Drawing options
     node_colors = "state" if noise == "cv" else False
