@@ -60,12 +60,12 @@
 * Tests were added to improve the overall test coverage. These included changes to
   `.coveragerc` as well as the refactoring of some examples to allow for proper
   imports from testing modules. Code coverage is now above 95% and
-  the fail threshold was bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
+  the overall fail threshold was bumped accordingly. [(#14)](https://github.com/XanaduAI/flamingpy/pull/14)
 * The PR template has been changed to inform the user about the 95% + codecov requirement. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
 * `CVLayer` has been modified to allow for instantiation with a code object
   in addition to an `EGraph`. This makes more semantic sense (applying a noise model
   to a code), making it conceptually easier for the user and avoiding noise layers having to reference the internal mechanics of codes. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
-* `codecov.yml` was introduced to customize codecov automated tests. For this version, we have added a `threshold: 0.1%` to avoid undesired failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
+* `codecov.yml` was introduced to customize codecov automated tests. For this version, we have added a `threshold: 0.5%` to avoid undesired delta failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
 * The Walrus has been re-added as a dependency and its functions are used instead of a verbatim
   copy of the code. [(#27)](https://github.com/XanaduAI/flamingpy/pull/27)
 * Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention 
