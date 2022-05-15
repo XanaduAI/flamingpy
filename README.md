@@ -38,7 +38,7 @@
 
 ## Features
 
-<img src="https://user-images.githubusercontent.com/25132802/160343140-8d1f8742-d37a-4f18-aa4c-31b6cce587f3.svg" width="330px" align="right">
+<img src="https://user-images.githubusercontent.com/25132802/168440346-9e285190-9527-482e-8877-b64c348df3b5.svg" width="330px" align="right">
 
 * Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. 
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states). 
@@ -71,7 +71,7 @@ python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backen
 python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 ``` 
 
-The purpose of the commands is as follows:
+Note you will need to remove the comments manually if you use Windows prompt. The purpose of the commands is as follows:
 - The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
 - The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
