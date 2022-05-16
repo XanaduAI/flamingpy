@@ -14,7 +14,6 @@
 """Example for building and visualizing EGraphs with CV noise."""
 import matplotlib.pyplot as plt
 
-from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import CVLayer
 

@@ -168,7 +168,6 @@ html_theme = "xanadu"
 html_theme_options = {
     "navbar_name": "FlamingPy",
     "navbar_logo_colour": "#f57c00",
-
     "navbar_left_links": [
         {
             "name": "Quantum Error Correction",
@@ -184,7 +183,6 @@ html_theme_options = {
             "active": True,
         },
     ],
-
     "navbar_right_links": [
         {
             "name": "FAQ",
@@ -202,7 +200,6 @@ html_theme_options = {
             "icon": "fab fa-github",
         },
     ],
-
     "prev_next_button_colour": "#f57c00",
     "prev_next_button_hover_colour": "#bb4d00",
     "toc_marker_colour": "#f57c00",
@@ -210,10 +207,8 @@ html_theme_options = {
     "border_colour": "#f57c00",
     "code_colour": "#ef6c00",
     "text_accent_colour": "#f57c00",
-
     "extra_copyrights": [
-        "TensorFlow, the TensorFlow logo, and any related marks are trademarks "
-        "of Google Inc."
+        "TensorFlow, the TensorFlow logo, and any related marks are trademarks of Google Inc."
     ],
 }
 
@@ -315,6 +310,4 @@ epub_exclude_files = ["search.html"]
 autodoc_member_order = "bysource"
 
 # inheritance_diagram graphviz attributes
-inheritance_node_attrs = dict(
-    color="lightskyblue1", fillcolor="lightskyblue1", style="filled"
-)
+inheritance_node_attrs = dict(color="lightskyblue1", fillcolor="lightskyblue1", style="filled")

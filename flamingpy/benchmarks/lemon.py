@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from flamingpy.decoders.mwpm.lemon import max_weight_matching
+from flamingpy.decoders.mwpm.lemon import min_weight_matching
 
 
 time_lemon = []
@@ -37,12 +37,12 @@ for num_nodes in range(50, 150, 50):
     G_match = nx.from_numpy_array(b_symm)
 
     start = time.time()
-    lemon_matching = max_weight_matching(G_match, weight="weight")
+    lemon_matching = min_weight_matching(G_match)
     end = time.time()
     time_lemon.append(end - start)
 
     start = time.time()
-    nx_matching = nx.max_weight_matching(G_match, weight="weight")
+    nx_matching = nx.min_weight_matching(G_match)
     end = time.time()
     time_nx.append(end - start)
 

@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""""Unit tests for decoding funcions in the decoder module."""
+""""Unit tests for MWPM and decoding funcions in the decoder module."""
 
-# pylint: disable=no-member,redefined-outer-name,protected-access,no-self-use
+# pylint: disable=no-member,protected-access,no-self-use
 
 import itertools as it
 
@@ -29,17 +29,19 @@ from flamingpy.decoders.decoder import (
     recovery,
     check_correction,
 )
+
+from flamingpy.decoders.mwpm import mwpm_decoder
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual", "both"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
+    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
 )
 
 
 @pytest.fixture(scope="module", params=code_params)
 def enc_state(request):
-    """An RHGCode object and an encoded CVLayer for use in this module."""
+    """A SurfaceCode object and an encoded CVLayer for use in this module."""
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity)
     # CV (inner) code/state
@@ -66,9 +68,9 @@ def match_data(enc_state):
 class TestAssignWeights:
     """Test the weight assignment in decoder.py."""
 
-    def test_unit_weights(self, enc_state):
-        """Check that all weights are 1 with the "unit" weight option."""
-        assign_weights(enc_state[0], method="unit")
+    def test_uniform_weights(self, enc_state):
+        """Check that all weights are 1 with the "uniform" weight option."""
+        assign_weights(enc_state[0], "MWPM")
         for point in enc_state[0].all_syndrome_coords:
             assert enc_state[0].graph.nodes[point]["weight"] == 1
 
@@ -80,7 +82,7 @@ class TestAssignWeights:
             "multiplier": 100,
             "delta": enc_state[1]._delta,
         }
-        assign_weights(enc_state[0], **weight_options)
+        assign_weights(enc_state[0], "MWPM", **weight_options)
         for point in enc_state[0].all_syndrome_coords:
             weight = enc_state[0].graph.nodes[point]["weight"]
             # Check that all the weights are positive integers given
@@ -117,7 +119,7 @@ class TestDecoder:
                     assert cube.egraph.nodes[point].get("bit_val") is not None
 
     def test_stab_graph(self, enc_state):
-        """Check that edges in a stabilizer grapg contain the coordinates of
+        """Check that edges in a stabilizer graph contain the coordinates of
         the common vertex between neighbouring stabilizers."""
         for ec in enc_state[0].ec:
             stab_graph = getattr(enc_state[0], ec + "_stab_graph")
@@ -163,11 +165,12 @@ class TestDecoder:
 class TestRecovery:
     """A class that defines recovery and correction tests."""
 
-    def test_recovery(self, enc_state, match_data):
+    def test_recovery(self, enc_state):
         """Check that there remain no unsatisfied stabilizers after the
-        recovery operation."""
-        for i, ec in enumerate(enc_state[0].ec):
-            recovery(enc_state[0], match_data[0][i], match_data[1][i], ec)
+        decoding and recovery operation."""
+        for ec in enc_state[0].ec:
+            recovery_set = mwpm_decoder(enc_state[0], ec)
+            recovery(recovery_set, enc_state[0], ec)
             stab_graph = getattr(enc_state[0], ec + "_stab_graph")
             odd_cubes = stab_graph.odd_parity_stabilizers()
             assert len(list(odd_cubes)) == 0
@@ -197,6 +200,3 @@ class TestRecovery:
             assert np.all(result)
         else:
             assert not np.all(result)
-
-    # def test_correct(self):
-    # pass
