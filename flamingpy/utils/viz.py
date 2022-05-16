@@ -146,6 +146,7 @@ def draw_EGraph(
     title=False,
     legend=False,
     show_axes=True,
+    dimensions=None,
 ):
     """Draw the graph state represented by the EGraph.
 
@@ -189,6 +190,9 @@ def draw_EGraph(
         legend (bool): if True and label is set to 'state', display
             the state color legend.
         show_axes (bool): if False, turn off the axes.
+        dimensions (tuple): Dimensions of the region that should be plotted. Formatted like
+            [[xmin, xmax], [ymin, ymax], [zmin, zmax]]. If None, set the dimensions to the smallest
+            rectangular space containing all the nodes.
 
     Returns:
         A Matplotib Axes object.
@@ -196,8 +200,7 @@ def draw_EGraph(
     if state_colors is None:
         state_colors = {}
 
-    dims = egraph.graph.get("dims")
-    xmax, ymax, zmax = dims
+    xlim, ylim, zlim = dimensions
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
@@ -292,12 +295,14 @@ def draw_EGraph(
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
 
-    plt.xticks(range(0, 2 * xmax))
-    plt.yticks(range(0, 2 * zmax))
-    ax.set_zticks(range(0, 2 * ymax))
+    plt.xticks(np.arange(xlim[0], xlim[1]))
+    plt.yticks(np.arange(zlim[0], zlim[1]))
+    ax.set_zticks(np.arange(ylim[0], ylim[1]))
+
     ax.set_xlabel("x", labelpad=15)
-    ax.set_ylabel("z", labelpad=15)
+    ax.set_ylabel("z", labelpad=15)  # TODO Question: why were z and y flipped?
     ax.set_zlabel("y", labelpad=15)
+
     if not show_axes:
         ax.axis("off")
     plt.tight_layout(pad=5)
