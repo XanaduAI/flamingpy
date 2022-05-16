@@ -306,7 +306,7 @@ def draw_EGraph(
     ax.set_zticks(np.arange(ylim[0], ylim[1] + 1))
 
     ax.set_xlabel("x", labelpad=15)
-    ax.set_ylabel("z", labelpad=15)  # TODO Question: why were z and y flipped?
+    ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
 
     if not show_axes:
