@@ -16,6 +16,7 @@
 # pylint: disable=no-self-use,protected-access,too-few-public-methods
 
 import itertools as it
+
 import re
 import pytest
 
@@ -23,7 +24,6 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
-from flamingpy.benchmarks.simulations import run_sims_benchmark
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
 
@@ -83,12 +83,15 @@ class TestPassive:
 
 @pytest.mark.parametrize("passive", [True, False])
 @pytest.mark.parametrize("empty_file", [True, False])
-@pytest.mark.parametrize("sim", [run_ec_simulation, run_sims_benchmark])
+@pytest.mark.parametrize("sim", [run_ec_simulation])
 def test_simulations_output_file(tmpdir, passive, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
-    expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time"
-    dummy_content = "2,primal,open,0.04,0.5,2,10,12:34:56"
+    expected_header = (
+        "distance,passive,ec,boundaries,delta,p_swap,decoder,errors_py,"
+        + "trials,current_time,decoding_time,simulation_time"
+    )
+    dummy_content = "2,True,primal,open,0.04,0.5,2,10,12:34:56,10,20"
     if "benchmark" in sim.__name__:
         expected_header += ",cpp_to_py_speedup"
         dummy_content += ",1"
@@ -107,9 +110,11 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
         "boundaries": "open",
         "delta": 0.04,
         "p_swap": 0.5,
-        "passive": passive,
-        "trials": 10,
+        "trials": 100,
+        "passive": True,
+        "decoder": "MWPM",
     }
+
     sim(**params, fname=f)
 
     file_lines = f.readlines()

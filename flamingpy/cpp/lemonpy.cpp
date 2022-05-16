@@ -21,10 +21,8 @@ std::vector<int> mwpm(const std::vector<float> & adjacency, int num_nodes)
  
   for (int i = 0; i < num_nodes; i++){
     for (int j = i+1; j < num_nodes; j++){
-      if (adjacency[i*num_nodes + j] != 0.){
-	Graph::Edge e = g.addEdge(g.nodeFromId(i), g.nodeFromId(j));
-	w[e] = adjacency[i*num_nodes + j];
-      }
+        Graph::Edge e = g.addEdge(g.nodeFromId(i), g.nodeFromId(j));
+        w[e] = adjacency[i*num_nodes + j];
     }
   }
   
