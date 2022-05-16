@@ -28,3 +28,21 @@ Module members
 .. automodapi:: flamingpy
     :no-heading:
     :include-all-objects:
+
+
+
+UML Diagrams
+--------------
+
+* **Classes:**
+.. image:: ../_static/classes_flamingpy.svg
+    :align: center
+    :width: 550px
+
+
+|
+* **Packages:**
+.. image:: ../_static/packages_flamingpy.svg
+    :align: center
+    :width: 550px
+
