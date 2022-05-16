@@ -110,6 +110,7 @@ sphinx_gallery_conf = {
     'backreferences_dir'  : 'backreferences',
     'doc_module'          : ('flamingpy'),
     'junit': '../test-results/sphinx-gallery/junit.xml',
+    'download_all_examples': False,
 }
 
 automodapi_toctreedirnm = "source/api"
