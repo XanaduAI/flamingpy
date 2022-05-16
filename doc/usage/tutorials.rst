@@ -26,12 +26,7 @@ FlamingPy tutorials.
 :html:`<div class="gallery-grid row">`
 
 .. gallery-item::
-    :tooltip: Test tutorial tooltip.
-    :figure: tutorials/_out/images/thumb/sphx_glr_run_tutorial_test_thumb.png
-    :description: :doc:`../tutorials/_out/run_tutorial_test`
-
-.. gallery-item::
-    :tooltip: Graph states turtorial.
+    :tooltip: Graph states tutorial.
     :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
     :description: :doc:`../tutorials/_out/run_graph_states`
 
