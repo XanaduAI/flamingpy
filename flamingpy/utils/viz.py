@@ -204,7 +204,7 @@ def draw_EGraph(
         mins = tuple(map(min, zip(*egraph.nodes)))
         maxs = tuple(map(max, zip(*egraph.nodes)))
 
-        dimensions = [a for a in zip(mins, maxs)]
+        dimensions = list(zip(mins, maxs))
 
     xlim, ylim, zlim = dimensions
 
