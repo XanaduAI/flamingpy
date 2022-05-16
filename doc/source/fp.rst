@@ -34,13 +34,15 @@ Module members
 UML Diagrams
 --------------
 
-* **Classes:**
+Classes
+^^^^^^^^^^^^ 
 .. image:: ../_static/classes_flamingpy.svg
     :align: center
     :width: 550px
 
 |
-* **Packages:**
+Packages
+^^^^^^^^^^^^
 .. image:: ../_static/packages_flamingpy.svg
     :align: center
     :width: 550px
