@@ -200,6 +200,12 @@ def draw_EGraph(
     if state_colors is None:
         state_colors = {}
 
+    if dimensions is None:
+        mins = tuple(map(min, zip(*egraph.nodes)))
+        maxs = tuple(map(max, zip(*egraph.nodes)))
+
+        dimensions = [a for a in zip(mins, maxs)]
+
     xlim, ylim, zlim = dimensions
 
     fig = plt.figure()
@@ -295,9 +301,9 @@ def draw_EGraph(
     if color_nodes == "state" and legend:
         ax.legend(handles=handles)
 
-    plt.xticks(np.arange(xlim[0], xlim[1]))
-    plt.yticks(np.arange(zlim[0], zlim[1]))
-    ax.set_zticks(np.arange(ylim[0], ylim[1]))
+    plt.xticks(np.arange(xlim[0], xlim[1] + 1))
+    plt.yticks(np.arange(zlim[0], zlim[1] + 1))
+    ax.set_zticks(np.arange(ylim[0], ylim[1] + 1))
 
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)  # TODO Question: why were z and y flipped?
