@@ -33,7 +33,8 @@ Graph States
 # This means the graph state :math:`\vert B \rangle` corresponding to the
 # graph above is
 #
-# :raw-latex:`\begin{equation} \vert B \rangle = CZ (\vert + \rangle \vert + \rangle) = \frac{1}{\sqrt{2}} \left( \vert 0 \rangle \vert + \rangle + \vert 1 \rangle \vert -\rangle \right), \end{equation}`
+# .. math::
+#   \begin{equation} \vert B \rangle = CZ (\vert + \rangle \vert + \rangle) = \frac{1}{\sqrt{2}} \left( \vert 0 \rangle \vert + \rangle + \vert 1 \rangle \vert -\rangle \right), \end{equation}
 #
 # where
 # :math:`\vert - \rangle = \frac{1}{\sqrt{2}} \left(\vert 0 \rangle - \vert 1 \rangle\right)`.
@@ -45,9 +46,10 @@ Graph States
 # To create a three-qubit entangled state(a rotated GHZ) state, we can
 # follow the same process:
 #
-# :raw-latex:`\begin{equation}
-# \vert \text{GHZ} \rangle =  CZ_{23}CZ_{21} (\vert + \rangle _1 \vert + \rangle _2 \vert + \rangle _3) = \frac{1}{\sqrt{2}}(\vert 0 \rangle _1 \vert + \rangle _2 \vert + \rangle _3 + (\vert 1 \rangle _1 \vert - \rangle _2 \vert - \rangle _3)).
-# \end{equation}`
+# .. math::
+#   \begin{equation}
+#   \vert \text{GHZ} \rangle =  CZ_{23}CZ_{21} (\vert + \rangle _1 \vert + \rangle _2 \vert + \rangle _3) = \frac{1}{\sqrt{2}}(\vert 0 \rangle _1 \vert + \rangle _2 \vert + \rangle _3 + (\vert 1 \rangle _1 \vert - \rangle _2 \vert - \rangle _3)).
+#   \end{equation}
 #
 
 ######################################################################
@@ -67,20 +69,23 @@ Graph States
 # When applied to the state, these operators leave the state unchanged.
 # The stabilizers for the above states are:
 #
-# :raw-latex:`\begin{equation} S_B = \{X_1 Z_2, X_2, Z_1\} \qquad \text{and} \qquad S_\text{GHZ} = \{ X_1 Z_2 Z_3, Z_1 X_2 Z_3, Z_1 Z_2 X_3 \}. \end{equation}`
+# .. math::
+#   \begin{equation} S_B = \{X_1 Z_2, X_2, Z_1\} \qquad \text{and} \qquad S_\text{GHZ} = \{ X_1 Z_2 Z_3, Z_1 X_2 Z_3, Z_1 Z_2 X_3 \}. \end{equation}
 #
 # To see this, you can use the fact that the :math:`Z` operator changes
 # phases:
 #
-# :raw-latex:`\begin{align}
-# Z \vert 0 \rangle = \vert 0 \rangle, \quad Z\vert 1 \rangle = - \vert 1 \rangle, \quad Z\vert + \rangle = \vert - \rangle, \quad Z\vert - \rangle= \vert + \rangle,
-# \end{align}`
+# .. math::
+#   \begin{align}
+#   Z \vert 0 \rangle = \vert 0 \rangle, \quad Z\vert 1 \rangle = - \vert 1 \rangle, \quad Z\vert + \rangle = \vert - \rangle, \quad Z\vert - \rangle= \vert + \rangle,
+#   \end{align}
 #
 # while the :math:`X` operator flips bits:
 #
-# :raw-latex:`\begin{align}
-# X \vert 0 \rangle = \vert 1 \rangle, \quad X\vert 1 \rangle= \vert 0 \rangle, \quad X\vert + \rangle = \vert + \rangle, \quad X\vert - \rangle = -\vert - \rangle.
-# \end{align}`
+# .. math::
+#   \begin{align}
+#   X \vert 0 \rangle = \vert 1 \rangle, \quad X\vert 1 \rangle= \vert 0 \rangle, \quad X\vert + \rangle = \vert + \rangle, \quad X\vert - \rangle = -\vert - \rangle.
+#   \end{align}
 #
 # If you apply the stabilizer elements to the above states, you’ll see
 # they don’t change. In general, if you’re given a graph state with
