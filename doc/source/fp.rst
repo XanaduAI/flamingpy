@@ -39,7 +39,6 @@ UML Diagrams
     :align: center
     :width: 550px
 
-
 |
 * **Packages:**
 .. image:: ../_static/packages_flamingpy.svg
