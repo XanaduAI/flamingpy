@@ -4,8 +4,6 @@
 Tutorials
 =========
 
-FlamingPy tutorials.
-
 ..
     To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``
     Note that the ``description`` option can be a link to a document. Also,
@@ -26,8 +24,13 @@ FlamingPy tutorials.
 :html:`<div class="gallery-grid row">`
 
 .. gallery-item::
-    :tooltip: Graph states tutorial.
+    :tooltip: Graph states tutorial
     :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
     :description: :doc:`../tutorials/_out/run_graph_states`
+
+.. gallery-item::
+    :tooltip: Error correction tutorial
+    :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
+    :description: :doc:`../tutorials/_out/run_error_correction`
 
 :html:`</div></div><div style='clear:both'>`
