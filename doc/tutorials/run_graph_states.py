@@ -24,8 +24,8 @@ Graph States
 # (undirected) mathematical graph, i.e. a collection of nodes and edges,
 # like so:
 # 
-# .. image:: images/bell_cluster.svg
-#  :width: 400   
+#.. image:: /_static/bell_cluster.svg
+#   :width: 400   
 #
 # In the above graph (call it :math:`B`), the nodes represent qubit
 # states, and the edges indicate entanglement. This can be made more
