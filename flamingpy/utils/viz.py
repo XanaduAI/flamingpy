@@ -305,6 +305,10 @@ def draw_EGraph(
     plt.yticks(np.arange(zlim[0], zlim[1] + 1))
     ax.set_zticks(np.arange(ylim[0], ylim[1] + 1))
 
+    plt.xlim(xlim)
+    plt.ylim(zlim)
+    ax.set_zlim(ylim)
+
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
