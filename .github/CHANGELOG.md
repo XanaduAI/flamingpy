@@ -80,7 +80,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa), [Priya Nadkarni](https://github.com/PriNad), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
+[Theodor Isacsson](https://github.com/thisac), [Josh Izaac](https://github.com/josh146), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Priya Nadkarni](https://github.com/PriNad), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.6.1a3...v0.7.0a4).
 
