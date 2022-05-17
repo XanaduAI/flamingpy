@@ -98,6 +98,13 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
 
 .. toctree::
    :maxdepth: 2
+   :caption: Background
+   :hidden:
+
+   quantum_error_correction
+
+.. toctree::
+   :maxdepth: 2
    :caption: Using FlamingPy
    :hidden:
 
