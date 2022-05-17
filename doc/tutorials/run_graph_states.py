@@ -59,7 +59,7 @@ Graph States
 
 
 ######################################################################
-# This is the general way entanglemenet is ''generated'' in a graph state:
+# This is the general way entanglement is ''generated'' in a graph state:
 # the :math:`CZ` gate (edge) entangles each pair of qubits (nodes).
 #
 # Stabilizer definition
@@ -72,7 +72,7 @@ Graph States
 # but through operators.
 #
 # In general, given a state of :math:`n` qubits, you can uniquely
-# detemrine the state by :math:`n` distinct operators called *stabilizer
+# determine the state by :math:`n` distinct operators called *stabilizer
 # elements* (or, colloquially, just *stabilizers*). When applied to the
 # state, these operators leave the state unchanged. The stabilizers for
 # the above states are:
@@ -118,7 +118,7 @@ import flamingpy.utils.viz as viz
 ######################################################################
 # An ``EGraph`` is a type of (inherits from) a ``Graph`` object from the
 # ``networkx`` package, but it builds on ``networkx`` graphs with its own
-# functionality. EGraphs (like NetworkX graphs) have dictionaries of nodes
+# functionality. ``EGraph``s (like NetworkX graphs) have dictionaries of nodes
 # and edges. To properly define a graph state, the ``EGraph`` class
 # assumes that the nodes are specified by three-tuples :math:`(x, y, z)`
 # corresponding to coordinates in three dimensions.
@@ -133,7 +133,7 @@ GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
 
 
 ######################################################################
-# We can give an EGraph its edges right away, but let us instead first
+# We can give an ``EGraph`` its edges right away, but let us instead first
 # initialize an empty graph:
 #
 
@@ -154,7 +154,7 @@ print("Edge attributes ", *GHZ_state.edges.data())
 # Eventually, these dictionaries can be populated attributes useful for
 # error correction and visualization. Let us now create a plot the state.
 # We can first specify some drawing options, and then use the ``draw``
-# method of the EGraph. This is as easy as:
+# method of the ``EGraph``. This is as easy as:
 #
 
 drawing_opts = {
