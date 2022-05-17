@@ -41,9 +41,7 @@ Graph States
 #
 # .. math::
 #
-#    \begin{align}
 #    \vert B \rangle = CZ (\vert + \rangle_1 \vert + \rangle_2) = \frac{1}{\sqrt{2}} \left( \vert 0 \rangle_1 \vert + \rangle_2 + \vert 1 \rangle_1 \vert -\rangle_2 \right),
-#    \end{align}
 #
 # where
 # :math:`\vert - \rangle = \frac{1}{\sqrt{2}} \left(\vert 0 \rangle - \vert 1 \rangle\right)`.
@@ -56,9 +54,7 @@ Graph States
 #
 # .. math::
 #
-#    \begin{align}
 #    \vert \text{GHZ} \rangle =  CZ_{23}CZ_{21} (\vert + \rangle _1 \vert + \rangle _2 \vert + \rangle _3) = \frac{1}{\sqrt{2}}(\vert 0 \rangle _1 \vert + \rangle _2 \vert + \rangle _3 + (\vert 1 \rangle _1 \vert - \rangle _2 \vert - \rangle _3)).
-#    \end{align}
 #
 
 
@@ -83,24 +79,20 @@ Graph States
 #
 # .. math::
 #
-#    \begin{align} S_B = \{X_1 Z_2, X_2 Z_1\} \qquad \text{and} \qquad S_\text{GHZ} = \{ X_1 Z_2 Z_3, Z_1 X_2 Z_3, Z_1 Z_2 X_3 \}. \end{align}
+#     S_B = \{X_1 Z_2, X_2 Z_1\} \qquad \text{and} \qquad S_\text{GHZ} = \{ X_1 Z_2 Z_3, Z_1 X_2 Z_3, Z_1 Z_2 X_3 \}.
 #
 # To see this, you can use the fact that the :math:`Z` operator flips
 # phases:
 #
 # .. math::
 #
-#    \begin{align}
 #    Z \vert 0 \rangle = \vert 0 \rangle, \quad Z\vert 1 \rangle = - \vert 1 \rangle, \quad Z\vert + \rangle = \vert - \rangle, \quad Z\vert - \rangle= \vert + \rangle,
-#    \end{align}
 #
 # while the :math:`X` operator flips bits:
 #
 # .. math::
 #
-#    \begin{align}
 #    X \vert 0 \rangle = \vert 1 \rangle, \quad X\vert 1 \rangle= \vert 0 \rangle, \quad X\vert + \rangle = \vert + \rangle, \quad X\vert - \rangle = -\vert - \rangle.
-#    \end{align}
 #
 # If you apply the stabilizer elements to the above states, you'll see
 # they don't change. In general, if you're given a graph state with
