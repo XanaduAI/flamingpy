@@ -18,7 +18,7 @@ A complete round of error correction
 # Currently, FlamingPy gives you the option to use the *surface code*
 # (also known as the *planar* or *toric* code, depending on its boundary
 # conditions). In the measurement-based picture, the surface code is
-# represented as a special graph state (see the :ref:`graph states tutorial <graph-states>`)
+# represented as a special graph state (see the :ref:`graph states tutorial <graph-states-tutorial>`)
 # called the RHG lattice. We begin by specifying some code parameters:
 #
 
