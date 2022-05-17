@@ -29,7 +29,7 @@ Graph States
 #
 # .. image:: /_static/bell_cluster.svg
 #    :width: 400
-#    :alt: Bell cluster undirected graph
+#    :alt: Two-qubit cluster states (bell pair)
 #
 # In the above graph (call it :math:`B`), the nodes represent qubit
 # states, and the edges indicate entanglement. This can be made more
@@ -50,6 +50,10 @@ Graph States
 # :math:`\vert - \rangle = \frac{1}{\sqrt{2}} \left(\vert 0 \rangle - \vert 1 \rangle\right)`.
 # We can write down a circuit diagram for this:
 #
+# .. image:: /_static/bell_circuit.svg
+#    :width: 400
+#    :alt: Circuit to produce Bell cluster state
+#
 # You may recognize :math:`\vert B \rangle` as a type of *Bell* or *EPR
 # pair*: a maximally entangled state of two qubits. To create a
 # three-qubit entangled state (equivalent to a *GHZ state*), we can follow
@@ -59,7 +63,16 @@ Graph States
 #
 #    \vert \text{GHZ} \rangle =  CZ_{23}CZ_{21} (\vert + \rangle _1 \vert + \rangle _2 \vert + \rangle _3) = \frac{1}{\sqrt{2}}(\vert 0 \rangle _1 \vert + \rangle _2 \vert + \rangle _3 + (\vert 1 \rangle _1 \vert - \rangle _2 \vert - \rangle _3)).
 #
-
+# The corresponding graph and circuit are:
+#
+# .. image:: /_static/GHZ_cluster.svg
+#    :width: 400
+#    :alt: Three qubit cluster state (GHZ state)
+#
+# .. image:: /_static/GHZ_circuit.svg
+#    :width: 400
+#    :alt: Circuit to produce GHZ cluster
+#
 
 ######################################################################
 # This is the general way entanglement is ''generated'' in a graph state:
