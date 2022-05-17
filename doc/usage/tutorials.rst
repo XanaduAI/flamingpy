@@ -31,7 +31,7 @@ Tutorials
 
 .. gallery-item::
     :tooltip: Error correction tutorial
-    :figure: tutorials/_out/images/thumb/sphx_glr_run_error_correction_thumb.png
+    :figure: _static/ec_thumbnail.png
     :description: :doc:`../tutorials/_out/run_error_correction`
 
 :html:`</div></div><div style='clear:both'>`
