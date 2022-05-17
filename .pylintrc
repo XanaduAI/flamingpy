@@ -3,6 +3,7 @@
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code
 extension-pkg-whitelist=numpy,scipy,networkx,flamingpy.cpp
+ignore-patterns=doc/tutorials/**
 
 [TYPECHECK]
 # List of module names for which member attributes should not be checked
