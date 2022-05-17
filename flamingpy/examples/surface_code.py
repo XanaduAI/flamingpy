@@ -41,8 +41,7 @@ def surface_code(d, boundaries, err, polarity, show=False):
         # Stabilizers are available in the attributes primal_stabilizers and/or
         # dual_stabilizers, depending on the error complex.
         stabilizers = getattr(RHG_code, ec + "_stabilizers")
-        
-        stabilizer = stabilizers[index]:
+        stabilizer = stabilizers[index]
         color = np.random.rand(3)
         for point in stabilizer.egraph:
             x, z, y = point
