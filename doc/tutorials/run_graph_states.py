@@ -11,7 +11,7 @@ Graph States
 ######################################################################
 # A graph state is a special kind of entangled state. Certain types of
 # graph states, called *cluster states*, are important resources for
-# universal fault-tolerant quantum computation. In this tutorial well
+# universal fault-tolerant quantum computation. In this tutorial we will
 # tell you a bit about graph states, and show you how to define and
 # visualize them using FlamingPy.
 #

@@ -25,12 +25,12 @@ Tutorials
 :html:`<div class="gallery-grid row">`
 
 .. gallery-item::
-    :tooltip: Graph states tutorial
+    :tooltip: In this tutorial we will tell you a bit about graph states, and show you how to define and visualize them using FlamingPy.
     :figure: tutorials/_out/images/thumb/sphx_glr_run_graph_states_thumb.png
     :description: :doc:`../tutorials/_out/run_graph_states`
 
 .. gallery-item::
-    :tooltip: Error correction tutorial
+    :tooltip: In this tutorial we will go over the minimal steps required to run through one round of quantum error correction: encoding, decoding, and recovery.
     :figure: _static/ec_thumbnail.png
     :description: :doc:`../tutorials/_out/run_error_correction`
 
