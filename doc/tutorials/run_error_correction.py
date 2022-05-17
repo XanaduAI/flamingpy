@@ -8,6 +8,8 @@ A complete round of error correction
 ######################################################################
 # *Author: Ilan Tzitrin*
 #
+
+
 ######################################################################
 # In this tutorial we will go over the minimal steps required to run
 # through one round of quantum error correction: encoding, decoding, and
