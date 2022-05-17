@@ -147,6 +147,5 @@ print(f"Success: {c}")
 # the RHG lattice by setting ''show_nodes'' to True.
 #
 # More information about all these steps will come in future tutorials;
-# for now, you may visit our :ref:``quantum error correction``\ <
-# introduction to error correction.
+# for now, you may visit our :ref:`introduction to error correction <quantum-error-correction>`
 #

@@ -1,5 +1,7 @@
 .. default-role:: math
 
+.. _quantum-error-correction:
+
 Quantum Error Correction
 ========================
 
@@ -33,7 +35,7 @@ Quantum Error Correction
 
 Introduction
 ------------
-Quantum systems spontaneously interact with their environment; this manifests as errors in a quantum computation. Quantum error correction, and the theory of fault-tolerant quantum computation generally, has been developed to ensure reliable logical operations in the presence of noise. 
+Quantum systems spontaneously interact with their environment; this manifests as errors in a quantum computation. Quantum error correction, and the theory of fault-tolerant quantum computation generally, has been developed to ensure reliable logical operations in the presence of noise.
 
 The key idea behind quantum error correction is the use of redundancy to represent or *encode* quantum information. The simplest example of an encoding is a *repetition code*, wherein a qubit is associated with a two-dimensional space spanned by `|000\rangle` and `|111\rangle`, i.e., `|\psi\rangle = \alpha|000\rangle + \beta|111\rangle`. For simplicity let us consider the effect of a generic single-qubit Pauli error `P` on `|\psi\rangle`. `P` is incapable of transforming one encoded state to another. Moreover, a simple majority vote can infer the state of the logical qubit given `P|\psi\rangle`. This is quantum error correction in its simplest form.
 
