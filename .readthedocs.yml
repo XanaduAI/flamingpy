@@ -7,7 +7,7 @@ python:
     install:
       - requirements: dev_requirements.txt
       - requirements: doc/dev_requirements.txt
-      - method: pip
+      - method: setuptools
         path: .
     system_packages: true
 
