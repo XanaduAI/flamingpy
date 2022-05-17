@@ -1,4 +1,5 @@
 """
+.. _graph-states-tutorial:
 Graph States
 ============
 
