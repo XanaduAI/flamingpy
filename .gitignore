@@ -2,7 +2,6 @@
 *.stats
 
 # For the figures
-*.png
 *.pdf
 
 # Byte-compiled / optimized / DLL files
