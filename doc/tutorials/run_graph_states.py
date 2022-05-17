@@ -9,6 +9,9 @@ Graph States
 
 
 ######################################################################
+# *Author: Ilan Tzitrin*
+#
+######################################################################
 # A graph state is a special kind of entangled state. Certain types of
 # graph states, called *cluster states*, are important resources for
 # universal fault-tolerant quantum computation. In this tutorial we will
@@ -63,7 +66,7 @@ Graph States
 #
 # .. math::
 #
-#    \vert \text{GHZ} \rangle =  CZ_{23}CZ_{21} (\vert + \rangle _1 \vert + \rangle _2 \vert + \rangle _3) = \frac{1}{\sqrt{2}}(\vert 0 \rangle _1 \vert + \rangle _2 \vert + \rangle _3 + (\vert 1 \rangle _1 \vert - \rangle _2 \vert - \rangle _3)).
+#    \vert \text{GHZ} \rangle =  CZ_{23}CZ_{12} (\vert + \rangle _1 \vert + \rangle _2 \vert + \rangle _3) = \frac{1}{\sqrt{2}}(\vert 0 \rangle _1 \vert + \rangle _2 \vert + \rangle _3 + (\vert 1 \rangle _1 \vert - \rangle _2 \vert - \rangle _3)).
 #
 # The corresponding graph and circuit are:
 #
@@ -88,8 +91,8 @@ Graph States
 # ^^^^^^^^^^^^^^^^^^^^^
 #
 # It is possible to completely understand graph states using the
-# definitions above. However, it is very convenient--especially for error
-# correction--to talk about the *stabilizer* of the graph state. The idea
+# definitions above. However, it is very convenient---especially for error
+# correction---to talk about the *stabilizer* of the graph state. The idea
 # is that we can define graph states not through individual qubit states,
 # but through operators.
 #
@@ -140,12 +143,12 @@ import flamingpy.utils.viz as viz
 ######################################################################
 # An ``EGraph`` is a type of (inherits from) a ``Graph`` object from the
 # ``networkx`` package, but it builds on ``networkx`` graphs with its own
-# functionality. ``EGraph``s (like NetworkX graphs) have dictionaries of nodes
+# functionality. EGraphs (like NetworkX graphs) have dictionaries of nodes
 # and edges. To properly define a graph state, the ``EGraph`` class
 # assumes that the nodes are specified by three-tuples :math:`(x, y, z)`
 # corresponding to coordinates in three dimensions.
 #
-# Let us construct a GHZ state. To do so, we have to place its nodes in 3D
+# We can construct a GHZ state using FlamingPy. To do so, we have to place its nodes in 3D
 # space. There are infinite choices of coordinates available to us, but
 # let us place the points at corners of the unit cube:
 #
@@ -174,8 +177,8 @@ print("Edge attributes ", *GHZ_state.edges.data())
 
 ######################################################################
 # Eventually, these dictionaries can be populated attributes useful for
-# error correction and visualization. Let us now create a plot the state.
-# We can first specify some drawing options, and then use the ``draw``
+# error correction and visualization. Now, we can create a plot of the state.
+# We will first specify some drawing options, and then use the ``draw``
 # method of the ``EGraph``. This is as easy as:
 #
 

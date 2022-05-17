@@ -94,7 +94,7 @@ decoder = {"outer": "MWPM"}
 
 
 ######################################################################
-# The option `"outer"` here indicates that this is a qubit-level decoder
+# The option ``"outer"`` here indicates that this is a qubit-level decoder
 # taking in bit values. One may also specify an ``"inner"`` decoder if the
 # qubits are, for example, GKP states, which are capable of performing an
 # additional round of error correction themselves. We will go over this in
@@ -103,7 +103,7 @@ decoder = {"outer": "MWPM"}
 
 
 ######################################################################
-# Finally, we can run the ``correct`` decoder method, which decodes and recovers
+# Finally, we can run the ``correct`` function from the ``decoder`` module, which decodes and recovers
 # the information. We can illustrate the full decoding procedure, for
 # which we first specify some drawing options:
 #
@@ -147,5 +147,5 @@ print(f"Success: {c}")
 # the RHG lattice by setting ``"show_nodes"`` to ``True``.
 #
 # More information about all these steps will come in future tutorials;
-# for now, you may visit our :ref:`introduction to error correction <quantum-error-correction>`
+# for now, you may visit our :ref:`introduction to error correction. <quantum-error-correction>`
 #
