@@ -25,8 +25,8 @@ Graph States
 # like so:
 #
 # .. image:: /_static/bell_cluster.svg
-#     :width: 300
-#     :alt: Bell cluster undirected graph
+#    :width: 400
+#    :alt: Bell cluster undirected graph
 #
 # In the above graph (call it :math:`B`), the nodes represent qubit
 # states, and the edges indicate entanglement. This can be made more
