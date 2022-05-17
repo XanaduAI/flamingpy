@@ -28,7 +28,8 @@ Graph States
 # like so:
 #
 # .. image:: /_static/bell_cluster.svg
-#    :width: 400
+#    :width: 200
+#    :align: center
 #    :alt: Two-qubit cluster states (bell pair)
 #
 # In the above graph (call it :math:`B`), the nodes represent qubit
@@ -51,7 +52,8 @@ Graph States
 # We can write down a circuit diagram for this:
 #
 # .. image:: /_static/bell_circuit.svg
-#    :width: 400
+#    :width: 200
+#    :align: center
 #    :alt: Circuit to produce Bell cluster state
 #
 # You may recognize :math:`\vert B \rangle` as a type of *Bell* or *EPR
@@ -66,11 +68,15 @@ Graph States
 # The corresponding graph and circuit are:
 #
 # .. image:: /_static/GHZ_cluster.svg
-#    :width: 400
+#    :width: 200
+#    :align: center
 #    :alt: Three qubit cluster state (GHZ state)
 #
+#
+#
 # .. image:: /_static/GHZ_circuit.svg
-#    :width: 400
+#    :width: 200
+#    :align: center
 #    :alt: Circuit to produce GHZ cluster
 #
 
@@ -191,4 +197,6 @@ GHZ_state.draw(**drawing_opts)
 
 GHZ_state.adj_generator(sparse=False)
 adj = GHZ_state.adj_mat
+
+viz.plot_params["figure.figsize"] = (5.4,4)
 viz.plot_mat_heat_map(adj)
