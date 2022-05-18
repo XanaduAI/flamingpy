@@ -18,7 +18,7 @@ import numpy as np
 from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity
 
 
-def surface_code(d, boundaries, err, polarity, show=False):
+def surface_code(d, boundaries, err, polarity, show=False, stabilizer_indices=(0,)):
     """Example for building and visualizing RHG lattices and surface codes."""
 
     # Instantiate a surface code.
@@ -36,7 +36,8 @@ def surface_code(d, boundaries, err, polarity, show=False):
         RHG_subgraph.draw()
 
     # Plot the stabilizers
-    stabilizer_indices = [0]  # indeces corresponding to the stabilizer(s) you'd like to plot
+    if stabilizer_indices is None:
+        stabilizer_indices = [0]  # indeces corresponding to the stabilizer(s) you'd like to plot
 
     for ec in RHG_code.ec:
         # Stabilizers are available in the attributes primal_stabilizers and/or dual_stabilizers,
