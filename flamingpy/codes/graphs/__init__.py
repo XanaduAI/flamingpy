@@ -13,4 +13,4 @@
 # limitations under the License.
 """Abstract graphs for qubit codes."""
 from .egraph import EGraph
-from .stabilizer_graph import NxStabilizerGraph, RxStabilizerGraph
+from .stabilizer_graph import NxStabilizerGraph, RxStabilizerGraph, StabilizerGraph
