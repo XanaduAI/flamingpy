@@ -38,12 +38,12 @@ Classes
 ^^^^^^^^^^^^ 
 .. image:: ../_static/classes_flamingpy.svg
     :align: center
-    :width: 550px
+    :width: 850px
 
 |
 Packages
 ^^^^^^^^^^^^
 .. image:: ../_static/packages_flamingpy.svg
     :align: center
-    :width: 550px
+    :width: 850px
 

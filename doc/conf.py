@@ -153,8 +153,22 @@ show_authors = True
 html_favicon = "_static/favicon.ico"
 
 # Creates UML diagrams (svg). These are later used in source/fp.rst .   
-os.system('pyreverse -o svg -p flamingpy ../flamingpy -d _static')
+os.system('pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k')
 time.sleep(0.5)
+
+with open('_static/packages_flamingpy.svg', 'r') as file :
+  filedata = file.read()
+filedata = filedata.replace('aliceblue', '#bde0ff')
+filedata = filedata.replace('green', 'black')
+with open('_static/packages_flamingpy.svg', 'w') as file:
+  file.write(filedata)
+
+with open('_static/classes_flamingpy.svg', 'r') as file :
+  filedata = file.read()
+filedata = filedata.replace('aliceblue', '#bde0ff')
+filedata = filedata.replace('green', 'black')
+with open('_static/classes_flamingpy.svg', 'w') as file:
+  file.write(filedata)
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
