@@ -156,6 +156,7 @@ html_favicon = "_static/favicon.ico"
 os.system('pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k')
 time.sleep(0.5)
 
+#changes color of uml diagrams to match the common 'blue' theme
 with open('_static/packages_flamingpy.svg', 'r') as file :
   filedata = file.read()
 filedata = filedata.replace('aliceblue', '#bde0ff')
