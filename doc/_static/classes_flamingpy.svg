@@ -38,7 +38,7 @@
 <title>flamingpy.codes.graphs.egraph.EGraph&#45;&gt;flamingpy.codes.surface_code.SurfaceCode</title>
 <path fill="none" stroke="black" d="M203,-36.9C203,-48.17 203,-63.12 203,-76.18"/>
 <polygon fill="black" stroke="black" points="203,-76.42 207,-82.42 203,-88.42 199,-82.42 203,-76.42"/>
-<text text-anchor="middle" x="218.5" y="-58.8" font-family="Times,serif" font-size="14.00" fill="darkgrey">graph</text>
+<text text-anchor="middle" x="218.5" y="-58.8" font-family="Times,serif" font-size="14.00" fill="black">graph</text>
 </g>
 <!-- flamingpy.noise.iid.IidNoise -->
 <g id="node4" class="node">
@@ -81,7 +81,7 @@
 <title>flamingpy.decoders.unionfind.uf_classes.Node&#45;&gt;flamingpy.decoders.unionfind.uf_classes.Node</title>
 <path fill="none" stroke="black" d="M546.24,-10.26C556.02,-10.08 564,-12.83 564,-18.5 564,-21.51 561.75,-23.7 558.17,-25.06"/>
 <polygon fill="black" stroke="black" points="558.12,-25.07 552.74,-29.87 546.24,-26.74 551.62,-21.95 558.12,-25.07"/>
-<text text-anchor="middle" x="581" y="-14.8" font-family="Times,serif" font-size="14.00" fill="darkgrey">parent</text>
+<text text-anchor="middle" x="581" y="-14.8" font-family="Times,serif" font-size="14.00" fill="black">parent</text>
 </g>
 <!-- flamingpy.decoders.mwpm.matching.NxMatchingGraph&#45;&gt;flamingpy.decoders.mwpm.matching.MatchingGraph -->
 <g id="edge4" class="edge">
