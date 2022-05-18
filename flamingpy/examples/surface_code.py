@@ -36,16 +36,20 @@ def surface_code(d, boundaries, err, polarity, show=False):
         RHG_subgraph.draw()
 
     # Plot the stabilizers
-    index = 0  # Change `index` to correspond with the stabilizer you'd like to plot.
+    stabilizer_indices = [0]  # indeces corresponding to the stabilizer(s) you'd like to plot
+
     for ec in RHG_code.ec:
-        # Stabilizers are available in the attributes primal_stabilizers and/or
-        # dual_stabilizers, depending on the error complex.
+        # Stabilizers are available in the attributes primal_stabilizers and/or dual_stabilizers,
+        # depending on the error complex.
+
         stabilizers = getattr(RHG_code, ec + "_stabilizers")
-        stabilizer = stabilizers[index]
-        color = np.random.rand(3)
-        for point in stabilizer.egraph:
-            x, z, y = point
-            RHG_fig.scatter(x, z, y, color=color, s=200)
+
+        for index in stabilizer_indices:
+            stabilizer = stabilizers[index]
+            color = np.random.rand(3)
+            for point in stabilizer.egraph:
+                x, z, y = point
+                RHG_fig.scatter(x, z, y, color=color, s=200)
 
     if show:
         plt.show()
