@@ -83,7 +83,7 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     "sphinx.ext.inheritance_diagram",
 ]
-graphviz_output_format = 'svg'
+graphviz_output_format = "svg"
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/latest/": None}
 
@@ -105,14 +105,14 @@ sphinx_gallery_conf = {
     ),
     # thumbnail size
     "thumbnail_size": (400, 400),
-    'reference_url': {
-         # The module you locally document uses None
-        'flamingpy': "https://flamingpy.readthedocs.io/en/latest/",
+    "reference_url": {
+        # The module you locally document uses None
+        "flamingpy": "https://flamingpy.readthedocs.io/en/latest/",
     },
-    'backreferences_dir'  : 'backreferences',
-    'doc_module'          : ('flamingpy'),
-    'junit': '../test-results/sphinx-gallery/junit.xml',
-    'download_all_examples': False,
+    "backreferences_dir": "backreferences",
+    "doc_module": ("flamingpy"),
+    "junit": "../test-results/sphinx-gallery/junit.xml",
+    "download_all_examples": False,
 }
 
 automodapi_toctreedirnm = "source/api"
@@ -154,24 +154,26 @@ show_authors = True
 # pixels large.
 html_favicon = "_static/favicon.ico"
 
-# Creates UML diagrams (svg). These are later used in source/fp.rst .   
-os.system('pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k')
+# Creates UML diagrams (svg). These are later used in source/fp.rst .
+os.system(
+    "pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k"
+)
 time.sleep(0.5)
 
-#changes color of uml diagrams to match the common 'blue' theme
-with open('_static/packages_flamingpy.svg', 'r') as file :
-  filedata = file.read()
-filedata = filedata.replace('aliceblue', '#bde0ff')
-filedata = filedata.replace('green', 'black')
-with open('_static/packages_flamingpy.svg', 'w') as file:
-  file.write(filedata)
+# changes color of uml diagrams to match the common 'blue' theme
+with open("_static/packages_flamingpy.svg", "r") as file:
+    filedata = file.read()
+filedata = filedata.replace("aliceblue", "#bde0ff")
+filedata = filedata.replace("green", "black")
+with open("_static/packages_flamingpy.svg", "w") as file:
+    file.write(filedata)
 
-with open('_static/classes_flamingpy.svg', 'r') as file :
-  filedata = file.read()
-filedata = filedata.replace('aliceblue', '#bde0ff')
-filedata = filedata.replace('green', 'black')
-with open('_static/classes_flamingpy.svg', 'w') as file:
-  file.write(filedata)
+with open("_static/classes_flamingpy.svg", "r") as file:
+    filedata = file.read()
+filedata = filedata.replace("aliceblue", "#bde0ff")
+filedata = filedata.replace("green", "black")
+with open("_static/classes_flamingpy.svg", "w") as file:
+    file.write(filedata)
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
