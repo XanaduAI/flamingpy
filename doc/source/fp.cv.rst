@@ -20,4 +20,3 @@ Module members
 
 .. automodapi:: flamingpy.cv
     :no-heading:
-    :include-all-objects:
