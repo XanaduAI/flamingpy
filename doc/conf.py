@@ -158,27 +158,27 @@ html_favicon = "_static/favicon.ico"
 # Creates UML diagrams (svg). These are later used in source/fp.rst .
 subprocess.call(
     "pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k",
-    shell=False,
+    shell=True,
 )
 time.sleep(0.5)
 
 # Changes color of uml diagrams to match the common theme
-with open("_static/packages_flamingpy.svg", "r") as file:
+with open("_static/packages_flamingpy.svg", "r", encoding="utf-8") as file:
     filedata = file.read()
 filedata = filedata.replace("aliceblue", "#bde0ff")
 filedata = filedata.replace("Times,serif", "Helvetica,sans-serif")
 filedata = filedata.replace("green", "black")
 filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
-with open("_static/packages_flamingpy.svg", "w") as file:
+with open("_static/packages_flamingpy.svg", "w", encoding="utf-8") as file:
     file.write(filedata)
 
-with open("_static/classes_flamingpy.svg", "r") as file:
+with open("_static/classes_flamingpy.svg", "r", encoding="utf-8") as file:
     filedata = file.read()
 filedata = filedata.replace("aliceblue", "#bde0ff")
 filedata = filedata.replace("Times,serif", "Helvetica,sans-serif")
 filedata = filedata.replace("green", "black")
 filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
-with open("_static/classes_flamingpy.svg", "w") as file:
+with open("_static/classes_flamingpy.svg", "w", encoding="utf-8") as file:
     file.write(filedata)
 
 # -- Options for HTMLHelp output ---------------------------------------------
