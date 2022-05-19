@@ -41,11 +41,11 @@ def to_pi_string(x, tex: bool = True, d=2):
 
 
 class GKPFormatter(Formatter):
-    """Formatter for GKP binning plots used to create a string based on a tick value."""
+    """Formatter for GKP binning plots used to create a string based on a tick
+    value."""
 
     def __init__(self, tex: bool = True, d: int = 2):
-        """
-        Initialize the formatter.
+        """Initialize the formatter.
 
         Args:
             tex: Whether to use LaTeX formatting (i.e. adding $ around the string).
