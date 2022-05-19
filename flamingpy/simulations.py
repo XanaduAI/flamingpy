@@ -32,7 +32,6 @@ except ImportError:  # pragma: no cover
     warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
 
 import numpy as np
-from numpy.random import default_rng
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
@@ -44,25 +43,12 @@ def ec_mc_trial(
     passive_objects,
     p_swap,
     delta,
-    code_lattice,
     cv_noise,
     code,
     decoder,
     weight_options,
-    rng=default_rng(),
 ):
     """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
-    if passive_objects is not None:
-        reduce_macro_and_simulate(*passive_objects, p_swap, delta)
-    else:
-        # Apply noise
-        CVRHG = CVLayer(code_lattice, p_swap=p_swap, rng=rng)
-        # Measure syndrome
-        CVRHG.apply_noise(cv_noise, rng=rng)
-        CVRHG.measure_hom("p", code.all_syndrome_inds, rng=rng)
-
-    result = correct(code=code, decoder=decoder, weight_options=weight_options)
-
     if passive_objects is not None:
         reduce_macro_and_simulate(*passive_objects, p_swap, delta)
     else:
@@ -72,12 +58,12 @@ def ec_mc_trial(
         CVRHG.apply_noise(cv_noise)
         CVRHG.measure_hom("p", code.all_syndrome_inds)
 
-        decoding_start_time = perf_counter()
+    decoding_start_time = perf_counter()
 
-        result = correct(code=code, decoder=decoder, weight_options=weight_options)
+    result = correct(code=code, decoder=decoder, weight_options=weight_options)
 
-        decoding_stop_time = perf_counter()
-        decoding_time = decoding_stop_time - decoding_start_time
+    decoding_stop_time = perf_counter()
+    decoding_time = decoding_stop_time - decoding_start_time
 
     return result, decoding_time
 
@@ -157,12 +143,10 @@ def ec_monte_carlo(
                 passive_objects,
                 p_swap,
                 delta,
-                code.graph,
                 cv_noise,
                 code,
                 decoder,
                 weight_options,
-                rng,
             )
             if return_decoding_time:
                 decoding_time_total += decoding_time
