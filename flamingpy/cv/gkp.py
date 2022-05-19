@@ -15,6 +15,7 @@
 import math
 import numpy as np
 from scipy.special import erf
+from matplotlib.ticker import Formatter
 
 
 def to_pi_string(x, tex: bool = True, d=2):
@@ -39,7 +40,7 @@ def to_pi_string(x, tex: bool = True, d=2):
     return "{:.{}f}".format(x, d)
 
 
-class GKPFormatter:
+class GKPFormatter(Formatter):
     def __init__(self, tex: bool = True, d: int = 2):
         self.tex = tex
         self.d = d
