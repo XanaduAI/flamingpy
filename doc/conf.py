@@ -48,7 +48,7 @@ copyright = "2022, Xanadu Quantum Technologies"
 author = "Xanadu Inc."
 
 # The full version, including alpha/beta/rc tags.
-with open("../flamingpy/_version.py", encoding="utf-8") as f:
+with open("../flamingpy/_version.py") as f:
     release = f.readlines()[-1].split()[-1].strip("\"'")
 
 # The short X.Y version.
@@ -163,22 +163,22 @@ subprocess.call(
 time.sleep(0.5)
 
 # Changes color of uml diagrams to match the common theme
-with open("_static/packages_flamingpy.svg", "r", encoding="utf-8") as file:
+with open("_static/packages_flamingpy.svg", "r") as file:
     filedata = file.read()
 filedata = filedata.replace("aliceblue", "#bde0ff")
 filedata = filedata.replace("Times,serif", "Helvetica,sans-serif")
 filedata = filedata.replace("green", "black")
 filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
-with open("_static/packages_flamingpy.svg", "w", encoding="utf-8") as file:
+with open("_static/packages_flamingpy.svg", "w") as file:
     file.write(filedata)
 
-with open("_static/classes_flamingpy.svg", "r", encoding="utf-8") as file:
+with open("_static/classes_flamingpy.svg", "r") as file:
     filedata = file.read()
 filedata = filedata.replace("aliceblue", "#bde0ff")
 filedata = filedata.replace("Times,serif", "Helvetica,sans-serif")
 filedata = filedata.replace("green", "black")
 filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
-with open("_static/classes_flamingpy.svg", "w", encoding="utf-8") as file:
+with open("_static/classes_flamingpy.svg", "w") as file:
     file.write(filedata)
 
 # -- Options for HTMLHelp output ---------------------------------------------
