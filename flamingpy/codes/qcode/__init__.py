@@ -14,4 +14,4 @@
 """
 The qcodes module. This module allows using the matrix stabilizer formalism to manage quantum 
 error-correcting codes.
- """
+"""
