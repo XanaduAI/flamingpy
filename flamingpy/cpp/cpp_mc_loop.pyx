@@ -14,7 +14,7 @@
 """Cython-based Monte Carlo simulations for estimating FT thresholds."""
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import reduce_macro_and_simulate
+from flamingpy.cv.macro_reduce import reduce_macronode_graph
 
 
 cpdef int cpp_mc_loop(object code, int trials, dict decoder, dict weight_options, object passive_objects, double p_swap, double delta, dict cv_noise):
@@ -23,10 +23,10 @@ cpdef int cpp_mc_loop(object code, int trials, dict decoder, dict weight_options
     cdef int result, errors, ii
     for ii in range(trials):
         if passive_objects:
-            reduce_macro_and_simulate(*passive_objects, p_swap, delta)
+            reduce_macronode_graph(*passive_objects, p_swap, delta)
         else:
             # Apply noise
-            CVRHG = CVLayer(code.graph, p_swap=p_swap)
+            CVRHG = CVLayer(code, p_swap=p_swap)
             CVRHG.apply_noise(cv_noise)
             # Measure syndrome
             CVRHG.measure_hom("p", code.syndrome_inds)
