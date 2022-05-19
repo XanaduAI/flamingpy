@@ -153,7 +153,8 @@ def ec_monte_carlo(
                 decoding_time_total += decoding_time
             local_successes[0] += result
 
-    world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
+    if 'MPI' in globals():
+        world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
 
     errors = int(trials - successes[0])
 
@@ -164,7 +165,15 @@ def ec_monte_carlo(
 
 
 def run_ec_simulation(
-    distance, ec, boundaries, delta, p_swap, trials, passive, decoder="MWPM", fname=None
+    distance,
+    ec,
+    boundaries,
+    delta,
+    p_swap,
+    trials,
+    passive,
+    decoder="MWPM",
+    fname=None
 ):
     """Run full Monte Carlo error-correction simulations for the surface
     code."""
@@ -190,6 +199,15 @@ def run_ec_simulation(
     else:
         passive_objects = None
 
+    if 'MPI' in globals():
+        world_comm = MPI.COMM_WORLD
+        mpi_size = world_comm.Get_size()
+        mpi_rank = world_comm.Get_rank()
+    else:
+        world_comm = None
+        mpi_size = 1
+        mpi_rank = 0
+
     # Perform the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
@@ -206,60 +224,58 @@ def run_ec_simulation(
     )
     simulation_stop_time = perf_counter()
 
-    # Store results in the provided file-path or by default in
-    # a sims_data directory in the file simulations_results.csv.
-    file_name = fname or "./flamingpy/sims_data/sims_results.csv"
+    if mpi_rank == 0:
+        # Store results in the provided file-path or by default in
+        # a sims_data directory in the file simulations_results.csv.
+        file_name = fname or "./flamingpy/sims_data/sims_results.csv"
 
-    # Create a CSV file if it doesn't already exist.
-    # pylint: disable=consider-using-with
-    try:
-        file = open(file_name, "x", newline="", encoding="utf8")
-        writer = csv.writer(file)
+        # Create a CSV file if it doesn't already exist.
+        # pylint: disable=consider-using-with
+        try:
+            file = open(file_name, "x", newline="", encoding="utf8")
+            writer = csv.writer(file)
+            writer.writerow(
+                [
+                    "distance",
+                    "passive",
+                    "ec",
+                    "boundaries",
+                    "delta",
+                    "p_swap",
+                    "decoder",
+                    "errors_py",
+                    "trials",
+                    "current_time",
+                    "decoding_time",
+                    "simulation_time",
+                ]
+            )
+        # Open the file for appending if it already exists.
+        except FileExistsError:
+            file = open(file_name, "a", newline="", encoding="utf8")
+            writer = csv.writer(file)
+
+        current_time = datetime.now().time().strftime("%H:%M:%S")
         writer.writerow(
             [
-                "distance",
-                "passive",
-                "ec",
-                "boundaries",
-                "delta",
-                "p_swap",
-                "decoder",
-                "errors_py",
-                "trials",
-                "current_time",
-                "decoding_time",
-                "simulation_time",
+                distance,
+                passive,
+                ec,
+                boundaries,
+                delta,
+                p_swap,
+                decoder,
+                errors,
+                trials,
+                current_time,
+                decoding_time,
+                (simulation_stop_time - simulation_start_time),
             ]
         )
-    # Open the file for appending if it already exists.
-    except FileExistsError:
-        file = open(file_name, "a", newline="", encoding="utf8")
-        writer = csv.writer(file)
-    current_time = datetime.now().time().strftime("%H:%M:%S")
-    writer.writerow(
-        [
-            distance,
-            passive,
-            ec,
-            boundaries,
-            delta,
-            p_swap,
-            decoder,
-            errors,
-            trials,
-            current_time,
-            decoding_time,
-            (simulation_stop_time - simulation_start_time),
-        ]
-    )
-    file.close()
+        file.close()
 
 
 if __name__ == "__main__":
-
-    world_comm = MPI.COMM_WORLD
-    mpi_size = world_comm.Get_size()
-    mpi_rank = world_comm.Get_rank()
 
     if len(sys.argv) != 1:
         # Parsing input parameters
