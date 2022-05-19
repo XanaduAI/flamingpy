@@ -35,14 +35,14 @@ def splitter_symp(n=4):
 
     Return the symplectic matrix of the beamsplitters connecting the four
     micronodes in each macronode. `n` refers to the total number of modes
-    (so n >= 4). If n = 4, return the matrix in the 'all q's first' convention; 
-    otherwise, return a large block-diagonal matrix in the 'q1p1, ..., qnpn' 
+    (so n >= 4). If n = 4, return the matrix in the 'all q's first' convention;
+    otherwise, return a large block-diagonal matrix in the 'q1p1, ..., qnpn'
     convention.
-    
+
     Args:
         n (int, optional): the total number of modes on which the beamsplitters
             apply (n must be >= 4).
-    
+
     Returns:
         numpy.array: the sympletic matrix of the four-splitter.
     """
@@ -71,10 +71,10 @@ def splitter_symp(n=4):
 
 def _apply_initial_noise(macro_graph, noise_layer, noise_model):
     """Set up the two-step noise model for macro_graph.
-    
-    Based on noise_layer and noise_model, populate macro_graph with states and 
+
+    Based on noise_layer and noise_model, populate macro_graph with states and
     sample for the initial (ideal) measurement outcomes.
-    
+
     This function modifies macro_graph.
     """
     to_points = macro_graph.to_points
@@ -96,16 +96,16 @@ def _apply_initial_noise(macro_graph, noise_layer, noise_model):
 
 def _permute_indices_and_label(macro_graph, reduced_graph):
     """Obtain permuted indices and set type of reduced node.
-    
+
     For each macronode, permute indices so that the first encountered GKP state
-    comes first, designating it as the 'star' ('central') mode. The first 
+    comes first, designating it as the 'star' ('central') mode. The first
     index in the resulting list and every four indices thereafter correspond
-    to star modes. The rest are 'planets' ('satellite' modes). 
-    
+    to star modes. The rest are 'planets' ('satellite' modes).
+
     For each star, associate a 'body_index' of 1, and 2, 3, and 4 for the
-    subsequent planets. Additionally, if a macronode contains at least one GKP 
-    state, label the reduced state as 'GKP' (otherwise 'p'). 
-    
+    subsequent planets. Additionally, if a macronode contains at least one GKP
+    state, label the reduced state as 'GKP' (otherwise 'p').
+
     This function returns a list and modified reduced_graph.
     """
     N = len(macro_graph)
@@ -146,11 +146,11 @@ def _permute_indices_and_label(macro_graph, reduced_graph):
 
 def _entangle_states(macro_graph, permuted_inds, initial_quads, symp_bs):
     """Entangle the states in the macro_graph.
-    
+
     Apply CZ gates to (i.e. a symplectic CZ matrix to the quadratures of)
-    macro_graph, based on where the edges are in the graph. Then, apply the 
+    macro_graph, based on where the edges are in the graph. Then, apply the
     four-splitter to each macronode.
-    
+
     Return the permuted quadratures and the corresponding permutation vector.
     """
     quads = SCZ_apply(macro_graph.adj_mat, initial_quads)
@@ -171,11 +171,11 @@ def _entangle_states(macro_graph, permuted_inds, initial_quads, symp_bs):
 
 def _measure_syndrome(noisy_macro_state, permuted_inds, entangled_quads, quad_permutation):
     """Measure the syndrome of noisy_macro_state.
-    
-    Conduct p-homodyne measurements on the stars (central modes) of 
-    noisy_macro_state and q-homodyne measurements to the planets (satellite
-    modes). This effectively conducts an X-basis measurement on the modes
-    of the reduced lattice.
+
+    Conduct p-homodyne measurements on the stars (central modes) of
+    noisy_macro_state and q-homodyne measurements to the planets
+    (satellite modes). This effectively conducts an X-basis measurement
+    on the modes of the reduced lattice.
     """
     N = len(permuted_inds) // 2
     unpermuted_quads = entangled_quads[invert_permutation(quad_permutation)]
@@ -191,9 +191,10 @@ def _measure_syndrome(noisy_macro_state, permuted_inds, entangled_quads, quad_pe
 def _neighbor_of_micro_i_macro_j(i, j, macro_graph, permuted_inds):
     """Return the neighbor of the ith micronode, jth macronode in macro_graph.
 
-    Suppose micronode i (in macronode j) is adjacent to a neighbor. Return the 
-    vertex (tuple) and the body index of the neighbor to help the subsequent 
-    processing rules. If there is no such neighbor, return None.
+    Suppose micronode i (in macronode j) is adjacent to a neighbor.
+    Return the vertex (tuple) and the body index of the neighbor to help
+    the subsequent processing rules. If there is no such neighbor,
+    return None.
     """
     to_points = macro_graph.to_points
     # Index of ith micronode in the jth macronode.
@@ -213,9 +214,9 @@ def _hom_outcomes(vertex, macro_graph):
 
     Return the values of the homodyne measurements of the macronode
     containing vertex. Note we are only interested in q-homodyne
-    outcomes; the returned list is of the form [0, 0, q2, q3, q4].
-    If vertex is None, return a list of 0s, so that the processing
-    is unaltered by the outcomes.
+    outcomes; the returned list is of the form [0, 0, q2, q3, q4]. If
+    vertex is None, return a list of 0s, so that the processing is
+    unaltered by the outcomes.
     """
     if vertex is None:
         return [0, 0, 0, 0, 0]
@@ -235,10 +236,11 @@ def _hom_outcomes(vertex, macro_graph):
 def _process_neighboring_outcomes(neighbor_hom_vals, neighbor_body_index):
     """Process homodyne outcomes for a neighboring macronode.
 
-    Suppose some micronode is connected to a neighboring micronode, i.
-    i has a certain body index and belongs to a macronode with measurement
-    results neighbor_hom_vals. Use this information to process the results
-    (i.e. find appropriate linear combinations of neighbor_hom_vals).
+    Suppose some micronode is connected to a neighboring micronode, i. i
+    has a certain body index and belongs to a macronode with measurement
+    results neighbor_hom_vals. Use this information to process the
+    results (i.e. find appropriate linear combinations of
+    neighbor_hom_vals).
     """
     if neighbor_body_index == 1:
         return 0
@@ -253,11 +255,11 @@ def _process_neighboring_outcomes(neighbor_hom_vals, neighbor_body_index):
 
 def _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, delta):
     """Obtain the bit value and error probability for the jth macronode.
-    
-    Process the measurement outcomes of the jth macronode in macro_graph to 
+
+    Process the measurement outcomes of the jth macronode in macro_graph to
     populate the corresponding reduced node in reduced_graph with a bit value
     and conditional phase error probability.
-    
+
     This function modifies reduced_graph.
     """
     to_points = macro_graph.to_points
@@ -278,7 +280,8 @@ def _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, delta):
     # Array of processed q-homodyne outcomes from neighboring
     # macronodes of the form [0, Z(1), Z(2), Z(3), Z(4)].
     Z_arr = np.array(
-        [0] + [_process_neighboring_outcomes(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)]
+        [0]
+        + [_process_neighboring_outcomes(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)]
     )
     # p-homodyne outcome of the star node.
     star_p_val = macro_graph.nodes[vertex]["hom_val_p"]
@@ -320,14 +323,14 @@ def _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, delta):
 def reduce_macronode_graph(macro_graph, reduced_graph, noise_layer, noise_model, bs_network):
     """Reduce the macronode lattice macro_graph to the canonical reduced_graph.
 
-    Follow the procedure in 	arXiv:2104.03241. Take the macronode lattice 
+    Follow the procedure in     arXiv:2104.03241. Take the macronode lattice
     macro_graph, apply noise based on noise_layer and noise_model, designate
-    micronodes as planets and stars, conduct homodyne measurements, process 
-    these measurements, and compute conditional phase error probabilities. 
-    
-    Modify reduced_graph into a canonical lattice with effective measurement 
+    micronodes as planets and stars, conduct homodyne measurements, process
+    these measurements, and compute conditional phase error probabilities.
+
+    Modify reduced_graph into a canonical lattice with effective measurement
     outcomes and phase error probabilities stored as node attributes.
-    
+
     Args:
         macro_graph (EGraph): the macronode lattice
         reduced_graph (EGraph): the reduced lattice
@@ -336,9 +339,9 @@ def reduce_macronode_graph(macro_graph, reduced_graph, noise_layer, noise_model,
             noise_layer
         bs_network (np.array): the beamsplitter network used to entangle the
             macronodes.
-    
+
     Returns:
-        None    
+        None
     """
     # Sample for the initial state
     noisy_macro_state = _apply_initial_noise(macro_graph, noise_layer, noise_model)

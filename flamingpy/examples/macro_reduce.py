@@ -40,7 +40,7 @@ RHG_macro.adj_generator(sparse=True)
 
 # Define the 4X4 beamsplitter network for a given macronode.
 # star at index 0, planets at indices 1-3.
-bs_network = splitter_symp(4)
+bs_network = splitter_symp()
 
 noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
 
