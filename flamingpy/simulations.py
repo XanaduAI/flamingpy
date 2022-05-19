@@ -57,10 +57,10 @@ def ec_mc_trial(
         reduce_macro_and_simulate(*passive_objects, p_swap, delta, rng)
     else:
         # Apply noise
-        CVRHG = CVLayer(code, p_swap, rng)
+        CVRHG = CVLayer(code, p_swap=p_swap, rng=rng)
         # Measure syndrome
-        CVRHG.apply_noise(cv_noise, rng)
-        CVRHG.measure_hom("p", code.all_syndrome_inds, rng)
+        CVRHG.apply_noise(cv_noise, rng=rng)
+        CVRHG.measure_hom("p", code.all_syndrome_inds, rng=rng)
 
     decoding_start_time = perf_counter()
 
