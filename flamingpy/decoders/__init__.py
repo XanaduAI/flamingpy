@@ -38,7 +38,8 @@ Module members
 
 Class Inheritance Diagram
 --------------------------
-.. inheritance-diagram:: flamingpy.decoders.mwpm.LemonMatchingGraph flamingpy.decoders.mwpm.RxMatchingGraph
+.. inheritance-diagram:: flamingpy.decoders.mwpm.LemonMatchingGraph\
+     flamingpy.decoders.mwpm.RxMatchingGraph
    :parts: 1
 """
 from .decoder import correct
