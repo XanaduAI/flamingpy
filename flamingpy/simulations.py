@@ -125,14 +125,8 @@ def ec_monte_carlo(
         else:
             weight_options = None
 
-    if mpi_rank == 0:
-        # only processor 0 will actually get the final data
-        successes = np.zeros(1)
-    else:
-        successes = None
+    successes = np.zeros(1)
     local_successes = np.zeros(1)
-
-    rng = np.random.default_rng(mpi_rank + int_time)
 
     if return_decoding_time:
         decoding_time_total = 0
