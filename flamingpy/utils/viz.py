@@ -36,6 +36,7 @@ import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from matplotlib.ticker import FormatStrFormatter
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from flamingpy.codes import Stabilizer
@@ -127,15 +128,24 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
         xmin, xmax = -alpha / 2, alpha / 2
 
     print(xmin, xmax, min(val), max(val))
+<<<<<<< HEAD
 
     fig = plt.figure()
     ax = plt.gca()
 
+=======
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    # newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+    fig = plt.figure()
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(GKPFormatter())
+>>>>>>> 1bacb1c... using GKPFormatter for x-ticks
     plt.plot(val, error, ".")
 
     # labels
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
+<<<<<<< HEAD
     plt.title(
         "Conditional phase probabilities: "
         + ("Full homodyne value" if use_hom_val else "Central peak")
@@ -147,6 +157,11 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     plt.xticks(newxticks, newxlabels)
 
+=======
+    addendum = "Full homodyne value" if use_hom_val else "Central peak"
+    plt.title("Conditional phase probabilities: " + addendum)
+    plt.xticks(newxticks)  # , newxlabels)
+>>>>>>> 1bacb1c... using GKPFormatter for x-ticks
     if show:
         plt.show()
 
@@ -699,5 +714,15 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
         print("\nMatching graph empty!\n")
 
     _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+<<<<<<< HEAD
     if drawing_opts.get("show_matching"):
         draw_matching_on_syndrome_plot(ax, matching, G_match)
+=======
+    if drawing_opts.get("show_recovery"):
+        draw_recovery(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
+
+
+class GKPFormatter(mpl.ticker.Formatter):
+    def __call__(self, x, pos=None):
+        return gkp.to_pi_string(x)
+>>>>>>> 1bacb1c... using GKPFormatter for x-ticks
