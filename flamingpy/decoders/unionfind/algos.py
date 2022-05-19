@@ -95,7 +95,7 @@ def initialize_cluster_trees(stabilizer_graph):
     node_dict = {}
     stabilizer_graph_nodes = stabilizer_graph.nodes()
     for stabilizer in stabilizer_graph_nodes:
-        if stabilizer != "low" and stabilizer != "high":
+        if stabilizer not in ('low', 'high'):
             node_dict[stabilizer] = Node(stabilizer)
 
     # Create clusters corresponding to the connected components of the erasures
