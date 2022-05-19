@@ -9,6 +9,7 @@
 flamingpy configuration file for the Sphinx documentation builder.
 """
 import os, sys, re, time
+import subprocess
 from unittest.mock import MagicMock
 
 
@@ -155,8 +156,9 @@ show_authors = True
 html_favicon = "_static/favicon.ico"
 
 # Creates UML diagrams (svg). These are later used in source/fp.rst .
-os.system(
-    "pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k"
+subprocess.call(
+    "pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k",
+    shell=False,
 )
 time.sleep(0.5)
 
