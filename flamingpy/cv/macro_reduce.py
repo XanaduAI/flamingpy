@@ -30,13 +30,21 @@ def invert_permutation(p):
     return p_inverted
 
 
-def splitter_symp(n):
-    """Return the symlectic matrix of the beamsplitter network.
+def splitter_symp(n=4):
+    """Return the symplectic matrix of a four-splitter.
 
-    Return the symplectic matrix of the beamsplitters connecting four
-    micronodes in each macronode out of n total micronodes. If n = 4, return
-    the matrix in the 'all q's first' convention; otherwise, return a large
-    block-diagonal matrix in the 'q1p1, ... qnpn' convention.
+    Return the symplectic matrix of the beamsplitters connecting the four
+    micronodes in each macronode. `n` refers to the total number of modes
+    (so n >= 4). If n = 4, return the matrix in the 'all q's first' convention; 
+    otherwise, return a large block-diagonal matrix in the 'q1p1, ..., qnpn' 
+    convention.
+    
+    Args:
+        n (int, optional): the total number of modes on which the beamsplitters
+            apply (n must be >= 4).
+    
+    Returns:
+        numpy.array: the sympletic matrix of the four-splitter.
     """
     # 50/50 beamsplitter in the 'all q's first' convention.
     bs5050 = beam_splitter(np.pi / 4, 0)
@@ -45,10 +53,9 @@ def splitter_symp(n):
     bs3 = expand(bs5050, [2, 0], 4)
     bs4 = expand(bs5050, [3, 1], 4)
     bs_network = (bs4 @ bs3 @ bs2 @ bs1).astype(np.single)
-    if n < 4:
-        print("Too small!")
-        raise Exception
-    if n > 4:
+    if n == 4:
+        return bs_network
+    elif n > 4:
         # Permutation away from 'all q's first' convention for matrices of
         # with dimension 4 and the network spanning all the macronoes.
         perm_out_4 = [0, 4, 1, 5, 2, 6, 3, 7]
@@ -57,7 +64,9 @@ def splitter_symp(n):
         # the whole lattice.
         bs_full = block_diag(*[bs_perm] * (n // 4))
         return bs_full
-    return bs_network
+    else:
+        print("Total number of modes cannot be less than 4.")
+        raise Exception
 
 
 def _apply_initial_noise(macro_graph, noise_layer, noise_model):
