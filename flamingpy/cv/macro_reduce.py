@@ -74,6 +74,7 @@ def _apply_initial_noise(macro_graph, noise_layer, noise_model):
     else:
         perfect_inds = None
     noise_model["perfect_inds"] = perfect_inds
+    noise_model["sampling_order"] = "two-step"
     noisy_macro_state.apply_noise(noise_model)
     return noisy_macro_state
 
@@ -137,7 +138,7 @@ def _entangle_states(macro_graph, permuted_inds, initial_quads, symp_bs):
 def _measure_syndrome(noisy_macro_state, permuted_inds, entangled_quads, quad_permutation):
     """Measure the syndrome of noisy_macro_state."""
     N = len(permuted_inds) // 2
-    unpermuted_quads = entangled_quads[invert_permutation(quad_permutation)]    
+    unpermuted_quads = entangled_quads[invert_permutation(quad_permutation)]
     # Indices of stars and planets.
     stars = permuted_inds[::4]
     planets = np.delete(permuted_inds, np.arange(0, N, 4))
@@ -145,7 +146,7 @@ def _measure_syndrome(noisy_macro_state, permuted_inds, entangled_quads, quad_pe
     # Measure stars in p, planets in q.
     noisy_macro_state.measure_hom(quad="p", inds=stars, updated_quads=unpermuted_quads)
     noisy_macro_state.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
-    
+
 
 def _neighbor_of_micro_i_macro_j(i, j, macro_graph, permuted_inds):
     """Return the neighbor of the ith micronode, jth macronode in macro_lattice.
@@ -169,32 +170,32 @@ def _neighbor_of_micro_i_macro_j(i, j, macro_graph, permuted_inds):
 
 
 def _hom_outcomes(vertex, macro_graph):
-   """Measurement outcomes in the macronode containing vertex.
+    """Measurement outcomes in the macronode containing vertex.
 
-   Return the values of the homodyne measurements of the macronode
-   containing vertex. Note we are only interested in q-homodyne
-   outcomes; the returned list is of the form [0, 0, q2, q3, q4].
-   If vertex is None, return a list of 0s, so that the processing
-   is unaltered by the outcomes.
-   """
-   if vertex is None:
-       return [0, 0, 0, 0, 0]
-   meas = np.zeros(5)
-   # The central node corresponding to the neighboring
-   # macronode.
-   central_node = tuple(round(i) for i in vertex)
-   for micro in macro_graph.macro_to_micro[central_node]:
-       index = macro_graph.nodes[micro]["body_index"]
-       # Populate meas with the q-homodyne outcomes for
-       # the planet modes.
-       if index != 1:
-           meas[index] = macro_graph.nodes[micro]["hom_val_q"]
-   return meas
+    Return the values of the homodyne measurements of the macronode
+    containing vertex. Note we are only interested in q-homodyne
+    outcomes; the returned list is of the form [0, 0, q2, q3, q4].
+    If vertex is None, return a list of 0s, so that the processing
+    is unaltered by the outcomes.
+    """
+    if vertex is None:
+        return [0, 0, 0, 0, 0]
+    meas = np.zeros(5)
+    # The central node corresponding to the neighboring
+    # macronode.
+    central_node = tuple(round(i) for i in vertex)
+    for micro in macro_graph.macro_to_micro[central_node]:
+        index = macro_graph.nodes[micro]["body_index"]
+        # Populate meas with the q-homodyne outcomes for
+        # the planet modes.
+        if index != 1:
+            meas[index] = macro_graph.nodes[micro]["hom_val_q"]
+    return meas
 
 
 def _process_outcomes(hom_outcomes, neighbor_body_index):
     """Process the homodyne outcomes for neighboring macronode i.
-    
+
     Macronode j is connected to a macronode whose with an array of
     measurement outcomes M and whose micronodes have body indices
     neighbor_body_index. Use this information to process the
@@ -219,7 +220,9 @@ def _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, delta):
 
     # Here, j corresponds to the macronode and i to to micronode.
     # i ranges from 1 to 4, to align with manuscript.
-    verts_and_inds = [_neighbor_of_micro_i_macro_j(i, j, macro_graph, permuted_inds) for i in (1, 2, 3, 4)]
+    verts_and_inds = [
+        _neighbor_of_micro_i_macro_j(i, j, macro_graph, permuted_inds) for i in (1, 2, 3, 4)
+    ]
     neighbors = [tup[0] if tup else None for tup in verts_and_inds]
     body_indices = [tup[1] if tup else None for tup in verts_and_inds]
 
@@ -228,7 +231,9 @@ def _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, delta):
     m_arr = np.array([_hom_outcomes(neighbors[i - 1], macro_graph) for i in (1, 2, 3, 4)])
     # Array of processed q-homodyne outcomes from neighboring
     # macronodes of the form [0, Z(1), Z(2), Z(3), Z(4)].
-    Z_arr = np.array([0] + [_process_outcomes(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)])
+    Z_arr = np.array(
+        [0] + [_process_outcomes(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)]
+    )
     # p-homodyne outcome of the star node.
     star_p_val = macro_graph.nodes[vertex]["hom_val_p"]
 
@@ -264,7 +269,7 @@ def _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, delta):
     central_vert = tuple(round(i) for i in vertex)
     reduced_graph.nodes[central_vert]["bit_val"] = processed_bit_val
     reduced_graph.nodes[central_vert]["p_phase_cond"] = p_err
-    
+
 
 def reduce_macronode_graph(macro_graph, reduced_graph, noise_layer, noise_model, bs_network):
     """Reduce the macronode RHG lattice to the canonical lattice.
@@ -284,9 +289,13 @@ def reduce_macronode_graph(macro_graph, reduced_graph, noise_layer, noise_model,
     # Entangle macronodes
     permuted_inds = _permute_indices(macro_graph, reduced_graph)
     nodes_with_body = 0
-    entangled_quads, quad_permutation = _entangle_states(macro_graph, permuted_inds, initial_quads, bs_network)
+    entangled_quads, quad_permutation = _entangle_states(
+        macro_graph, permuted_inds, initial_quads, bs_network
+    )
     # Measure syndrome
     _measure_syndrome(noisy_macro_state, permuted_inds, entangled_quads, quad_permutation)
     # Process homodyne outcomes and calculate of phase error probabilities
     for j in range(0, len(macro_graph) - 3, 4):
-        _reduce_jth_macronode(j, macro_graph, reduced_graph, permuted_inds, noise_model.get("delta"))
+        _reduce_jth_macronode(
+            j, macro_graph, reduced_graph, permuted_inds, noise_model.get("delta")
+        )
