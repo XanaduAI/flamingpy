@@ -41,6 +41,8 @@ def to_pi_string(x, tex: bool = True, d=2):
 
 
 class GKPFormatter(Formatter):
+    """Formatter for GKP binning plots used to create a string based on a tick value."""
+
     def __init__(self, tex: bool = True, d: int = 2):
         self.tex = tex
         self.d = d
