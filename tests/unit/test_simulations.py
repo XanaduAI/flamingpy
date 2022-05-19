@@ -76,7 +76,9 @@ class TestPassive:
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
-        errors_py = ec_monte_carlo(None, 0, 1, code, trials, delta, p_swap, MWMP, passive_objects, False)
+        errors_py = ec_monte_carlo(
+            None, 0, 1, code, trials, delta, p_swap, MWMP, passive_objects, False
+        )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
