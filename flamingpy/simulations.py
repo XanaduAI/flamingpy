@@ -13,15 +13,26 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments
+# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position
 
 import argparse
 import csv
-import os
 import sys
+import warnings
 
 from datetime import datetime
 from time import perf_counter
+int_time = int(str(datetime.now().timestamp()).replace(".", ""))
+
+try:
+    import mpi4py.rc
+    mpi4py.rc.threaded = False
+    from mpi4py import MPI
+except ImportError:  # pragma: no cover
+    warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
+
+import numpy as np
+from numpy.random import default_rng
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
@@ -29,8 +40,65 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
 
+def ec_mc_trial(
+    passive_objects,
+    p_swap,
+    delta,
+    code_lattice,
+    cv_noise,
+    code,
+    decoder,
+    weight_options,
+    rng=default_rng(),
+    return_decoding_time=False
+):
+    """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
+    if passive_objects is not None:
+        reduce_macro_and_simulate(*passive_objects, p_swap, delta, rng)
+    else:
+        # Apply noise
+        CVRHG = CVLayer(code_lattice, p_swap=p_swap, rng=rng)
+        # Measure syndrome
+        CVRHG.apply_noise(cv_noise, rng=rng)
+        CVRHG.measure_hom("p", code.all_syndrome_inds, rng=rng)
+
+    result = correct(code=code, decoder=decoder, weight_options=weight_options)
+
+    if passive_objects is not None:
+        reduce_macro_and_simulate(*passive_objects, p_swap, delta)
+    else:
+        # Apply noise
+        CVRHG = CVLayer(code, p_swap=p_swap)
+        # Measure syndrome
+        CVRHG.apply_noise(cv_noise)
+        CVRHG.measure_hom("p", code.all_syndrome_inds)
+
+        if return_decoding_time:
+            decoding_start_time = perf_counter()
+    
+        result = correct(code=code, decoder=decoder, weight_options=weight_options)
+
+        if return_decoding_time:
+            decoding_stop_time = perf_counter()
+            decoding_time = decoding_stop_time - decoding_start_time    
+
+    if return_decoding_time:
+        return result, decoding_time
+    else:
+        return result
+
+
 def ec_monte_carlo(
-    code, trials, delta, p_swap, decoder="MWPM", passive_objects=None, return_decoding_time=False
+    code, 
+    trials, 
+    delta, 
+    p_swap, 
+    decoder="MWPM", 
+    passive_objects=None, 
+    return_decoding_time=False,
+    world_comm, 
+    mpi_rank, 
+    mpi_size
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
 
@@ -76,34 +144,58 @@ def ec_monte_carlo(
         else:
             weight_options = None
 
-    successes = 0
-    if return_decoding_time:
-        decoding_time = 0
-    for _ in range(trials):
-        if passive_objects is not None:
-            reduce_macro_and_simulate(*passive_objects, p_swap, delta)
-        else:
-            # Apply noise
-            CVRHG = CVLayer(code, p_swap=p_swap)
-            # Measure syndrome
-            CVRHG.apply_noise(cv_noise)
-            CVRHG.measure_hom("p", code.all_syndrome_inds)
+    if mpi_rank == 0:
+        # only processor 0 will actually get the final data
+        successes = np.zeros(1)
+    else:
+        successes = None
+    local_successes = np.zeros(1)
 
-        if return_decoding_time:
-            decoding_start_time = perf_counter()
-        result = correct(code=code, decoder=decoder, weight_options=weight_options)
-        if return_decoding_time:
-            decoding_stop_time = perf_counter()
-            decoding_time += decoding_stop_time - decoding_start_time
-        successes += result
-    errors = trials - successes
+    rng = np.random.default_rng(mpi_rank + int_time)
+
     if return_decoding_time:
-        return errors, decoding_time
+        decoding_time_total = 0
+    
+    for i in range(trials):
+        if i % mpi_size == mpi_rank:
+            if return_decoding_time:
+                result, decoding_time = ec_mc_trial(
+                    passive_objects,
+                    p_swap,
+                    delta,
+                    code.graph,
+                    cv_noise,
+                    code,
+                    decoder,
+                    weight_options,
+                    rng,
+                    return_decoding_time
+                )
+                decoding_time_total += decoding_time
+            else:
+                result = ec_mc_trial(
+                    passive_objects,
+                    p_swap,
+                    delta,
+                    code.graph,
+                    cv_noise,
+                    code,
+                    decoder,
+                    weight_options,
+                    rng,
+                )    
+            local_successes[0] += result
+   
+    world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
+
+    errors = int(trials - successes[0])
+
+    if return_decoding_time:
+        return errors, decoding_time_total
     else:
         return errors
 
 
-# pylint: disable=too-many-arguments
 def run_ec_simulation(
     distance, ec, boundaries, delta, p_swap, trials, passive, decoder="MWPM", fname=None
 ):
@@ -188,6 +280,11 @@ def run_ec_simulation(
 
 
 if __name__ == "__main__":
+
+    world_comm = MPI.COMM_WORLD
+    mpi_size = world_comm.Get_size()
+    mpi_rank = world_comm.Get_rank()
+
     if len(sys.argv) != 1:
         # Parsing input parameters
         parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
