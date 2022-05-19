@@ -15,14 +15,14 @@
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
+from flamingpy.cv.macro_reduce import reduce_macronode_graph, splitter_symp
 from flamingpy.decoders.decoder import correct
 
 # Number of trials
-total = 1
+total = 100
 # Code parameters
 d = 3
-boundaries = "open"
+boundaries = "periodic"
 ec = "primal"
 # Noise parameters
 delta = 0.1
@@ -38,16 +38,16 @@ RHG_macro = RHG_code.graph.macronize(pad_boundary=pad_bool)
 RHG_macro.index_generator()
 RHG_macro.adj_generator(sparse=True)
 
-# The empty CV layer, uninitiated with any error model.
-CVRHG_reduced = CVLayer(RHG_code)
 # Define the 4X4 beamsplitter network for a given macronode.
 # star at index 0, planets at indices 1-3.
-bs_network = BS_network(4)
+bs_network = splitter_symp(4)
+
+noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap, "sampling_order": "two-step"}
 
 successes = 0
 for trial in range(total):
     # The empty CV state, uninitiated with any error model.
-    reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta)
+    reduce_macronode_graph(RHG_macro, RHG_reduced, CVLayer, noise_model, bs_network)
     decoder = {"outer": "MWPM"}
     decoder_opts = {"backend": "networkx"}
     if decoder["outer"] == "MWPM":
