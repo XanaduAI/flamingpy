@@ -21,12 +21,11 @@ avoids having to modify the global Matplotlib `rc_params`.
 To modify the plot parameters use, for example,
 
   .. code::
-
     from flamingpy.utils.viz import plot_params as fp_plot_params
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-statements,too-many-locals
 
 import itertools as it
 
@@ -135,7 +134,6 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
 
     _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
     val = hom_val if use_hom_val else frac
-
     # bounds for the plot
     if use_hom_val:
         xmin, xmax = alpha * np.array([hom_val[0] // alpha, hom_val[-1] // alpha + 1])
@@ -151,21 +149,10 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     plt.xticks(newxticks)
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
-<<<<<<< HEAD
     plt.title(
         "Conditional phase probabilities: "
         + ("Full homodyne value" if use_hom_val else "Central peak")
     )
-
-    # axis ticks
-    n_ticks = int((xmax - xmin) // alpha) + 1 if use_hom_val else 3
-    newxticks = np.linspace(xmin, xmax, n_ticks)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    plt.xticks(newxticks, newxlabels)
-
-=======
-    addendum = "Full homodyne value" if use_hom_val else "Central peak"
-    plt.title("Conditional phase probabilities: " + addendum)
 
     if show:
         plt.show()
@@ -182,7 +169,7 @@ def draw_EGraph(
     label=None,
     title=False,
     legend=False,
-    display_axes=True,
+    show_axes=True,
 ):
     """Draw the graph state represented by the EGraph.
 
@@ -225,7 +212,7 @@ def draw_EGraph(
             name to plane English and capitalized.
         legend (bool): if True and label is set to 'state', display
             the state color legend.
-        display_axes (bool): if False, turn off the axes.
+        show_axes (bool): if False, turn off the axes.
 
     Returns:
         A Matplotib Axes object.
@@ -233,8 +220,6 @@ def draw_EGraph(
     if state_colors is None:
         state_colors = {}
 
-    # Recommended to be viewed with IPython.
-    # Font properties
     dims = egraph.graph.get("dims")
     xmax, ymax, zmax = dims
 
@@ -338,11 +323,11 @@ def draw_EGraph(
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
-    if not display_axes:
+    if not show_axes:
         ax.axis("off")
     plt.tight_layout(pad=5)
     plt.draw()
-    
+
     return fig, ax
 
 
@@ -503,9 +488,9 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         "color_edges": "k",
         "label": None,
         "legend": True,
-        "title": True,
         "state_colors": {"p": None, "GKP": None},
-        "display_axes": True,
+        "show_title": True,
+        "show_axes": True,
         "label_stabilizers": True,
         "label_boundary": False,
     }
@@ -526,7 +511,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             "state_colors",
             "label",
             "legend",
-            "display_axes",
+            "show_axes",
         ]
         egraph_opts = {k: drawing_opts[k] for k in egraph_args}
         fig, ax = draw_EGraph(code.graph, **egraph_opts)
@@ -600,7 +585,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # it to the plot.
     if leg:
         ax.add_artist(leg)
-    if drawing_opts["title"]:
+    if drawing_opts["show_title"]:
         ax.set_title(ec.capitalize() + " syndrome")
 
     return fig, ax
@@ -656,40 +641,49 @@ def _cuboid_data(origin, size=(1, 1, 1)):
 
 
 @mpl.rc_context(plot_params)
-def draw_matching_on_syndrome_plot(ax, matching, G_match):
-    """Plot the matching output by MWPM."""
-    virtual_points = G_match.virtual_points
-    for pair in matching:
-        if pair not in it.product(virtual_points, virtual_points):
-            xlist, ylist, zlist = [], [], []
-            path = G_match.edge_path(pair)
-            for node in path:
-                if isinstance(node, Stabilizer):
-                    x, y, z = node.midpoint()
-                else:
-                    x, y, z = node
-                    plt.plot(x, y, z, marker="2", markersize=15, c="k")
-                xlist += [x]
-                ylist += [y]
-                zlist += [z]
-            ax.set_title("Minimum-weight perfect matching")
-            ax.plot(
-                xlist,
-                ylist,
-                zlist,
-                "o-",
-                c=np.random.rand(3),
-                linewidth=plot_params.get("lines.linewidth", None) * 0.9,
-            )
+def draw_recovery(ax, **kwargs):
+    """Plot the recovery."""
+    if kwargs.get("show_title"):
+        ax.set_title("Syndrome and recovery")
+    recovery_set = kwargs.get("recovery_set")
+    if recovery_set:
+        for point in recovery_set:
+            ax.plot(*point, "o", c="k", markersize=6)
+    matching = kwargs.get("matching")
+    G_match = kwargs.get("matching_graph")
+    if matching:
+        virtual_points = G_match.virtual_points
+        for pair in matching:
+            if pair not in it.product(virtual_points, virtual_points):
+                xlist, ylist, zlist = [], [], []
+                path = G_match.edge_path(pair)
+                for node in path:
+                    if isinstance(node, Stabilizer):
+                        x, y, z = node.midpoint()
+                    else:
+                        x, y, z = node
+                        plt.plot(x, y, z, marker="2", markersize=15, c="k")
+                    xlist += [x]
+                    ylist += [y]
+                    zlist += [z]
+                ax.plot(
+                    xlist,
+                    ylist,
+                    zlist,
+                    "o-",
+                    c=np.random.rand(3),
+                    linewidth=plot_params.get("lines.linewidth", None) * 0.9,
+                )
     return ax
 
 
-def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
+def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     """Draw the stabilizer and matching graphs, and the plot the syndrome."""
     if drawing_opts is None:
         drawing_opts = {}
 
     G_stabilizer = getattr(code, ec + "_stab_graph")
+    G_match = dec_objects.get("matching_graph")
     # An integer label for each node in the stabilizer and matching
     # graphs. This is useful to identify the nodes in the plots.
     if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):
@@ -697,37 +691,31 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
         node_labels = {node: index for index, node in enumerate(list(G_stabilizer.nodes())[2:])}
         # Update node labels to work with the matching graph---needs to be done
         # because virtual boundary nodes are of the form ((x, y, z), i).
-        for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
-            index = node_labels[virtual_node[0]]
-            node_labels[virtual_node] = index
+        if G_match:
+            for virtual_node in set(G_match.graph.nodes()) - set(G_stabilizer.nodes()):
+                index = node_labels[virtual_node[0]]
+                node_labels[virtual_node] = index
     else:
         node_labels = None
     label_edges = bool(drawing_opts.get("label_edges"))
-
+    show_title = bool(drawing_opts.get("show_title"))
+    # title = drawing_opts.get_title()
     code.draw_stabilizer_graph(
         ec,
-        title=ec.capitalize() + " stabilizer graph",
+        title=ec.capitalize() + " stabilizer graph" if show_title else "",
         label_edges=label_edges,
         node_labels=node_labels,
     )
-    if len(G_match.graph):
-        G_match.draw(
-            title=ec.capitalize() + " matching graph",
-            label_edges=label_edges,
-            node_labels=node_labels,
-        )
-    else:
-        print("\nMatching graph empty!\n")
+    if G_match:
+        if len(G_match.graph):
+            G_match.draw(
+                title=ec.capitalize() + " matching graph" if show_title else "",
+                label_edges=label_edges,
+                node_labels=node_labels,
+            )
+        else:
+            print("\nMatching graph empty!\n")
 
     _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
-<<<<<<< HEAD
-    if drawing_opts.get("show_matching"):
-        draw_matching_on_syndrome_plot(ax, matching, G_match)
-=======
     if drawing_opts.get("show_recovery"):
         draw_recovery(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
-
-
-class GKPFormatter(mpl.ticker.Formatter):
-    def __call__(self, x, pos=None):
-        return gkp.to_pi_string(x)
