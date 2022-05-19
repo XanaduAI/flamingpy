@@ -240,6 +240,7 @@ def run_ec_simulation(
                     "current_time",
                     "decoding_time",
                     "simulation_time",
+                    "mpi_size",
                 ]
             )
         # Open the file for appending if it already exists.
@@ -262,6 +263,7 @@ def run_ec_simulation(
                 current_time,
                 decoding_time,
                 (simulation_stop_time - simulation_start_time),
+                mpi_size,
             ]
         )
         file.close()
