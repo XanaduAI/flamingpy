@@ -139,7 +139,6 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     fig = plt.figure()
     ax = plt.gca()
     ax.xaxis.set_major_formatter(GKPFormatter())
->>>>>>> 1bacb1c... using GKPFormatter for x-ticks
     plt.plot(val, error, ".")
 
     # labels
@@ -161,7 +160,6 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
     plt.title("Conditional phase probabilities: " + addendum)
     plt.xticks(newxticks)  # , newxlabels)
->>>>>>> 1bacb1c... using GKPFormatter for x-ticks
     if show:
         plt.show()
 
@@ -725,4 +723,3 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
 class GKPFormatter(mpl.ticker.Formatter):
     def __call__(self, x, pos=None):
         return gkp.to_pi_string(x)
->>>>>>> 1bacb1c... using GKPFormatter for x-ticks
