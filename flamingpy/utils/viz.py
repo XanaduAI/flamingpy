@@ -87,14 +87,13 @@ def plot_fractional_part(xs, fs, alpha, show=True):
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
     ax.xaxis.set_major_formatter(gkp.GKP_Formatter())
-    newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
-    newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
+    ax.yaxis.set_major_formatter(gkp.GKP_Formatter())
 
     plt.plot(xs, fs, ".")
     plt.title("Fractional Part")
     plt.xticks(newxticks)
     plt.xlabel("$x$")
-    plt.yticks(newyticks, newylabels)
+    plt.yticks(newyticks)
     plt.ylabel(r"$\mathrm{frac}(x)$")
 
     if show:
