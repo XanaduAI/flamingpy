@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
 
-# pylint: disable=redefined-outer-name,protected-access,no-self-use
+# pylint: disable=protected-access,no-self-use
 
 import string
 

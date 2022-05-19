@@ -297,7 +297,6 @@ def draw_EGraph(
         message = "{} at {} node(s) have not yet been computed."
         print(message.format(name.lower(), n_uncomputed))
 
-    # Plotting edges.
     for edge in egraph.edges:
 
         # Color edges based on color_edges if string, or based on
