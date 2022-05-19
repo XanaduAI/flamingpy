@@ -22,16 +22,19 @@ import warnings
 
 from datetime import datetime
 from time import perf_counter
+
 int_time = int(str(datetime.now().timestamp()).replace(".", ""))
 
 try:
     import mpi4py.rc
+
     mpi4py.rc.threaded = False
     from mpi4py import MPI
 except ImportError:  # pragma: no cover
     warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
 
 import numpy as np
+from numpy.random import default_rng
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
@@ -47,16 +50,17 @@ def ec_mc_trial(
     code,
     decoder,
     weight_options,
+    rng=default_rng(),
 ):
     """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
     if passive_objects is not None:
-        reduce_macro_and_simulate(*passive_objects, p_swap, delta)
+        reduce_macro_and_simulate(*passive_objects, p_swap, delta, rng)
     else:
         # Apply noise
-        CVRHG = CVLayer(code, p_swap=p_swap)
+        CVRHG = CVLayer(code, p_swap, rng)
         # Measure syndrome
-        CVRHG.apply_noise(cv_noise)
-        CVRHG.measure_hom("p", code.all_syndrome_inds)
+        CVRHG.apply_noise(cv_noise, rng)
+        CVRHG.measure_hom("p", code.all_syndrome_inds, rng)
 
     decoding_start_time = perf_counter()
 
@@ -128,6 +132,8 @@ def ec_monte_carlo(
     successes = np.zeros(1)
     local_successes = np.zeros(1)
 
+    rng = np.random.default_rng(mpi_rank + int_time)
+
     if return_decoding_time:
         decoding_time_total = 0
 
@@ -141,6 +147,7 @@ def ec_monte_carlo(
                 code,
                 decoder,
                 weight_options,
+                rng,
             )
             if return_decoding_time:
                 decoding_time_total += decoding_time

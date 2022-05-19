@@ -16,6 +16,7 @@
 # pylint: disable=protected-access
 
 import numpy as np
+from numpy.random import default_rng
 from scipy.linalg import block_diag
 
 from flamingpy.cv.ops import CVLayer, SCZ_apply
@@ -60,7 +61,9 @@ def BS_network(n):
     return bs_network
 
 
-def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, swap_prob, delta):
+def reduce_macro_and_simulate(
+    RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, swap_prob, delta, rng=default_rng()
+):
     """Reduce the macronode RHG lattice to the canonical lattice.
 
     Take the macronode lattice EGraph, RHG_macro, and generate a
@@ -76,7 +79,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
     N = len(RHG_macro)
 
     # The hybridized CVRHG macronode lattice.
-    CVRHG = CVLayer(RHG_macro, p_swap=swap_prob)
+    CVRHG = CVLayer(RHG_macro, p_swap=swap_prob, rng=rng)
     # Noise-model
     perfect_points = RHG_macro.graph.get("perfect_points")
     if perfect_points:
@@ -89,7 +92,7 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
         "sampling_order": "two-step",
         "perfect_inds": perfect_inds,
     }
-    CVRHG.apply_noise(noise_model)
+    CVRHG.apply_noise(noise_model, rng)
     # A list of permuted indices where each block of four
     # corresponds to [star, planet, planet, planet].
     permuted_inds = np.empty(N, dtype=np.int32)
@@ -143,8 +146,8 @@ def reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network,
 
     unpermuted_quads = permuted_quads[invert_permutation(quad_permutation)]
     # Measure stars in p, planets in q.
-    CVRHG.measure_hom(quad="p", inds=stars, updated_quads=unpermuted_quads)
-    CVRHG.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
+    CVRHG.measure_hom(quad="p", inds=stars, updated_quads=unpermuted_quads, rng=rng)
+    CVRHG.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads, rng=rng)
 
     def neighbor_of_i(i, j):
         """Return the neighbor of the ith micronode, jth macronode.
