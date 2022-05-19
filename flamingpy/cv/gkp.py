@@ -17,7 +17,7 @@ import numpy as np
 from scipy.special import erf
 
 
-def to_pi_string(x, tex=True, d=2):
+def to_pi_string(x, tex: bool = True, d=2):
     """Convert x, a multiple of sqrt(pi)/2, to a pretty string.
 
     If x is not a multiple of sqrt(pi)/2, return the unmodified string
@@ -37,6 +37,15 @@ def to_pi_string(x, tex=True, d=2):
         )
         return x_str
     return "{:.{}f}".format(x, d)
+
+
+class GKP_Formatter:
+    def __init__(self, tex: bool = True, d: int = 2):
+        self.tex = tex
+        self.d = d
+
+    def __call__(self, x, pos=None):
+        return to_pi_string(x, tex=self.tex, d=self.d)
 
 
 def integer_fractional(x, alpha):

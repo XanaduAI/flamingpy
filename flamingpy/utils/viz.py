@@ -63,7 +63,7 @@ def plot_integer_part(xs, ns, alpha, show=True):
 
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+    ax.xaxis.set_major_formatter(gkp.GKP_Formatter())
 
     plt.plot(xs, ns, ".")
     plt.title("Integer Part")
@@ -86,7 +86,7 @@ def plot_fractional_part(xs, fs, alpha, show=True):
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
-    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+    ax.xaxis.set_major_formatter(gkp.GKP_Formatter())
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
 
@@ -111,7 +111,7 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
 
     xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+    ax.xaxis.set_major_formatter(gkp.GKP_Formatter())
 
     plt.plot(outcomes, bit_values, ".")
     plt.title("Binned values")
@@ -143,7 +143,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     print(xmin, xmax, min(val), max(val))
 
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+    ax.xaxis.set_major_formatter(gkp.GKP_Formatter())
 
     plt.plot(val, error, ".")
     plt.xticks(newxticks)
