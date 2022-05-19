@@ -2,9 +2,9 @@
 
 ### New features since the last release
 
-* Our frontend simulator script, simulations.py, now supports simple and highly-scalable MPI calculations through mpi4py libraries in a non-intrusive manner. The users who do not have or want MPI, can run simulations.py single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The scripts support running both on local machines and large-scale clusters.
-MPI users on their local machines can simply run the following for a 4-processor job:
-`mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible) 
+* Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI calculations through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
+  MPI users on their local machines can simply run the following for a 4-processor job:
+  `mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible) 
 
 ### Bug fixes
 
