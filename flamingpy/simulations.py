@@ -75,7 +75,7 @@ def ec_mc_trial(
 
         if return_decoding_time:
             decoding_start_time = perf_counter()
-    
+
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
 
         if return_decoding_time:
@@ -84,21 +84,21 @@ def ec_mc_trial(
 
     if return_decoding_time:
         return result, decoding_time
-    else:
-        return result
+
+    return result
 
 
 def ec_monte_carlo(
-    code, 
-    trials, 
-    delta, 
-    p_swap, 
-    decoder="MWPM", 
-    passive_objects=None, 
-    return_decoding_time=False,
-    world_comm, 
-    mpi_rank, 
+    world_comm,
+    mpi_rank,
     mpi_size,
+    code,
+    trials,
+    delta,
+    p_swap,
+    decoder="MWPM",
+    passive_objects=None,
+    return_decoding_time=False,
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
 
@@ -155,7 +155,7 @@ def ec_monte_carlo(
 
     if return_decoding_time:
         decoding_time_total = 0
-    
+
     for i in range(trials):
         if i % mpi_size == mpi_rank:
             if return_decoding_time:
@@ -185,7 +185,7 @@ def ec_monte_carlo(
                     rng,
                 )    
             local_successes[0] += result
-   
+  
     world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
 
     errors = int(trials - successes[0])
@@ -226,7 +226,16 @@ def run_ec_simulation(
     # Perform the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
-        RHG_code, trials, delta, p_swap, decoder, passive_objects, True, world_comm, mpi_rank, mpi_size,
+        world_comm,
+        mpi_rank,
+        mpi_size,
+        RHG_code,
+        trials,
+        delta,
+        p_swap,
+        decoder,
+        passive_objects,
+        True,
     )
     simulation_stop_time = perf_counter()
 
