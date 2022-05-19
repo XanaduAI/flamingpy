@@ -61,13 +61,15 @@ def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+
     fig = plt.figure()
     ax = plt.gca()
+
     plt.plot(xs, ns, ".")
     plt.title("Integer Part")
     plt.xlabel("$x$")
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
     plt.ylabel(r"$\mathrm{int}(x)$")
     if show:
         plt.show()
@@ -78,15 +80,19 @@ def plot_integer_part(xs, ns, alpha, show=True):
 @mpl.rc_context(plot_params)
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
-    plt.title("Fractional Part")
-    plt.plot(xs, fs, ".")
+    fig = plt.figure()
+    ax = plt.gca()
+
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
+    ax.xaxis.set_major_formatter(gkp.to_pi_string)
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
+
+    plt.plot(xs, fs, ".")
+    plt.title("Fractional Part")
     plt.xlabel("$x$")
     plt.yticks(newyticks, newylabels)
     plt.ylabel(r"$\mathrm{frac}(x)$")
@@ -141,7 +147,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     plt.ylabel("Error")
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
     plt.title("Conditional phase probabilities: " + addendum)
-    plt.xticks(newxticks)  # , newxlabels)
+    plt.xticks(newxticks)
     if show:
         plt.show()
 
