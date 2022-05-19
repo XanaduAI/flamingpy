@@ -98,7 +98,7 @@ def ec_monte_carlo(
     return_decoding_time=False,
     world_comm, 
     mpi_rank, 
-    mpi_size
+    mpi_size,
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
 
@@ -226,7 +226,7 @@ def run_ec_simulation(
     # Perform the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
-        RHG_code, trials, delta, p_swap, decoder, passive_objects, True
+        RHG_code, trials, delta, p_swap, decoder, passive_objects, True, world_comm, mpi_rank, mpi_size,
     )
     simulation_stop_time = perf_counter()
 
