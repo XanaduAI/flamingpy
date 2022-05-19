@@ -129,6 +129,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
 
     print(xmin, xmax, min(val), max(val))
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     fig = plt.figure()
     ax = plt.gca()
@@ -140,6 +141,15 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     ax = plt.gca()
     ax.xaxis.set_major_formatter(GKPFormatter())
 >>>>>>> 1bacb1c... using GKPFormatter for x-ticks
+=======
+
+    fig = plt.figure()
+    ax = plt.gca()
+
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+
+>>>>>>> 1afe5b4... removed fancy formatter and use existing gkp.to_pi_string
     plt.plot(val, error, ".")
 
     # labels
