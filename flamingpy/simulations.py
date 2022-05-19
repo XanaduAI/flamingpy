@@ -50,11 +50,10 @@ def ec_mc_trial(
     decoder,
     weight_options,
     rng=default_rng(),
-    return_decoding_time=False
 ):
     """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
     if passive_objects is not None:
-        reduce_macro_and_simulate(*passive_objects, p_swap, delta, rng)
+        reduce_macro_and_simulate(*passive_objects, p_swap, delta)
     else:
         # Apply noise
         CVRHG = CVLayer(code_lattice, p_swap=p_swap, rng=rng)
@@ -73,19 +72,14 @@ def ec_mc_trial(
         CVRHG.apply_noise(cv_noise)
         CVRHG.measure_hom("p", code.all_syndrome_inds)
 
-        if return_decoding_time:
-            decoding_start_time = perf_counter()
+        decoding_start_time = perf_counter()
 
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
 
-        if return_decoding_time:
-            decoding_stop_time = perf_counter()
-            decoding_time = decoding_stop_time - decoding_start_time    
+        decoding_stop_time = perf_counter()
+        decoding_time = decoding_stop_time - decoding_start_time
 
-    if return_decoding_time:
-        return result, decoding_time
-
-    return result
+    return result, decoding_time
 
 
 def ec_monte_carlo(
@@ -129,6 +123,7 @@ def ec_monte_carlo(
             weight_options = {"method": "blueprint", "prob_precomputed": True}
         else:
             weight_options = None
+        cv_noise = None
     else:
         # Noise model
         cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
@@ -158,42 +153,29 @@ def ec_monte_carlo(
 
     for i in range(trials):
         if i % mpi_size == mpi_rank:
+            result, decoding_time = ec_mc_trial(
+                passive_objects,
+                p_swap,
+                delta,
+                code.graph,
+                cv_noise,
+                code,
+                decoder,
+                weight_options,
+                rng,
+            )
             if return_decoding_time:
-                result, decoding_time = ec_mc_trial(
-                    passive_objects,
-                    p_swap,
-                    delta,
-                    code.graph,
-                    cv_noise,
-                    code,
-                    decoder,
-                    weight_options,
-                    rng,
-                    return_decoding_time
-                )
                 decoding_time_total += decoding_time
-            else:
-                result = ec_mc_trial(
-                    passive_objects,
-                    p_swap,
-                    delta,
-                    code.graph,
-                    cv_noise,
-                    code,
-                    decoder,
-                    weight_options,
-                    rng,
-                )    
             local_successes[0] += result
-  
+
     world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
 
     errors = int(trials - successes[0])
 
     if return_decoding_time:
         return errors, decoding_time_total
-    else:
-        return errors
+
+    return errors
 
 
 def run_ec_simulation(
