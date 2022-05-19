@@ -709,8 +709,3 @@ def draw_mwpm_decoding(code, ec, G_match, matching, drawing_opts=None):
     _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_recovery"):
         draw_recovery(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
-
-
-class GKPFormatter(mpl.ticker.Formatter):
-    def __call__(self, x, pos=None):
-        return gkp.to_pi_string(x)
