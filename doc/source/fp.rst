@@ -41,8 +41,7 @@ Classes
 .. raw:: html
     <style>
         .wrapper{
-        width:100%; 
-        height:70%;
+        width:100%;
         overflow-x:scroll;     
         white-space: nowrap;
         }
@@ -50,7 +49,7 @@ Classes
 
     <div class="wrapper">   
         <div class="text-center">
-            <img src="../_static/classes_flamingpy.svg"/>
+            <img src="../_static/classes_flamingpy.svg" width="200%"/>
         </div>
     </div>
     
@@ -64,7 +63,6 @@ Packages
     <style>
         .wrapper{
         width: 100%;
-        height:70%;
         overflow-x:scroll;     
         white-space: nowrap;
         }
@@ -72,7 +70,7 @@ Packages
 
     <div class="wrapper">   
         <div class="text-center">
-            <img src="../_static/packages_flamingpy.svg" />
+            <img src="../_static/packages_flamingpy.svg" width="280%"/>
         </div>
     </div>
     
