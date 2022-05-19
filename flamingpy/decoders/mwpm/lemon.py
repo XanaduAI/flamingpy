@@ -22,14 +22,14 @@ except ImportError:  # pragma: no cover
     warnings.warn("Failed to import flamingpy.cpp.lemonpy library.", ImportWarning)
 
 
-def max_weight_matching(G_match, weight):
-    """Compute the maximum weighted matching graph using lemon.
+def min_weight_matching(G_match):
+    """Compute the minimum-weight perfect matching using lemon.
 
     Assumptions:
         1. Symmetric adjacency matrix.
         2. Adjacency matrix has zeros along diagonal.
     """
-    adjacency = nx.to_numpy_array(G_match, weight=weight)
+    adjacency = nx.to_numpy_array(G_match, weight="inverse_weight", nonedge=-(2**64) + 1)
     lemon_matching = lp.mwpm(adjacency)
 
     # lemon uses different node ids, so we convert back to networkx node ids

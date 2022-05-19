@@ -11,12 +11,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-"""Version number (major.minor.patch[label])"""
-
-
-<<<<<<< HEAD
-__version__ = "0.6.1a3.dev6"
-=======
-__version__ = "0.7.0a4-dev0"
->>>>>>> main
+"""The Union-Find decoder."""
+from .algos import uf_decoder
