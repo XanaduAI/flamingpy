@@ -26,7 +26,7 @@ from time import perf_counter
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
+from flamingpy.cv.macro_reduce import reduce_macronode_graph, splitter_symp
 
 
 def ec_monte_carlo(
@@ -81,7 +81,7 @@ def ec_monte_carlo(
         decoding_time = 0
     for _ in range(trials):
         if passive_objects is not None:
-            reduce_macro_and_simulate(*passive_objects, p_swap, delta)
+            reduce_macronode_graph(*passive_objects)
         else:
             # Apply noise
             CVRHG = CVLayer(code, p_swap=p_swap)
@@ -122,12 +122,11 @@ def run_ec_simulation(
         RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
-        # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(RHG_lattice)
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
-        bs_network = BS_network(4)
-        passive_objects = [RHG_macro, RHG_lattice, CVRHG_reduced, bs_network]
+        bs_network = splitter_symp(4)
+        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
+        passive_objects = [RHG_macro, RHG_lattice, CVLayer, noise_model, bs_network]
     else:
         passive_objects = None
 

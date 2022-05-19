@@ -42,7 +42,7 @@ RHG_macro.adj_generator(sparse=True)
 # star at index 0, planets at indices 1-3.
 bs_network = splitter_symp(4)
 
-noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap, "sampling_order": "two-step"}
+noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
 
 successes = 0
 for trial in range(total):

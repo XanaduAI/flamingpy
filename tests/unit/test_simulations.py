@@ -22,7 +22,7 @@ import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import BS_network
+from flamingpy.cv.macro_reduce import splitter_symp
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
@@ -74,8 +74,9 @@ class TestPassive:
 
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
-        bs_network = BS_network(4)
-        passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
+        bs_network = splitter_symp(4)
+        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap} 
+        passive_objects = [RHG_macro, code.graph, CVLayer, noise_model, bs_network]
         errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
