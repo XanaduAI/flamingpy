@@ -23,7 +23,7 @@ import pytest
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import invert_permutation, BS_network, reduce_macro_and_simulate
+from flamingpy.cv.macro_reduce import invert_permutation, splitter_symp, reduce_macronode_graph
 
 
 code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "periodic"], ["primal", "dual"])
@@ -70,12 +70,11 @@ class TestReduction:
     def test_reduce_macro_and_simulate(self, macro_RHG):
         """Test the reduce_macro_and_simulate function."""
         delta, p_swap, RHG_macro, RHG_reduced = macro_RHG
-        # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(RHG_reduced)
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
-        bs_network = BS_network(4)
-        reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta)
+        bs_network = splitter_symp(4)
+        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap, "sampling_order": "two-step"}
+        reduce_macronode_graph(RHG_macro, RHG_reduced, CVLayer, noise_model, bs_network)
         # Check proper reduction to effective node type.
         for central_node in RHG_macro.macro_to_micro:
             micronodes = RHG_macro.macro_to_micro[central_node]
