@@ -15,17 +15,37 @@
 
 # pylint: disable=no-self-use,protected-access,too-few-public-methods
 
+import warnings
+
 import itertools as it
 
 import re
 import pytest
+
+try:
+    import mpi4py.rc
+
+    mpi4py.rc.threaded = False
+    from mpi4py import MPI
+except ImportError:  # pragma: no cover
+    warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
+
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
+
+if "MPI" in locals():
+    world_comm = MPI.COMM_WORLD
+    mpi_size = world_comm.Get_size()
+    mpi_rank = world_comm.Get_rank()
+else:
+    world_comm = None
+    mpi_size = 1
+    mpi_rank = 0
 
 
 @pytest.fixture(scope="module", params=code_params)
@@ -47,7 +67,18 @@ class TestBlueprint:
         p_swap = 0
         delta = 0.001
         trials = 10
-        errors_py = ec_monte_carlo(None, 0, 1, code, trials, delta, p_swap, "MWPM", None, False)
+        errors_py = ec_monte_carlo(
+            world_comm,
+            mpi_rank,
+            mpi_size,
+            code,
+            trials,
+            delta,
+            p_swap,
+            "MWPM",
+            None,
+            False,
+        )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
@@ -77,7 +108,16 @@ class TestPassive:
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
         errors_py = ec_monte_carlo(
-            None, 0, 1, code, trials, delta, p_swap, "MWPM", passive_objects, False
+            world_comm,
+            mpi_rank,
+            mpi_size,
+            code,
+            trials,
+            delta,
+            p_swap,
+            "MWPM",
+            passive_objects,
+            False,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
@@ -91,7 +131,7 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
 
     expected_header = (
         "distance,passive,ec,boundaries,delta,p_swap,decoder,errors_py,"
-        + "trials,current_time,decoding_time,simulation_time"
+        + "trials,current_time,decoding_time,simulation_time,mpi_size"
     )
     dummy_content = "2,True,primal,open,0.04,0.5,2,10,12:34:56,10,20"
     if "benchmark" in sim.__name__:
