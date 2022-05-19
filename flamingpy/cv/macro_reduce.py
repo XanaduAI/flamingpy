@@ -18,7 +18,7 @@
 import numpy as np
 from scipy.linalg import block_diag
 
-from flamingpy.cv.ops import CVLayer, SCZ_apply
+from flamingpy.cv.ops import SCZ_apply
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 from thewalrus.symplectic import expand, beam_splitter
 
@@ -55,7 +55,7 @@ def splitter_symp(n=4):
     bs_network = (bs4 @ bs3 @ bs2 @ bs1).astype(np.single)
     if n == 4:
         return bs_network
-    elif n > 4:
+    if n > 4:
         # Permutation away from 'all q's first' convention for matrices of
         # with dimension 4 and the network spanning all the macronoes.
         perm_out_4 = [0, 4, 1, 5, 2, 6, 3, 7]
@@ -77,8 +77,6 @@ def _apply_initial_noise(macro_graph, noise_layer, noise_model):
 
     This function modifies macro_graph.
     """
-    to_points = macro_graph.to_points
-    N = len(macro_graph)
     swap_prob = noise_model.get("p_swap")
     # Apply a CV noise layer to the macronode lattice.
     noisy_macro_state = noise_layer(macro_graph, p_swap=swap_prob)
@@ -348,7 +346,6 @@ def reduce_macronode_graph(macro_graph, reduced_graph, noise_layer, noise_model,
     initial_quads = noisy_macro_state._init_quads
     # Entangle macronodes
     permuted_inds = _permute_indices_and_label(macro_graph, reduced_graph)
-    nodes_with_body = 0
     entangled_quads, quad_permutation = _entangle_states(
         macro_graph, permuted_inds, initial_quads, bs_network
     )
