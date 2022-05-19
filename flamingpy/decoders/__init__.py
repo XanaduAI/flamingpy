@@ -11,37 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This subpackage contains the modules that make up the Flamingpy decoders. This includes the
-MWPM and Unionfind decoders.
-
-Available modules
------------------
-
-.. currentmodule:: flamingpy.decoders
-.. autosummary::
-    :toctree: api
-
-    ~decoder
-    ~mwpm
-    ~unionfind
-
-Module members
---------------
-
-.. currentmodule:: flamingpy.decoders
-.. autosummary::
-    :toctree: api
-
-    correct
-    uf_decoder
-    mwpm_decoder
-
-Class Inheritance Diagram
---------------------------
-.. inheritance-diagram:: flamingpy.decoders.mwpm.LemonMatchingGraph
-     flamingpy.decoders.mwpm.RxMatchingGraph
-   :parts: 1
-"""
+"""The module for decoders and error-correction functions."""
 from .decoder import correct
 from .unionfind.algos import uf_decoder
 from .mwpm.algos import mwpm_decoder
