@@ -59,18 +59,19 @@ plot_params = {
 @mpl.rc_context(plot_params)
 def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
+    fig = plt.figure()
+    ax = plt.gca()
+
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     ax.xaxis.set_major_formatter(gkp.to_pi_string)
-
-    fig = plt.figure()
-    ax = plt.gca()
 
     plt.plot(xs, ns, ".")
     plt.title("Integer Part")
     plt.xlabel("$x$")
     plt.xticks(newxticks)
     plt.ylabel(r"$\mathrm{int}(x)$")
+
     if show:
         plt.show()
 
@@ -89,31 +90,37 @@ def plot_fractional_part(xs, fs, alpha, show=True):
     ax.xaxis.set_major_formatter(gkp.to_pi_string)
     newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
     newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
-    plt.xticks(newxticks)
 
     plt.plot(xs, fs, ".")
     plt.title("Fractional Part")
+    plt.xticks(newxticks)
     plt.xlabel("$x$")
     plt.yticks(newyticks, newylabels)
     plt.ylabel(r"$\mathrm{frac}(x)$")
+
     if show:
         plt.show()
+
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
-    xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+
     plt.plot(outcomes, bit_values, ".")
     plt.title("Binned values")
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
     plt.xlabel("Outcomes")
     plt.yticks([0, 1], [0, 1])
     plt.ylabel("Bit values")
+
     if show:
         plt.show()
 
@@ -123,6 +130,9 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
 @mpl.rc_context(plot_params)
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
+    fig = plt.figure()
+    ax = plt.gca()
+
     _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
     val = hom_val if use_hom_val else frac
 
@@ -134,20 +144,16 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
 
     print(xmin, xmax, min(val), max(val))
 
-    fig = plt.figure()
-    ax = plt.gca()
-
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     ax.xaxis.set_major_formatter(gkp.to_pi_string)
 
     plt.plot(val, error, ".")
-
-    # labels
+    plt.xticks(newxticks)
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
     addendum = "Full homodyne value" if use_hom_val else "Central peak"
     plt.title("Conditional phase probabilities: " + addendum)
-    plt.xticks(newxticks)
+
     if show:
         plt.show()
 
@@ -323,6 +329,7 @@ def draw_EGraph(
         ax.axis("off")
     plt.tight_layout(pad=5)
     plt.draw()
+
     return fig, ax
 
 
