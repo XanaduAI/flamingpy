@@ -52,10 +52,7 @@ Classes
             <img src="../_static/classes_flamingpy.svg" />
         </div>
     </div>
-.. .. image:: ../_static/classes_flamingpy.svg
-..     :align: center
-..     :width: 850px
-
+    
 |
 Packages
 ^^^^^^^^^^^^
@@ -77,7 +74,3 @@ Packages
         </div>
     </div>
     
-.. .. image:: ../_static/packages_flamingpy.svg
-..     :align: center
-..     :width: 850px
-
