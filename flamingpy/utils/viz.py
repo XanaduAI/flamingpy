@@ -128,17 +128,13 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
         xmin, xmax = -alpha / 2, alpha / 2
 
     print(xmin, xmax, min(val), max(val))
-<<<<<<< HEAD
 
     fig = plt.figure()
     ax = plt.gca()
 
-=======
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    # newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    fig = plt.figure()
-    ax = plt.gca()
-    ax.xaxis.set_major_formatter(GKPFormatter())
+    ax.xaxis.set_major_formatter(gkp.to_pi_string)
+
     plt.plot(val, error, ".")
 
     # labels
