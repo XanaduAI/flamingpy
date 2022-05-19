@@ -68,7 +68,14 @@ class TestBlueprint:
         delta = 0.001
         trials = 10
         errors_py = ec_monte_carlo(
-            world_comm, mpi_rank, mpi_size, code, trials, delta, p_swap, passive_objects=None
+            code,
+            trials,
+            delta,
+            p_swap,
+            passive_objects=None,
+            world_comm=world_comm,
+            mpi_rank=mpi_rank,
+            mpi_size=mpi_size,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
@@ -99,14 +106,14 @@ class TestPassive:
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
         errors_py = ec_monte_carlo(
-            world_comm,
-            mpi_rank,
-            mpi_size,
             code,
             trials,
             delta,
             p_swap,
             passive_objects=passive_objects,
+            world_comm=world_comm,
+            mpi_rank=mpi_rank,
+            mpi_size=mpi_size,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
