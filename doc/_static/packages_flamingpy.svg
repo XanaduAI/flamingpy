@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>flamingpy</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="223.91,-36 150.91,-36 150.91,0 223.91,0 223.91,-36"/>
-<text text-anchor="middle" x="187.41" y="-14.3" font-family="Times,serif" font-size="14.00">flamingpy</text>
+<text text-anchor="middle" x="187.41" y="-14.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy</text>
 </g>
 <!-- flamingpy._version -->
 <g id="node2" class="node">
 <title>flamingpy._version</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="248.41,-108 126.41,-108 126.41,-72 248.41,-72 248.41,-108"/>
-<text text-anchor="middle" x="187.41" y="-86.3" font-family="Times,serif" font-size="14.00">flamingpy._version</text>
+<text text-anchor="middle" x="187.41" y="-86.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy._version</text>
 </g>
 <!-- flamingpy&#45;&gt;flamingpy._version -->
 <g id="edge1" class="edge">
@@ -31,13 +31,13 @@
 <g id="node3" class="node">
 <title>flamingpy.codes</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1185.91,-108 1078.91,-108 1078.91,-72 1185.91,-72 1185.91,-108"/>
-<text text-anchor="middle" x="1132.41" y="-86.3" font-family="Times,serif" font-size="14.00">flamingpy.codes</text>
+<text text-anchor="middle" x="1132.41" y="-86.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.codes</text>
 </g>
 <!-- flamingpy.codes.graphs -->
 <g id="node4" class="node">
 <title>flamingpy.codes.graphs</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1117.41,-252 971.41,-252 971.41,-216 1117.41,-216 1117.41,-252"/>
-<text text-anchor="middle" x="1044.41" y="-230.3" font-family="Times,serif" font-size="14.00">flamingpy.codes.graphs</text>
+<text text-anchor="middle" x="1044.41" y="-230.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.codes.graphs</text>
 </g>
 <!-- flamingpy.codes&#45;&gt;flamingpy.codes.graphs -->
 <g id="edge2" class="edge">
@@ -49,7 +49,7 @@
 <g id="node7" class="node">
 <title>flamingpy.codes.stabilizer</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="762.41,-324 602.41,-324 602.41,-288 762.41,-288 762.41,-324"/>
-<text text-anchor="middle" x="682.41" y="-302.3" font-family="Times,serif" font-size="14.00">flamingpy.codes.stabilizer</text>
+<text text-anchor="middle" x="682.41" y="-302.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.codes.stabilizer</text>
 </g>
 <!-- flamingpy.codes&#45;&gt;flamingpy.codes.stabilizer -->
 <g id="edge3" class="edge">
@@ -61,7 +61,7 @@
 <g id="node8" class="node">
 <title>flamingpy.codes.surface_code</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1223.41,-180 1041.41,-180 1041.41,-144 1223.41,-144 1223.41,-180"/>
-<text text-anchor="middle" x="1132.41" y="-158.3" font-family="Times,serif" font-size="14.00">flamingpy.codes.surface_code</text>
+<text text-anchor="middle" x="1132.41" y="-158.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.codes.surface_code</text>
 </g>
 <!-- flamingpy.codes&#45;&gt;flamingpy.codes.surface_code -->
 <g id="edge4" class="edge">
@@ -73,7 +73,7 @@
 <g id="node5" class="node">
 <title>flamingpy.codes.graphs.egraph</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1222.91,-324 1035.91,-324 1035.91,-288 1222.91,-288 1222.91,-324"/>
-<text text-anchor="middle" x="1129.41" y="-302.3" font-family="Times,serif" font-size="14.00">flamingpy.codes.graphs.egraph</text>
+<text text-anchor="middle" x="1129.41" y="-302.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.codes.graphs.egraph</text>
 </g>
 <!-- flamingpy.codes.graphs&#45;&gt;flamingpy.codes.graphs.egraph -->
 <g id="edge5" class="edge">
@@ -85,7 +85,7 @@
 <g id="node6" class="node">
 <title>flamingpy.codes.graphs.stabilizer_graph</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1017.91,-324 780.91,-324 780.91,-288 1017.91,-288 1017.91,-324"/>
-<text text-anchor="middle" x="899.41" y="-302.3" font-family="Times,serif" font-size="14.00">flamingpy.codes.graphs.stabilizer_graph</text>
+<text text-anchor="middle" x="899.41" y="-302.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.codes.graphs.stabilizer_graph</text>
 </g>
 <!-- flamingpy.codes.graphs&#45;&gt;flamingpy.codes.graphs.stabilizer_graph -->
 <g id="edge6" class="edge">
@@ -97,7 +97,7 @@
 <g id="node26" class="node">
 <title>flamingpy.utils.viz</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="958.91,-396 839.91,-396 839.91,-360 958.91,-360 958.91,-396"/>
-<text text-anchor="middle" x="899.41" y="-374.3" font-family="Times,serif" font-size="14.00">flamingpy.utils.viz</text>
+<text text-anchor="middle" x="899.41" y="-374.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.utils.viz</text>
 </g>
 <!-- flamingpy.codes.graphs.egraph&#45;&gt;flamingpy.utils.viz -->
 <g id="edge7" class="edge">
@@ -127,13 +127,13 @@
 <g id="node9" class="node">
 <title>flamingpy.cv</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="979.91,-468 890.91,-468 890.91,-432 979.91,-432 979.91,-468"/>
-<text text-anchor="middle" x="935.41" y="-446.3" font-family="Times,serif" font-size="14.00">flamingpy.cv</text>
+<text text-anchor="middle" x="935.41" y="-446.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.cv</text>
 </g>
 <!-- flamingpy.cv.ops -->
 <g id="node12" class="node">
 <title>flamingpy.cv.ops</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1091.41,-540 981.41,-540 981.41,-504 1091.41,-504 1091.41,-540"/>
-<text text-anchor="middle" x="1036.41" y="-518.3" font-family="Times,serif" font-size="14.00">flamingpy.cv.ops</text>
+<text text-anchor="middle" x="1036.41" y="-518.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.cv.ops</text>
 </g>
 <!-- flamingpy.cv&#45;&gt;flamingpy.cv.ops -->
 <g id="edge11" class="edge">
@@ -145,13 +145,13 @@
 <g id="node10" class="node">
 <title>flamingpy.cv.gkp</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1110.41,-468 998.41,-468 998.41,-432 1110.41,-432 1110.41,-468"/>
-<text text-anchor="middle" x="1054.41" y="-446.3" font-family="Times,serif" font-size="14.00">flamingpy.cv.gkp</text>
+<text text-anchor="middle" x="1054.41" y="-446.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.cv.gkp</text>
 </g>
 <!-- flamingpy.cv.macro_reduce -->
 <g id="node11" class="node">
 <title>flamingpy.cv.macro_reduce</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1222.91,-396 1053.91,-396 1053.91,-360 1222.91,-360 1222.91,-396"/>
-<text text-anchor="middle" x="1138.41" y="-374.3" font-family="Times,serif" font-size="14.00">flamingpy.cv.macro_reduce</text>
+<text text-anchor="middle" x="1138.41" y="-374.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.cv.macro_reduce</text>
 </g>
 <!-- flamingpy.cv.macro_reduce&#45;&gt;flamingpy.cv.gkp -->
 <g id="edge12" class="edge">
@@ -175,13 +175,13 @@
 <g id="node13" class="node">
 <title>flamingpy.decoders</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="454.41,-36 330.41,-36 330.41,0 454.41,0 454.41,-36"/>
-<text text-anchor="middle" x="392.41" y="-14.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders</text>
+<text text-anchor="middle" x="392.41" y="-14.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders</text>
 </g>
 <!-- flamingpy.decoders.decoder -->
 <g id="node14" class="node">
 <title>flamingpy.decoders.decoder</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="477.41,-108 307.41,-108 307.41,-72 477.41,-72 477.41,-108"/>
-<text text-anchor="middle" x="392.41" y="-86.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.decoder</text>
+<text text-anchor="middle" x="392.41" y="-86.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.decoder</text>
 </g>
 <!-- flamingpy.decoders&#45;&gt;flamingpy.decoders.decoder -->
 <g id="edge15" class="edge">
@@ -193,7 +193,7 @@
 <g id="node16" class="node">
 <title>flamingpy.decoders.mwpm.algos</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="375.91,-252 176.91,-252 176.91,-216 375.91,-216 375.91,-252"/>
-<text text-anchor="middle" x="276.41" y="-230.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.mwpm.algos</text>
+<text text-anchor="middle" x="276.41" y="-230.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.mwpm.algos</text>
 </g>
 <!-- flamingpy.decoders&#45;&gt;flamingpy.decoders.mwpm.algos -->
 <g id="edge16" class="edge">
@@ -205,7 +205,7 @@
 <g id="node20" class="node">
 <title>flamingpy.decoders.unionfind.algos</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="618.41,-252 406.41,-252 406.41,-216 618.41,-216 618.41,-252"/>
-<text text-anchor="middle" x="512.41" y="-230.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.unionfind.algos</text>
+<text text-anchor="middle" x="512.41" y="-230.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.unionfind.algos</text>
 </g>
 <!-- flamingpy.decoders&#45;&gt;flamingpy.decoders.unionfind.algos -->
 <g id="edge17" class="edge">
@@ -223,7 +223,7 @@
 <g id="node15" class="node">
 <title>flamingpy.decoders.mwpm</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="235.91,-180 68.91,-180 68.91,-144 235.91,-144 235.91,-180"/>
-<text text-anchor="middle" x="152.41" y="-158.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.mwpm</text>
+<text text-anchor="middle" x="152.41" y="-158.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.mwpm</text>
 </g>
 <!-- flamingpy.decoders.decoder&#45;&gt;flamingpy.decoders.mwpm -->
 <g id="edge19" class="edge">
@@ -235,7 +235,7 @@
 <g id="node19" class="node">
 <title>flamingpy.decoders.unionfind</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="484.41,-180 304.41,-180 304.41,-144 484.41,-144 484.41,-180"/>
-<text text-anchor="middle" x="394.41" y="-158.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.unionfind</text>
+<text text-anchor="middle" x="394.41" y="-158.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.unionfind</text>
 </g>
 <!-- flamingpy.decoders.decoder&#45;&gt;flamingpy.decoders.unionfind -->
 <g id="edge20" class="edge">
@@ -253,7 +253,7 @@
 <g id="node18" class="node">
 <title>flamingpy.decoders.mwpm.matching</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="249.91,-324 28.91,-324 28.91,-288 249.91,-288 249.91,-324"/>
-<text text-anchor="middle" x="139.41" y="-302.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.mwpm.matching</text>
+<text text-anchor="middle" x="139.41" y="-302.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.mwpm.matching</text>
 </g>
 <!-- flamingpy.decoders.mwpm&#45;&gt;flamingpy.decoders.mwpm.matching -->
 <g id="edge22" class="edge">
@@ -277,7 +277,7 @@
 <g id="node17" class="node">
 <title>flamingpy.decoders.mwpm.lemon</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="241.91,-396 36.91,-396 36.91,-360 241.91,-360 241.91,-396"/>
-<text text-anchor="middle" x="139.41" y="-374.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.mwpm.lemon</text>
+<text text-anchor="middle" x="139.41" y="-374.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.mwpm.lemon</text>
 </g>
 <!-- flamingpy.decoders.mwpm.matching&#45;&gt;flamingpy.decoders.mwpm -->
 <g id="edge25" class="edge">
@@ -313,7 +313,7 @@
 <g id="node21" class="node">
 <title>flamingpy.decoders.unionfind.uf_classes</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="545.91,-324 306.91,-324 306.91,-288 545.91,-288 545.91,-324"/>
-<text text-anchor="middle" x="426.41" y="-302.3" font-family="Times,serif" font-size="14.00">flamingpy.decoders.unionfind.uf_classes</text>
+<text text-anchor="middle" x="426.41" y="-302.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.decoders.unionfind.uf_classes</text>
 </g>
 <!-- flamingpy.decoders.unionfind.algos&#45;&gt;flamingpy.decoders.unionfind.uf_classes -->
 <g id="edge30" class="edge">
@@ -331,13 +331,13 @@
 <g id="node22" class="node">
 <title>flamingpy.noise</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1468.41,-36 1364.41,-36 1364.41,0 1468.41,0 1468.41,-36"/>
-<text text-anchor="middle" x="1416.41" y="-14.3" font-family="Times,serif" font-size="14.00">flamingpy.noise</text>
+<text text-anchor="middle" x="1416.41" y="-14.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.noise</text>
 </g>
 <!-- flamingpy.noise.iid -->
 <g id="node23" class="node">
 <title>flamingpy.noise.iid</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1477.41,-108 1355.41,-108 1355.41,-72 1477.41,-72 1477.41,-108"/>
-<text text-anchor="middle" x="1416.41" y="-86.3" font-family="Times,serif" font-size="14.00">flamingpy.noise.iid</text>
+<text text-anchor="middle" x="1416.41" y="-86.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.noise.iid</text>
 </g>
 <!-- flamingpy.noise&#45;&gt;flamingpy.noise.iid -->
 <g id="edge32" class="edge">
@@ -349,7 +349,7 @@
 <g id="node24" class="node">
 <title>flamingpy.simulations</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1273.91,-36 1134.91,-36 1134.91,0 1273.91,0 1273.91,-36"/>
-<text text-anchor="middle" x="1204.41" y="-14.3" font-family="Times,serif" font-size="14.00">flamingpy.simulations</text>
+<text text-anchor="middle" x="1204.41" y="-14.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.simulations</text>
 </g>
 <!-- flamingpy.simulations&#45;&gt;flamingpy.codes -->
 <g id="edge33" class="edge">
@@ -379,7 +379,7 @@
 <g id="node25" class="node">
 <title>flamingpy.utils</title>
 <polygon fill="#bde0ff" stroke="#bde0ff" points="1585.91,-36 1486.91,-36 1486.91,0 1585.91,0 1585.91,-36"/>
-<text text-anchor="middle" x="1536.41" y="-14.3" font-family="Times,serif" font-size="14.00">flamingpy.utils</text>
+<text text-anchor="middle" x="1536.41" y="-14.3" font-family="Helvetica,sans-serif" font-size="12.00">flamingpy.utils</text>
 </g>
 <!-- flamingpy.utils.viz&#45;&gt;flamingpy.codes -->
 <g id="edge37" class="edge">

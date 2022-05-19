@@ -36,14 +36,48 @@ UML Diagrams
 
 Classes
 ^^^^^^^^^^^^ 
-.. image:: ../_static/classes_flamingpy.svg
-    :align: center
-    :width: 850px
+
+
+.. raw:: html
+    <style>
+        .wrapper{
+        width:100%; 
+        overflow-x:scroll;     
+        white-space: nowrap;
+        }
+    </style>
+
+    <div class="wrapper">   
+        <div class="text-center">
+            <img src="../_static/classes_flamingpy.svg" />
+        </div>
+    </div>
+.. .. image:: ../_static/classes_flamingpy.svg
+..     :align: center
+..     :width: 850px
 
 |
 Packages
 ^^^^^^^^^^^^
-.. image:: ../_static/packages_flamingpy.svg
-    :align: center
-    :width: 850px
+
+
+.. raw:: html
+
+    <style>
+        .wrapper{
+        width: 100%;
+        overflow-x:scroll;     
+        white-space: nowrap;
+        }
+    </style>
+
+    <div class="wrapper">   
+        <div class="text-center">
+            <img src="../_static/packages_flamingpy.svg" />
+        </div>
+    </div>
+    
+.. .. image:: ../_static/packages_flamingpy.svg
+..     :align: center
+..     :width: 850px
 
