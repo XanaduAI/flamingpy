@@ -153,7 +153,7 @@ def ec_monte_carlo(
                 decoding_time_total += decoding_time
             local_successes[0] += result
 
-    if 'MPI' in globals():
+    if "MPI" in globals():
         world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
 
     errors = int(trials - successes[0])
@@ -165,15 +165,7 @@ def ec_monte_carlo(
 
 
 def run_ec_simulation(
-    distance,
-    ec,
-    boundaries,
-    delta,
-    p_swap,
-    trials,
-    passive,
-    decoder="MWPM",
-    fname=None
+    distance, ec, boundaries, delta, p_swap, trials, passive, decoder="MWPM", fname=None
 ):
     """Run full Monte Carlo error-correction simulations for the surface
     code."""
@@ -199,7 +191,7 @@ def run_ec_simulation(
     else:
         passive_objects = None
 
-    if 'MPI' in globals():
+    if "MPI" in globals():
         world_comm = MPI.COMM_WORLD
         mpi_size = world_comm.Get_size()
         mpi_rank = world_comm.Get_rank()
