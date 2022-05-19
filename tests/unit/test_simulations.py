@@ -68,16 +68,14 @@ class TestBlueprint:
         delta = 0.001
         trials = 10
         errors_py = ec_monte_carlo(
-            world_comm,
-            mpi_rank,
-            mpi_size,
-            code,
-            trials,
-            delta,
-            p_swap,
-            "MWPM",
-            None,
-            False,
+            world_comm, 
+            mpi_rank, 
+            mpi_size, 
+            code, 
+            trials, 
+            delta, 
+            p_swap, 
+            passive_objects=None
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
@@ -115,18 +113,15 @@ class TestPassive:
             trials,
             delta,
             p_swap,
-            "MWPM",
-            passive_objects,
-            False,
+            passive_objects=passive_objects,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
 
-@pytest.mark.parametrize("passive", [True, False])
 @pytest.mark.parametrize("empty_file", [True, False])
 @pytest.mark.parametrize("sim", [run_ec_simulation])
-def test_simulations_output_file(tmpdir, passive, empty_file, sim):
+def test_simulations_output_file(tmpdir, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
