@@ -75,7 +75,7 @@ class TestPassive:
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
         bs_network = splitter_symp()
-        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap} 
+        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
         passive_objects = [RHG_macro, code.graph, CVLayer, noise_model, bs_network]
         errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
         # Check that there are no errors in all-GKP high-squeezing limit.

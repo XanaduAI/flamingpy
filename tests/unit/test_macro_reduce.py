@@ -73,7 +73,7 @@ class TestReduction:
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
         bs_network = splitter_symp(4)
-        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap, "sampling_order": "two-step"}
+        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
         reduce_macronode_graph(RHG_macro, RHG_reduced, CVLayer, noise_model, bs_network)
         # Check proper reduction to effective node type.
         for central_node in RHG_macro.macro_to_micro:
