@@ -36,7 +36,6 @@ import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-from matplotlib.ticker import FormatStrFormatter
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from flamingpy.codes import Stabilizer
