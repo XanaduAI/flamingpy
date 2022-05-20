@@ -24,18 +24,18 @@ from datetime import datetime
 from time import perf_counter
 
 from flamingpy.codes import SurfaceCode
+from flamingpy.cv.ops import splitter_symp
 from flamingpy.decoders.decoder import correct
-from flamingpy.noise.cv import CVLayer, CVMacroLayer
-from flamingpy.cv.macro_reduce import reduce_macronode_graph, splitter_symp
+from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
 
 def ec_monte_carlo(
     code,
-    noise_params,
+    noise,
+    noise_args,
+    decoder,
+    decoder_args,
     trials,
-    decoder="MWPM",
-    weight_options=None,
-    passive=False,
     return_decoding_time=False,
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
@@ -46,14 +46,11 @@ def ec_monte_carlo(
     procedure.
 
     Args:
-        code (code object): the abstract code.
+        code (instance code object): the initialized qubit code
+        noise (noise object): the noise layer (CVLayer, CVMacroLayer, or IidNoise)
+        noise_args (dict): the arguments to the noise layer
+        decoder (str): the decoding algorithm ("MWPM" or "UF")
         trials (int): the number of trials.
-        delta (float): the noise/squeezing/width parameter.
-        p_swap (float): the probability of replacing a GKP state
-            with a p-squeezed state in the lattice
-        decoder (str): the decoding algorithm ('MWPM' or 'UF')
-        passive_objects (NoneType or list, optional): the arguments for
-            reduce_macro_and_simulate for passive architecture simulations.
         return_decoding_time (bool, optional): total decoding time is returned when set to True
 
     Returns:
@@ -61,43 +58,46 @@ def ec_monte_carlo(
         decoding_time (float): the total number of seconds taken by the decoder. This parameter is
             returned only if return_decoding_time is set to True
     """
-    delta = noise_params.get("delta")
-    p_swap = noise_params.get("p_swap")
-    noise_model = {"model": "grn", "delta": delta}
-
-    if passive:
-        # The lattice with macronodes.
-        pad_bool = boundaries != "periodic"
-        macro_graph = code.graph.macronize(pad_boundary=pad_bool)
-        macro_graph.index_generator()
-        macro_graph.adj_generator(sparse=True)
-        bs_network = splitter_symp()
-        decoder = {"outer": decoder}
-    else:
+    weight_opts = decoder_args["weight_opts"]
+    decoder = {"outer": decoder}
+    if noise in (CVLayer, CVMacroLayer):
+        delta, p_swap = noise_args["delta"], noise_args["p_swap"]
+        noise_model = {"noise": "grn", "delta": delta}
+    if noise == CVLayer:
         noise_model["sampling_order"] = "initial"
-        decoder = {"inner": "basic", "outer": decoder}
-        
+        decoder["inner"] = "basic"
+    elif noise == CVMacroLayer:
+        macro_graph, bs_network = noise_args["macro_graph"], noise_args["bs_network"]
+    elif noise == IidNoise:
+        p_err = noise_args["p_err"]
+
     successes = 0
     if return_decoding_time:
         decoding_time = 0
     for _ in range(trials):
-        if passive:
-            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph)
-            CV_macro.reduce(noise_model, bs_network)
-        else:
+        if noise == CVLayer:
             CVRHG = CVLayer(code, p_swap=p_swap)
-            # Measure syndrome
             CVRHG.apply_noise(noise_model)
             CVRHG.measure_hom("p", code.all_syndrome_inds)
+        elif noise == CVMacroLayer:
+            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph)
+            CV_macro.reduce(noise_model, bs_network)
+        elif noise == IidNoise:
+            IidNoise(code, p_err).apply_noise()
 
         if return_decoding_time:
             decoding_start_time = perf_counter()
-        result = correct(code=code, decoder=decoder, weight_options=weight_options)
+
+        result = correct(code=code, decoder=decoder, weight_options=weight_opts)
+
         if return_decoding_time:
             decoding_stop_time = perf_counter()
             decoding_time += decoding_stop_time - decoding_start_time
+
         successes += result
+
     errors = trials - successes
+
     if return_decoding_time:
         return errors, decoding_time
     else:
@@ -106,44 +106,63 @@ def ec_monte_carlo(
 
 # pylint: disable=too-many-arguments
 def run_ec_simulation(
-    distance, ec, boundaries, delta, p_swap, trials, passive, decoder="MWPM", fname=None
+    trials, code, code_args, noise, noise_args, decoder, decoder_args=None, fname=None
 ):
-    """Run full Monte Carlo error-correction simulations for the surface
-    code."""
-    # The Monte Carlo simulations
-    # The qubit code
-    RHG_code = SurfaceCode(distance, ec, boundaries, backend="retworkx")
-    RHG_lattice = RHG_code.graph
-    RHG_lattice.index_generator()
-    
-    noise_params = {"delta": delta, "p_swap": p - swap}
-    
-    if passive:
-        if decoder == "MWPM":
-            weight_options = {"method": "blueprint", "prob_precomputed": True}
-        else:
-            weight_options = None
-    else:
-        if decoder == "MWPM":
-            weight_options = {"method": "blueprint", "integer": False, "multiplier": 1, "delta": delta}
-        else:
-            weight_options = None
+    """Run full Monte Carlo error-correction simulations."""
+    # Set up the objects common to all trials.
+    if decoder_args is None:
+        decoder_args = {}
 
-    # Perform the simulation
+    # Instance of the qubit QEC code
+    code_instance = code(**code_args)
+    code_instance.graph.index_generator()
+
+    # The noise model
+    # For the blueprint
+    if noise == CVLayer:
+        if decoder == "MWPM":
+            weight_opts = decoder_args.get("weight_opts")
+            if weight_opts is None:
+                weight_opts = {}
+            default_weight_opts = {
+                "method": "blueprint",
+                "integer": False,
+                "multiplier": 1,
+                "delta": noise_args.get("delta"),
+            }
+            weight_opts = {**default_weight_opts, **weight_opts}
+        else:
+            weight_opts = None
+
+    # For the passive architecture
+    elif noise == CVMacroLayer:
+        pad_bool = code_args["boundaries"] != "periodic"
+        # Instantiate macronode graph and beamsplitter network
+        macro_graph = code_instance.graph.macronize(pad_boundary=pad_bool)
+        macro_graph.index_generator()
+        macro_graph.adj_generator(sparse=True)
+        bs_network = splitter_symp()
+        noise_args.update({"bs_network": bs_network, "macro_graph": macro_graph})
+        if decoder == "MWPM":
+            weight_opts = {"method": "blueprint", "prob_precomputed": True}
+        else:
+            weight_opts = None
+
+    # For iid Z errors
+    elif noise == IidNoise:
+        weight_opts = {"method": "uniform"}
+    decoder_args.update({"weight_opts": weight_opts})
+
+    # Perform and time the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
-        RHG_code,
-        noise_params,
-        trials,
-        decoder,
-        weight_options=weight_options,
-        return_decoding_time=True,
+        code_instance, noise, noise_args, decoder, decoder_args, trials, return_decoding_time=True
     )
     simulation_stop_time = perf_counter()
 
     # Store results in the provided file-path or by default in
     # a sims_data directory in the file simulations_results.csv.
-    file_name = fname or "./flamingpy/sims_data/sims_results.csv"
+    file_name = fname or "./sims_data/sims_results.csv"
 
     # Create a CSV file if it doesn't already exist.
     # pylint: disable=consider-using-with
@@ -173,12 +192,12 @@ def run_ec_simulation(
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow(
         [
-            distance,
-            passive,
-            ec,
-            boundaries,
-            delta,
-            p_swap,
+            code_args["distance"],
+            code_args["ec"],
+            code_args["boundaries"],
+            noise_args.get("delta"),
+            noise_args.get("p_swap"),
+            noise_args.get("p_err"),
             decoder,
             errors,
             trials,
@@ -194,13 +213,13 @@ if __name__ == "__main__":
     if len(sys.argv) != 1:
         # Parsing input parameters
         parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
+        parser.add_argument("-noise", type=str)
         parser.add_argument("-distance", type=int)
         parser.add_argument("-ec", type=str)
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
         parser.add_argument("-p_swap", type=float)
         parser.add_argument("-trials", type=int)
-        parser.add_argument("-passive", type=lambda s: s == "True")
         parser.add_argument("-decoder", type=str)
         parser.add_argument(
             "-dir", type=str, help="The directory where the result file should be stored"
@@ -208,39 +227,45 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         params = {
+            "type": args.type,
             "distance": args.distance,
             "ec": args.ec,
             "boundaries": args.boundaries,
             "delta": args.delta,
             "p_swap": args.p_swap,
             "trials": args.trials,
-            "passive": args.passive,
             "decoder": args.decoder,
         }
 
     else:
         # User-specified values, if not using command line.
         params = {
-            "distance": 2,
+            "noise": "passive",
+            "distance": 3,
             "ec": "primal",
             "boundaries": "open",
-            "delta": 0.04,
-            "p_swap": 0.5,
+            "delta": 0.09,
+            "p_swap": 0.25,
+            "p_err": 0.1,
             "trials": 100,
-            "passive": True,
             "decoder": "MWPM",
         }
     # Checking that a valid decoder choice is provided
     if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
         params["decoder"] = "UF"
-    elif params["decoder"].lower() in [
-        "mwpm",
-        "minimum-weight-perfect-matching",
-        "minimum weight perfect matching",
-    ]:
+    elif params["decoder"].lower() in ["mwpm"]:
         params["decoder"] = "MWPM"
     else:
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
 
     # The Monte Carlo simulations
-    run_ec_simulation(**params)
+    code = SurfaceCode
+    code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
+
+    noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
+    noise = noise_dict[params["noise"]]
+    noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
+
+    decoder = params["decoder"]
+    args = [params["trials"], code, code_args, noise, noise_args, decoder]
+    run_ec_simulation(*args)

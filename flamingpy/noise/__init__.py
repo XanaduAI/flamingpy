@@ -13,4 +13,4 @@
 # limitations under the License.
 """The noise module."""
 from .iid import IidNoise
-from .cv import CVLayer
+from .cv import CVLayer, CVMacroLayer
