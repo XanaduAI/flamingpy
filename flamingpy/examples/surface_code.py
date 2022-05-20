@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Example for building and visualizing RHG lattices and surface codes."""
+
+# pylint: disable=too-many-locals,too-many-arguments
+
 import matplotlib.pyplot as plt
 import numpy as np
 
