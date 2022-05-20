@@ -111,7 +111,7 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
         "delta": 0.04,
         "p_swap": 0.5,
         "trials": 100,
-        "passive": True,
+        "passive": passive,
         "decoder": "MWPM",
     }
 
