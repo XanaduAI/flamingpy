@@ -22,7 +22,7 @@ from flamingpy.noise.cv import CVLayer, CVMacroLayer
 total = 100
 # Code parameters
 d = 3
-boundaries = "periodic"
+boundaries = "open"
 ec = "primal"
 # Noise parameters
 delta = 0.1
@@ -42,12 +42,13 @@ RHG_macro.adj_generator(sparse=True)
 # star at index 0, planets at indices 1-3.
 bs_network = splitter_symp()
 
-noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
+noise_model = {"noise": "grn", "delta": delta}
 
 successes = 0
 for trial in range(total):
-    # The empty CV state, uninitiated with any error model.
-    reduce_macronode_graph(RHG_macro, RHG_reduced, CVLayer, noise_model, bs_network)
+    # The CV macronode noise layer and reduction
+    CV_macro = CVMacroLayer(RHG_macro, p_swap=p_swap, reduced_graph=RHG_reduced)
+    CV_macro.reduce(noise_model, bs_network)
     decoder = {"outer": "MWPM"}
     decoder_opts = {"backend": "networkx"}
     if decoder["outer"] == "MWPM":

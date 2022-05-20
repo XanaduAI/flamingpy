@@ -18,6 +18,7 @@
 import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
+from thewalrus.symplectic import expand, beam_splitter
 
 
 def invert_permutation(p):
