@@ -28,14 +28,16 @@ from flamingpy.cv.ops import splitter_symp
 from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
+noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
+reverse_dict = {b:a for a, b in noise_dict.items()}
 
 def ec_monte_carlo(
+    trials,
     code,
     noise,
     noise_args,
     decoder,
     decoder_args,
-    trials,
     return_decoding_time=False,
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
@@ -156,13 +158,13 @@ def run_ec_simulation(
     # Perform and time the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
-        code_instance, noise, noise_args, decoder, decoder_args, trials, return_decoding_time=True
+        trials, code_instance, noise, noise_args, decoder, decoder_args, return_decoding_time=True
     )
     simulation_stop_time = perf_counter()
 
     # Store results in the provided file-path or by default in
     # a sims_data directory in the file simulations_results.csv.
-    file_name = fname or "./sims_data/sims_results.csv"
+    file_name = fname or ".flamingpy/sims_data/sims_results.csv"
 
     # Create a CSV file if it doesn't already exist.
     # pylint: disable=consider-using-with
@@ -170,13 +172,13 @@ def run_ec_simulation(
         file = open(file_name, "x", newline="", encoding="utf8")
         writer = csv.writer(file)
         writer.writerow(
-            [
+            [   "noise",
                 "distance",
-                "passive",
                 "ec",
                 "boundaries",
                 "delta",
                 "p_swap",
+                "p_err",
                 "decoder",
                 "errors_py",
                 "trials",
@@ -191,7 +193,8 @@ def run_ec_simulation(
         writer = csv.writer(file)
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow(
-        [
+        [   
+            reverse_dict[noise],
             code_args["distance"],
             code_args["ec"],
             code_args["boundaries"],
@@ -227,7 +230,7 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         params = {
-            "type": args.type,
+            "noise": args.noise,
             "distance": args.distance,
             "ec": args.ec,
             "boundaries": args.boundaries,
@@ -262,7 +265,7 @@ if __name__ == "__main__":
     code = SurfaceCode
     code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
-    noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
+    
     noise = noise_dict[params["noise"]]
     noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
 
