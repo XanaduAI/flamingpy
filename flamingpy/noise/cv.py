@@ -345,16 +345,17 @@ class CVLayer:
 
 class CVMacroLayer(CVLayer):
     """The CV macronode noise layer."""
+
     def __init__(self, *args, reduced_graph, **kwargs):
         super().__init__(*args, **kwargs)
         self.reduced_graph = reduced_graph
 
     def _apply_initial_noise(self, noise_model):
         """Set up the two-step noise model for macro_graph.
-    
+
         Based on noise_layer and noise_model, populate macro_graph with states and
         sample for the initial (ideal) measurement outcomes.
-    
+
         This function modifies macro_graph.
         """
         macro_graph = self.egraph
@@ -366,19 +367,19 @@ class CVMacroLayer(CVLayer):
         noise_model["perfect_inds"] = perfect_inds
         noise_model["sampling_order"] = "two-step"
         self.apply_noise(noise_model)
-    
+
     def _permute_indices_and_label(self):
         """Obtain permuted indices and set type of reduced node.
-    
+
         For each macronode, permute indices so that the first encountered GKP state
         comes first, designating it as the 'star' ('central') mode. The first
         index in the resulting list and every four indices thereafter correspond
         to star modes. The rest are 'planets' ('satellite' modes).
-    
+
         For each star, associate a 'body_index' of 1, and 2, 3, and 4 for the
         subsequent planets. Additionally, if a macronode contains at least one GKP
         state, label the reduced state as 'GKP' (otherwise 'p').
-    
+
         This function returns a list and modified reduced_graph.
         """
         N = self._N
@@ -414,15 +415,14 @@ class CVMacroLayer(CVLayer):
                 k += 1
             permuted_inds[[i, i + 1, i + 2, i + 3]] = new_inds
         self.permuted_inds = permuted_inds
-    
-    
+
     def _entangle_states(self, symp_bs):
         """Entangle the states in the macro_graph.
-    
+
         Apply CZ gates to (i.e. a symplectic CZ matrix to the quadratures of)
         macro_graph, based on where the edges are in the graph. Then, apply the
         four-splitter to each macronode.
-    
+
         Return the permuted quadratures and the corresponding permutation vector.
         """
         macro_graph = self.egraph
@@ -442,10 +442,9 @@ class CVMacroLayer(CVLayer):
         self.permuted_quads = permuted_quads
         self.quad_permutation = quad_permutation
 
-    
     def _measure_syndrome(self):
         """Measure the syndrome of noisy_macro_state.
-    
+
         Conduct p-homodyne measurements on the stars (central modes) of
         noisy_macro_state and q-homodyne measurements to the planets
         (satellite modes). This effectively conducts an X-basis measurement
@@ -460,11 +459,10 @@ class CVMacroLayer(CVLayer):
         # Measure stars in p, planets in q.
         self.measure_hom(quad="p", inds=stars, updated_quads=unpermuted_quads)
         self.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
-    
-    
+
     def _neighbor_of_micro_i_macro_j(self, i, j):
         """Return the neighbor of the ith micronode, jth macronode in macro_graph.
-    
+
         Suppose micronode i (in macronode j) is adjacent to a neighbor.
         Return the vertex (tuple) and the body index of the neighbor to help
         the subsequent processing rules. If there is no such neighbor,
@@ -481,11 +479,10 @@ class CVMacroLayer(CVLayer):
             ith_body_index = macro_graph.nodes[ith_neighbor]["body_index"]
             return ith_neighbor, ith_body_index
         return None
-    
-    
+
     def _hom_outcomes(self, vertex):
         """Measurement outcomes in the macronode containing vertex.
-    
+
         Return the values of the homodyne measurements of the macronode
         containing vertex. Note we are only interested in q-homodyne
         outcomes; the returned list is of the form [0, 0, q2, q3, q4]. If
@@ -506,11 +503,10 @@ class CVMacroLayer(CVLayer):
             if index != 1:
                 meas[index] = macro_graph.nodes[micro]["hom_val_q"]
         return meas
-    
-    
+
     def _process_neighboring_outcomes(self, neighbor_hom_vals, neighbor_body_index):
         """Process homodyne outcomes for a neighboring macronode.
-    
+
         Suppose some micronode is connected to a neighboring micronode, i. i
         has a certain body index and belongs to a macronode with measurement
         results neighbor_hom_vals. Use this information to process the
@@ -526,15 +522,14 @@ class CVMacroLayer(CVLayer):
         if neighbor_body_index == 4:
             return neighbor_hom_vals[2] + neighbor_hom_vals[3]
         return None
-    
-    
+
     def _reduce_jth_macronode(self, j):
         """Obtain the bit value and error probability for the jth macronode.
-    
+
         Process the measurement outcomes of the jth macronode in macro_graph to
         populate the corresponding reduced node in reduced_graph with a bit value
         and conditional phase error probability.
-    
+
         This function modifies reduced_graph.
         """
         macro_graph = self.egraph
@@ -543,15 +538,13 @@ class CVMacroLayer(CVLayer):
         to_points = macro_graph.to_points
         star_index = self.permuted_inds[j]
         vertex = self.to_points[star_index]
-    
+
         # Here, j corresponds to the macronode and i to to micronode.
         # i ranges from 1 to 4, to align with manuscript.
-        verts_and_inds = [
-            self._neighbor_of_micro_i_macro_j(i, j) for i in (1, 2, 3, 4)
-        ]
+        verts_and_inds = [self._neighbor_of_micro_i_macro_j(i, j) for i in (1, 2, 3, 4)]
         neighbors = [tup[0] if tup else None for tup in verts_and_inds]
         body_indices = [tup[1] if tup else None for tup in verts_and_inds]
-    
+
         # Array of arrays of measurement outcomes in all the
         # macronodes adjacent to j.
         m_arr = np.array([self._hom_outcomes(neighbors[i - 1]) for i in (1, 2, 3, 4)])
@@ -559,14 +552,19 @@ class CVMacroLayer(CVLayer):
         # macronodes of the form [0, Z(1), Z(2), Z(3), Z(4)].
         Z_arr = np.array(
             [0]
-            + [self._process_neighboring_outcomes(m_arr[i - 1], body_indices[i - 1]) for i in (1, 2, 3, 4)]
+            + [
+                self._process_neighboring_outcomes(m_arr[i - 1], body_indices[i - 1])
+                for i in (1, 2, 3, 4)
+            ]
         )
         # p-homodyne outcome of the star node.
         star_p_val = macro_graph.nodes[vertex]["hom_val_p"]
-    
+
         # Types of state for the four micronodes directly neighboring
         # macronode j.
-        types = [macro_graph.nodes[neighbor]["state"] if neighbor else None for neighbor in neighbors]
+        types = [
+            macro_graph.nodes[neighbor]["state"] if neighbor else None for neighbor in neighbors
+        ]
         # Phase error probability and number of p-squeezed states
         # among the four micronodes in the vicinity of macronode j
         p_err = 0
@@ -585,30 +583,29 @@ class CVMacroLayer(CVLayer):
             p_err += Z_err_cond(2 * (2 + num_p) * delta, outcome, use_hom_val=True)
         p_err = min(p_err, 0.5)
         p_err = max(p_err, 0)
-    
+
         bitp = GKP_binner([outcome])[0]
         bitq = GKP_binner(Z_arr[gkp_inds].astype(np.float64)) if gkp_inds else 0
-    
+
         processed_bit_val = (bitp + np.sum(bitq)) % 2
-    
+
         # Update the reduced RHG lattice with the effective
         # homodyne value and the phase error probability.
         central_vert = tuple(round(i) for i in vertex)
         self.reduced_graph.nodes[central_vert]["bit_val"] = processed_bit_val
         self.reduced_graph.nodes[central_vert]["p_phase_cond"] = p_err
-    
-    
+
     def reduce(self, noise_model, symp_bs):
         """Reduce the macronode lattice macro_graph to the canonical reduced_graph.
-    
+
         Follow the procedure in arXiv:2104.03241. Take the macronode lattice
         macro_graph, apply noise based on noise_layer and noise_model, designate
         micronodes as planets and stars, conduct homodyne measurements, process
         these measurements, and compute conditional phase error probabilities.
-    
+
         Modify reduced_graph into a canonical lattice with effective measurement
         outcomes and phase error probabilities stored as node attributes.
-    
+
         Args:
             macro_graph (EGraph): the macronode lattice
             reduced_graph (EGraph): the reduced lattice
@@ -617,7 +614,7 @@ class CVMacroLayer(CVLayer):
                 noise_layer
             bs_network (np.array): the beamsplitter network used to entangle the
                 macronodes.
-    
+
         Returns:
             None
         """
