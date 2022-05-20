@@ -15,7 +15,7 @@
 import matplotlib.pyplot as plt
 
 from flamingpy.codes.graphs import EGraph
-from flamingpy.cv.ops import CVLayer
+from flamingpy.noise import CVLayer
 
 show = __name__ == "__main__"
 

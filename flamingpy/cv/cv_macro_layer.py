@@ -23,52 +23,6 @@ from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 from thewalrus.symplectic import expand, beam_splitter
 
 
-def invert_permutation(p):
-    """Invert the permutation associated with p."""
-    p_inverted = np.empty(p.size, p.dtype)
-    p_inverted[p] = np.arange(p.size)
-    return p_inverted
-
-
-def splitter_symp(n=4):
-    """Return the symplectic matrix of a four-splitter.
-
-    Return the symplectic matrix of the beamsplitters connecting the four
-    micronodes in each macronode. `n` refers to the total number of modes
-    (so n >= 4). If n = 4, return the matrix in the 'all q's first' convention;
-    otherwise, return a large block-diagonal matrix in the 'q1p1, ..., qnpn'
-    convention.
-
-    Args:
-        n (int, optional): the total number of modes on which the beamsplitters
-            apply (n must be >= 4).
-
-    Returns:
-        numpy.array: the sympletic matrix of the four-splitter.
-    """
-    # 50/50 beamsplitter in the 'all q's first' convention.
-    bs5050 = beam_splitter(np.pi / 4, 0)
-    bs1 = expand(bs5050, [1, 0], 4)
-    bs2 = expand(bs5050, [3, 2], 4)
-    bs3 = expand(bs5050, [2, 0], 4)
-    bs4 = expand(bs5050, [3, 1], 4)
-    bs_network = (bs4 @ bs3 @ bs2 @ bs1).astype(np.single)
-    if n == 4:
-        return bs_network
-    if n > 4:
-        # Permutation away from 'all q's first' convention for matrices of
-        # with dimension 4 and the network spanning all the macronoes.
-        perm_out_4 = [0, 4, 1, 5, 2, 6, 3, 7]
-        bs_perm = bs_network[:, perm_out_4][perm_out_4, :]
-        # Symplectic corresponding to the beasmplitter network spanning
-        # the whole lattice.
-        bs_full = block_diag(*[bs_perm] * (n // 4))
-        return bs_full
-    else:
-        print("Total number of modes cannot be less than 4.")
-        raise Exception
-
-
 class CVMacroLayer(CVLayer):
     """The CV macronode noise layer."""
     def __init__(self, *args, reduced_graph, **kwargs):

@@ -86,8 +86,8 @@ To see a sample of what FlamingPy can do, let us first import a few important ob
 
 ```
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import correct
+from flamingpy.noise import CVLayer
 ```
 
 Next, let us instantiate an RHG lattice -- the measurement-based version of the surface code:

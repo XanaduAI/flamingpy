@@ -22,10 +22,9 @@ from numpy.random import default_rng
 import pytest
 
 from flamingpy.codes import alternating_polarity, Stabilizer, SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import assign_weights, CV_decoder, GKP_binner
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
-
+from flamingpy.noise import CVLayer
 
 # Test parameters
 

@@ -16,9 +16,8 @@ visualizing this procedure for the measurement-based surface code."""
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
-from flamingpy.noise import IidNoise
+from flamingpy.noise import CVLayer, IidNoise
 
 
 def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=True, show=False):

@@ -23,10 +23,9 @@ import pytest
 import networkx as nx
 
 from flamingpy.codes.surface_code import SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import CV_decoder, GKP_binner, assign_weights
 from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
-
+from flamingpy.noise import CVLayer
 
 # Test parameters
 matching_graph_types = [LemonMatchingGraph, RxMatchingGraph]

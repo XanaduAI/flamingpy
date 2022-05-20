@@ -25,7 +25,7 @@ from time import perf_counter
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
-from flamingpy.cv.ops import CVLayer
+from flamingpy.noise.cv import CVLayer
 from flamingpy.cv.macro_reduce import reduce_macronode_graph, splitter_symp
 
 

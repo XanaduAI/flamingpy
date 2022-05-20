@@ -13,9 +13,8 @@
 # limitations under the License.
 """Cython-based Monte Carlo simulations for estimating FT thresholds."""
 from flamingpy.decoders.decoder import correct
-from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import reduce_macronode_graph
-
+from flamingpy.noise import CVLayer
 
 cpdef int cpp_mc_loop(object code, int trials, dict decoder, dict weight_options, object passive_objects, double p_swap, double delta, dict cv_noise):
     """Exclusively run loop section of Monte Carlo simulations of error-correction on code=code."""

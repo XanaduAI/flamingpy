@@ -22,9 +22,8 @@ from numpy.random import shuffle, default_rng as rng
 import pytest
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import invert_permutation, splitter_symp, reduce_macronode_graph
-
+from flamingpy.noise import CVLayer
 
 code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "periodic"], ["primal", "dual"])
 

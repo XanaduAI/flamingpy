@@ -22,17 +22,15 @@ import numpy as np
 import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import (
     assign_weights,
     CV_decoder,
     recovery,
     check_correction,
 )
-
 from flamingpy.decoders.mwpm import mwpm_decoder
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
-
+from flamingpy.noise import CVLayer
 
 code_params = it.product(
     [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]

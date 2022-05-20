@@ -17,10 +17,9 @@ import time
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import SurfaceCode, alternating_polarity
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 from flamingpy.decoders.mwpm.algos import build_match_graph
-
+from flamingpy.noise import CVLayer
 
 # How many simulations to do for each algorithm.
 num_trials = 10

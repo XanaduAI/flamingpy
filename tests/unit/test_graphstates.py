@@ -26,7 +26,8 @@ import scipy.sparse as sp
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.codes.graphs import EGraph
-from flamingpy.cv.ops import CVLayer, SCZ_mat, SCZ_apply
+from flamingpy.cv.ops import SCZ_mat, SCZ_apply
+from flamingpy.noise import CVLayer
 
 # A NetworkX random graph of size N for use in this module.
 N = 20

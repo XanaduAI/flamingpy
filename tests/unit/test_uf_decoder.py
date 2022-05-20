@@ -24,9 +24,7 @@ import pytest
 import retworkx as rx
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import assign_weights, CV_decoder
-
 from flamingpy.decoders.unionfind.uf_classes import Node, Root, Support, Boundary
 from flamingpy.codes.graphs.stabilizer_graph import RxStabilizerGraph
 from flamingpy.codes.stabilizer import Stabilizer
@@ -37,6 +35,7 @@ from flamingpy.decoders.unionfind.algos import (
     peeling,
     union,
 )
+from flamingpy.noise import CVLayer
 
 
 code_params = it.product(

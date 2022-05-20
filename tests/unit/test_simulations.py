@@ -21,7 +21,7 @@ import re
 import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
+from flamingpy.noise import CVLayer
 from flamingpy.cv.macro_reduce import splitter_symp
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
