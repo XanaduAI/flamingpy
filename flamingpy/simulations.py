@@ -25,12 +25,18 @@ from time import perf_counter
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
-from flamingpy.noise.cv import CVLayer
+from flamingpy.noise.cv import CVLayer, CVMacroLayer
 from flamingpy.cv.macro_reduce import reduce_macronode_graph, splitter_symp
 
 
 def ec_monte_carlo(
-    code, trials, delta, p_swap, decoder="MWPM", passive_objects=None, return_decoding_time=False
+    code,
+    noise_params,
+    trials,
+    decoder="MWPM",
+    weight_options=None,
+    passive=False,
+    return_decoding_time=False,
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
 
@@ -55,38 +61,33 @@ def ec_monte_carlo(
         decoding_time (float): the total number of seconds taken by the decoder. This parameter is
             returned only if return_decoding_time is set to True
     """
-    if passive_objects is not None:
-        decoder = {"outer": decoder}
-        if decoder["outer"] == "MWPM":
-            weight_options = {"method": "blueprint", "prob_precomputed": True}
-        else:
-            weight_options = None
-    else:
-        # Noise model
-        cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
-        # Decoding options
-        decoder = {"inner": "basic", "outer": decoder}
-        if decoder["outer"] == "MWPM":
-            weight_options = {
-                "method": "blueprint",
-                "integer": False,
-                "multiplier": 1,
-                "delta": delta,
-            }
-        else:
-            weight_options = None
+    delta = noise_params.get("delta")
+    p_swap = noise_params.get("p_swap")
+    noise_model = {"model": "grn", "delta": delta}
 
+    if passive:
+        # The lattice with macronodes.
+        pad_bool = boundaries != "periodic"
+        macro_graph = code.graph.macronize(pad_boundary=pad_bool)
+        macro_graph.index_generator()
+        macro_graph.adj_generator(sparse=True)
+        bs_network = splitter_symp()
+        decoder = {"outer": decoder}
+    else:
+        noise_model["sampling_order"] = "initial"
+        decoder = {"inner": "basic", "outer": decoder}
+        
     successes = 0
     if return_decoding_time:
         decoding_time = 0
     for _ in range(trials):
-        if passive_objects is not None:
-            reduce_macronode_graph(*passive_objects)
+        if passive:
+            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph)
+            CV_macro.reduce(noise_model, bs_network)
         else:
-            # Apply noise
             CVRHG = CVLayer(code, p_swap=p_swap)
             # Measure syndrome
-            CVRHG.apply_noise(cv_noise)
+            CVRHG.apply_noise(noise_model)
             CVRHG.measure_hom("p", code.all_syndrome_inds)
 
         if return_decoding_time:
@@ -109,31 +110,34 @@ def run_ec_simulation(
 ):
     """Run full Monte Carlo error-correction simulations for the surface
     code."""
-
     # The Monte Carlo simulations
-
     # The qubit code
     RHG_code = SurfaceCode(distance, ec, boundaries, backend="retworkx")
     RHG_lattice = RHG_code.graph
     RHG_lattice.index_generator()
+    
+    noise_params = {"delta": delta, "p_swap": p - swap}
+    
     if passive:
-        # The lattice with macronodes.
-        pad_bool = boundaries != "periodic"
-        RHG_macro = RHG_lattice.macronize(pad_boundary=pad_bool)
-        RHG_macro.index_generator()
-        RHG_macro.adj_generator(sparse=True)
-        # Define the 4X4 beamsplitter network for a given macronode.
-        # star at index 0, planets at indices 1-3.
-        bs_network = splitter_symp()
-        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
-        passive_objects = [RHG_macro, RHG_lattice, CVLayer, noise_model, bs_network]
+        if decoder == "MWPM":
+            weight_options = {"method": "blueprint", "prob_precomputed": True}
+        else:
+            weight_options = None
     else:
-        passive_objects = None
+        if decoder == "MWPM":
+            weight_options = {"method": "blueprint", "integer": False, "multiplier": 1, "delta": delta}
+        else:
+            weight_options = None
 
     # Perform the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
-        RHG_code, trials, delta, p_swap, decoder, passive_objects, True
+        RHG_code,
+        noise_params,
+        trials,
+        decoder,
+        weight_options=weight_options,
+        return_decoding_time=True,
     )
     simulation_stop_time = perf_counter()
 
