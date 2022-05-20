@@ -13,8 +13,6 @@
 # limitations under the License.
 """"Unit tests for functions in the viz module."""
 
-# pylint: disable=no-self-use
-
 import math
 import numpy as np
 from numpy.random import default_rng as rng
