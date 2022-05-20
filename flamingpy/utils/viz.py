@@ -29,6 +29,7 @@ To modify the plot parameters use, for example,
 
 import itertools as it
 
+import math
 import numpy as np
 import networkx as nx
 import matplotlib as mpl

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions useful for binning and errors associated with GKP encodings."""
-import math
 import numpy as np
 from scipy.special import erf
 
