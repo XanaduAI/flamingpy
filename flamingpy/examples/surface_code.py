@@ -15,7 +15,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity
+from flamingpy.codes.surface_code import SurfaceCode
 
 
 def surface_code(d, boundaries, err, polarity, show=False):

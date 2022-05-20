@@ -4,6 +4,8 @@ sidebar.
 Loosely based on https://github.com/astropy/astropy/pull/347
 """
 
+# pylint: disable=missing-function-docstring
+
 import os
 import warnings
 
