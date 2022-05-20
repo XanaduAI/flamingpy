@@ -40,8 +40,8 @@ def to_pi_string(x, tex: bool = True, d=2):
     return "{:.{}f}".format(x, d)
 
 
-class GKPFormatter(Formatter):
-    """Formatter for GKP binning plots used to create a string based on a tick value."""
+class PiFormatter(Formatter):
+    """Formatter for axis-ticks containing multiples of sqrt(pi)/2."""
 
     def __init__(self, tex: bool = True, d: int = 2):
         """
