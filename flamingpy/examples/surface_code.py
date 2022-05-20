@@ -18,7 +18,7 @@ import numpy as np
 from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity
 
 
-def surface_code(d, boundaries, err, polarity, show=False, stabilizer_indices=(0,)):
+def surface_code(d, boundaries, err, polarity, stabilizer_inds=None, show=False):
     """Example for building and visualizing RHG lattices and surface codes.
 
     Args:
@@ -27,7 +27,8 @@ def surface_code(d, boundaries, err, polarity, show=False, stabilizer_indices=(0
         err (float): error complex ("primal" or "dual")
         polarity (int): polarity
         show (bool): if True, show the plot
-        stabilizer_indices (list): indices of the stabilizers you'd like to plot
+        stabilizer_indices (list): indices of the stabilizers to plot (all by
+            default).
     """
 
     # Instantiate a surface code.
@@ -51,12 +52,14 @@ def surface_code(d, boundaries, err, polarity, show=False, stabilizer_indices=(0
 
         stabilizers = getattr(RHG_code, ec + "_stabilizers")
 
-        for index in stabilizer_indices:
-            stabilizer = stabilizers[index]
+        if stabilizer_inds is None:
+            stabilizer_inds = range(len(stabilizers))
+        for ind in stabilizer_inds:
+            stabilizer = stabilizers[ind]
             color = np.random.rand(3)
             for point in stabilizer.egraph:
                 x, z, y = point
-                RHG_fig.scatter(x, z, y, color=color, s=200)
+                RHG_fig.scatter(x, z, y, color=color, s=40)
 
     if show:
         plt.show()
@@ -74,8 +77,11 @@ if __name__ == "__main__":
         # Error complex ("primal" or "dual")
         "err": "primal",
         # Polarity (edge weight pattern in graph state -- all unit weights by default)
-        "polarity": None
-        # polarity = alternating_polarity'
+        "polarity": None,
+        # polarity = alternating_polarity,
+        # indices of stabilizer nodes to scatter
+        # "stabilizer_inds": [0, 3],
+        "show": True,
     }
 
-    surface_code(**params, show=True)
+    surface_code(**params)
