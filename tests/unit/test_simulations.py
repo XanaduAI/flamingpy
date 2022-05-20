@@ -21,8 +21,8 @@ import re
 import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.noise import CVLayer
-from flamingpy.cv.macro_reduce import splitter_symp
+from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
+from flamingpy.cv.ops import splitter_symp
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
@@ -47,7 +47,10 @@ class TestBlueprint:
         p_swap = 0
         delta = 0.001
         trials = 10
-        errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None)
+        noise_args = {"delta": delta, "p_swap": p_swap}
+        decoder_args = {}
+        decoder_args["weight_opts"] = {"method": "blueprint", "integer": False, "multiplier": 1, "delta": noise_args.get("delta")}
+        errors_py = ec_monte_carlo(trials, code, CVLayer, noise_args, "MWPM", decoder_args)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
@@ -72,9 +75,9 @@ class TestPassive:
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
         bs_network = splitter_symp()
-        noise_model = {"noise": "grn", "delta": delta, "p_swap": p_swap}
-        passive_objects = [RHG_macro, code.graph, CVLayer, noise_model, bs_network]
-        errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
+        noise_args = {"delta": delta, "p_swap": p_swap, "macro_graph": RHG_macro, "bs_network": bs_network}
+        decoder_args= {"weight_opts": None}
+        errors_py = ec_monte_carlo(trials, code, CVMacroLayer, noise_args, "MWPM", decoder_args)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
@@ -86,10 +89,10 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
-        "distance,passive,ec,boundaries,delta,p_swap,decoder,errors_py,"
+        "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors_py,"
         + "trials,current_time,decoding_time,simulation_time"
     )
-    dummy_content = "2,True,primal,open,0.04,0.5,2,10,12:34:56,10,20"
+    dummy_content = "blueprint,3,primal,open,0.04,0.5,0.2,MWPM,2,10,12:34:56,10,20"
     if "benchmark" in sim.__name__:
         expected_header += ",cpp_to_py_speedup"
         dummy_content += ",1"
@@ -103,17 +106,28 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
 
     # simulation params
     params = {
-        "distance": 2,
+        "noise": "blueprint",
+        "distance": 3,
         "ec": "primal",
         "boundaries": "open",
-        "delta": 0.04,
-        "p_swap": 0.5,
+        "delta": 0.09,
+        "p_swap": 0.25,
+        "p_err": 0.1,
         "trials": 100,
-        "passive": True,
         "decoder": "MWPM",
     }
 
-    sim(**params, fname=f)
+    # The Monte Carlo simulations
+    code = SurfaceCode
+    code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
+
+    noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
+    noise = noise_dict[params["noise"]]
+    noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
+
+    decoder = params["decoder"]
+    args = [params["trials"], code, code_args, noise, noise_args, decoder]
+    sim(*args, fname=f)
 
     file_lines = f.readlines()
     # file is created with header and result lines
