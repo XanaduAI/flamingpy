@@ -22,7 +22,7 @@ def to_pi_string(x, tex: bool = True, d=2):
     """Convert x, a multiple of sqrt(pi)/2, to a pretty string.
 
     If x is not a multiple of sqrt(pi)/2, return the unmodified string
-    of x with `d` decimals. If tex is True, add LaTeX $ signs.
+    of x with `d` integers after the decimal. If tex is True, add LaTeX $ signs.
     """
     remainder = math.remainder(x, np.sqrt(np.pi) / 2)
     if np.isclose(remainder, 0):
