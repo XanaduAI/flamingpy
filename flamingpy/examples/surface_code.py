@@ -15,7 +15,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from flamingpy.codes.surface_code import SurfaceCode, alternating_polarity    # pylint: disable=unused-import
+from flamingpy.codes.surface_code import (
+    SurfaceCode,
+    alternating_polarity,
+)  # pylint: disable=unused-import
 
 
 def surface_code(d, boundaries, err, polarity, show=False):
