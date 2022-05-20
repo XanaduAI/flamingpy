@@ -43,3 +43,6 @@ def test_to_pi_string():
     rand_d = rng().integers(2, 25)
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
         assert to_pi_string(rand_numb, d=rand_d) == "{:.{}f}".format(rand_numb, rand_d)
+
+    # Test for tex=False
+    assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
