@@ -37,7 +37,7 @@ def to_pi_string(x, tex: bool = True, d=2):
             + bool(tex) * "$"
         )
         return x_str
-    return "{:.{}f}".format(x, d)
+    return f"{x:.{d}f}"
 
 
 class GKPFormatter(Formatter):
