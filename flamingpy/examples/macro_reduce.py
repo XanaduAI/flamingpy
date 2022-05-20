@@ -14,9 +14,9 @@
 """Example of simulating Xanadu's passive and static architecture."""
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import reduce_macronode_graph, splitter_symp
+from flamingpy.cv.ops import splitter_symp
 from flamingpy.decoders.decoder import correct
+from flamingpy.noise.cv import CVLayer, CVMacroLayer
 
 # Number of trials
 total = 100
