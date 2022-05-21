@@ -21,7 +21,9 @@
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand
+Nariman Saadatmand, [Trevor Vincent](https://github.com/trevor-vincent)
+
+See full commit details ...
 
 ---
 
