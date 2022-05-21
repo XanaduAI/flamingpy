@@ -16,6 +16,7 @@ as well as the following Python packages for development purposes:
 * `cython <https://cython.org/>`_ >= 0.29.28
 * `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
+* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (required only for Linux users)
 * `networkx <https://networkx.org/>`_ >= 2.5
 * `NumPy <http://numpy.org/>`_ >= 1.21
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
