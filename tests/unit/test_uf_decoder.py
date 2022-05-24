@@ -295,7 +295,7 @@ class TestUnionFindFunctions:
             elif ec == "dual":
                 stabilizer_graph = enc_state[0].dual_stab_graph
             # Initializing the clusters based on erased edges and non-trivial syndrome
-            node_dict, cluster_trees, odd_clusters = initialize_cluster_trees(stabilizer_graph)
+            _, cluster_trees, _ = initialize_cluster_trees(stabilizer_graph)
 
             # Generate the erasure graph
             erasure_graph = rx.PyGraph()
