@@ -722,7 +722,6 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
             )
         else:
             print("\nMatching graph empty!\n")
-        
 
     # Drawing the syndrome
     fig3, ax3 = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
