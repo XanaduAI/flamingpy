@@ -714,7 +714,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     # Drawing the matching graph
     if G_match:
         if len(G_match.graph):
-            G_match.draw(
+            fig2, ax2 = G_match.draw(
                 title=ec.capitalize() + " matching graph" if show_title else "",
                 label_edges=label_edges,
                 node_labels=node_labels,
