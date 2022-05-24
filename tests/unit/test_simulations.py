@@ -150,7 +150,7 @@ def test_simulations_output_file(tmpdir, empty_file, sim):
         "trials": 100,
         "passive": True,
         "decoder": "MWPM",
-    }
+    } # Should we switch to using "passive": passive instead?
 
     sim(**params, fname=f)
 
