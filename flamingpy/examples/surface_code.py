@@ -24,14 +24,16 @@ from flamingpy.codes.surface_code import (
 )
 
 
-def surface_code(d, boundaries, err, polarity, stabilizer_inds=None, show=False):
+def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, show=False):
     """Example for building and visualizing RHG lattices and surface codes.
 
+    See more details about the following arguments in the SurfaceCode class.
+
     Args:
-        d (int): code distance
-        boundaries (list): boundaries ("open" or "periodic")
-        err (float): error complex ("primal" or "dual")
-        polarity (int): polarity
+        d (int): the code distance
+        boundaries (str): the code boundaries ("open" or "periodic")
+        err (str): the error complex ("primal" or "dual")
+        polarity (func): the polarity (edge weight) function
         show (bool): if True, show the plot
         stabilizer_indices (list): indices of the stabilizers to plot (all by
             default).
@@ -90,4 +92,4 @@ if __name__ == "__main__":
         "show": True,
     }
 
-    surface_code(**params)
+    illustrate_surface_code(**params)

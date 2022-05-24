@@ -56,12 +56,12 @@ def test_macro_reduce_example():
 @pytest.mark.parametrize("boundaries", ["periodic", "open"])
 def test_surface_code_example(boundaries):
     """Simple test for the surface_code module in flamingpy.examples."""
-    from flamingpy.examples.surface_code import surface_code
+    from flamingpy.examples.surface_code import illustrate_surface_code
 
     d = 2
     err = "primal"
     polarity = None
-    surface_code(d, boundaries, err, polarity, show=False)
+    illustrate_surface_code(d, boundaries, err, polarity, show=False)
 
 
 def test_lemon_benchmark():
