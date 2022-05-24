@@ -538,7 +538,6 @@ class UnionFindDecoder:
             ]
         )
 
-        # pylint: disable= unused-argument
         def fn(code):
             return 2
 
