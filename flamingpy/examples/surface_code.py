@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Example for building and visualizing RHG lattices and surface codes."""
+
+# pylint: disable=unused-import
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from flamingpy.codes.surface_code import (
     SurfaceCode,
     alternating_polarity,
-)  # pylint: disable=unused-import
+)
 
 
 def surface_code(d, boundaries, err, polarity, show=False):
