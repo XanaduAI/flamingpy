@@ -142,12 +142,13 @@ class Support:
         elif edge_status == "half-grown":
             self.status[frozenset(edge)] = "grown"
             return edge
+        return None
 
     def span_forest(self, stabilizer_graph=None):
         """Obtain the spanning forest from the grown clusters."""
         spanning_forest = rx.PyGraph()
         stab_index_to_node = {}
-        while self.status != {}:
+        while self.status:
             edge, status = self.status.popitem()
             edge = list(edge)
             if status == "grown":

@@ -6,6 +6,12 @@
 * Added a warning message that is raised when plotting very large codes.
 ### Improvements
 
+* Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
+* Improvements to the decoding example. [#51](https://github.com/XanaduAI/flamingpy/pull/44/files)
+ * Rename function and add dosctring.
+ * Decrease size of markers for plotting stabilizer nodes.
+ * Improve way to scatter stabilizers via specifying indices.
+
 ### Documentation changes
 
 * A pipeline for adding tutorials to the docs was introduced. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
@@ -14,6 +20,12 @@
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 
 ### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+
+See full commit details ...
 
 ---
 
