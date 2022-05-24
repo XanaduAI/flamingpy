@@ -3,7 +3,7 @@
 ### New features since the last release
 
 ### Bug fixes
-
+* Added a warning message that is raised when plotting very large codes.
 ### Improvements
 
 ### Documentation changes
