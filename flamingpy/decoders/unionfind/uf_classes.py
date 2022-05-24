@@ -141,8 +141,8 @@ class Support:
             self.status[frozenset(edge)] = "half-grown"
         elif edge_status == "half-grown":
             self.status[frozenset(edge)] = "grown"
-
-        return edge
+            return edge
+        return None
 
     def span_forest(self, stabilizer_graph=None):
         """Obtain the spanning forest from the grown clusters."""
