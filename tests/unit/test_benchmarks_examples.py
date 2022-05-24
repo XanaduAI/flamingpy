@@ -34,7 +34,6 @@ def test_decoder_example(noise, decoder):
     assert result.__class__.__name__ == "bool_"
 
 
-
 def test_decoding_benchmark():
     """Simple test for the decoding module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import decoding as dc_benchmarks

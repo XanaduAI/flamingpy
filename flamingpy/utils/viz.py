@@ -350,7 +350,6 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         ]
         ax.legend(handles=handles)
 
-
     return ax
 
 

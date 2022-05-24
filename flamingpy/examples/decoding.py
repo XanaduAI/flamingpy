@@ -21,7 +21,6 @@ from flamingpy.decoders import decoder as dec
 from flamingpy.noise import IidNoise
 
 
-
 def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=True, show=False):
 
     """Example of instantiating, applying noise, decoding, recovering, and
