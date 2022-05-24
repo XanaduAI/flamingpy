@@ -7,6 +7,8 @@
 
 ### Improvements
 
+* Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
+
 ### Documentation changes
 
 * A pipeline for adding tutorials to the docs was introduced. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
@@ -15,6 +17,12 @@
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * Added UML class and package diagrams. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 ### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+[Sebastián Duque Mesa](https://github.com/sduquemesa)
+
+See full commit details ...
 
 ---
 
