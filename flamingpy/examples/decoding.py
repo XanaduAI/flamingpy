@@ -22,7 +22,6 @@ from flamingpy.noise import IidNoise
 
 
 def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=True, show=False):
-
     """Example of instantiating, applying noise, decoding, recovering, and
     visualizing this procedure for the measurement-based surface code."""
 
@@ -67,10 +66,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         decoder = {"outer": decoder}
 
     # Drawing options
-    node_colors = ("state", {"GKP": "gold", "p": "blue"}) if noise == "cv" else True
-    edge_colors = (
-        ("weight", {"GKP": "gold", "p": "blue"}) if polarity == alternating_polarity else True
-    )
+    node_colors = "state" if noise == "cv" else False
     dw = {
         "show_nodes": True,
         "color_nodes": node_colors,
