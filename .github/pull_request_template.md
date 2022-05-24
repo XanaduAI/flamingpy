@@ -45,13 +45,13 @@
 
 ## Related Github issues
 
-< Explicitly, link any corresponding issue and update the status of the relevant GitHub issue here; otherwise, mark N/A below. >
+< Explicitly, link any related issue and update the status of the relevant GitHub issue here; otherwise, mark N/A below. >
 - [ ] Not Applicable
 
 ## Checklist and integration statements
 
-- [ ] My Python and C++ codes follow the coding and commenting styles of this project as indicated by existing files. Specifically, the changes conform to given `black`, `docformatter` and `pylint` configurations. 
-- [ ] I have performed a self-review of these changes, checked my code (including for [codefactor](https://www.codefactor.io/repository/github/xanaduai/flamingpy/branches) compliance), and corrected misspellings to the best of my capacity. I have synced this branch with others as required.
+[ ] My Python and C++ codes follow this project's coding and commenting styles as indicated by existing files. Precisely, the changes conform to given `black`, `docformatter` and `pylint` configurations. 
+- [ ] I have performed a self-review of these changes, and checked my code (including for [codefactor](https://www.codefactor.io/repository/github/xanaduai/flamingpy/branches) compliance), and corrected misspellings to the best of my capacity. I have synced this branch with others as required.
 - [ ] I have added context for corresponding changes in documentation and [`README.md`](README.md) as needed.
-- [ ] I have added new workflow CI tests for corresponding changes, ensuring codecoverage 95% or better, and these pass locally for me.
+- [ ] I have added new workflow CI tests for corresponding changes, ensuring codecoverage is 95% or better, and these pass locally for me.
 - [ ] I have updated [`CHANGELOG.md`](.github/CHANGELOG.md) following the template. I recognize that the developers may revisit [`CHANGELOG.md`](.github/CHANGELOG.md) and the versioning, and create a Special Release including my changes.
