@@ -10,6 +10,7 @@ Available modules
 
     ~decoder
     ~mwpm
+    ~unionfind
 
 Module members
 --------------

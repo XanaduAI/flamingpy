@@ -12,18 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
+
+# pylint: disable=too-many-locals,too-many-arguments
+
 import argparse
 import csv
 import sys
 
 from datetime import datetime
+from time import perf_counter
+
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 
 
-def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
+def ec_monte_carlo(
+    code, trials, delta, p_swap, decoder="MWPM", passive_objects=None, return_decoding_time=False
+):
     """Run Monte Carlo simulations of error-correction for the given code.
 
     Given a code object code, a noise parameter delta, and a
@@ -37,28 +44,40 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
         delta (float): the noise/squeezing/width parameter.
         p_swap (float): the probability of replacing a GKP state
             with a p-squeezed state in the lattice
-        passive_objects (NoneType or list): the arguments for
+        decoder (str): the decoding algorithm ('MWPM' or 'UF')
+        passive_objects (NoneType or list, optional): the arguments for
             reduce_macro_and_simulate for passive architecture simulations.
+        return_decoding_time (bool, optional): total decoding time is returned when set to True
 
     Returns:
         errors (integer): the number of errors.
+        decoding_time (float): the total number of seconds taken by the decoder. This parameter is
+            returned only if return_decoding_time is set to True
     """
     if passive_objects is not None:
-        decoder = {"outer": "MWPM"}
-        weight_options = {"method": "blueprint", "prob_precomputed": True}
+        decoder = {"outer": decoder}
+        if decoder["outer"] == "MWPM":
+            weight_options = {"method": "blueprint", "prob_precomputed": True}
+        else:
+            weight_options = None
     else:
         # Noise model
         cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
         # Decoding options
-        decoder = {"inner": "basic", "outer": "MWPM"}
-        weight_options = {
-            "method": "blueprint",
-            "integer": False,
-            "multiplier": 1,
-            "delta": delta,
-        }
+        decoder = {"inner": "basic", "outer": decoder}
+        if decoder["outer"] == "MWPM":
+            weight_options = {
+                "method": "blueprint",
+                "integer": False,
+                "multiplier": 1,
+                "delta": delta,
+            }
+        else:
+            weight_options = None
 
     successes = 0
+    if return_decoding_time:
+        decoding_time = 0
     for _ in range(trials):
         if passive_objects is not None:
             reduce_macro_and_simulate(*passive_objects, p_swap, delta)
@@ -69,18 +88,31 @@ def ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None):
             CVRHG.apply_noise(cv_noise)
             CVRHG.measure_hom("p", code.all_syndrome_inds)
 
+        if return_decoding_time:
+            decoding_start_time = perf_counter()
         result = correct(code=code, decoder=decoder, weight_options=weight_options)
+        if return_decoding_time:
+            decoding_stop_time = perf_counter()
+            decoding_time += decoding_stop_time - decoding_start_time
         successes += result
     errors = trials - successes
-    return errors
+    if return_decoding_time:
+        return errors, decoding_time
+    else:
+        return errors
 
 
 # pylint: disable=too-many-arguments
-def run_ec_simulation(distance, ec, boundaries, delta, p_swap, trials, passive, fname=None):
-    """Run full Monte Carlo error-correction simulations for the surface code."""
+def run_ec_simulation(
+    distance, ec, boundaries, delta, p_swap, trials, passive, decoder="MWPM", fname=None
+):
+    """Run full Monte Carlo error-correction simulations for the surface
+    code."""
+
+    # The Monte Carlo simulations
 
     # The qubit code
-    RHG_code = SurfaceCode(distance, ec, boundaries)
+    RHG_code = SurfaceCode(distance, ec, boundaries, backend="retworkx")
     RHG_lattice = RHG_code.graph
     RHG_lattice.index_generator()
     if passive:
@@ -98,11 +130,17 @@ def run_ec_simulation(distance, ec, boundaries, delta, p_swap, trials, passive, 
     else:
         passive_objects = None
 
-    errors = ec_monte_carlo(RHG_code, trials, delta, p_swap, passive_objects)
+    # Perform the simulation
+    simulation_start_time = perf_counter()
+    errors, decoding_time = ec_monte_carlo(
+        RHG_code, trials, delta, p_swap, decoder, passive_objects, True
+    )
+    simulation_stop_time = perf_counter()
 
     # Store results in the provided file-path or by default in
     # a sims_data directory in the file simulations_results.csv.
     file_name = fname or "./flamingpy/sims_data/sims_results.csv"
+
     # Create a CSV file if it doesn't already exist.
     # pylint: disable=consider-using-with
     try:
@@ -111,13 +149,17 @@ def run_ec_simulation(distance, ec, boundaries, delta, p_swap, trials, passive, 
         writer.writerow(
             [
                 "distance",
+                "passive",
                 "ec",
                 "boundaries",
                 "delta",
                 "p_swap",
+                "decoder",
                 "errors_py",
                 "trials",
                 "current_time",
+                "decoding_time",
+                "simulation_time",
             ]
         )
     # Open the file for appending if it already exists.
@@ -125,22 +167,40 @@ def run_ec_simulation(distance, ec, boundaries, delta, p_swap, trials, passive, 
         file = open(file_name, "a", newline="", encoding="utf8")
         writer = csv.writer(file)
     current_time = datetime.now().time().strftime("%H:%M:%S")
-    writer.writerow([distance, ec, boundaries, delta, p_swap, errors, trials, current_time])
+    writer.writerow(
+        [
+            distance,
+            passive,
+            ec,
+            boundaries,
+            delta,
+            p_swap,
+            decoder,
+            errors,
+            trials,
+            current_time,
+            decoding_time,
+            (simulation_stop_time - simulation_start_time),
+        ]
+    )
     file.close()
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 1:
-        print(sys.argv)
         # Parsing input parameters
         parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
-        parser.add_argument("distance", type=int)
-        parser.add_argument("ec", type=str)
-        parser.add_argument("boundaries", type=str)
-        parser.add_argument("delta", type=float)
-        parser.add_argument("p_swap", type=float)
-        parser.add_argument("trials", type=int)
-        parser.add_argument("passive", type=bool)
+        parser.add_argument("-distance", type=int)
+        parser.add_argument("-ec", type=str)
+        parser.add_argument("-boundaries", type=str)
+        parser.add_argument("-delta", type=float)
+        parser.add_argument("-p_swap", type=float)
+        parser.add_argument("-trials", type=int)
+        parser.add_argument("-passive", type=lambda s: s == "True")
+        parser.add_argument("-decoder", type=str)
+        parser.add_argument(
+            "-dir", type=str, help="The directory where the result file should be stored"
+        )
 
         args = parser.parse_args()
         params = {
@@ -151,6 +211,7 @@ if __name__ == "__main__":
             "p_swap": args.p_swap,
             "trials": args.trials,
             "passive": args.passive,
+            "decoder": args.decoder,
         }
 
     else:
@@ -163,7 +224,19 @@ if __name__ == "__main__":
             "p_swap": 0.5,
             "trials": 100,
             "passive": True,
+            "decoder": "MWPM",
         }
+    # Checking that a valid decoder choice is provided
+    if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
+        params["decoder"] = "UF"
+    elif params["decoder"].lower() in [
+        "mwpm",
+        "minimum-weight-perfect-matching",
+        "minimum weight perfect matching",
+    ]:
+        params["decoder"] = "MWPM"
+    else:
+        raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
 
     # The Monte Carlo simulations
     run_ec_simulation(**params)

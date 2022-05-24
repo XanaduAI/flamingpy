@@ -14,15 +14,15 @@
 """Check that we can run all the example and benchmark files without showing
 the plots."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,unused-import
 
 import pytest
 from flamingpy.codes import alternating_polarity
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])
-@pytest.mark.parametrize("polarity", [None, alternating_polarity])
-def test_decoder_example(noise, polarity):
+@pytest.mark.parametrize("decoder", ["MWPM", "UF"])
+def test_decoder_example(noise, decoder):
     """Simple test for the decoding module in flamingpy.examples."""
     from flamingpy.examples.decoding import decode_surface_code
 
@@ -30,7 +30,9 @@ def test_decoder_example(noise, polarity):
     boundaries = "open"
     ec = "primal"
 
-    decode_surface_code(distance, boundaries, ec, noise, polarity, draw=True)
+    result = decode_surface_code(distance, boundaries, ec, noise, decoder, draw=True)
+    assert result.__class__.__name__ == "bool_"
+
 
 
 def test_decoding_benchmark():
@@ -56,12 +58,12 @@ def test_macro_reduce_example():
 @pytest.mark.parametrize("boundaries", ["periodic", "open"])
 def test_surface_code_example(boundaries):
     """Simple test for the surface_code module in flamingpy.examples."""
-    from flamingpy.examples.surface_code import surface_code
+    from flamingpy.examples.surface_code import illustrate_surface_code
 
     d = 2
-    err = "both"
+    err = "primal"
     polarity = None
-    surface_code(d, boundaries, err, polarity, show=False)
+    illustrate_surface_code(d, boundaries, err, polarity, show=False)
 
 
 def test_lemon_benchmark():
@@ -77,8 +79,3 @@ def test_matching_benchmark():
 def test_shortest_path_benchmark():
     """Simple test for the shortest_path module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import shortest_path
-
-
-def test_simulations_benchmark():
-    """Simple test for the simulations module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import simulations
