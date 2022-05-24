@@ -84,6 +84,7 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     "sphinx.ext.inheritance_diagram",
 ]
+graphviz_output_format = "svg"
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/latest/": None}
 
