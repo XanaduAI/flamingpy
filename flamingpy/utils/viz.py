@@ -170,7 +170,7 @@ def draw_EGraph(
                 string by providing a tuple with [attribute, color_dictionary],
                 for example: if the edge attribute "weight" can be +1 or -1,
                 the tuple should be of the form:
-                ``("weight",{-1: minus_color, +1: plus_color})``.
+                ``("weight", {-1: minus_color, +1: plus_color})``.
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -232,7 +232,7 @@ def draw_EGraph(
 
 
 def _plot_EGraph_edges(ax, egraph, color_edges):
-    """Draw the nodes of the graph state represented by the EGraph.
+    """Draw the edges of the graph state represented by the EGraph.
 
     Args:
         ax (matplotlib.axes.Axes): the axes to draw the lines in
@@ -245,18 +245,14 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
                 string by providing a tuple with [attribute, color_dictionary],
                 for example: if the edge attribute "weight" can be +1 or -1,
                 the tuple should be of the form:
-                ``("weight",{-1: minus_color, +1: plus_color})``.
+                ``("weight", {-1: minus_color, +1: plus_color})``.
 
     Returns:
         A Matplotib Axes object.
     """
     # Plotting edges.
     for edge in egraph.edges:
-        # Color edges based on `color_eges`:
-        #  if `color_edges` is a string use it as color,
-        # using the attribute and color dict if `color_edges` is a tuple(str,dict)
-        # or based on color attribute (when available) if `color_edges` is bool and True;
-        # black otherwise.
+        # Color edges based on `color_edges` choices (see docstring)
         if isinstance(color_edges, str):
             color = color_edges
         elif isinstance(color_edges, tuple):
@@ -264,17 +260,17 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
             if not (isinstance(edge_attribute, str) and isinstance(color_dict, dict)):
                 raise ValueError(
                     "Inappropiate value for `color_edges` argument:"
-                    "Check it complies with the type `tuple(str, dict)`"
+                    "Check that it complies with the type `tuple(str, dict)`,"
                     "where the string corresponds to a valid edge attribute,"
                     "the dictionary keys to valid attribute values and"
                     "dictionary values to valid matplotlib color strings."
                 )
             edge_property = egraph.edges[edge].get(edge_attribute)
             color = color_dict.get(edge_property)
-        elif isinstance(color_edges, bool) and color_edges == True:
-            color = egraph.edges[edge].get("color") if color_edges else "grey"
+        elif color_edges == True:
+            color = egraph.edges[edge].get("color") or "grey"
         else:
-            color = "k"
+            color = "grey"
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
@@ -302,9 +298,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
             to plot bit values, set label to "bit_val". If set to 'index',
-            it will plot the integer indices of the nodes. If the attribute
-            for some or all of the nodes, a message will print indicating
-            for how many nodes the attribute has not been set.
+            it will plot the integer indices of the nodes.
         name (bool): attribute name to display as title.
         legend (bool): if True and color_nodes argument is a tuple(str, dict),
             display the a color legend with node attributes.
@@ -349,7 +343,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
 
     # Plotting nodes legend
     if isinstance(color_nodes, tuple) and legend:
-        # this two lines are just a handy way to create a legend for
+        # these two lines are just a handy way to create a legend for
         # the node colors and attributes by generating handles of empty lines
         # with the label and color of the node property
         handles = [
@@ -376,7 +370,7 @@ def _get_node_color(egraph, color_nodes, point):
         if not (isinstance(node_attribute, str) and isinstance(color_dict, dict)):
             raise ValueError(
                 "Inappropiate value for `color_nodes` argument:"
-                "Check it complies with the type `tuple(str, dict)`"
+                "Check that it complies with the type `tuple(str, dict)`,"
                 "where the string corresponds to a valid node attribute,"
                 "the dictionary keys to valid attribute values and"
                 "dictionary values to valid matplotlib color strings."
@@ -384,8 +378,8 @@ def _get_node_color(egraph, color_nodes, point):
         node_property = egraph.nodes[point].get(node_attribute)
         color = color_dict.get(node_property)
 
-    elif isinstance(color_nodes, bool) and color_nodes == True:
-        color = egraph.nodes[point].get("color") if color_nodes else "k"
+    elif color_nodes == True:
+        color = egraph.nodes[point].get("color") or "k"
     else:
         color = "k"
     return color
