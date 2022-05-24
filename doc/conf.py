@@ -82,7 +82,6 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
     "sphinx_gallery.gen_gallery",
-    "sphinx.ext.inheritance_diagram",
 ]
 graphviz_output_format = "svg"
 
