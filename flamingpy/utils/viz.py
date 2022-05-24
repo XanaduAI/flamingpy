@@ -136,6 +136,7 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     return fig, ax
 
 
+# pylint: disable=too-many-arguments
 @mpl.rc_context(plot_params)
 def draw_EGraph(
     egraph,
@@ -582,7 +583,8 @@ def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
 
     Keyword arguments:
         **kwargs: all other parameters are forwarded to
-            ```Poly3DColletion`` <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
+            ```Poly3DColletion``
+            <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
 
     Returs:
         Poly3DCollection: A collection of 3D polygons defining the cubes.
