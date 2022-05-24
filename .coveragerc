@@ -6,12 +6,11 @@ source = flamingpy
 [report]
 # Regexes for lines to exclude from consideration
 exclude_lines =
-     if __name__ == .__main__.:
-     return 1
-     pragma: no cover
-     plt.show()
-     except ImportError:
-     raise NotImplementedError
-     raise ValueError
-     raise Exception
-
+    if __name__ == .__main__.:
+    return 1
+    pragma: no cover
+    plt.show()
+    except ImportError:
+    raise NotImplementedError
+    raise ValueError
+    raise Exception
