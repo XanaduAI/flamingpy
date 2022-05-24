@@ -239,10 +239,10 @@ class SurfaceCode:
     Attributes:
         distance (int): the code distance.
         dims (tup): a tuple of the spatial extent in x, y, z.
-        ec (str): the error complex ('primal', 'dual', or 'both').
+        ec (str): the error complex ('primal' or 'dual').
         boundaries (str): the boundary conditions. The options are:
 
-            'open': ['primal', 'dual', 'dual'] for 'primal' or 'both' EC
+            'open': ['primal', 'dual', 'dual'] for 'primal' EC
                     ['primal', 'dual', 'primal'] for 'dual' EC
             'periodic': 'periodic' in all three directions.
 
@@ -253,8 +253,9 @@ class SurfaceCode:
 
             If not supplied, assumes all edges have weight 1.
         backend (string): The backend to use for the stabilizer graph.
-            Can be "networkx" (the default) or "retworkx".
+            Can be "retworkx" (the default) or "networkx".
             The retworkx backend should be used when speed is a concern.
+            The networkx backend is provided for historical reasons.
 
         graph (EGraph): the EGraph corresponding to the code, representing the
             graph state.
@@ -278,11 +279,12 @@ class SurfaceCode:
         ec="primal",
         boundaries="open",
         polarity=None,
-        backend="networkx",
+        backend="retworkx",
     ):
         self.distance = distance
         self.dims = (distance, distance, distance)
-        self.ec = ["primal", "dual"] if ec == "both" else [ec]
+        self.ec = [ec]
+        # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
         if boundaries == "open":
             self.bound_str = "open_primal" if ec in ("primal", "both") else "open_dual"
@@ -300,18 +302,18 @@ class SurfaceCode:
         # The following line defines the boundary points attribute.
         self.identify_boundary()
 
-        if ec == "both":
-            # For both error complexes, designate certain qubits as perfect
-            # so that the correction check proceeds as expected. In particular
-            # the qubits on the first and last temporal (z-direction) slice
-            # are made perfect.
-            perfect_qubits = self.graph.slice_coords("z", 1) + self.graph.slice_coords(
-                "z", 2 * self.dims[2] - 1
-            )
-            self.graph.graph["perfect_points"] = perfect_qubits
-            self.graph.graph["perfect_inds"] = [
-                self.graph.to_indices[point] for point in perfect_qubits
-            ]
+        # if ec == "both":
+        #     # For both error complexes, designate certain qubits as perfect
+        #     # so that the correction check proceeds as expected. In particular
+        #     # the qubits on the first and last temporal (z-direction) slice
+        #     # are made perfect.
+        #     perfect_qubits = self.graph.slice_coords("z", 1) + self.graph.slice_coords(
+        #         "z", 2 * self.dims[2] - 1
+        #     )
+        #     self.graph.graph["perfect_points"] = perfect_qubits
+        #     self.graph.graph["perfect_inds"] = [
+        #         self.graph.to_indices[point] for point in perfect_qubits
+        #     ]
 
         for error_type in self.ec:
             if backend == "networkx":

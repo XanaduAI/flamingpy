@@ -48,12 +48,18 @@ successes = 0
 for trial in range(total):
     # The empty CV state, uninitiated with any error model.
     reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta)
-    weight_options = {
-        "method": "blueprint",
-        "prob_precomputed": True,
-    }
     decoder = {"outer": "MWPM"}
-    c = correct(code=RHG_code, decoder=decoder, weight_options=weight_options)
+    decoder_opts = {"backend": "networkx"}
+    if decoder["outer"] == "MWPM":
+        weight_options = {
+            "method": "blueprint",
+            "prob_precomputed": True,
+        }
+    else:
+        weight_options = None
+    c = correct(
+        code=RHG_code, decoder=decoder, weight_options=weight_options, decoder_opts=decoder_opts
+    )
     successes += int(c)
 
 error = (total - successes) / total

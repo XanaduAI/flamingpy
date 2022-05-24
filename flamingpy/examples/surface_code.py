@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Example for building and visualizing RHG lattices and surface codes."""
-
-# pylint: disable=no-member
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -64,8 +61,8 @@ if __name__ == "__main__":
         "d": 2,
         # Boundaries ("open" or "periodic")
         "boundaries": "open",
-        # Error complex ("primal", "dual", or "both")
-        "err": "both",
+        # Error complex ("primal" or "dual")
+        "err": "primal",
         # Polarity (edge weight pattern in graph state -- all unit weights by default)
         "polarity": None
         # polarity = alternating_polarity'
