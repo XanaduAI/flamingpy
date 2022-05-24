@@ -617,7 +617,7 @@ def _cuboid_data(origin, size=(1, 1, 1)):
 
 
 @mpl.rc_context(plot_params)
-def draw_recovery(ax, **kwargs):
+def add_recovery_drawing(ax, **kwargs):
     """Plot the recovery."""
     if kwargs.get("show_title"):
         ax.set_title("Syndrome and recovery")
@@ -650,6 +650,7 @@ def draw_recovery(ax, **kwargs):
                     c=np.random.rand(3),
                     linewidth=plot_params.get("lines.linewidth", None) * 0.9,
                 )
+
     return ax
 
 
@@ -692,6 +693,8 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
         else:
             print("\nMatching graph empty!\n")
 
-    _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    fig, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_recovery"):
-        draw_recovery(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
+        ax = add_recovery_drawing(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
+
+    return fig, ax
