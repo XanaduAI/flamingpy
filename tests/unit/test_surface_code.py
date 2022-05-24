@@ -428,6 +428,18 @@ class TestSurfaceCode:
             elif surface_code.bound_str == "periodic":
                 assert not bound_points
 
+    def test_draw_warning(self, surface_code):
+        """Check that the stabilizer graph plot raises a warning for large codes"""
+        with pytest.warns() as record:
+            for ec in surface_code.ec:
+                graph_plot = surface_code.draw_stabilizer_graph(ec)
+                assert graph_plot == 1, "Expected a plot!"
+                graph = getattr(surface_code, ec + "_stab_graph")
+                n_nodes = len(graph.nodes())
+                if not record and n_nodes > 75:
+                    pytest.fail("Expected a warning!")
+
+            
 
 class TestStabilizer:
     """Test the Stabilizer class."""

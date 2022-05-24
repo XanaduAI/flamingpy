@@ -16,6 +16,7 @@
 # pylint: disable=no-member,protected-access,no-self-use
 
 import itertools as it
+import warnings
 
 import networkx as nx
 import numpy as np
@@ -160,6 +161,11 @@ class TestDecoder:
         for i, graph in enumerate(match_data[0]):
             matching = match_data[1][i]
             assert not {a for b in matching for a in b} - graph.graph.nodes
+
+    def test_plot_warnings(self, enc_state):
+        """Check that the warnings are raised when ploting large codes"""
+        
+        pass
 
 
 class TestRecovery:
