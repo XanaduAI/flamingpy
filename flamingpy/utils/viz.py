@@ -183,7 +183,7 @@ def draw_EGraph(
             name to plane English and capitalized.
         legend (bool): if True and color_nodes argument is a tuple(str, dict),
             display the a color legend with node attributes.
-        display_axes (bool): if False, turn off the axes.
+        show_axes (bool): if False, turn off the axes.
 
     Returns:
         tuple: Matplotib Figure and Axes.
@@ -221,7 +221,7 @@ def draw_EGraph(
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
-    if not display_axes:
+    if not show_axes:
         ax.axis("off")
     plt.tight_layout(pad=5)
     plt.draw()
@@ -541,7 +541,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         "label": None,
         "legend": True,
         "title": True,
-        "display_axes": True,
+        "show_axes": True,
         "label_stabilizers": True,
         "label_boundary": False,
     }
