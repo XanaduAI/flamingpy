@@ -2,6 +2,10 @@
 
 ### New features since the last release
 
+* Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * THe `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
+
+
 ### Bug fixes
 
 ### Improvements
@@ -11,6 +15,9 @@
  * Rename function and add dosctring.
  * Decrease size of markers for plotting stabilizer nodes.
  * Improve way to scatter stabilizers via specifying indices.
+* The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+ * `display_axes` is changed to `show_axes` for consistency.
 
 ### Documentation changes
 
