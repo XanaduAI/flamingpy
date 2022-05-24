@@ -31,7 +31,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         distance=distance,
         ec=ec,
         boundaries=boundaries,
-        polarity=polarity,
+        polarity=alternating_polarity,
     )
 
     # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
