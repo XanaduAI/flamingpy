@@ -712,6 +712,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     )
 
     # Drawing the matching graph
+    fig2, ax2 = (None, None)
     if G_match:
         if len(G_match.graph):
             fig2, ax2 = G_match.draw(
@@ -721,8 +722,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
             )
         else:
             print("\nMatching graph empty!\n")
-    else:
-        fig2, ax2 = (None, None)
+        
 
     # Drawing the syndrome
     fig3, ax3 = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
