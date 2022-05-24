@@ -166,7 +166,7 @@ def draw_EGraph(
             True: color the edges based on the 'color' attribute
                 attached to the node. If unavailable, color nodes grey.
             string: color all edges with the color specified by the stirng
-            dict: color edges based on attribute and defined colour
+            tuple: color edges based on attribute and defined colour
                 string by providing a tuple with [attribute, color_dictionary],
                 for example: if the edge attribute "weight" can be +1 or -1,
                 the tuple should be of the form:
@@ -288,8 +288,8 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
                 attached to the node. If unavailable, color nodes black.
             string: color all nodes with the color specified by the string
             tuple[str, dict]: color nodes based on attribute and defined colour
-                string by providing a tuple with [attribute, color_dictionary],
-                for example: ``["state", {"GKP": "b", "p": "r"}]``
+                string by providing a tuple with (attribute, color_dictionary),
+                for example: ``("state", {"GKP": "b", "p": "r"})``
                 will look at the "state" attribute of the node, and colour
                 according to the dictionary.
 
