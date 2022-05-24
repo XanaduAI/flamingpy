@@ -685,6 +685,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     if drawing_opts is None:
         drawing_opts = {}
 
+    # Drawing the stabilizer graph
     G_stabilizer = getattr(code, ec + "_stab_graph")
     G_match = dec_objects.get("matching_graph")
     # An integer label for each node in the stabilizer and matching
@@ -703,12 +704,14 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     label_edges = bool(drawing_opts.get("label_edges"))
     show_title = bool(drawing_opts.get("show_title"))
     # title = drawing_opts.get_title()
-    code.draw_stabilizer_graph(
+    fig1, ax1 = code.draw_stabilizer_graph(
         ec,
         title=ec.capitalize() + " stabilizer graph" if show_title else "",
         label_edges=label_edges,
         node_labels=node_labels,
     )
+
+    # Drawing the matching graph
     if G_match:
         if len(G_match.graph):
             G_match.draw(
@@ -718,12 +721,15 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
             )
         else:
             print("\nMatching graph empty!\n")
+    else:
+        fig2, ax2 = (None, None)
 
-    fig, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    # Drawing the syndrome
+    fig3, ax3 = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_recovery"):
-        ax = add_recovery_drawing(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
+        ax3 = add_recovery_drawing(ax3, show_title=drawing_opts.get("show_title"), **dec_objects)
 
-    return fig, ax
+    return (fig1, ax1), (fig2, ax2), (fig3, ax3)
 
 
 def to_pi_string(x, tex: bool = True, d=2):
