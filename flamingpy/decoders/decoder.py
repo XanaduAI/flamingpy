@@ -322,3 +322,6 @@ def correct(
     if sanity_check:
         return np.all(result[0])
     return np.all(result)
+
+def find_recovery_set():
+    pass
