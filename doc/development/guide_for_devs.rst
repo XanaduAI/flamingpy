@@ -19,7 +19,6 @@ as well as the following Python packages for development purposes:
 * `networkx <https://networkx.org/>`_ >= 2.5
 * `NumPy <http://numpy.org/>`_ >= 1.21
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
-* `pylint <https://pypi.org/project/pylint/>`_ >= 2.13.9
 * `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
 * `pytest-cov <https://pypi.org/project/pytest-cov/>`_ >= 3.0
 * `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
