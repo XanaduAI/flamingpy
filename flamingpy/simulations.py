@@ -28,7 +28,8 @@ from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
 noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
-reverse_dict = {b:a for a, b in noise_dict.items()}
+reverse_dict = {b: a for a, b in noise_dict.items()}
+
 
 def ec_monte_carlo(
     trials,
@@ -81,7 +82,9 @@ def ec_monte_carlo(
             CVRHG.apply_noise(noise_model)
             CVRHG.measure_hom("p", code.all_syndrome_inds)
         elif noise == CVMacroLayer:
-            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph, bs_network=bs_network)
+            CV_macro = CVMacroLayer(
+                macro_graph, p_swap=p_swap, reduced_graph=code.graph, bs_network=bs_network
+            )
             CV_macro.reduce(noise_model)
         elif noise == IidNoise:
             IidNoise(code, p_err).apply_noise()
@@ -170,7 +173,8 @@ def run_ec_simulation(
         file = open(file_name, "x", newline="", encoding="utf8")
         writer = csv.writer(file)
         writer.writerow(
-            [   "noise",
+            [
+                "noise",
                 "distance",
                 "ec",
                 "boundaries",
@@ -191,7 +195,7 @@ def run_ec_simulation(
         writer = csv.writer(file)
     current_time = datetime.now().time().strftime("%H:%M:%S")
     writer.writerow(
-        [   
+        [
             reverse_dict[noise],
             code_args["distance"],
             code_args["ec"],
@@ -263,7 +267,6 @@ if __name__ == "__main__":
     code = SurfaceCode
     code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
-    
     noise = noise_dict[params["noise"]]
     noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
 

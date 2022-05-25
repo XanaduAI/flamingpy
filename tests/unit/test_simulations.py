@@ -49,7 +49,12 @@ class TestBlueprint:
         trials = 10
         noise_args = {"delta": delta, "p_swap": p_swap}
         decoder_args = {}
-        decoder_args["weight_opts"] = {"method": "blueprint", "integer": False, "multiplier": 1, "delta": noise_args.get("delta")}
+        decoder_args["weight_opts"] = {
+            "method": "blueprint",
+            "integer": False,
+            "multiplier": 1,
+            "delta": noise_args.get("delta"),
+        }
         errors_py = ec_monte_carlo(trials, code, CVLayer, noise_args, "MWPM", decoder_args)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
@@ -73,7 +78,7 @@ class TestPassive:
         RHG_macro.adj_generator(sparse=True)
 
         noise_args = {"delta": delta, "p_swap": p_swap, "macro_graph": RHG_macro}
-        decoder_args= {"weight_opts": None}
+        decoder_args = {"weight_opts": None}
         errors_py = ec_monte_carlo(trials, code, CVMacroLayer, noise_args, "MWPM", decoder_args)
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0

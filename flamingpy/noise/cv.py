@@ -24,9 +24,10 @@ from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
 # pylint: disable=too-many-instance-attributes
 class CVLayer:
-    """A class for applying to a code (or an EGraph) a physical layer of continuous-variable noise.
+    """A class for applying to a code (or an EGraph) a physical layer of
+    continuous-variable noise.
 
-    Associates the nodes of an EGraph with continuous-variable quantum states, 
+    Associates the nodes of an EGraph with continuous-variable quantum states,
     and its edges with continuous-variable CZ gates.
 
     For now, only a hybrid state of p-squeezed and GKP states is considered.
@@ -342,13 +343,13 @@ four_splitter = splitter_symp()
 
 class CVMacroLayer(CVLayer):
     """A class for reducing a macronode CV graph to a canonical graph.
-    
+
     Applies noise to self.egraph (assumed a macronode graph), entangles the
     macronodes, measures the syndrome, and populates the canonical graph
     reduced_graph with the reduced states, bit values, and error probabilities.
-    
+
     In addition to CVLayer args, the following --
-    
+
     Args:
         reduced_graph (EGraph): the canonical (reduced) code graph.
         bs_network (np.array, optional): the sympletic matrix corresponding to
@@ -365,7 +366,7 @@ class CVMacroLayer(CVLayer):
     def _apply_initial_noise(self, noise_model):
         """Set up the two-step noise model for macro_graph.
 
-        Based on noise_model, populate macro_graph with states and sample for 
+        Based on noise_model, populate macro_graph with states and sample for
         the initial (ideal) measurement outcomes.
 
         This method modifies self.egraph.
@@ -436,8 +437,8 @@ class CVMacroLayer(CVLayer):
         self.egraph, based on where the edges are in the graph. Then, apply the
         four-splitter to each macronode.
 
-        This method sets the attributes self.permuted_quads to the permuted 
-        quadratures and self.quad_permutation to the corresponding permutation 
+        This method sets the attributes self.permuted_quads to the permuted
+        quadratures and self.quad_permutation to the corresponding permutation
         vector.
         """
         macro_graph = self.egraph
@@ -466,7 +467,7 @@ class CVMacroLayer(CVLayer):
         self.egrapg and q-homodyne measurements to the planets
         (satellite modes). This effectively conducts an X-basis measurement
         on the modes of the reduced lattice.
-        
+
         This method modifies self.egraph.
         """
         N = self._N
@@ -480,12 +481,13 @@ class CVMacroLayer(CVLayer):
         self.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
 
     def _neighbor_of_micro_i_macro_j(self, i, j):
-        """Return the neighbor of the ith micronode, jth macronode in self.egraph.
+        """Return the neighbor of the ith micronode, jth macronode in
+        self.egraph.
 
         Suppose micronode i (in macronode j) is adjacent to a neighbor.
-        Return the vertex (tuple) and the body index of the neighbor to help
-        the subsequent processing rules. If there is no such neighbor,
-        return None.
+        Return the vertex (tuple) and the body index of the neighbor to
+        help the subsequent processing rules. If there is no such
+        neighbor, return None.
         """
         macro_graph = self.egraph
         # Index of ith micronode in the jth macronode.
@@ -504,9 +506,9 @@ class CVMacroLayer(CVLayer):
 
         Return the values of the homodyne measurements of the macronode
         containing vertex. Note we are only interested in q-homodyne
-        outcomes; the returned list is of the form [0, 0, q2, q3, q4]. If
-        vertex is None, return a list of 0s, so that the processing is
-        unaltered by the outcomes.
+        outcomes; the returned list is of the form [0, 0, q2, q3, q4].
+        If vertex is None, return a list of 0s, so that the processing
+        is unaltered by the outcomes.
         """
         macro_graph = self.egraph
         if vertex is None:
@@ -526,11 +528,11 @@ class CVMacroLayer(CVLayer):
     def _process_neighboring_outcomes(self, neighbor_hom_vals, neighbor_body_index):
         """Process homodyne outcomes for a neighboring macronode.
 
-        Suppose some micronode is connected to a neighboring micronode, i. i
-        has a certain body index and belongs to a macronode with measurement
-        results neighbor_hom_vals. Use this information to process the
-        results (i.e. find appropriate linear combinations of
-        neighbor_hom_vals).
+        Suppose some micronode is connected to a neighboring micronode,
+        i. i has a certain body index and belongs to a macronode with
+        measurement results neighbor_hom_vals. Use this information to
+        process the results (i.e. find appropriate linear combinations
+        of neighbor_hom_vals).
         """
         if neighbor_body_index == 1:
             return 0
@@ -613,7 +615,8 @@ class CVMacroLayer(CVLayer):
         self.reduced_graph.nodes[central_vert]["p_phase_cond"] = p_err
 
     def reduce(self, noise_model):
-        """Reduce the macronode lattice macro_graph to the canonical reduced_graph.
+        """Reduce the macronode lattice macro_graph to the canonical
+        reduced_graph.
 
         Follow the procedure in arXiv:2104.03241. Take the macronode lattice
         macro_graph, apply noise based on noise_layer and noise_model, designate
