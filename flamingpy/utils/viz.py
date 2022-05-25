@@ -251,7 +251,7 @@ def draw_EGraph(
     # plot generalities
     plt.xlim(xlim)
     plt.ylim(zlim)
-    ax.set_ylim(ylim)
+    ax.set_zlim(ylim)
     plt.xticks(range(xlim[0], xlim[1] + 1))
     plt.yticks(range(zlim[0], zlim[1] + 1))
     ax.set_zticks(range(ylim[0], ylim[1] + 1))
