@@ -2,13 +2,41 @@
 
 ### New features since the last release
 
+* Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * THe `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
+
 ### Bug fixes
+* Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Improvements
 
+* Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
+* Improvements to the decoding example. [#51](https://github.com/XanaduAI/flamingpy/pull/44/files)
+ * Rename function and add dosctring.
+ * Decrease size of markers for plotting stabilizer nodes.
+ * Improve way to scatter stabilizers via specifying indices.
+* The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+ * `display_axes` is changed to `show_axes` for consistency.
+* `xlim` in `viz.plot_Z_err_cond` is adjusted to the relevant domain when plotting the central peak. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
+* Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
+
 ### Documentation changes
 
+* A pipeline for adding tutorials to the docs was introduced. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
+ * To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
+* Brief tutorials about graph states and error correction were added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
+* An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
+* Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+
 ### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+
+See full commit details ...
 
 ---
 
@@ -45,8 +73,8 @@
   to parse, thanks partially to a new function, `draw_curved_edges`.
   * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
 * Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [(#23)](https://github.com/XanaduAI/flamingpy/pull/23)
-  * A function (`draw_decoding`) was added to the `viz` module and new options were added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial. 
-  * The appearance and presence of node labels (specifically the virtual nodes of the matching graph) were fixed. 
+  * A function (`draw_decoding`) was added to the `viz` module and new options were added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial.
+  * The appearance and presence of node labels (specifically the virtual nodes of the matching graph) were fixed.
   * The `label_cubes` argument was renamed to the more accurate `label_stabilizers`.
   * The argument `show_matching` was added to the drawing options to be able to turn the matching plot on or off.
   * One can now plot a non-NetworkX matching graph (by automatic conversion to a NetworkX graph).
@@ -54,7 +82,7 @@
 
 * The _display_axes_ option has been changed to show_axes and title to show_title for consistency. The show_title option is now respected. [(#37)](https://github.com/XanaduAI/flamingpy/pull/37)
 * Decoders have become more organized and compartmentalized. [(#37)](https://github.com/XanaduAI/flamingpy/pull/37)
-  * They are located in a directory with their name, with separate modules for decoding objects and algorithms. The latter -- `algos.py` -- contains 
+  * They are located in a directory with their name, with separate modules for decoding objects and algorithms. The latter -- `algos.py` -- contains
   a cumulative decoding function combining all the steps. This function is imported by `decoder.py`, which is now a more general module.
   * The `draw_decoding` function in `viz` can now accommodate plotting generic decoding procedures: a stabilizer graph, a syndrome plot, and the recovery.
 * Tests were added to improve the overall test coverage. These included changes to
@@ -68,7 +96,7 @@
 * `codecov.yml` was introduced to customize codecov automated tests. For this version, we have added a `threshold: 0.5%` to avoid undesired delta failures due to just removing a few lines, etc. [(#25)](https://github.com/XanaduAI/flamingpy/pull/25)
 * The Walrus has been re-added as a dependency and its functions are used instead of a verbatim
   copy of the code. [(#27)](https://github.com/XanaduAI/flamingpy/pull/27)
-* Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention 
+* Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention
   as `networkx`, the default backend for stabilizer graphs and MWPM has been changed to `retworkx`. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
 * Some more tests were added to `test_matching.py` to compare the output of different matching backends. [(#28)](https://github.com/XanaduAI/flamingpy/pull/28)
 
@@ -80,7 +108,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa), [Priya Nadkarni](https://github.com/PriNad), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
+[Mikhail Andrenkov](https://github.com/Mandrenkov), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Theodor Isacsson](https://github.com/thisac), [Josh Izaac](https://github.com/josh146), [Priya Nadkarni](https://github.com/PriNad), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.6.1a3...v0.7.0a4).
 

@@ -41,7 +41,7 @@ def build_match_graph(code, ec, matching_backend="retworkx"):
         "retworkx": RxMatchingGraph,
         "lemon": LemonMatchingGraph,
     }
-    if matching_backend in default_backends:
+    if default_backends.get(matching_backend):
         matching_backend = default_backends[matching_backend]
 
     return matching_backend(ec, code)
@@ -72,19 +72,22 @@ def mwpm_decoder(code, ec, backend="retworkx", draw=False, drawing_opts=None):
     stab_graph = getattr(code, ec + "_stab_graph")
     matching_graph = build_match_graph(code, ec, backend)
     matching = matching_graph.min_weight_perfect_matching()
-    virtual_points = matching_graph.virtual_points
 
     # Draw the stabilizer graph, matching graph, and syndrome, if
     # desired.
     if draw:
         from flamingpy.utils.viz import draw_decoding
 
-        dec_objects = {"matching_graph": matching_graph, "matching": matching}
-        draw_decoding(code, ec, dec_objects, drawing_opts)
+        draw_decoding(
+            code,
+            ec,
+            dec_objects={"matching_graph": matching_graph, "matching": matching},
+            drawing_opts=drawing_opts,
+        )
 
     qubits_to_flip = set()
     for match in matching:
-        if match not in it.product(virtual_points, virtual_points):
+        if match not in it.product(matching_graph.virtual_points, matching_graph.virtual_points):
             path = matching_graph.edge_path(match)
             pairs = [(path[i], path[i + 1]) for i in range(len(path) - 1)]
             for pair in pairs:

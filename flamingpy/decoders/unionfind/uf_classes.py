@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A collection of classes used for UnionFind decoder"""
+"""A collection of classes used for UnionFind decoder."""
 
 # pylint: disable=too-few-public-methods
 
@@ -142,12 +142,13 @@ class Support:
         elif edge_status == "half-grown":
             self.status[frozenset(edge)] = "grown"
             return edge
+        return None
 
     def span_forest(self, stabilizer_graph=None):
         """Obtain the spanning forest from the grown clusters."""
         spanning_forest = rx.PyGraph()
         stab_index_to_node = {}
-        while self.status != {}:
+        while self.status:
             edge, status = self.status.popitem()
             edge = list(edge)
             if status == "grown":

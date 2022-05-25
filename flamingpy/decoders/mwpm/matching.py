@@ -180,7 +180,7 @@ class MatchingGraph(ABC):
         from flamingpy.utils.viz import draw_dec_graph
 
         nx_graph = self if isinstance(self, NxMatchingGraph) else self.to_nx()
-        draw_dec_graph(nx_graph, **kwargs)
+        return draw_dec_graph(nx_graph, **kwargs)
 
 
 class NxMatchingGraph(MatchingGraph):
