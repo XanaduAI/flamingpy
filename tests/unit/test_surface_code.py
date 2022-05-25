@@ -16,6 +16,7 @@
 # pylint: disable=no-self-use,too-few-public-methods
 
 import itertools as it
+import warnings
 
 import networkx as nx
 from networkx import fast_gnp_random_graph

@@ -17,6 +17,7 @@ Unit tests for StablizerGraph classes in stab_graph.py.
 The networkx implementation is used as a reference.
 """
 import itertools as it
+import warnings
 
 from numpy.random import default_rng
 import pytest
