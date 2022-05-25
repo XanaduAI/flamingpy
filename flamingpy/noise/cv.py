@@ -24,17 +24,16 @@ from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
 # pylint: disable=too-many-instance-attributes
 class CVLayer:
-    """A class for applying to an EGraph a physical layer of continuous-
-    variable states.
+    """A class for applying to a code (or an EGraph) a physical layer of continuous-variable noise.
 
-    Has all the functionality of an EGraph, but associates its nodes with
-    continuous-variable quantum states and its edges with continuous-variable
-    CZ gates.
+    Associates the nodes of an EGraph with continuous-variable quantum states, 
+    and its edges with continuous-variable CZ gates.
 
     For now, only a hybrid state of p-squeezed and GKP states is considered.
 
     Args:
-        g (graph-type): the graph underlying the state.
+        code (SurfaceCode or EGraph): the code object (so that code.graph is
+            an EGraph) or an EGraph directly.
         state (dict, optional): the dictionary of all non-GKP states and their
             indices, of the form {'state': []}. By default, all states are
             GKP states.
@@ -50,8 +49,6 @@ class CVLayer:
         _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph.
         _states (dict): states along with their indices.
         _delta (float): the delta from the Args above (after noise applied)
-        _sampling_order (str): the sampling order from the Args above (after
-            noise applied).
         _adj (array): adjancency matrix of the underlying graph.
         to_points (dict): pointer to self.egraph.to_points, the dictionary from
             indices to coordinates.
@@ -344,7 +341,20 @@ four_splitter = splitter_symp()
 
 
 class CVMacroLayer(CVLayer):
-    """The CV macronode noise layer."""
+    """A class for reducing a macronode CV graph to a canonical graph.
+    
+    Applies noise to self.egraph (assumed a macronode graph), entangles the
+    macronodes, measures the syndrome, and populates the canonical graph
+    reduced_graph with the reduced states, bit values, and error probabilities.
+    
+    In addition to CVLayer args, the following --
+    
+    Args:
+        reduced_graph (EGraph): the canonical (reduced) code graph.
+        bs_network (np.array, optional): the sympletic matrix corresponding to
+            the beamsplitter network entangling the macronode. By default,
+            the standard four-splitter.
+    """
 
     def __init__(self, *args, reduced_graph, bs_network=None, **kwargs):
         super().__init__(*args, **kwargs)
