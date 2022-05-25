@@ -16,7 +16,6 @@ visualizing this procedure for the measurement-based surface code."""
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 from flamingpy.noise import CVLayer, IidNoise
 
