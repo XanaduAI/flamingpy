@@ -164,7 +164,7 @@ GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
 # initialize an empty graph:
 #
 
-GHZ_state = EGraph(dims=(1,1,1))
+GHZ_state = EGraph(dims=(1, 1, 1))
 GHZ_state.add_edges_from([GHZ_edge_1, GHZ_edge_2])
 
 
@@ -203,5 +203,5 @@ GHZ_state.draw(**drawing_opts)
 GHZ_state.adj_generator(sparse=False)
 adj = GHZ_state.adj_mat
 
-viz.plot_params["figure.figsize"] = (5.4,4)
+viz.plot_params["figure.figsize"] = (5.4, 4)
 viz.plot_mat_heat_map(adj)

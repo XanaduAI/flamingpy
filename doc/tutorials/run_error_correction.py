@@ -113,7 +113,7 @@ decoder = {"outer": "MWPM"}
 
 dw = {
     "show_nodes": False,
-    "color_nodes": 'k',
+    "color_nodes": "k",
     "show_recovery": True,
     "label_stabilizers": True,
     "label_boundary": True,

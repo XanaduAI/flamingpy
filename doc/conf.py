@@ -103,14 +103,14 @@ sphinx_gallery_conf = {
     ),
     # thumbnail size
     "thumbnail_size": (400, 400),
-    'reference_url': {
-         # The module you locally document uses None
-        'flamingpy': "https://flamingpy.readthedocs.io/en/latest/",
+    "reference_url": {
+        # The module you locally document uses None
+        "flamingpy": "https://flamingpy.readthedocs.io/en/latest/",
     },
-    'backreferences_dir'  : 'backreferences',
-    'doc_module'          : ('flamingpy'),
-    'junit': '../test-results/sphinx-gallery/junit.xml',
-    'download_all_examples': False,
+    "backreferences_dir": "backreferences",
+    "doc_module": ("flamingpy"),
+    "junit": "../test-results/sphinx-gallery/junit.xml",
+    "download_all_examples": False,
 }
 
 automodapi_toctreedirnm = "source/api"

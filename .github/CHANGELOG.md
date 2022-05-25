@@ -2,6 +2,8 @@
 
 ### New features since the last release
 
+* Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary: [#32](https://github.com/XanaduAI/flamingpy/pull/32)(backward compatible) 
+ * The `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
 * Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI jobs through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
   MPI users on their local machines can simply run the following for a 4-processor job:
   `mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible) 
@@ -11,6 +13,13 @@
 ### Improvements
 
 * Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
+* Improvements to the decoding example. [#51](https://github.com/XanaduAI/flamingpy/pull/44/files)
+ * Rename function and add dosctring.
+ * Decrease size of markers for plotting stabilizer nodes.
+ * Improve way to scatter stabilizers via specifying indices.
+* The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+ * `display_axes` is changed to `show_axes` for consistency.
 
 ### Documentation changes
 
@@ -23,7 +32,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Trevor Vincent](https://github.com/trevor-vincent)
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz), [Trevor Vincent](https://github.com/trevor-vincent)
 
 See full commit details ...
 
