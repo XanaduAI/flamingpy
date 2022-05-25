@@ -5,7 +5,6 @@
 * Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
  * THe `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
 
-
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Added a warning message that is raised when plotting very large codes.
@@ -20,6 +19,8 @@
 * The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
  * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
  * `display_axes` is changed to `show_axes` for consistency.
+* `xlim` in `viz.plot_Z_err_cond` is adjusted to the relevant domain when plotting the central peak. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
+* Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 
 ### Documentation changes
 

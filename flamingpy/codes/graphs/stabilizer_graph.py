@@ -350,7 +350,7 @@ class StabilizerGraph(ABC):
         """
         from flamingpy.utils.viz import draw_dec_graph
 
-        draw_dec_graph(self.to_nx(), **kwargs)
+        return draw_dec_graph(self.to_nx(), **kwargs)
 
 
 class NxStabilizerGraph(StabilizerGraph):
