@@ -13,3 +13,5 @@
 # limitations under the License.
 """The module for decoders and error-correction functions."""
 from .decoder import correct
+from .unionfind.algos import uf_decoder
+from .mwpm.algos import mwpm_decoder

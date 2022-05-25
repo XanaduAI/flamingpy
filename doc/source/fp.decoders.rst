@@ -1,6 +1,7 @@
 fp.decoders
 ===========
 
+
 Available modules
 -----------------
 
@@ -16,7 +17,15 @@ Module members
 --------------
 
 .. currentmodule:: flamingpy.decoders
+.. autosummary::
+    :toctree: api
 
-.. automodapi:: flamingpy.decoders
-    :no-heading:
-    :include-all-objects:
+    correct
+    uf_decoder
+    mwpm_decoder
+
+Class Inheritance Diagram
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. inheritance-diagram:: flamingpy.decoders.mwpm.LemonMatchingGraph
+     flamingpy.decoders.mwpm.RxMatchingGraph
+   :parts: 1

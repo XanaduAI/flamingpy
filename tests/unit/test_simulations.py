@@ -115,7 +115,7 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
         "p_err": 0.1,
         "trials": 100,
         "decoder": "MWPM",
-    }
+    }  # Should we switch to using "passive": passive instead?
 
     # The Monte Carlo simulations
     code = SurfaceCode

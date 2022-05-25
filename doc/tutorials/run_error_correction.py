@@ -29,10 +29,9 @@ A complete round of error correction
 
 import matplotlib.pyplot as plt
 
-from flamingpy.codes import alternating_polarity, SurfaceCode
+from flamingpy.codes import SurfaceCode
 from flamingpy.decoders import decoder as dec
 from flamingpy.noise import IidNoise
-from flamingpy.utils import viz
 
 # QEC code parameters
 distance = 3
@@ -114,7 +113,7 @@ decoder = {"outer": "MWPM"}
 
 dw = {
     "show_nodes": False,
-    "color_nodes": 'k',
+    "color_nodes": "k",
     "show_recovery": True,
     "label_stabilizers": True,
     "label_boundary": True,
