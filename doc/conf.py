@@ -8,7 +8,9 @@
 """
 flamingpy configuration file for the Sphinx documentation builder.
 """
-import os, sys, re
+import os, sys, re, time
+import subprocess
+import shlex
 from unittest.mock import MagicMock
 
 
@@ -79,9 +81,10 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
-    "sphinx.ext.inheritance_diagram",
     "sphinx_gallery.gen_gallery",
+    "sphinx.ext.inheritance_diagram",
 ]
+graphviz_output_format = "svg"
 
 intersphinx_mapping = {"https://flamingpy.readthedocs.io/en/latest/": None}
 
@@ -152,6 +155,32 @@ show_authors = True
 # pixels large.
 html_favicon = "_static/favicon.ico"
 
+# Creates UML diagrams (svg). These are later used in source/fp.rst .
+comd = "pyreverse -o svg -p flamingpy ../flamingpy -d _static --colorized --max-color-depth 1 -k"
+subprocess.call(
+    shlex.split(comd),
+    shell=False,
+)
+time.sleep(0.5)
+
+# Changes color of uml diagrams to match the common theme
+with open("_static/packages_flamingpy.svg", "r", encoding="utf-8") as file:
+    filedata = file.read()
+filedata = filedata.replace("aliceblue", "#bde0ff")
+filedata = filedata.replace("Times,serif", "Helvetica,sans-serif")
+filedata = filedata.replace("green", "black")
+filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
+with open("_static/packages_flamingpy.svg", "w", encoding="utf-8") as file:
+    file.write(filedata)
+
+with open("_static/classes_flamingpy.svg", "r", encoding="utf-8") as file:
+    filedata = file.read()
+filedata = filedata.replace("aliceblue", "#bde0ff")
+filedata = filedata.replace("Times,serif", "Helvetica,sans-serif")
+filedata = filedata.replace("green", "black")
+filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
+with open("_static/classes_flamingpy.svg", "w", encoding="utf-8") as file:
+    file.write(filedata)
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
