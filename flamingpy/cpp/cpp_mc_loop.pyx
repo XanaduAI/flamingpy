@@ -13,16 +13,17 @@
 # limitations under the License.
 """Cython-based Monte Carlo simulations for estimating FT thresholds."""
 from flamingpy.decoders.decoder import correct
-from flamingpy.cv.macro_reduce import reduce_macronode_graph
-from flamingpy.noise import CVLayer
+from flamingpy.noise import CVLayer, CVMacroLayer
 
-cpdef int cpp_mc_loop(object code, int trials, dict decoder, dict weight_options, object passive_objects, double p_swap, double delta, dict cv_noise):
+cpdef int cpp_mc_loop(object coder, int trials, dict decoder, dict weight_options, object macro_graph, object bs_network, double p_swap, double delta, dict cv_noise):
     """Exclusively run loop section of Monte Carlo simulations of error-correction on code=code."""
+    noise_model = {"noise": "grn", "delta": delta}
     cdef int successes = 0
     cdef int result, errors, ii
     for ii in range(trials):
-        if passive_objects:
-            reduce_macronode_graph(*passive_objects, p_swap, delta)
+        if macro_graph:
+            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph)
+            CV_macro.reduce(noise_model, bs_network)
         else:
             # Apply noise
             CVRHG = CVLayer(code, p_swap=p_swap)
