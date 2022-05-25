@@ -28,11 +28,8 @@ To modify the plot parameters use, for example,
 # pylint: disable=too-many-statements,too-many-locals
 
 import itertools as it
-<<<<<<< HEAD
 import warnings
-=======
 import math
->>>>>>> main
 
 import numpy as np
 import networkx as nx
@@ -800,7 +797,6 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     fig2, ax2 = (None, None)
     if G_match:
         if len(G_match.graph):
-<<<<<<< HEAD
             n_nodes_matching = len(G_match.graph.nodes())
             if n_nodes_matching > 75:
                 warnings.warn(
@@ -808,10 +804,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
                     " is too large. The generated plots might be too crowded.",
                     stacklevel=2,
                 )
-            G_match.draw(
-=======
             fig2, ax2 = G_match.draw(
->>>>>>> main
                 title=ec.capitalize() + " matching graph" if show_title else "",
                 label_edges=label_edges,
                 node_labels=node_labels,
