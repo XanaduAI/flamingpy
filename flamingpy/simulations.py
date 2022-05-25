@@ -23,7 +23,6 @@ from datetime import datetime
 from time import perf_counter
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import splitter_symp
 from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
@@ -246,7 +245,7 @@ if __name__ == "__main__":
         # User-specified values, if not using command line.
         params = {
             "noise": "passive",
-            "distance": 3,
+            "distance": 2,
             "ec": "primal",
             "boundaries": "open",
             "delta": 0.09,
