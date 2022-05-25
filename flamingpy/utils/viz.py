@@ -28,11 +28,13 @@ To modify the plot parameters use, for example,
 # pylint: disable=too-many-statements,too-many-locals
 
 import itertools as it
+import math
 
 import numpy as np
 import networkx as nx
 import matplotlib as mpl
 from matplotlib.patches import Patch
+from matplotlib.ticker import Formatter
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -58,16 +60,19 @@ plot_params = {
 @mpl.rc_context(plot_params)
 def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
-    xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(PiFormatter())
+
     plt.plot(xs, ns, ".")
     plt.title("Integer Part")
     plt.xlabel("$x$")
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
     plt.ylabel(r"$\mathrm{int}(x)$")
+
     if show:
         plt.show()
 
@@ -77,36 +82,45 @@ def plot_integer_part(xs, ns, alpha, show=True):
 @mpl.rc_context(plot_params)
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
-    plt.title("Fractional Part")
-    plt.plot(xs, fs, ".")
+    fig = plt.figure()
+    ax = plt.gca()
+
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
-    newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
-    plt.xticks(newxticks, newxlabels)
+    ax.xaxis.set_major_formatter(PiFormatter())
+    ax.yaxis.set_major_formatter(PiFormatter())
+
+    plt.plot(xs, fs, ".")
+    plt.title("Fractional Part")
+    plt.xticks(newxticks)
     plt.xlabel("$x$")
-    plt.yticks(newyticks, newylabels)
+    plt.yticks(newyticks)
     plt.ylabel(r"$\mathrm{frac}(x)$")
+
     if show:
         plt.show()
+
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
-    xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(PiFormatter())
+
     plt.plot(outcomes, bit_values, ".")
     plt.title("Binned values")
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
     plt.xlabel("Outcomes")
     plt.yticks([0, 1], [0, 1])
     plt.ylabel("Bit values")
+
     if show:
         plt.show()
 
@@ -116,20 +130,31 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
 @mpl.rc_context(plot_params)
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
-    _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
-    val = hom_val if use_hom_val else frac
-    xmin, xmax = alpha * (hom_val[0] // alpha), alpha * (hom_val[-1] // alpha) + alpha
-    print(xmin, xmax, min(val), max(val))
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
+    val = hom_val if use_hom_val else frac
+    # bounds for the plot
+    if use_hom_val:
+        xmin, xmax = alpha * np.array([hom_val[0] // alpha, hom_val[-1] // alpha + 1])
+    else:
+        xmin, xmax = -alpha / 2, alpha / 2
+
+    print(xmin, xmax, min(val), max(val))
+
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(PiFormatter())
+
     plt.plot(val, error, ".")
+    plt.xticks(newxticks)
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
-    addendum = "Full homodyne value" if use_hom_val else "Central peak"
-    plt.title("Conditional phase probabilities: " + addendum)
-    plt.xticks(newxticks, newxlabels)
+    plt.title(
+        "Conditional phase probabilities: "
+        + ("Full homodyne value" if use_hom_val else "Central peak")
+    )
+
     if show:
         plt.show()
 
@@ -540,7 +565,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         "color_edges": "k",
         "label": None,
         "legend": True,
-        "title": True,
+        "show_title": True,
         "show_axes": True,
         "label_stabilizers": True,
         "label_boundary": False,
@@ -692,7 +717,7 @@ def _cuboid_data(origin, size=(1, 1, 1)):
 
 
 @mpl.rc_context(plot_params)
-def draw_recovery(ax, **kwargs):
+def add_recovery_drawing(ax, **kwargs):
     """Plot the recovery."""
     if kwargs.get("show_title"):
         ax.set_title("Syndrome and recovery")
@@ -725,6 +750,7 @@ def draw_recovery(ax, **kwargs):
                     c=np.random.rand(3),
                     linewidth=plot_params.get("lines.linewidth", None) * 0.9,
                 )
+
     return ax
 
 
@@ -733,6 +759,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     if drawing_opts is None:
         drawing_opts = {}
 
+    # Drawing the stabilizer graph
     G_stabilizer = getattr(code, ec + "_stab_graph")
     G_match = dec_objects.get("matching_graph")
     # An integer label for each node in the stabilizer and matching
@@ -751,15 +778,18 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     label_edges = bool(drawing_opts.get("label_edges"))
     show_title = bool(drawing_opts.get("show_title"))
     # title = drawing_opts.get_title()
-    code.draw_stabilizer_graph(
+    fig1, ax1 = code.draw_stabilizer_graph(
         ec,
         title=ec.capitalize() + " stabilizer graph" if show_title else "",
         label_edges=label_edges,
         node_labels=node_labels,
     )
+
+    # Drawing the matching graph
+    fig2, ax2 = (None, None)
     if G_match:
         if len(G_match.graph):
-            G_match.draw(
+            fig2, ax2 = G_match.draw(
                 title=ec.capitalize() + " matching graph" if show_title else "",
                 label_edges=label_edges,
                 node_labels=node_labels,
@@ -767,6 +797,49 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
         else:
             print("\nMatching graph empty!\n")
 
-    _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    # Drawing the syndrome
+    fig3, ax3 = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_recovery"):
-        draw_recovery(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
+        ax3 = add_recovery_drawing(ax3, show_title=drawing_opts.get("show_title"), **dec_objects)
+
+    return (fig1, ax1), (fig2, ax2), (fig3, ax3)
+
+
+def to_pi_string(x, tex: bool = True, d=2):
+    """Convert x, a multiple of sqrt(pi)/2, to a pretty string.
+
+    If x is not a multiple of sqrt(pi)/2, return the unmodified string
+    of x with `d` integers after the decimal. If tex is True, add LaTeX
+    $ signs.
+    """
+    remainder = math.remainder(x, np.sqrt(np.pi) / 2)
+    if np.isclose(remainder, 0):
+        integer = round(x / (np.sqrt(np.pi) / 2))
+        pref = int(integer * ((1 - integer % 2) / 2 + integer % 2))
+        x_str = (not bool(round(x))) * "0" + bool(round(x)) * (
+            bool(tex) * "$"
+            + (not bool(1 + pref)) * "-"
+            + bool(1 - abs(pref)) * str(pref)
+            + r"\sqrt{\pi}"
+            + (integer % 2) * "/2"
+            + bool(tex) * "$"
+        )
+        return x_str
+    return f"{x:.{d}f}"
+
+
+class PiFormatter(Formatter):
+    """Formatter for axis-ticks containing multiples of sqrt(pi)/2."""
+
+    def __init__(self, tex: bool = True, d: int = 2):
+        """Initialize the formatter.
+
+        Args:
+            tex: Whether to use LaTeX formatting (i.e. adding $ around the string).
+            d: Number of decimals to use.
+        """
+        self.tex = tex
+        self.d = d
+
+    def __call__(self, x, pos=None):
+        return to_pi_string(x, tex=self.tex, d=self.d)
