@@ -72,10 +72,7 @@ class TestPassive:
         RHG_macro.index_generator()
         RHG_macro.adj_generator(sparse=True)
 
-        # Define the 4X4 beamsplitter network for a given macronode.
-        # star at index 0, planets at indices 1-3.
-        bs_network = splitter_symp()
-        noise_args = {"delta": delta, "p_swap": p_swap, "macro_graph": RHG_macro, "bs_network": bs_network}
+        noise_args = {"delta": delta, "p_swap": p_swap, "macro_graph": RHG_macro}
         decoder_args= {"weight_opts": None}
         errors_py = ec_monte_carlo(trials, code, CVMacroLayer, noise_args, "MWPM", decoder_args)
         # Check that there are no errors in all-GKP high-squeezing limit.

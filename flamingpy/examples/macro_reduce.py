@@ -14,9 +14,8 @@
 """Example of simulating Xanadu's passive and static architecture."""
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import splitter_symp
 from flamingpy.decoders.decoder import correct
-from flamingpy.noise.cv import CVLayer, CVMacroLayer
+from flamingpy.noise.cv import CVMacroLayer
 
 # Number of trials
 total = 100
@@ -38,9 +37,6 @@ RHG_macro = RHG_code.graph.macronize(pad_boundary=pad_bool)
 RHG_macro.index_generator()
 RHG_macro.adj_generator(sparse=True)
 
-# Define the 4X4 beamsplitter network for a given macronode.
-# star at index 0, planets at indices 1-3.
-bs_network = splitter_symp()
 
 noise_model = {"noise": "grn", "delta": delta}
 
@@ -48,7 +44,7 @@ successes = 0
 for trial in range(total):
     # The CV macronode noise layer and reduction
     CV_macro = CVMacroLayer(RHG_macro, p_swap=p_swap, reduced_graph=RHG_reduced)
-    CV_macro.reduce(noise_model, bs_network)
+    CV_macro.reduce(noise_model)
     decoder = {"outer": "MWPM"}
     decoder_opts = {"backend": "networkx"}
     if decoder["outer"] == "MWPM":

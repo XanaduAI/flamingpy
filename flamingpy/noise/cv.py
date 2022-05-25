@@ -19,9 +19,6 @@ import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
 
-import numpy as np
-from scipy.linalg import block_diag
-
 from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply, splitter_symp
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
@@ -343,12 +340,17 @@ class CVLayer:
         return plot_mat_heat_map(self.SCZ(), **kwargs)
 
 
+four_splitter = splitter_symp()
+
+
 class CVMacroLayer(CVLayer):
     """The CV macronode noise layer."""
 
-    def __init__(self, *args, reduced_graph, **kwargs):
+    def __init__(self, *args, reduced_graph, bs_network=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.reduced_graph = reduced_graph
+        if bs_network is None:
+            self.bs_network = four_splitter
 
     def _apply_initial_noise(self, noise_model):
         """Set up the two-step noise model for macro_graph.
@@ -416,7 +418,7 @@ class CVMacroLayer(CVLayer):
             permuted_inds[[i, i + 1, i + 2, i + 3]] = new_inds
         self.permuted_inds = permuted_inds
 
-    def _entangle_states(self, symp_bs):
+    def _entangle_states(self):
         """Entangle the states in the macro_graph.
 
         Apply CZ gates to (i.e. a symplectic CZ matrix to the quadratures of)
@@ -432,6 +434,8 @@ class CVMacroLayer(CVLayer):
         N = self._N
         quad_permutation = np.concatenate([self.permuted_inds, N + self.permuted_inds])
         permuted_quads = quads[quad_permutation]
+        # The beamsplitter network
+        symp_bs = self.bs_network
         for i in range(0, N - 3, 4):
             q_inds = np.array([i, i + 1, i + 2, i + 3])
             p_inds = q_inds + N
@@ -533,9 +537,7 @@ class CVMacroLayer(CVLayer):
         This function modifies reduced_graph.
         """
         macro_graph = self.egraph
-        reuced_graph = self.reduced_graph
         delta = self._delta
-        to_points = macro_graph.to_points
         star_index = self.permuted_inds[j]
         vertex = self.to_points[star_index]
 
@@ -595,7 +597,7 @@ class CVMacroLayer(CVLayer):
         self.reduced_graph.nodes[central_vert]["bit_val"] = processed_bit_val
         self.reduced_graph.nodes[central_vert]["p_phase_cond"] = p_err
 
-    def reduce(self, noise_model, symp_bs):
+    def reduce(self, noise_model):
         """Reduce the macronode lattice macro_graph to the canonical reduced_graph.
 
         Follow the procedure in arXiv:2104.03241. Take the macronode lattice
@@ -622,7 +624,7 @@ class CVMacroLayer(CVLayer):
         # Sample for the initial state
         self._apply_initial_noise(noise_model)
         self._permute_indices_and_label()
-        self._entangle_states(symp_bs)
+        self._entangle_states()
         self._measure_syndrome()
         # Process homodyne outcomes and calculate phase error probabilities
         for j in range(0, len(macro_graph) - 3, 4):

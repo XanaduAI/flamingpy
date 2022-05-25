@@ -15,7 +15,7 @@
 from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer
 
-cpdef int cpp_mc_loop(object coder, int trials, dict decoder, dict weight_options, object macro_graph, object bs_network, double p_swap, double delta, dict cv_noise):
+cpdef int cpp_mc_loop(object coder, int trials, dict decoder, dict weight_options, object macro_graph, double p_swap, double delta, dict cv_noise):
     """Exclusively run loop section of Monte Carlo simulations of error-correction on code=code."""
     noise_model = {"noise": "grn", "delta": delta}
     cdef int successes = 0
@@ -23,7 +23,7 @@ cpdef int cpp_mc_loop(object coder, int trials, dict decoder, dict weight_option
     for ii in range(trials):
         if macro_graph:
             CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph)
-            CV_macro.reduce(noise_model, bs_network)
+            CV_macro.reduce(noise_model)
         else:
             # Apply noise
             CVRHG = CVLayer(code, p_swap=p_swap)

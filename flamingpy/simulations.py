@@ -68,7 +68,7 @@ def ec_monte_carlo(
         noise_model["sampling_order"] = "initial"
         decoder["inner"] = "basic"
     elif noise == CVMacroLayer:
-        macro_graph, bs_network = noise_args["macro_graph"], noise_args["bs_network"]
+        macro_graph, bs_network = noise_args["macro_graph"], noise_args.get("bs_network")
     elif noise == IidNoise:
         p_err = noise_args["p_err"]
 
@@ -81,8 +81,8 @@ def ec_monte_carlo(
             CVRHG.apply_noise(noise_model)
             CVRHG.measure_hom("p", code.all_syndrome_inds)
         elif noise == CVMacroLayer:
-            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph)
-            CV_macro.reduce(noise_model, bs_network)
+            CV_macro = CVMacroLayer(macro_graph, p_swap=p_swap, reduced_graph=code.graph, bs_network=bs_network)
+            CV_macro.reduce(noise_model)
         elif noise == IidNoise:
             IidNoise(code, p_err).apply_noise()
 
@@ -142,8 +142,7 @@ def run_ec_simulation(
         macro_graph = code_instance.graph.macronize(pad_boundary=pad_bool)
         macro_graph.index_generator()
         macro_graph.adj_generator(sparse=True)
-        bs_network = splitter_symp()
-        noise_args.update({"bs_network": bs_network, "macro_graph": macro_graph})
+        noise_args.update({"bs_network": None, "macro_graph": macro_graph})
         if decoder == "MWPM":
             weight_opts = {"method": "blueprint", "prob_precomputed": True}
         else:
