@@ -24,8 +24,20 @@ from flamingpy.codes.surface_code import (
 )
 
 
-def surface_code(d, boundaries, err, polarity, show=False):
-    """Example for building and visualizing RHG lattices and surface codes."""
+def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, show=False):
+    """Example for building and visualizing RHG lattices and surface codes.
+
+    See more details about the following arguments in the SurfaceCode class.
+
+    Args:
+        d (int): the code distance
+        boundaries (str): the code boundaries ("open" or "periodic")
+        err (str): the error complex ("primal" or "dual")
+        polarity (func): the polarity (edge weight) function
+        show (bool): if True, show the plot
+        stabilizer_indices (list): indices of the stabilizers to plot (all by
+            default).
+    """
 
     # Instantiate a surface code.
     RHG_code = SurfaceCode(d, ec=err, boundaries=boundaries, polarity=polarity)
@@ -43,16 +55,19 @@ def surface_code(d, boundaries, err, polarity, show=False):
 
     # Plot the stabilizers
     for ec in RHG_code.ec:
-        # Stabilizers are available in the attributes primal_stabilizers and/or
-        # dual_stabilizers, depending on the error complex.
+        # Stabilizers are available in the attributes primal_stabilizers and/or dual_stabilizers,
+        # depending on the error complex.
+
         stabilizers = getattr(RHG_code, ec + "_stabilizers")
-        # Change [0:1] in the following line to other consecutive indices,
-        # corresponding to another stabilizer you'd like to plot.
-        for stabilizer in stabilizers[0:1]:
+
+        if stabilizer_inds is None:
+            stabilizer_inds = range(len(stabilizers))
+        for ind in stabilizer_inds:
+            stabilizer = stabilizers[ind]
             color = np.random.rand(3)
             for point in stabilizer.egraph:
                 x, z, y = point
-                RHG_fig.scatter(x, z, y, color=color, s=200)
+                RHG_fig.scatter(x, z, y, color=color, s=40)
 
     if show:
         plt.show()
@@ -70,8 +85,11 @@ if __name__ == "__main__":
         # Error complex ("primal" or "dual")
         "err": "primal",
         # Polarity (edge weight pattern in graph state -- all unit weights by default)
-        "polarity": None
-        # polarity = alternating_polarity'
+        "polarity": None,
+        # polarity = alternating_polarity,
+        # indices of stabilizer nodes to scatter
+        # "stabilizer_inds": [0, 3],
+        "show": True,
     }
 
-    surface_code(**params, show=True)
+    illustrate_surface_code(**params)
