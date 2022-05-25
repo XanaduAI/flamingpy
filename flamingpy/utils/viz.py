@@ -253,12 +253,19 @@ def draw_EGraph(
     ax = _plot_EGraph_edges(ax, egraph, color_edges)
 
     # plot generalities
-    plt.xlim(xlim)
-    plt.ylim(zlim)
-    ax.set_zlim(ylim)
     plt.xticks(range(xlim[0], xlim[1] + 1))
     plt.yticks(range(zlim[0], zlim[1] + 1))
     ax.set_zticks(range(ylim[0], ylim[1] + 1))
+
+    for lim in [xlim, ylim, zlim]:
+        if lim[0] == lim[1]:
+            lim[0] -= 1
+            lim[1] += 1
+
+    plt.xlim(xlim)
+    plt.ylim(zlim)
+    ax.set_zlim(ylim)
+
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)
