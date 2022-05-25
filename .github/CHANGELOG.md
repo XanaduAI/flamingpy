@@ -3,7 +3,7 @@
 ### New features since the last release
 
 ### Bug fixes
-* Fixed the class inheretance diagram displayed in fp.codes. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Improvements
 
@@ -19,7 +19,8 @@
  * To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
 * Brief tutorials about graph states and error correction were added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
-* Added UML class and package diagrams. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
