@@ -6,6 +6,7 @@
  * THe `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
 
 ### Bug fixes
+* Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Improvements
 
@@ -26,12 +27,14 @@
  * To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
 * Brief tutorials about graph states and error correction were added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
+* Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details ...
 
