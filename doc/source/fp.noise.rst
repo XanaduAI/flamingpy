@@ -10,6 +10,7 @@ Available modules
     :toctree: api
 
     ~iid
+    ~cv
 
 Module members
 --------------
