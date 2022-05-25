@@ -2,8 +2,14 @@
 
 ### New features since the last release
 
+* Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * THe `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
+
+
 ### Bug fixes
+* Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Added a warning message that is raised when plotting very large codes.
+
 ### Improvements
 
 * Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
@@ -11,6 +17,9 @@
  * Rename function and add dosctring.
  * Decrease size of markers for plotting stabilizer nodes.
  * Improve way to scatter stabilizers via specifying indices.
+* The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
+ * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+ * `display_axes` is changed to `show_axes` for consistency.
 
 ### Documentation changes
 
@@ -18,12 +27,14 @@
  * To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
 * Brief tutorials about graph states and error correction were added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
+* Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details ...
 

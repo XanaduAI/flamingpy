@@ -17,6 +17,7 @@ the plots."""
 # pylint: disable=import-outside-toplevel,unused-import
 
 import pytest
+from flamingpy.codes import alternating_polarity
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])

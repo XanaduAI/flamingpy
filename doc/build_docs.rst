@@ -10,6 +10,7 @@ The FlamingPy documentation is built using `sphinx`. To build the documentation 
 * `numba <https://numba.pydata.org/>`_ >= 0.53.1
 * `NumPy <http://numpy.org/>`_ >= 1.21.0
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
+* `pylint <https://pypi.org/project/pylint/>`_ >= 2.13.9
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
 * `scipy <https://scipy.org/>`_ >= 1.6.0
 * `sphinx <https://www.sphinx-doc.org/en/master/index.html>`_ >= 4.3.1
