@@ -355,10 +355,10 @@ class CVMacroLayer(CVLayer):
     def _apply_initial_noise(self, noise_model):
         """Set up the two-step noise model for macro_graph.
 
-        Based on noise_layer and noise_model, populate macro_graph with states and
-        sample for the initial (ideal) measurement outcomes.
+        Based on noise_model, populate macro_graph with states and sample for 
+        the initial (ideal) measurement outcomes.
 
-        This function modifies macro_graph.
+        This method modifies self.egraph.
         """
         macro_graph = self.egraph
         perfect_points = macro_graph.graph.get("perfect_points")
@@ -382,7 +382,8 @@ class CVMacroLayer(CVLayer):
         subsequent planets. Additionally, if a macronode contains at least one GKP
         state, label the reduced state as 'GKP' (otherwise 'p').
 
-        This function returns a list and modified reduced_graph.
+        This method sets the attribute self.permuted_inds to the permuted
+        indices and modifies self.egraph and self.reduced_graph.
         """
         N = self._N
         macro_graph = self.egraph
@@ -422,10 +423,12 @@ class CVMacroLayer(CVLayer):
         """Entangle the states in the macro_graph.
 
         Apply CZ gates to (i.e. a symplectic CZ matrix to the quadratures of)
-        macro_graph, based on where the edges are in the graph. Then, apply the
+        self.egraph, based on where the edges are in the graph. Then, apply the
         four-splitter to each macronode.
 
-        Return the permuted quadratures and the corresponding permutation vector.
+        This method sets the attributes self.permuted_quads to the permuted 
+        quadratures and self.quad_permutation to the corresponding permutation 
+        vector.
         """
         macro_graph = self.egraph
         quads = SCZ_apply(macro_graph.adj_mat, self._init_quads)
@@ -447,12 +450,14 @@ class CVMacroLayer(CVLayer):
         self.quad_permutation = quad_permutation
 
     def _measure_syndrome(self):
-        """Measure the syndrome of noisy_macro_state.
+        """Measure the syndrome of self.egraph.
 
         Conduct p-homodyne measurements on the stars (central modes) of
-        noisy_macro_state and q-homodyne measurements to the planets
+        self.egrapg and q-homodyne measurements to the planets
         (satellite modes). This effectively conducts an X-basis measurement
         on the modes of the reduced lattice.
+        
+        This method modifies self.egraph.
         """
         N = self._N
         unpermuted_quads = self.permuted_quads[invert_permutation(self.quad_permutation)]
@@ -465,7 +470,7 @@ class CVMacroLayer(CVLayer):
         self.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
 
     def _neighbor_of_micro_i_macro_j(self, i, j):
-        """Return the neighbor of the ith micronode, jth macronode in macro_graph.
+        """Return the neighbor of the ith micronode, jth macronode in self.egraph.
 
         Suppose micronode i (in macronode j) is adjacent to a neighbor.
         Return the vertex (tuple) and the body index of the neighbor to help
@@ -530,11 +535,11 @@ class CVMacroLayer(CVLayer):
     def _reduce_jth_macronode(self, j):
         """Obtain the bit value and error probability for the jth macronode.
 
-        Process the measurement outcomes of the jth macronode in macro_graph to
+        Process the measurement outcomes of the jth macronode in self.egraph to
         populate the corresponding reduced node in reduced_graph with a bit value
         and conditional phase error probability.
 
-        This function modifies reduced_graph.
+        This method modifies self.reduced_graph.
         """
         macro_graph = self.egraph
         delta = self._delta
