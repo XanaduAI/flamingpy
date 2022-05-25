@@ -164,7 +164,7 @@ GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
 # initialize an empty graph:
 #
 
-GHZ_state = EGraph(dims=(1, 1, 1))
+GHZ_state = EGraph()
 GHZ_state.add_edges_from([GHZ_edge_1, GHZ_edge_2])
 
 
