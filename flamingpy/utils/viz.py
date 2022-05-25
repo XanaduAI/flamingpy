@@ -210,9 +210,13 @@ def draw_EGraph(
         legend (bool): if True and color_nodes argument is a tuple(str, dict),
             display the a color legend with node attributes.
         show_axes (bool): if False, turn off the axes.
-        dimensions (tuple): Dimensions of the region that should be plotted. Formatted like
-            [[xmin, xmax], [ymin, ymax], [zmin, zmax]]. If None, set the dimensions to the smallest
-            rectangular space containing all the nodes.
+        dimensions (tuple): Dimensions of the region that should be plotted.
+            Should be of the form:
+
+                ([xmin, xmax], [ymin, ymax], [zmin, zmax]).
+
+            If None, set the dimensions to the smallest rectangular space
+            containing all the nodes.
 
     Returns:
         tuple: Matplotib Figure and Axes.
