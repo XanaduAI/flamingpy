@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A collection of classes used for UnionFind decoder"""
+"""A collection of classes used for UnionFind decoder."""
 
 # pylint: disable=too-few-public-methods
 
