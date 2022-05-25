@@ -25,7 +25,7 @@ Module members
     mwpm_decoder
 
 Class Inheritance Diagram
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. inheritance-diagram:: flamingpy.decoders.mwpm.LemonMatchingGraph
      flamingpy.decoders.mwpm.RxMatchingGraph
    :parts: 1
