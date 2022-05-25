@@ -21,6 +21,7 @@
  * `display_axes` is changed to `show_axes` for consistency.
 * `xlim` in `viz.plot_Z_err_cond` is adjusted to the relevant domain when plotting the central peak. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
+* Both upper and lower axes limits can now be specified for `EGraph` plots. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
 
 ### Documentation changes
 
