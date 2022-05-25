@@ -249,6 +249,9 @@ def draw_EGraph(
     ax = _plot_EGraph_edges(ax, egraph, color_edges)
 
     # plot generalities
+    plt.xlim(xlim)
+    plt.ylim(zlim)
+    ax.set_ylim(ylim)
     plt.xticks(range(xlim[0], xlim[1] + 1))
     plt.yticks(range(zlim[0], zlim[1] + 1))
     ax.set_zticks(range(ylim[0], ylim[1] + 1))
