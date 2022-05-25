@@ -32,10 +32,10 @@ Module members
 
 
 UML Diagrams
---------------
+------------
 
 Classes
-^^^^^^^^^^^^ 
+^^^^^^^
 
 
 .. raw:: html
@@ -54,8 +54,8 @@ Classes
     </div>
     
 |
-Packages
-^^^^^^^^^^^^
+Module relationships
+^^^^^^^^^^^^^^^^^^^^
 
 
 .. raw:: html
