@@ -565,7 +565,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         "color_edges": "k",
         "label": None,
         "legend": True,
-        "title": True,
+        "show_title": True,
         "show_axes": True,
         "label_stabilizers": True,
         "label_boundary": False,
