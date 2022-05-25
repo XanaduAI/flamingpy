@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.cv.ops import CVLayer
-from flamingpy.decoders import decoder as dec
+from flamingpy.decoders import correct
 from flamingpy.noise import IidNoise
 
 
@@ -44,7 +44,6 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         # Apply noise, measure syndrome, translate to bit values
         CVRHG.apply_noise(cv_noise)
         CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         # Decoding options
         if decoder == "MWPM":
             weight_options = {
@@ -80,7 +79,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
     }
 
     # Decode and plot
-    c = dec.correct(
+    c = correct(
         code=RHG_code,
         decoder=decoder,
         weight_options=weight_options,
