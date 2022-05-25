@@ -3,7 +3,8 @@
 ### New features since the last release
 
 * Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
- * THe `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
+ * The `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
+* The `dims` attribute of `EGraph` has been removed. Its function is replaced by the `dimensions` parameter that is passed to the `draw_EGraph` method. This method does not require the `EGraph` to have a `dims` attribute defined anymore. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
 
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
