@@ -11,6 +11,7 @@ flamingpy configuration file for the Sphinx documentation builder.
 import os
 import sys
 import re
+import time
 import subprocess
 import shlex
 from unittest.mock import MagicMock
