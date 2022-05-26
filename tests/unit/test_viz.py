@@ -75,6 +75,6 @@ def test_draw_EGraph_RHG():
     assert len(a.get_yticks()) == 2*d-1
     assert len(a.get_zticks()) == 2*d-1
     
-    assert a.get_xlim() == (0, 2*d-1)
-    assert a.get_ylim() == (1, 2*d)
-    assert a.get_zlim() == (1, 2*d)
+    assert a.get_xlim() == (0, 2*d-2)
+    assert a.get_ylim() == (1, 2*d-1)
+    assert a.get_zlim() == (1, 2*d-1)
