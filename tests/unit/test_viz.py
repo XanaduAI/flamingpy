@@ -22,6 +22,7 @@ from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import SurfaceCode
 
+
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
     # Test +- sqrt(pi) and sqrt(pi)/2.
@@ -47,13 +48,14 @@ def test_to_pi_string():
     # Test for tex=False
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
+
 def test_draw_EGraph_Bell():
     """Test for the draw method of EGraph of Bell state."""
     # Bell state EGraph
     edge = [(0, 0, 0), (0, 0, 1)]
     bell_state = EGraph()
     bell_state.add_edge(*edge, color="MidnightBlue")
-    
+
     # Test for drawing the EGraph
     f, a = draw_EGraph(bell_state)
     plt.close()
@@ -61,22 +63,23 @@ def test_draw_EGraph_Bell():
     assert len(a.get_xticks()) == 0
     assert a.get_xlim() == (-1, 1)
 
+
 def test_draw_EGraph_RHG():
     """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
     d = np.random.randint(2, 5)
     RHG = SurfaceCode(d).graph
-    
+
     # Test for drawing the EGraph
     f, a = draw_EGraph(RHG)
     plt.close()
 
-    n_ticks = 2*d - 1
+    n_ticks = 2 * d - 1
 
     assert len(a.get_xticks()) == n_ticks
     assert len(a.get_yticks()) == n_ticks
     assert len(a.get_zticks()) == n_ticks
-    
-    assert a.get_xlim() == (0, n_ticks-1)
+
+    assert a.get_xlim() == (0, n_ticks - 1)
     assert a.get_ylim() == (1, n_ticks)
     assert a.get_zlim() == (1, n_ticks)
