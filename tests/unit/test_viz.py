@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
+from flamingpy.codes import SurfaceCode
 
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
@@ -58,4 +59,17 @@ def test_draw_EGraph_Bell():
     
     # Test for drawing the EGraph
     f, a = draw_EGraph(bell_state)
+    plt.close()
+
+def test_draw_EGraph_RHG():
+    """Test for the draw method of EGraph."""
+    # Bell state EGraph
+    d = np.random.randint(2, 7)
+    RHG = SurfaceCode(d)
+
+    assert len(a.get_xticks()) == d+1
+    assert a.get_xlim() == (0, d+1)
+    
+    # Test for drawing the EGraph
+    f, a = draw_EGraph(RHG)
     plt.close()
