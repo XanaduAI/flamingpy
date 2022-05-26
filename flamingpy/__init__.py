@@ -32,7 +32,6 @@ try:
 except ImportError:  # pragma: no cover
     warnings.warn("Failed to import flamingpy.cpp libraries.", ImportWarning)
 
-
 from ._version import __version__
 
 

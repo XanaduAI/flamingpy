@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for the Union Find decoder."""
 
-# pylint: disable=too-many-function-args,no-self-use,unsubscriptable-object,consider-using-dict-items,too-few-public-methods,too-many-locals,unused-argument
+# pylint: disable=too-many-function-args,no-self-use,unsubscriptable-object,consider-using-dict-items,too-few-public-methods,too-many-locals,unused-argument,pointless-statement
 
 import itertools as it
 import random
@@ -171,7 +171,6 @@ class TestUnionFindStructures:
                 if (edge[0] not in {"low", "high"}) and (edge[1] not in {"low", "high"}):
                     assert support.status[frozenset((edge[0], edge[1]))] == "grown"
 
-    # pylint: disable=pointless-statement
     def test_support_value(self, enc_state_swap_list):
         """Test Support function assignments"""
         CV_decoder(enc_state_swap_list[0])
