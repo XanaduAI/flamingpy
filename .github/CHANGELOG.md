@@ -34,6 +34,7 @@
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Added `libopenmpi-dev` package to the apt list of `.readthedoc.yml` to allow documentation successful builds after adding recent `mpi4py` requirements. [#59](https://github.com/XanaduAI/flamingpy/pull/59)
 
 ### Contributors
 
