@@ -14,3 +14,4 @@
 """The qubit codes module."""
 from .stabilizer import Stabilizer
 from .surface_code import alternating_polarity, RHG_graph, SurfaceCode
+from .graphs import EGraph, StabilizerGraph, NxStabilizerGraph, RxStabilizerGraph

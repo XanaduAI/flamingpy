@@ -15,6 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - run: |
+       echo "::remove-matcher owner=eslint-compact::"
+       echo "::remove-matcher owner=eslint-stylish::"
+
     - name: Build sphinx documentation
       uses: XanaduAI/sphinx-action@master
       with:

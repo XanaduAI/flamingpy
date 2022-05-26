@@ -28,11 +28,13 @@ To modify the plot parameters use, for example,
 # pylint: disable=too-many-statements,too-many-locals
 
 import itertools as it
+import math
 
 import numpy as np
 import networkx as nx
 import matplotlib as mpl
 from matplotlib.patches import Patch
+from matplotlib.ticker import Formatter
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection

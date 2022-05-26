@@ -12,31 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions useful for binning and errors associated with GKP encodings."""
-import math
 import numpy as np
 from scipy.special import erf
-
-
-def to_pi_string(x, tex=True):
-    """Convert x, a multiple of sqrt(pi)/2, to a pretty string.
-
-    If x is not a multiple of sqrt(pi)/2, return the unmodified string
-    of x. If tex is True, add LaTeX $ signs.
-    """
-    remainder = math.remainder(x, np.sqrt(np.pi) / 2)
-    if np.isclose(remainder, 0):
-        integer = round(x / (np.sqrt(np.pi) / 2))
-        pref = int(integer * ((1 - integer % 2) / 2 + integer % 2))
-        x_str = (not bool(round(x))) * "0" + bool(round(x)) * (
-            bool(tex) * "$"
-            + (not bool(1 + pref)) * "-"
-            + bool(1 - abs(pref)) * str(pref)
-            + r"\sqrt{\pi}"
-            + (integer % 2) * "/2"
-            + bool(tex) * "$"
-        )
-        return x_str
-    return str(x)
 
 
 def integer_fractional(x, alpha):
