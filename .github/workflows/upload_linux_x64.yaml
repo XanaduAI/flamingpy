@@ -28,6 +28,7 @@ jobs:
 
       - name: install dependencies
         run: |
+          sudo apt install -y libopenmpi-dev
           python -m pip install --upgrade pip
           python -m pip install pyyaml wheel --upgrade
           python -m pip install -r dev_requirements.txt
