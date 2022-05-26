@@ -48,28 +48,28 @@ def test_to_pi_string():
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 def test_draw_EGraph_Bell():
-    """Test for the draw method of EGraph."""
+    """Test for the draw method of EGraph of Bell state."""
     # Bell state EGraph
     edge = [(0, 0, 0), (0, 0, 1)]
     bell_state = EGraph()
     bell_state.add_edge(*edge, color="MidnightBlue")
-
-    assert len(a.get_xticks()) == 0
-    assert a.get_xlim() == (-1, 1)
     
     # Test for drawing the EGraph
     f, a = draw_EGraph(bell_state)
     plt.close()
 
+    assert len(a.get_xticks()) == 0
+    assert a.get_xlim() == (-1, 1)
+
 def test_draw_EGraph_RHG():
-    """Test for the draw method of EGraph."""
+    """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
     d = np.random.randint(2, 5)
     RHG = SurfaceCode(d)
-
-    assert len(a.get_xticks()) == 2*d-1
-    assert a.get_xlim() == (0, 2*d-1)
     
     # Test for drawing the EGraph
     f, a = draw_EGraph(RHG)
     plt.close()
+
+    assert len(a.get_xticks()) == 2*d-1
+    assert a.get_xlim() == (0, 2*d-1)
