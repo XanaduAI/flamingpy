@@ -116,9 +116,9 @@ def RHG_graph(
     the surface code, with specified dimensions and boundary types.
 
     Args:
-        dims (int or list-type): the dimensions of the lattice. If int,
+        dims (int or tuple): the dimensions of the lattice. If int,
             generates a cube corresponding to a code of distance dims.
-            If a three-element list [dx, dy, dz], assumes distances
+            If a three-tuple (dx, dy, dz), assumes distances
             dx, dy, dz in x, y, z directions, respectively.
         boundaries (str or list-type, optional): the boundary types
             in x, y, z. We use the identification primal = smooth and
@@ -236,7 +236,10 @@ class SurfaceCode:
     vertices.
 
     Attributes:
-        distance (int): the code distance.
+        distance (int or 3-tuple): the code distance of the lattice. If int,
+            generates a cube corresponding to a code of distance dims. If a
+            three-tuple (dx, dy, dz), assumes distances dx, dy, dz in x, y,
+            z directions, respectively.
         dims (tup): a tuple of the spatial extent in x, y, z.
         ec (str): the error complex ('primal' or 'dual').
         boundaries (str): the boundary conditions. The options are:
@@ -280,8 +283,14 @@ class SurfaceCode:
         polarity=None,
         backend="retworkx",
     ):
+        assert np.size(distance) in (1, 3), "distance must be a scalar or a 3-tuple"
+
         self.distance = distance
-        self.dims = (distance, distance, distance)
+        if np.size(distance) == 1:
+            self.dims = (distance, distance, distance)
+        elif np.size(distance) == 3:
+            self.dims = distance
+
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
