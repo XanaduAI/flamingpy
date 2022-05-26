@@ -223,10 +223,10 @@ def draw_EGraph(
     """
 
     if dimensions is None:
-        mins = list(map(min, zip(*egraph.nodes)))
-        maxs = list(map(max, zip(*egraph.nodes)))
+        mins = map(min, zip(*egraph.nodes))
+        maxs = map(max, zip(*egraph.nodes))
 
-        dimensions = list(zip(mins, maxs))
+        dimensions = zip(mins, maxs)
 
     xlim, ylim, zlim = [list(lim) for lim in dimensions]
 
