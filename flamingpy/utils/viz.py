@@ -228,7 +228,7 @@ def draw_EGraph(
 
         dimensions = list(zip(mins, maxs))
 
-    xlim, ylim, zlim = dimensions
+    xlim, ylim, zlim = [list(lim) for lim in dimensions]
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
