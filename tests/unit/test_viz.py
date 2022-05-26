@@ -44,3 +44,6 @@ def test_to_pi_string():
 
     # Test for tex=False
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
+
+def test_draw_EGraph():
+    pass
