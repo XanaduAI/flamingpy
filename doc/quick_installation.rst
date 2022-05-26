@@ -1,5 +1,5 @@
-Easy Installation
-=================
+Quick Installation
+==================
 
 FlamingPy requires **Python 3.8** or newer. The recommended method to download and install 
 FlamingPy, as well as all dependencies and precompiled C++ binaries, is through ``pip`` 
