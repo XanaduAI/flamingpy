@@ -64,11 +64,11 @@ def test_draw_EGraph_Bell():
 def test_draw_EGraph_RHG():
     """Test for the draw method of EGraph."""
     # Bell state EGraph
-    d = np.random.randint(2, 7)
+    d = np.random.randint(2, 5)
     RHG = SurfaceCode(d)
 
-    assert len(a.get_xticks()) == d+1
-    assert a.get_xlim() == (0, d+1)
+    assert len(a.get_xticks()) == 2*d-1
+    assert a.get_xlim() == (0, 2*d-1)
     
     # Test for drawing the EGraph
     f, a = draw_EGraph(RHG)
