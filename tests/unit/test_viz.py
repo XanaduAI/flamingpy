@@ -16,9 +16,10 @@
 import math
 import numpy as np
 from numpy.random import default_rng as rng
+import matplotlib.pyplot as plt
 
-from flamingpy.utils.viz import to_pi_string
-
+from flamingpy.utils.viz import to_pi_string, draw_EGraph
+from flamingpy.codes.graphs import EGraph
 
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
@@ -46,4 +47,11 @@ def test_to_pi_string():
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 def test_draw_EGraph():
-    pass
+    # Bell state EGraph
+    edge = [(0, 0, 0), (0, 0, 1)]
+    bell_state = EGraph()
+    bell_state.add_edge(*edge, color="MidnightBlue")
+    
+    # Test for drawing the EGraph
+    draw_EGraph(bell_state)
+    plt.close()
