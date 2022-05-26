@@ -47,6 +47,7 @@ def test_to_pi_string():
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 def test_draw_EGraph():
+    """Test for the draw method of EGraph."""
     # Bell state EGraph
     edge = [(0, 0, 0), (0, 0, 1)]
     bell_state = EGraph()
