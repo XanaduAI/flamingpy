@@ -8,7 +8,9 @@
 """
 flamingpy configuration file for the Sphinx documentation builder.
 """
-import os, sys, re
+import os
+import sys
+import re
 from unittest.mock import MagicMock
 
 
