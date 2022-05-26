@@ -65,7 +65,7 @@ def test_draw_EGraph_RHG():
     """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
     d = np.random.randint(2, 5)
-    RHG = SurfaceCode(d)
+    RHG = SurfaceCode(d).graph
     
     # Test for drawing the EGraph
     f, a = draw_EGraph(RHG)
