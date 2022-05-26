@@ -92,16 +92,18 @@ def str_to_bound(bound_name):
         'open_dual': [primal, dual, primal]
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
     """
-    if bound_name == "open_primal":
-        boundaries = ["primal", "dual", "dual"]
-    elif bound_name == "open_dual":
-        boundaries = ["primal", "dual", "primal"]
-    elif bound_name in ("primal", "dual", "periodic"):
-        boundaries = [bound_name] * 3
-    elif not isinstance(bound_name, str):
-        print("Boundary type must be string.")
-        raise Exception
-    return np.array(boundaries)
+    if not isinstance(bound_name, str):
+        raise ValueError("Boundary type must be string.")
+
+    return {
+        "open_primal": ["primal", "dual", "dual"],
+        "open_dual": ["primal", "dual", "primal"],
+        "primal": ["primal", "primal", "primal"],
+        "dual": ["dual", "dual", "dual"],
+        "all_periodic": ["periodic", "periodic", "periodic"],
+        "periodic_primal": ["periodic", "periodic", "primal"],
+        "periodic_dual": ["periodic", "periodic", "dual"],
+    }.get(bound_name)
 
 
 def RHG_graph(
@@ -243,7 +245,8 @@ class SurfaceCode:
 
             'open': ['primal', 'dual', 'dual'] for 'primal' EC
                     ['primal', 'dual', 'primal'] for 'dual' EC
-            'periodic': 'periodic' in all three directions.
+            'all_periodic': 'periodic' in all three directions.
+            'periodic': 'periodic' in x and y but not z.
 
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
@@ -287,6 +290,8 @@ class SurfaceCode:
 
         if boundaries == "open":
             self.bound_str = "open_primal" if ec in ("primal", "both") else "open_dual"
+        elif boundaries == "periodic":
+            self.bound_str = "periodic_dual" if ec in ("primal", "both") else "periodic_primal"
         else:
             self.bound_str = boundaries
         self.boundaries = str_to_bound(self.bound_str)
