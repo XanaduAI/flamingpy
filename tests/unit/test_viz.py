@@ -60,7 +60,7 @@ def test_draw_EGraph_Bell():
     f, a = draw_EGraph(bell_state)
     plt.close()
 
-    assert len(a.get_xticks()) == 0
+    assert len(a.get_xticks()) == 1
     assert a.get_xlim() == (-1, 1)
 
 
