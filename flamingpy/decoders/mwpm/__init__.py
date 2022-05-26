@@ -13,3 +13,4 @@
 # limitations under the License.
 """The minimum-weight perfect-matching decoder."""
 from .algos import mwpm_decoder
+from .matching import MatchingGraph, NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
