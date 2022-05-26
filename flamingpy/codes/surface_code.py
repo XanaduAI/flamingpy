@@ -145,7 +145,7 @@ def RHG_graph(
     # plotting purposes.
     if np.size(dims) == 1:
         dims = (dims, dims, dims)
-    G = EGraph(dims=dims)
+    G = EGraph()
 
     # Dealing with boundaries.
     if isinstance(boundaries, str):
