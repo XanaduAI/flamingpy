@@ -6,6 +6,7 @@ build:
     python: "3.9"
   apt_packages:
     - graphviz
+    - libopenmpi-dev
 
 sphinx:
   configuration: doc/conf.py
@@ -15,6 +16,7 @@ formats:
 
 python:
     install:
+      - requirements: dev_requirements.txt
       - requirements: doc/dev_requirements.txt
       - method: setuptools
         path: .
