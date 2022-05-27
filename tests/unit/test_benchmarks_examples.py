@@ -17,7 +17,7 @@ the plots."""
 # pylint: disable=import-outside-toplevel,unused-import
 
 import pytest
-from flamingpy.codes import alternating_polarity
+from flamingpy import cpp_libraries_available
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])
@@ -65,11 +65,13 @@ def test_surface_code_example(boundaries):
     illustrate_surface_code(d, boundaries, err, polarity, show=False)
 
 
+@pytest.mark.skipif(not cpp_libraries_available, reason="flamingpy.cpp libraries not available")
 def test_lemon_benchmark():
     """Simple test for the lemon module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import lemon
 
 
+@pytest.mark.skipif(not cpp_libraries_available, reason="flamingpy.cpp libraries not available")
 def test_matching_benchmark():
     """Simple test for the matching module in flamingpy.benchmarks."""
     from flamingpy.benchmarks import matching
