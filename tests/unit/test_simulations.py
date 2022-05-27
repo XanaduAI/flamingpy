@@ -75,11 +75,11 @@ class TestBlueprint:
             "delta": noise_args.get("delta"),
         }
         errors_py = ec_monte_carlo(
-            trials, 
-            code, 
-            CVLayer, 
-            noise_args, 
-            "MWPM", 
+            trials,
+            code,
+            CVLayer,
+            noise_args,
+            "MWPM",
             decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,
@@ -109,11 +109,11 @@ class TestPassive:
         noise_args = {"delta": delta, "p_swap": p_swap, "macro_graph": RHG_macro}
         decoder_args = {"weight_opts": None}
         errors_py = ec_monte_carlo(
-            trials, 
-            code, 
-            CVMacroLayer, 
-            noise_args, 
-            "MWPM", 
+            trials,
+            code,
+            CVMacroLayer,
+            noise_args,
+            "MWPM",
             decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,
