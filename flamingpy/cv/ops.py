@@ -13,7 +13,7 @@
 # limitations under the License.
 """Continuous-variable operations, states, and noise models."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-instance-attributes
 
 import numpy as np
 from numpy.random import default_rng

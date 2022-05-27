@@ -13,21 +13,70 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments
+# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position
 
 import argparse
 import csv
 import sys
+import warnings
 
 from datetime import datetime
 from time import perf_counter
+
+int_time = int(str(datetime.now().timestamp()).replace(".", ""))
+
+try:
+    import mpi4py.rc
+
+    mpi4py.rc.threaded = False
+    from mpi4py import MPI
+except ImportError:  # pragma: no cover
+    warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
+
+import numpy as np
+from numpy.random import default_rng
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
+
 noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
 reverse_dict = {b: a for a, b in noise_dict.items()}
+
+
+def ec_mc_trial(
+    bs_network,
+    p_swap,
+    p_err,
+    noise_model,
+    code,
+    decoder,
+    macro_graph,
+    weight_options,
+    rng=default_rng(),
+):
+    """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
+    if noise == CVLayer:
+        CVRHG = CVLayer(code, p_swap=p_swap, rng=rng)
+        CVRHG.apply_noise(noise_model, rng=rng)
+        CVRHG.measure_hom("p", code.all_syndrome_inds, rng=rng)
+    elif noise == CVMacroLayer:
+        CV_macro = CVMacroLayer(
+            macro_graph, p_swap=p_swap, reduced_graph=code.graph, bs_network=bs_network, rng=rng
+        )
+        CV_macro.reduce(noise_model)
+    elif noise == IidNoise:
+        IidNoise(code, p_err, rng=rng).apply_noise()
+
+    decoding_start_time = perf_counter()
+
+    result = correct(code=code, decoder=decoder, weight_options=weight_options)
+
+    decoding_stop_time = perf_counter()
+    decoding_time = decoding_stop_time - decoding_start_time
+
+    return result, decoding_time
 
 
 def ec_monte_carlo(
@@ -38,6 +87,9 @@ def ec_monte_carlo(
     decoder,
     decoder_args,
     return_decoding_time=False,
+    world_comm=None,
+    mpi_rank=0,
+    mpi_size=1,
 ):
     """Run Monte Carlo simulations of error-correction for the given code.
 
@@ -56,8 +108,8 @@ def ec_monte_carlo(
 
     Returns:
         errors (integer): the number of errors.
-        decoding_time (float): the total number of seconds taken by the decoder. This parameter is
-            returned only if return_decoding_time is set to True
+        decoding_time_total (float): the total time is seconds taken by the decoder steps. This
+            parameter is returned only if return_decoding_time is set to True
     """
     weight_opts = decoder_args["weight_opts"]
     decoder = {"outer": decoder}
@@ -72,42 +124,42 @@ def ec_monte_carlo(
     elif noise == IidNoise:
         p_err = noise_args["p_err"]
 
-    successes = 0
+    successes = np.zeros(1)
+    local_successes = np.zeros(1)
+
+    rng = np.random.default_rng(mpi_rank + int_time)
+
     if return_decoding_time:
-        decoding_time = 0
-    for _ in range(trials):
-        if noise == CVLayer:
-            CVRHG = CVLayer(code, p_swap=p_swap)
-            CVRHG.apply_noise(noise_model)
-            CVRHG.measure_hom("p", code.all_syndrome_inds)
-        elif noise == CVMacroLayer:
-            CV_macro = CVMacroLayer(
-                macro_graph, p_swap=p_swap, reduced_graph=code.graph, bs_network=bs_network
+        decoding_time_total = 0
+
+    for i in range(trials):
+        if i % mpi_size == mpi_rank:
+            result, decoding_time = ec_mc_trial(
+                bs_network,
+                p_swap,
+                p_err,
+                noise_model,
+                code,
+                decoder,
+                macro_graph,
+                weight_opts,
+                rng,
             )
-            CV_macro.reduce(noise_model)
-        elif noise == IidNoise:
-            IidNoise(code, p_err).apply_noise()
+            if return_decoding_time:
+                decoding_time_total += decoding_time
+            local_successes[0] += result
 
-        if return_decoding_time:
-            decoding_start_time = perf_counter()
+    if "MPI" in globals():
+        world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
 
-        result = correct(code=code, decoder=decoder, weight_options=weight_opts)
-
-        if return_decoding_time:
-            decoding_stop_time = perf_counter()
-            decoding_time += decoding_stop_time - decoding_start_time
-
-        successes += result
-
-    errors = trials - successes
+    errors = int(trials - successes[0])
 
     if return_decoding_time:
-        return errors, decoding_time
-    else:
-        return errors
+        return errors, decoding_time_total
+
+    return errors
 
 
-# pylint: disable=too-many-arguments
 def run_ec_simulation(
     trials, code, code_args, noise, noise_args, decoder, decoder_args=None, fname=None
 ):
@@ -155,62 +207,81 @@ def run_ec_simulation(
         weight_opts = {"method": "uniform"}
     decoder_args.update({"weight_opts": weight_opts})
 
+    if "MPI" in globals():
+        world_comm = MPI.COMM_WORLD
+        mpi_size = world_comm.Get_size()
+        mpi_rank = world_comm.Get_rank()
+    else:
+        world_comm = None
+        mpi_size = 1
+        mpi_rank = 0
+
     # Perform and time the simulation
     simulation_start_time = perf_counter()
     errors, decoding_time = ec_monte_carlo(
-        trials, code_instance, noise, noise_args, decoder, decoder_args, return_decoding_time=True
+        trials,
+        code,
+        noise,
+        noise_args,
+        decoder,
+        decoder_args,
+        True,
+        world_comm,
+        mpi_rank,
+        mpi_size,
     )
     simulation_stop_time = perf_counter()
 
-    # Store results in the provided file-path or by default in
-    # a sims_data directory in the file simulations_results.csv.
-    file_name = fname or ".flamingpy/sims_data/sims_results.csv"
+    if mpi_rank == 0:
+        # Store results in the provided file-path or by default in
+        # a sims_data directory in the file simulations_results.csv.
+        file_name = fname or ".flamingpy/sims_data/sims_results.csv"
 
-    # Create a CSV file if it doesn't already exist.
-    # pylint: disable=consider-using-with
-    try:
-        file = open(file_name, "x", newline="", encoding="utf8")
-        writer = csv.writer(file)
+        # Create a CSV file if it doesn't already exist.
+        # pylint: disable=consider-using-with
+        try:
+            file = open(file_name, "x", newline="", encoding="utf8")
+            writer = csv.writer(file)
+            writer.writerow(
+                [
+                    "noise",
+                    "distance",
+                    "ec",
+                    "boundaries",
+                    "delta",
+                    "p_swap",
+                    "p_err",
+                    "decoder",
+                    "errors_py",
+                    "trials",
+                    "current_time",
+                    "decoding_time",
+                    "simulation_time",
+                ]
+            )
+        # Open the file for appending if it already exists.
+        except FileExistsError:
+            file = open(file_name, "a", newline="", encoding="utf8")
+            writer = csv.writer(file)
+        current_time = datetime.now().time().strftime("%H:%M:%S")
         writer.writerow(
             [
-                "noise",
-                "distance",
-                "ec",
-                "boundaries",
-                "delta",
-                "p_swap",
-                "p_err",
-                "decoder",
-                "errors_py",
-                "trials",
-                "current_time",
-                "decoding_time",
-                "simulation_time",
+                reverse_dict[noise],
+                code_args["distance"],
+                code_args["ec"],
+                code_args["boundaries"],
+                noise_args.get("delta"),
+                noise_args.get("p_swap"),
+                noise_args.get("p_err"),
+                decoder,
+                errors,
+                trials,
+                current_time,
+                decoding_time,
+                (simulation_stop_time - simulation_start_time),
             ]
         )
-    # Open the file for appending if it already exists.
-    except FileExistsError:
-        file = open(file_name, "a", newline="", encoding="utf8")
-        writer = csv.writer(file)
-    current_time = datetime.now().time().strftime("%H:%M:%S")
-    writer.writerow(
-        [
-            reverse_dict[noise],
-            code_args["distance"],
-            code_args["ec"],
-            code_args["boundaries"],
-            noise_args.get("delta"),
-            noise_args.get("p_swap"),
-            noise_args.get("p_err"),
-            decoder,
-            errors,
-            trials,
-            current_time,
-            decoding_time,
-            (simulation_stop_time - simulation_start_time),
-        ]
-    )
-    file.close()
+        file.close()
 
 
 if __name__ == "__main__":

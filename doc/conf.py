@@ -8,7 +8,10 @@
 """
 flamingpy configuration file for the Sphinx documentation builder.
 """
-import os, sys, re, time
+import os
+import sys
+import re
+import time
 import subprocess
 import shlex
 from unittest.mock import MagicMock
@@ -83,6 +86,7 @@ extensions = [
     "sphinx_automodapi.smart_resolver",
     "sphinx_gallery.gen_gallery",
     "sphinx.ext.inheritance_diagram",
+    "sphinx_gallery.gen_gallery",
 ]
 graphviz_output_format = "svg"
 
@@ -181,6 +185,7 @@ filedata = filedata.replace("green", "black")
 filedata = filedata.replace('font-size="14.00"', 'font-size="12.00"')
 with open("_static/classes_flamingpy.svg", "w", encoding="utf-8") as file:
     file.write(filedata)
+
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

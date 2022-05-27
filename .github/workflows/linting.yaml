@@ -28,7 +28,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install compilation and testing requirements of flamingpy
-        run: python3 -m pip install -r dev_requirements.txt
+        run: |
+          sudo apt install -y libopenmpi-dev
+          python -m pip install -r dev_requirements.txt
 
       - name: Build flamingpy from Source
         run: |
