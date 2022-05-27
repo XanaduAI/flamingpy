@@ -27,7 +27,14 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import CV_decoder, GKP_binner, assign_weights
 from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 
-from flamingpy import cpp_libraries_available
+
+try:
+    import flamingpy.cpp.lemonpy as lp
+    import flamingpy.cpp.cpp_mc_loop as cmc
+
+    cpp_libraries_available = True
+except ImportError:  # pragma: no cover
+    cpp_libraries_available = False
 
 # Test parameters
 matching_graph_types = [LemonMatchingGraph, RxMatchingGraph]

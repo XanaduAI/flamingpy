@@ -17,7 +17,14 @@ the plots."""
 # pylint: disable=import-outside-toplevel,unused-import
 
 import pytest
-from flamingpy import cpp_libraries_available
+
+try:
+    import flamingpy.cpp.lemonpy as lp
+    import flamingpy.cpp.cpp_mc_loop as cmc
+
+    cpp_libraries_available = True
+except ImportError:  # pragma: no cover
+    cpp_libraries_available = False
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])
