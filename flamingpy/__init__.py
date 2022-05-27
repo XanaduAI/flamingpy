@@ -24,7 +24,6 @@ import scipy
 import networkx
 import retworkx
 import matplotlib
-import pandas
 
 try:
     import flamingpy.cpp.lemonpy as lp
@@ -70,6 +69,5 @@ def about():
     print("NetworkX version:            {}".format(networkx.__version__))
     print("RetworkX version:            {}".format(retworkx.__version__))
     print("Matplotlib version:          {}".format(matplotlib.__version__))
-    print("Pandas version:              {}".format(pandas.__version__))
     print("lemonpy shared object:       {}".format(lp))
     print("cpp_mc_loop shared object:   {}".format(cmc))
