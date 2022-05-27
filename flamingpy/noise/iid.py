@@ -15,9 +15,10 @@
 
 from numpy.random import default_rng
 import numpy as np
+from .base import Noise
 
 
-class IidNoise:
+class IidNoise(Noise):
     """Noise sampler for independent and identically distributed Z errors on
     the qubits of a cluster state.
 
@@ -46,3 +47,4 @@ class IidNoise:
         
         """
         return np.array(rng.random(self.length) < self.error_probability, dtype=int)
+    
