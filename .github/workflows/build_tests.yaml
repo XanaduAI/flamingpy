@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.8, 3.9, '3.10']
-        use_mpi: [true, false]
+        use_mpi: ["single-processor", "mpi"]
 
     env:
       USE_MPI: ${{ matrix.use_mpi }}
@@ -37,7 +37,7 @@ jobs:
 
       - name: Install compilation and testing requirements of flamingpy
         run: |
-          if [ "$USE_MPI" = true ]; then
+          if [ "$USE_MPI" == "mpi" ]; then
             sudo apt install -y libopenmpi-dev
             python -m pip install mpi4py>=3.1.3
           fi
