@@ -46,6 +46,7 @@ reverse_dict = {b: a for a, b in noise_dict.items()}
 
 
 def ec_mc_trial(
+    noise,
     bs_network,
     p_swap,
     p_err,
@@ -139,6 +140,7 @@ def ec_monte_carlo(
     for i in range(trials):
         if i % mpi_size == mpi_rank:
             result, decoding_time = ec_mc_trial(
+                noise,
                 bs_network,
                 p_swap,
                 p_err,

@@ -126,7 +126,7 @@ class TestPassive:
 @pytest.mark.parametrize("passive", [True, False])
 @pytest.mark.parametrize("empty_file", [True, False])
 @pytest.mark.parametrize("sim", [run_ec_simulation])
-def test_simulations_output_file(tmpdir, passive, empty_file, sim):
+def test_simulations_output_file(tmpdir, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
