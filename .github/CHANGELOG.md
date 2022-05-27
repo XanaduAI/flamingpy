@@ -26,6 +26,7 @@
 * Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Both upper and lower axes limits can now be specified for `EGraph` plots. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
 * Tests that require cpp libraries are skipped if they are not installed hence avoiding failing tests from unmet dependencies. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
+* Pandas is removed from the package requirements. [#63](https://github.com/XanaduAI/flamingpy/pull/63)
 
 ### Documentation changes
 

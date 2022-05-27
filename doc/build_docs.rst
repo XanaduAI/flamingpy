@@ -9,7 +9,6 @@ The FlamingPy documentation is built using `sphinx`. To build the documentation 
 * `networkx <https://networkx.org/>`_ >= 2.5
 * `numba <https://numba.pydata.org/>`_ >= 0.53.1
 * `NumPy <http://numpy.org/>`_ >= 1.21.0
-* `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
 * `pylint <https://pypi.org/project/pylint/>`_ >= 2.13.9
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
 * `scipy <https://scipy.org/>`_ >= 1.6.0
@@ -31,6 +30,6 @@ We will build the documentation using `make` (if you require to install and unde
 
   $ make html
 
-You may need to run ``make clean`` beforehand. 
+You may need to run ``make clean`` beforehand.
 
 The documentation can be found in the :file:`doc/_build/html/` directory.

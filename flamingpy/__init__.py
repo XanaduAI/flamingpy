@@ -24,7 +24,6 @@ import scipy
 import networkx
 import retworkx
 import matplotlib
-import pandas
 
 try:
     import flamingpy.cpp.lemonpy as lp
