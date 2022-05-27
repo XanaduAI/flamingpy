@@ -115,6 +115,7 @@ def ec_monte_carlo(
     decoder = {"outer": decoder}
     bs_network = None
     p_err = 0
+    macro_graph = None
 
     if noise in (CVLayer, CVMacroLayer):
         delta, p_swap = noise_args["delta"], noise_args["p_swap"]
