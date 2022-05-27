@@ -67,7 +67,7 @@ def ec_mc_trial(
         )
         CV_macro.reduce(noise_model)
     elif noise == IidNoise:
-        IidNoise(code, p_err, rng=rng).apply_noise()
+        IidNoise(code, p_err).apply_noise(rng=rng)
 
     decoding_start_time = perf_counter()
 
