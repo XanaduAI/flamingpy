@@ -68,7 +68,7 @@ Module relationships
         }
     </style>
 
-    <div class="wrapper">   
+    <div class="wrapper">
         <div class="text-center">
             <img src="../_static/packages_flamingpy.svg" width="280%"/>
         </div>
