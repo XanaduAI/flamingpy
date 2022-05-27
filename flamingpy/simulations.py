@@ -113,6 +113,8 @@ def ec_monte_carlo(
     """
     weight_opts = decoder_args["weight_opts"]
     decoder = {"outer": decoder}
+    bs_network = None
+
     if noise in (CVLayer, CVMacroLayer):
         delta, p_swap = noise_args["delta"], noise_args["p_swap"]
         noise_model = {"noise": "grn", "delta": delta}
