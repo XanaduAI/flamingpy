@@ -16,7 +16,7 @@ as well as the following Python packages for development purposes:
 * `cython <https://cython.org/>`_ >= 0.29.28
 * `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
-* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (required only for Linux users)
+* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (optional, only for Linux users)
 * `networkx <https://networkx.org/>`_ >= 2.5
 * `NumPy <http://numpy.org/>`_ >= 1.21
 * `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
@@ -55,20 +55,21 @@ and other requirements as stated in the above section can be installed via ``pip
 
 Using MPI
 ---------
-Our frontend simulator script, ``simulations.py``, now supports simple and highly-scalable MPI jobs through ``mpi4py``
-libraries in a non-intrusive manner. The users who do not have or want MPI, can run simulations.py single-threaded as
+FamingPy's frontend simulator script, ``simulations.py``, now supports simple and highly-scalable MPI jobs through ``mpi4py``
+libraries in a non-intrusive manner. The users who do not have or want MPI, can run ``simulations.py`` single-threaded as
 per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many
 processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
 
 To setup FlamingPy's MPI dependencies on a linux system run
 
 .. code-block:: bash
+
     sudo apt install libopenmpi-dev
     python -m pip install mpi4py>=3.1.3
 
-and continue with the "Installation from Source" steps.
+and continue with the steps described in the following section.
 
-MPI users on their local machines can simply run the following for a 4-processor job:
+Then, MPI users on their local machines can simply run the following for a 4-processor job:
 
 .. code-block:: bash
 
