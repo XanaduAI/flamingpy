@@ -6,7 +6,6 @@ docformatter>=1.4
 matplotlib>=3.3.3
 networkx>=2.5
 numpy>=1.21
-pandas>=1.2.1
 pytest>=6.2
 pytest-cov>=3.0
 pytest-logger>=0.5.1

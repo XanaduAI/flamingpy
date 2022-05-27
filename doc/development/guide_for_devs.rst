@@ -19,7 +19,6 @@ as well as the following Python packages for development purposes:
 * `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (required only for Linux users)
 * `networkx <https://networkx.org/>`_ >= 2.5
 * `NumPy <http://numpy.org/>`_ >= 1.21
-* `pandas <https://pandas.pydata.org/>`_ >= 1.2.1
 * `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
 * `pytest-cov <https://pypi.org/project/pytest-cov/>`_ >= 3.0
 * `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
