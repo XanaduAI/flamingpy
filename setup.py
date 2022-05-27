@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""setup.py instructions for FlamingPy installation from Source
-"""
+"""setup.py instructions for FlamingPy installation from Source."""
 
 # pylint: disable=too-few-public-methods
 
@@ -36,7 +35,7 @@ with open("flamingpy/_version.py", encoding="utf8") as f:
 
 
 class BinaryDistribution(dist.Distribution):
-    """A class to define Binary Distribution objects"""
+    """A class to define Binary Distribution objects."""
 
     def has_ext_modules(foo):
         """Check for external modules."""
