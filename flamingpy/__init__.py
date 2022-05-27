@@ -72,7 +72,6 @@ def about():
     print("NetworkX version:            {}".format(networkx.__version__))
     print("RetworkX version:            {}".format(retworkx.__version__))
     print("Matplotlib version:          {}".format(matplotlib.__version__))
-    print("Pandas version:              {}".format(pandas.__version__))
     print(
         "lemonpy shared object:       {}".format(
             "Not installed" if not cpp_libraries_available else lp
