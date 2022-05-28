@@ -129,18 +129,16 @@ Documentation
 -------------
 
 Additional packages are required to build the documentation, as specified in
-``doc/dev_requirements.txt``. These packages can be installed using:
+``doc/dev_requirements.txt``. These packages can be installed using
 
 .. code-block:: bash
 
-    pip install -r doc/dev_requirements.txt
+    python -m pip install -r doc/dev_requirements.txt
 
-from the `doc` directory to then build the HTML documentation, run
+Switch to the `doc` directory and then build the HTML documentation by running
 
 .. code-block:: bash
 
     make docs
-
-You may need to run ``make clean`` beforehand.
 
 The documentation can be found in the :file:`doc/_build/html/` directory.
