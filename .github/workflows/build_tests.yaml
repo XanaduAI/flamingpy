@@ -41,6 +41,7 @@ jobs:
             sudo apt install -y libopenmpi-dev
             python -m pip install mpi4py>=3.1.3
           fi
+          python -m pip install pytest-xdist --upgrade
           python -m pip install -r dev_requirements.txt
 
       - name: Build flamingpy from Source
@@ -51,7 +52,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95
+          python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95 -n auto
           if [ "$USE_MPI" == "mpi" ]; then
             mpirun -np 2 python flamingpy/simulations.py
           fi
