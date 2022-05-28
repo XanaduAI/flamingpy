@@ -50,7 +50,7 @@ jobs:
           python setup.py build_cmake --inplace
 
       - name: Run tests
-        run: 
+        run: |
           python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95
           if [ "$USE_MPI" == "mpi" ]; then
             mpirun -np 2 python flamingpy/simulations.py
