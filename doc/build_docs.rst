@@ -28,7 +28,7 @@ All required packages can be installed via:
 We will build the documentation using ``make`` (if you require to install and understand how Makefiles work, see for example `this guide <https://pakstech.com/blog/make-windows/#:~:text=make%20%3A%20The%20term%20'make',choose%20Path%20and%20click%20Edit.>`_). Now to build the HTML documentation, go to the ``doc`` directory and run
 ::
 
-  $ make html
+  $ make docs
 
 Note this command will initially run ``make clean`` in the directory.
 
