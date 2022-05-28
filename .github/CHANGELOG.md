@@ -26,6 +26,8 @@
 * Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Both upper and lower axes limits can now be specified for `EGraph` plots. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
 * Pandas is removed from the package requirements. [#63](https://github.com/XanaduAI/flamingpy/pull/63)
+* `mpi4py` is no longer a development requirement for Linux users. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
+* CI test check that code executes properly with and without MPI. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
 
 ### Documentation changes
 
@@ -36,6 +38,7 @@
 * Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Added `libopenmpi-dev` package to the apt list of `.readthedoc.yml` to allow documentation successful builds after adding recent `mpi4py` requirements. [#59](https://github.com/XanaduAI/flamingpy/pull/59)
+* Adds a section to `guide_for_devs.rst` explaining how to install and use MPI along with FlamingPy. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
 
 ### Contributors
 

@@ -50,7 +50,11 @@ jobs:
           python setup.py build_cmake --inplace
 
       - name: Run tests
-        run: python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95
+        run: 
+          python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95
+          if [ "$USE_MPI" == "mpi" ]; then
+            mpirun -np 2 python flamingpy/simulations.py
+          fi
 
       - name: Adjust coverage file for Codecov
         run: bash <(sed -i 's/filename=\"/filename=\"flamingpy\//g' coverage.xml)
