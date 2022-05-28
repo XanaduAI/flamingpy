@@ -128,17 +128,4 @@ To obtain coverage, the ``pytest-cov`` plugin is needed.
 Documentation
 -------------
 
-Additional packages are required to build the documentation, as specified in
-``doc/dev_requirements.txt``. These packages can be installed using
-
-.. code-block:: bash
-
-    python -m pip install -r doc/dev_requirements.txt
-
-Switch to the `doc` directory and then build the HTML documentation by running
-
-.. code-block:: bash
-
-    make docs
-
-The documentation can be found in the :file:`doc/_build/html/` directory.
+See :doc:`build_docs` for the details on how to build the HTML documentation.
