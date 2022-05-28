@@ -1,7 +1,7 @@
 Build Documentation
 ===================
 
-The FlamingPy documentation is built using `sphinx`. To build the documentation locally, the following packages are required:
+The FlamingPy documentation is built using ``sphinx``. To build the documentation locally, the following packages (some in addition to the packages in the top ``dev_requirements.txt``) are required:
 
 * `docutils <https://docutils.sourceforge.io/>`_ >= 0.15.2
 * `m2r2 <https://pypi.org/project/m2r2/>`_ >= 0.3.2
@@ -25,11 +25,11 @@ All required packages can be installed via:
 
     $ python -m pip install -r doc/dev_requirements.txt
 
-We will build the documentation using `make` (if you require to install and understand how Makefiles work, see for example `this guide <https://pakstech.com/blog/make-windows/#:~:text=make%20%3A%20The%20term%20'make',choose%20Path%20and%20click%20Edit.>`_). Now to build the HTML documentation, go to the `doc` directory and run the command
+We will build the documentation using ``make`` (if you require to install and understand how Makefiles work, see for example `this guide <https://pakstech.com/blog/make-windows/#:~:text=make%20%3A%20The%20term%20'make',choose%20Path%20and%20click%20Edit.>`_). Now to build the HTML documentation, go to the ``doc`` directory and run
 ::
 
   $ make html
 
-You may need to run ``make clean`` beforehand.
+Note this command will initially run ``make clean`` in the directory.
 
 The documentation can be found in the :file:`doc/_build/html/` directory.
