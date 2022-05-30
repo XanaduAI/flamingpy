@@ -178,25 +178,24 @@ def draw_EGraph(
 
     Args:
         color_nodes (bool or string or dict): Options are:
-
             True: color the nodes based on the 'color' attribute
-                attached to the node. If unavailable, color nodes black.
+            attached to the node. If unavailable, color nodes black.
             string: color all nodes with the color specified by the string
             tuple[str, dict]: color nodes based on attribute and defined colour
-                string by providing a tuple with [attribute, color_dictionary],
-                for example: ``["state", {"GKP": "b", "p": "r"}]``
-                will look at the "state" attribute of the node, and colour
-                according to the dictionary.
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
+                ``["state", {"GKP": "b", "p": "r"}]``
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
 
         color_edges (bool or string or dict):
-
             True: color the edges based on the 'color' attribute
-                attached to the node. If unavailable, color nodes grey.
+            attached to the node. If unavailable, color nodes grey.
             string: color all edges with the color specified by the stirng
             tuple: color edges based on attribute and defined colour
-                string by providing a tuple with [attribute, color_dictionary],
-                for example: if the edge attribute "weight" can be +1 or -1,
-                the tuple should be of the form:
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
                 ``("weight", {-1: minus_color, +1: plus_color})``.
 
         label (NoneType or string): plot values next to each node
