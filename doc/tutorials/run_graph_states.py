@@ -149,7 +149,7 @@ import flamingpy.utils.viz as viz
 # assumes that the nodes are specified by three-tuples :math:`(x, y, z)`
 # corresponding to coordinates in three dimensions.
 #
-# We can construct a GHZ state using FlamingPy. We can either use the built-in method 
+# We can construct a GHZ state using FlamingPy. We can either use the built-in method
 # ``ghz`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
 # state, or we can construct it from scratch. To do the latter, we have to place its nodes in 3D
 # space. There are infinite choices of coordinates available to us, but
@@ -208,11 +208,12 @@ viz.plot_params["figure.figsize"] = (5.4, 4)
 viz.plot_mat_heat_map(adj)
 
 ######################################################################
-# Now that we know how to create custom cluster states in ``flamingpy``, 
+# Now that we know how to create custom cluster states in ``flamingpy``,
 # let's use some built-in functions to create some well known graph states.
 # First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
 
 from flamingpy.utils import graph_states
+
 viz.plot_params["figure.figsize"] = (8, 6)
 
 ######################################################################
@@ -229,7 +230,7 @@ graph_states.star(10).draw(**drawing_opts)
 graph_states.ghz(15).draw(**drawing_opts)
 
 ######################################################################
-# Having understood ``EGraph``, the basic building block of graph states in ``flamingpy``, 
+# Having understood ``EGraph``, the basic building block of graph states in ``flamingpy``,
 # you are ready to move on to the next level. Try to implement a resource state capable of doing
 # universal quantum computation! (or equivalently, check out our tutorial in surface codes:
-# :ref:`run-error-correction`.) 
+# :ref:`run-error-correction`.)

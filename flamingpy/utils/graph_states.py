@@ -54,7 +54,7 @@ def ghz(n):
     for i in range(n):
         degs = 2 * np.pi * i / n
         x, y = np.cos(degs), np.sin(degs)
-        for j in range(1, n-i):
+        for j in range(1, n - i):
             degs_adj = 2 * np.pi * j / n + degs
             x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
             edge = [(x, y, 0), (x_adj, y_adj, 0)]
