@@ -17,7 +17,7 @@ import numpy as np
 from flamingpy.codes.graphs import EGraph
 
 
-def star_graph_state(n):
+def star(n):
     """
     Returns the EGraph of a star graph state with n nodes.
     """
@@ -32,7 +32,7 @@ def star_graph_state(n):
     return star_graph_state
 
 
-def ghz_state(n):
+def ghz(n):
     """
     Returns the EGraph of a GHZ state with n nodes.
     """
@@ -50,7 +50,7 @@ def ghz_state(n):
     return ghz_state
 
 
-def linear_state(n):
+def linear(n):
     """
     Returns the EGraph of a linear cluster state with n nodes.
     """
@@ -63,7 +63,7 @@ def linear_state(n):
     return linear_state
 
 
-def ring_state(n):
+def ring(n):
     """
     Returns the EGraph of a ring graph state with n nodes.
     """
@@ -80,11 +80,11 @@ def ring_state(n):
     return ring_graph_state
 
 
-def bell_state(n=2):
+def bell(n=2):
     """
     Returns the EGraph of a two-qubit bell state.
     """
     assert (
         n == 2
     ), "Bell states are defined for two qubits. For larger n, you might want to consider GHZ states"
-    return linear_state(n)
+    return linear(n)
