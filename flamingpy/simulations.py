@@ -104,8 +104,8 @@ def ec_monte_carlo(
 
     Returns:
         (tuple): tuple containing:
-
             errors (integer): the number of errors.
+
             prep_time_total (float): the total time in seconds taken by the state prep steps.
             This parameter is returned only if return_decoding_time is set to True
     """

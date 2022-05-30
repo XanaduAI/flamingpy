@@ -216,9 +216,9 @@ def draw_EGraph(
         dimensions (tuple): Dimensions of the region that should be plotted.
             Should be of the form:
 
-                ([xmin, xmax], [ymin, ymax], [zmin, zmax])
+                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
 
-            If None, set the dimensions to the smallest rectangular space
+            If None, sets the dimensions to the smallest rectangular space
             containing all the nodes.
 
     Returns:
@@ -316,7 +316,7 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
                 )
             edge_property = egraph.edges[edge].get(edge_attribute)
             color = color_dict.get(edge_property)
-        elif color_edges == True:
+        elif color_edges is True:
             color = egraph.edges[edge].get("color") or "grey"
         else:
             color = "grey"
