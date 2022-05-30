@@ -151,9 +151,10 @@ import flamingpy.utils.viz as viz
 #
 # We can construct a GHZ state using FlamingPy. We can either use the built-in method
 # ``ghz`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
-# state, or we can construct it from scratch. To do the latter, we have to place its nodes in 3D
-# space. There are infinite choices of coordinates available to us, but
-# let us place the points at corners of the unit cube:
+# state, or we can construct it from scratch. To do the latter, 
+# we have to place its nodes in 3D space. There are infinite choices of 
+# coordinates available to us, but let us place the points at corners of 
+# the unit cube:
 #
 
 GHZ_edge_1 = {(0, 0, 0), (0, 0, 1)}
@@ -218,8 +219,8 @@ viz.plot_params["figure.figsize"] = (8, 6)
 
 ######################################################################
 # Some of the state families that we have access to are star states, GHZ states,
-# linear states, and ring states. Let begin by plotting the star state of 10 qubits (this state
-# is LU-equivalent to a GHZ state of 10 qubits):
+# linear states, and ring states. Let begin by plotting the star state 
+# of 10 qubits (this state is LU-equivalent to a GHZ state of 10 qubits):
 
 
 graph_states.star(10).draw(**drawing_opts)
@@ -231,6 +232,6 @@ graph_states.ghz(15).draw(**drawing_opts)
 
 ######################################################################
 # Having understood ``EGraph``, the basic building block of graph states in ``flamingpy``,
-# you are ready to move on to the next level. Try to implement a resource state capable of doing
-# universal quantum computation! (or equivalently, check out our tutorial in surface codes:
-# :ref:`run-error-correction`.)
+# you are ready to move on to the next level. Try to implement a resource state
+#  capable of doing universal quantum computation! (or equivalently, 
+# check out our tutorial in surface codes: :ref:`run-error-correction`.)
