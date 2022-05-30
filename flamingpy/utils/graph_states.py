@@ -18,8 +18,7 @@ from flamingpy.codes.graphs import EGraph
 
 
 def star(n):
-    """
-    EGraph of a star graph state with n nodes.
+    """EGraph of a star graph state with n nodes.
 
     Args:
         n (int): Number of qubits
@@ -39,8 +38,7 @@ def star(n):
 
 
 def ghz(n):
-    """
-    EGraph of a GHZ state with n nodes.
+    """EGraph of a GHZ state with n nodes.
 
     Args:
         n (int): Number of qubits
@@ -63,8 +61,7 @@ def ghz(n):
 
 
 def linear(n):
-    """
-    EGraph of a linear cluster state with n nodes.
+    """EGraph of a linear cluster state with n nodes.
 
     Args:
         n (int): Number of qubits
@@ -82,8 +79,7 @@ def linear(n):
 
 
 def ring(n):
-    """
-    EGraph of a ring graph state with n nodes.
+    """EGraph of a ring graph state with n nodes.
 
     Args:
         n (int): Number of qubits
@@ -105,8 +101,7 @@ def ring(n):
 
 
 def bell():
-    """
-    EGraph of a two-qubit bell state.
+    """EGraph of a two-qubit bell state.
 
     Returns:
         linear(2) (EGraph)
