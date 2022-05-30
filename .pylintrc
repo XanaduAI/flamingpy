@@ -11,7 +11,6 @@ ignore-patterns=doc/tutorials/*
 # and thus existing member attributes cannot be deduced by static analysis. It
 # supports qualified module names, as well as Unix pattern matching.
 ignored-modules=numpy,scipy,networkx,retworkx
-generated-members=pandas
 
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set). This supports can work

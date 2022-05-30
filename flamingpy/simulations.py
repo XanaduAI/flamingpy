@@ -13,7 +13,7 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position
+# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position,consider-using-with
 
 import argparse
 import csv
@@ -157,6 +157,8 @@ def ec_monte_carlo(
 
     if "MPI" in globals():
         world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
+    else:
+        successes[0] = local_successes[0]
 
     errors = int(trials - successes[0])
 
@@ -224,7 +226,7 @@ def run_ec_simulation(
 
     # Perform and time the simulation
     simulation_start_time = perf_counter()
-    errors, decoding_time = ec_monte_carlo(
+    errors, decoding_time_total = ec_monte_carlo(
         trials,
         code,
         noise,
@@ -244,7 +246,6 @@ def run_ec_simulation(
         file_name = fname or ".flamingpy/sims_data/sims_results.csv"
 
         # Create a CSV file if it doesn't already exist.
-        # pylint: disable=consider-using-with
         try:
             file = open(file_name, "x", newline="", encoding="utf8")
             writer = csv.writer(file)
@@ -283,7 +284,7 @@ def run_ec_simulation(
                 errors,
                 trials,
                 current_time,
-                decoding_time,
+                decoding_time_total,
                 (simulation_stop_time - simulation_start_time),
             ]
         )
