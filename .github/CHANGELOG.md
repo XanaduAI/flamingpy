@@ -18,7 +18,6 @@ This release contains contributions from (in alphabetical order):
 
 See full commit details ...
 
-
 ---
 
 ## Release 0.8.0a4 (current release)
