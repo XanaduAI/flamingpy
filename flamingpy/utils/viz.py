@@ -184,7 +184,9 @@ def draw_EGraph(
             tuple[str, dict]: color nodes based on attribute and defined colour
             string by providing a tuple with [attribute, color_dictionary],
             for example:
+
                 ``["state", {"GKP": "b", "p": "r"}]``
+
             will look at the "state" attribute of the node, and colour
             according to the dictionary.
 
@@ -196,7 +198,8 @@ def draw_EGraph(
             string by providing a tuple with [attribute, color_dictionary],
             for example: if the edge attribute "weight" can be +1 or -1,
             the tuple should be of the form:
-                ``("weight", {-1: minus_color, +1: plus_color})``.
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -213,7 +216,7 @@ def draw_EGraph(
         dimensions (tuple): Dimensions of the region that should be plotted.
             Should be of the form:
 
-                ([xmin, xmax], [ymin, ymax], [zmin, zmax]).
+                ([xmin, xmax], [ymin, ymax], [zmin, zmax])
 
             If None, set the dimensions to the smallest rectangular space
             containing all the nodes.
