@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for the utils.graph_states module"""
-
-from flamingpy.utils import graph_states
 import pytest
+from flamingpy.utils import graph_states
 
 
 def test_star_graph():
