@@ -8,9 +8,10 @@
 * Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI jobs through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
  MPI users on their local machines can simply run the following for a 4-processor job:
  `mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible)
-
+* Add new functions to create different graph states (GHZ, Ring, Linear, Star, Bell).
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
+* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted.
 
 ### Improvements
 
@@ -39,6 +40,7 @@
 * Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Added `libopenmpi-dev` package to the apt list of `.readthedoc.yml` to allow documentation successful builds after adding recent `mpi4py` requirements. [#59](https://github.com/XanaduAI/flamingpy/pull/59)
 * Adds a section to `guide_for_devs.rst` explaining how to install and use MPI along with FlamingPy. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
+* Mentions the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. 
 
 ### Contributors
 
