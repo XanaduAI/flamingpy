@@ -1,5 +1,4 @@
 """
-
 .. _graph-states-tutorial:
 
 Graph States
@@ -150,14 +149,16 @@ import flamingpy.utils.viz as viz
 # assumes that the nodes are specified by three-tuples :math:`(x, y, z)`
 # corresponding to coordinates in three dimensions.
 #
-# We can construct a GHZ state using FlamingPy. To do so, we have to place its nodes in 3D
+# We can construct a GHZ state using FlamingPy. We can either use the built-in method 
+# ``ghz`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
+# state, or we can construct it from scratch. To do the latter, we have to place its nodes in 3D
 # space. There are infinite choices of coordinates available to us, but
 # let us place the points at corners of the unit cube:
 #
 
 GHZ_edge_1 = {(0, 0, 0), (0, 0, 1)}
 GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
-
+GHZ_edge_3 = {(0, 0, 0), (1, 0, 1)}
 
 ######################################################################
 # We can give an ``EGraph`` its edges right away, but let us instead first
@@ -165,7 +166,7 @@ GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
 #
 
 GHZ_state = EGraph()
-GHZ_state.add_edges_from([GHZ_edge_1, GHZ_edge_2])
+GHZ_state.add_edges_from([GHZ_edge_1, GHZ_edge_2, GHZ_edge_3])
 
 
 ######################################################################
@@ -205,3 +206,30 @@ adj = GHZ_state.adj_mat
 
 viz.plot_params["figure.figsize"] = (5.4, 4)
 viz.plot_mat_heat_map(adj)
+
+######################################################################
+# Now that we know how to create custom cluster states in ``flamingpy``, 
+# let's use some built-in functions to create some well known graph states.
+# First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
+
+from flamingpy.utils import graph_states
+viz.plot_params["figure.figsize"] = (8, 6)
+
+######################################################################
+# Some of the state families that we have access to are star states, GHZ states,
+# linear states, and ring states. Let begin by plotting the star state of 10 qubits (this state
+# is LU-equivalent to a GHZ state of 10 qubits):
+
+
+graph_states.star(10).draw(**drawing_opts)
+
+######################################################################
+# Now, let's check how the GHZ state in 15 qubits looks like:
+
+graph_states.ghz(15).draw(**drawing_opts)
+
+######################################################################
+# Having understood ``EGraph``, the basic building block of graph states in ``flamingpy``, 
+# you are ready to move on to the next level. Try to implement a resource state capable of doing
+# universal quantum computation! (or equivalently, check out our tutorial in surface codes:
+# :ref:`run-error-correction`.) 
