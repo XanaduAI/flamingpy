@@ -20,7 +20,8 @@ avoids having to modify the global Matplotlib `rc_params`.
 
 To modify the plot parameters use, for example,
 
-  .. code::
+.. code-block:: python
+
     from flamingpy.utils.viz import plot_params as fp_plot_params
     fp_plot_params["font.size"] = 20
 """
