@@ -19,7 +19,13 @@ from flamingpy.codes.graphs import EGraph
 
 def star(n):
     """
-    Returns the EGraph of a star graph state with n nodes.
+    EGraph of a star graph state with n nodes.
+
+    Args:
+        n (int): Number of qubits
+
+    Returns:
+        star_graph_state (EGraph)
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 2, f"Input n should be 2 or larger. Current value is {n}"
@@ -34,7 +40,13 @@ def star(n):
 
 def ghz(n):
     """
-    Returns the EGraph of a GHZ state with n nodes.
+    EGraph of a GHZ state with n nodes.
+
+    Args:
+        n (int): Number of qubits
+
+    Returns:
+        ghz_state (EGraph)
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 3, f"Input n should be 3 or larger. Current value is {n}"
@@ -52,7 +64,13 @@ def ghz(n):
 
 def linear(n):
     """
-    Returns the EGraph of a linear cluster state with n nodes.
+    EGraph of a linear cluster state with n nodes.
+
+    Args:
+        n (int): Number of qubits
+
+    Returns:
+        linear_state (EGraph)
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 2, f"Input n should be 2 or larger. Current value is {n}"
@@ -65,7 +83,13 @@ def linear(n):
 
 def ring(n):
     """
-    Returns the EGraph of a ring graph state with n nodes.
+    EGraph of a ring graph state with n nodes.
+
+    Args:
+        n (int): Number of qubits
+
+    Returns:
+        ring_graph_state (EGraph)
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 3, f"Input n should be 3 or larger. Current value is {n}"
@@ -80,11 +104,11 @@ def ring(n):
     return ring_graph_state
 
 
-def bell(n=2):
+def bell():
     """
-    Returns the EGraph of a two-qubit bell state.
+    EGraph of a two-qubit bell state.
+
+    Returns:
+        linear(2) (EGraph)
     """
-    assert (
-        n == 2
-    ), "Bell states are defined for two qubits. For larger n, you might want to consider GHZ states"
-    return linear(n)
+    return linear(2)
