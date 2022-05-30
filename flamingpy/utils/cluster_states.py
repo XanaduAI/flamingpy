@@ -13,6 +13,7 @@
 # limitations under the License.
 """A module with common cluster states."""
 
+import numpy as np
 from flamingpy.codes.graphs import EGraph
 
 def star_graph_state(n):
@@ -24,7 +25,7 @@ def star_graph_state(n):
     star_graph_state = EGraph()
     for i in range(n-1):
         degs=2*np.pi*i/(n-1)
-        x, y = R*np.cos(degs), R*np.sin(degs)
+        x, y = np.cos(degs), np.sin(degs)
         edge = [(0, 0, 0), (x, y, 0)]
         star_graph_state.add_edge(*edge, color = "MidnightBlue")
     return star_graph_state
@@ -38,10 +39,10 @@ def ghz_state(n):
     ghz_state = EGraph()
     for i in range(n):
         degs=2*np.pi*i/n
-        x, y = R*np.cos(degs), R*np.sin(degs)
+        x, y = np.cos(degs), np.sin(degs)
         for j in range(1,n):
             degs_adj = 2*np.pi*j/n + degs
-            x_adj, y_adj = R*np.cos(degs_adj), R*np.sin(degs_adj)
+            x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
             edge = [(x, y, 0), (x_adj, y_adj, 0)]
             ghz_state.add_edge(*edge, color = "MidnightBlue")
     return ghz_state
@@ -68,8 +69,8 @@ def ring_state(n):
     for i in range(n):
         degs=2*np.pi*i/(n)
         degs_next=2*np.pi*(i+1)/(n)
-        x, y = R*np.cos(degs), R*np.sin(degs) 
-        x_next, y_next = R*np.cos(degs_next), R*np.sin(degs_next) 
+        x, y = np.cos(degs), np.sin(degs) 
+        x_next, y_next = np.cos(degs_next), np.sin(degs_next) 
         edge = [(x, y, 0), (x_next, y_next, 0)]
         ring_graph_state.add_edge(*edge, color = "MidnightBlue")
     return ring_graph_state 
