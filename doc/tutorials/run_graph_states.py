@@ -196,7 +196,7 @@ GHZ_state.draw(**drawing_opts)
 
 ######################################################################
 # Built-in graph states
-# ^^^^^^^^^^^^^^
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Now that we know how to create custom cluster states in FlamingPy,
 # let's use some built-in functions to generate some well-known graph states.
 # First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
@@ -217,8 +217,7 @@ graph_states.star_graph(10).draw(**drawing_opts)
 ######################################################################
 # Now, let's see how the complete graph states in 10 qubits looks like:
 
-complete_graph_state = graph_states.complete_graph(10)
-complete_graph_state.draw(**drawing_opts)
+graph_states.complete_graph(10).draw(**drawing_opts)
 
 ######################################################################
 # The two states above are both equivalent to GHZ states via local unitaries.
@@ -230,14 +229,14 @@ complete_graph_state.draw(**drawing_opts)
 # generate the adjacency matrix and then plot its heat map:
 #
 
+complete_graph_state = graph_states.complete_graph(15)
 adj = complete_graph_state.adj_generator(sparse=False)
 complete_graph_state.draw_adj()
 
 ######################################################################
 # As expected, we have black tiles on the diagonal of the heat map, indicating no self connections
 # (loops), and yellow tiles everywhere else, indicating maximal connectedness.
-
-######################################################################
+#
 # Having gone over the fundamentals of the ``EGraph``, the representation of graph states in FlamingPy,
 # you can better understand the structure of error correcting codes. Now, you can try to implement
 # a resource state amenable to universal quantum computation, or check out our tutorial
