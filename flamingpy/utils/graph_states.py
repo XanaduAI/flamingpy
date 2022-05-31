@@ -74,7 +74,7 @@ def linear_cluster(n):
     linear_state = EGraph()
     for i in range(n - 1):
         edge = [(i, 0, 0), (i + 1, 0, 0)]
-        linear_state.add_edge(*edge, color="MidnightBlue")
+        linear_state.add_edge(*edge)
     return linear_state
 
 
