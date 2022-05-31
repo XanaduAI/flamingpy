@@ -232,7 +232,7 @@ graph_states.star_graph(10).draw(**drawing_opts)
 ######################################################################
 # Now, let's see how the complete graph states in 15 qubits looks like:
 
-graph_states.ghz(15).draw(**drawing_opts)
+graph_states.complete_graph(15).draw(**drawing_opts)
 
 ######################################################################
 # The two states above are both equivalent to GHZ states via local unitaries.
