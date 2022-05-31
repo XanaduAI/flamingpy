@@ -152,9 +152,9 @@ import flamingpy.utils.viz as viz
 # ^^^^^^^^^^^^^^
 # We can construct a GHZ state using FlamingPy. We can either use the built-in method
 # ``complete_graph`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
-# state, or we can construct it from scratch. To do the latter, 
-# we have to place its nodes in 3D space. There are infinite choices of 
-# coordinates available to us, but let us place the points at corners of 
+# state, or we can construct it from scratch. To do the latter,
+# we have to place its nodes in 3D space. There are infinite choices of
+# coordinates available to us, but let us place the points at corners of
 # the unit cube:
 #
 
@@ -206,9 +206,9 @@ from flamingpy.utils import graph_states
 viz.plot_params["figure.figsize"] = (8, 6)
 
 ######################################################################
-# Some of the families of graph states that we have access to are 
+# Some of the families of graph states that we have access to are
 # star graph and complete graph states, linear cluster states (including
-# Bell pairs as a special case), and ring or polygon states. Let us plot a star 
+# Bell pairs as a special case), and ring or polygon states. Let us plot a star
 # graph of 10 qubits as an example:
 
 
@@ -234,11 +234,11 @@ adj = complete_graph_state.adj_generator(sparse=False)
 complete_graph_state.draw_adj()
 
 ######################################################################
-# As expected, we have black tiles on the diagonal of the heat map, indicating no self connections 
+# As expected, we have black tiles on the diagonal of the heat map, indicating no self connections
 # (loops), and yellow tiles everywhere else, indicating maximal connectedness.
 
 ######################################################################
 # Having gone over the fundamentals of the ``EGraph``, the representation of graph states in FlamingPy,
-# you can better understand the structure of error correcting codes. Now, you can try to implement 
-# a resource state amenable to universal quantum computation, or check out our tutorial 
+# you can better understand the structure of error correcting codes. Now, you can try to implement
+# a resource state amenable to universal quantum computation, or check out our tutorial
 # on error correction with the surface code: :ref:`run-error-correction`).
