@@ -1,15 +1,17 @@
 ## Release 0.8.2a5 (development release)
 
 ### New features since the last release
-
+* Add new functions to create different graph states (GHZ, Ring, Linear, Star, Bell).
 
 ### Bug fixes
+* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted.
 
 
 ### Improvements
 
 
 ### Documentation changes
+* Mentions the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. 
 
 
 ### Contributors
@@ -33,7 +35,6 @@ See full commit details ...
 
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
-* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted.
 
 ### Improvements
 
@@ -62,7 +63,6 @@ See full commit details ...
 * Improved class inheritance diagram for `fp.codes`, `fp.cv`, and `fp.decoders`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Added `libopenmpi-dev` package to the apt list of `.readthedoc.yml` to allow documentation successful builds after adding recent `mpi4py` requirements. [#59](https://github.com/XanaduAI/flamingpy/pull/59)
 * Adds a section to `guide_for_devs.rst` explaining how to install and use MPI along with FlamingPy. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
-* Mentions the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. 
 
 ### Contributors
 
