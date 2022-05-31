@@ -228,7 +228,7 @@ def run_ec_simulation(
     simulation_start_time = perf_counter()
     errors, decoding_time_total = ec_monte_carlo(
         trials,
-        code,
+        code_instance,
         noise,
         noise_args,
         decoder,
