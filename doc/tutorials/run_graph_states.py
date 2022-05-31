@@ -215,9 +215,10 @@ viz.plot_params["figure.figsize"] = (8, 6)
 graph_states.star_graph(10).draw(**drawing_opts)
 
 ######################################################################
-# Now, let's see how the complete graph states in 15 qubits looks like:
+# Now, let's see how the complete graph states in 10 qubits looks like:
 
-graph_states.complete_graph(15).draw(**drawing_opts)
+complete_graph_state = graph_states.complete_graph(10)
+complete_graph_state.draw(**drawing_opts)
 
 ######################################################################
 # The two states above are both equivalent to GHZ states via local unitaries.
@@ -229,9 +230,8 @@ graph_states.complete_graph(15).draw(**drawing_opts)
 # generate the adjacency matrix and then plot its heat map:
 #
 
-adj = GHZ_state.adj_generator(sparse=False)
-viz.plot_params["figure.figsize"] = (5.4, 4)
-GHZ_state.draw_adj()
+adj = complete_graph_state.adj_generator(sparse=False)
+complete_graph_state.draw_adj()
 
 ######################################################################
 # As expected, we have black tiles on the diagonal of the heat map, indicating no self connections 
