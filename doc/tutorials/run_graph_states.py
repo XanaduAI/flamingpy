@@ -235,7 +235,9 @@ graph_states.star(10).draw(**drawing_opts)
 graph_states.ghz(15).draw(**drawing_opts)
 
 ######################################################################
-# Having understood ``EGraph``, the basic building block of graph states in ``flamingpy``,
-# you are ready to move on to the next level. Try to implement a resource state 
-# capable of doing universal quantum computation! (or equivalently, 
-# check out our tutorial in surface codes: :ref:`run-error-correction`)
+# The two states above are both equivalent to GHZ states via local unitaries.
+#
+# Having gone over the fundamentals of the ``EGraph``, the representation of graph states in FlamingPy,
+# you can better understand the structure of error correcting codes. Now, you can try to implement 
+# a resource state amenable to universal quantum computation, or check out our tutorial 
+# on error correction with the surface code: :ref:`run-error-correction`).
