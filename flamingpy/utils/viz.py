@@ -320,7 +320,7 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
                 )
             edge_property = egraph.edges[edge].get(edge_attribute)
             color = color_dict.get(edge_property)
-        elif color_edges is True:
+        elif color_edges == True:
             color = egraph.edges[edge].get("color") or "grey"
         else:
             color = "grey"
