@@ -37,7 +37,7 @@ def star_graph(n):
     return star_graph_state
 
 
-def ghz(n):
+def complete_graph(n):
     """EGraph of a GHZ state with n nodes.
 
     Args:
