@@ -221,9 +221,10 @@ from flamingpy.utils import graph_states
 viz.plot_params["figure.figsize"] = (8, 6)
 
 ######################################################################
-# Some of the state families that we have access to are star states, GHZ states,
-# linear states, and ring states. Let begin by plotting the star state 
-# of 10 qubits (this state is LU-equivalent to a GHZ state of 10 qubits):
+# Some of the families of graph states that we have access to are 
+# star graph and complete graph states, linear cluster states (including
+# Bell pairs as a special case), and ring or polygon states. Let us plot a star 
+# graph of 10 qubits as an example:
 
 
 graph_states.star(10).draw(**drawing_opts)
