@@ -148,7 +148,8 @@ import flamingpy.utils.viz as viz
 # and edges. To properly define a graph state, the ``EGraph`` class
 # assumes that the nodes are specified by three-tuples :math:`(x, y, z)`
 # corresponding to coordinates in three dimensions.
-#
+# Custom graph states
+# ^^^^^^^^^^^^^^
 # We can construct a GHZ state using FlamingPy. We can either use the built-in method
 # ``ghz`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
 # state, or we can construct it from scratch. To do the latter, 
