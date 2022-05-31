@@ -1,4 +1,4 @@
-## Release 0.8.0a4 (development release)
+## Release 0.8.1a5 (development release)
 
 ### New features since the last release
 
@@ -20,7 +20,7 @@ See full commit details ...
 
 ---
 
-## Release 0.8.0a4 (current release)
+## Release 0.8.1a5 (current release)
 
 ### New features since the last release
 
@@ -37,15 +37,15 @@ See full commit details ...
 ### Improvements
 
 * The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
-  * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+  * This reduces the function complexity; ensures nodes, edges, and general plot attributes are handled in different places; and allows for better code maintenance and readability.
   * `display_axes` is changed to `show_axes` for consistency.
 * `xlim` in `viz.plot_Z_err_cond` is adjusted to the relevant domain when plotting the central peak. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Both upper and lower axes limits can now be specified for `EGraph` plots. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
 * Improvements to the decoding example. [#44](https://github.com/XanaduAI/flamingpy/pull/44)
   * Rename function and add dosctring.
-  * Decrease size of markers for plotting stabilizer nodes.
-  * Improve way to scatter stabilizers via specifying indices.
+  * Decrease the size of markers for plotting stabilizer nodes.
+  * Improve the way to scatter stabilizers via specifying indices.
 * Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
 * Pandas is removed from the package requirements. [#63](https://github.com/XanaduAI/flamingpy/pull/63)
 * `mpi4py` is **not** a development requirement for Linux users. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
@@ -68,7 +68,7 @@ This release contains contributions from (in alphabetical order):
 
 [Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz), [Trevor Vincent](https://github.com/trevor-vincent)
 
-See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.7.0a4...v0.8.0a4).
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.7.0a4...v0.8.1a5).
 
 
 ## Release 0.7.0a4
