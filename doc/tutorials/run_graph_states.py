@@ -230,7 +230,7 @@ viz.plot_params["figure.figsize"] = (8, 6)
 graph_states.star(10).draw(**drawing_opts)
 
 ######################################################################
-# Now, let's check how the GHZ state in 15 qubits looks like:
+# Now, let's see how the complete graph states in 15 qubits looks like:
 
 graph_states.ghz(15).draw(**drawing_opts)
 
