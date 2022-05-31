@@ -73,4 +73,3 @@ Module relationships
             <img src="../_static/packages_flamingpy.svg" width="280%"/>
         </div>
     </div>
-    

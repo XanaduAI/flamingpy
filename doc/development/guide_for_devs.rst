@@ -24,6 +24,7 @@ as well as the following Python packages for development purposes:
 * `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
 * `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `setuptools <https://pypi.org/project/setuptools/>`_ >= 62.3.2
 * `scipy <https://scipy.org/>`_ >= 1.6
 * `thewalrus <https://the-walrus.readthedocs.io/en/latest/>`_ >= 0.19.0
 
