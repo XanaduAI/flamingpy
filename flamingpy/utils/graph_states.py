@@ -60,7 +60,7 @@ def complete_graph(n):
     return ghz_state
 
 
-def linear(n):
+def linear_cluster(n):
     """EGraph of a linear cluster state with n nodes.
 
     Args:
