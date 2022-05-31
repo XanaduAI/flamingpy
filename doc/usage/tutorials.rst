@@ -26,7 +26,7 @@ Tutorials
 
 .. gallery-item::
     :tooltip: In this tutorial we will tell you a bit about graph states, and show you how to define and visualize them using FlamingPy.
-    :figure: tutorials/_out/images/sphx_glr_run_graph_states_003.png
+    :figure: _static/graph_states_thumbnail.png
     :description: :doc:`../tutorials/_out/run_graph_states`
 
 .. gallery-item::

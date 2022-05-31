@@ -202,7 +202,6 @@ GHZ_state.draw(**drawing_opts)
 # First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
 
 from flamingpy.utils import graph_states
-
 viz.plot_params["figure.figsize"] = (8, 6)
 
 ######################################################################
@@ -210,7 +209,6 @@ viz.plot_params["figure.figsize"] = (8, 6)
 # star graph and complete graph states, linear cluster states (including
 # Bell pairs as a special case), and ring or polygon states. Let us plot a star
 # graph of 10 qubits as an example:
-
 
 graph_states.star_graph(10).draw(**drawing_opts)
 
