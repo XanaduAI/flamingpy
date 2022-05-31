@@ -78,7 +78,7 @@ def linear_cluster(n):
     return linear_state
 
 
-def ring(n):
+def ring_graph(n):
     """EGraph of a ring graph state with n nodes.
 
     Args:
