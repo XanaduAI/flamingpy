@@ -17,7 +17,7 @@ import numpy as np
 from flamingpy.codes.graphs import EGraph
 
 
-def star(n):
+def star_graph(n):
     """EGraph of a star graph state with n nodes.
 
     Args:
