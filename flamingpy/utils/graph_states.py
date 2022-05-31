@@ -101,9 +101,5 @@ def ring_graph(n):
 
 
 def bell():
-    """EGraph of a two-qubit bell state.
-
-    Returns:
-        linear(2) (EGraph)
-    """
+    """Return an EGraph of the two-qubit Bell pair."""
     return linear(2)
