@@ -26,6 +26,18 @@ def test_star_graph():
     star_state = graph_states.star(n)
     assert star_state.number_of_edges() == (n - 1)
 
+    n = 1
+    with pytest.raises(Exception) as e:
+        star_state = graph_states.star(n)
+    assert e.type == ValueError
+    assert "Input n should be 2 or larger." in str(e.value)
+
+    n = 'hello'
+    with pytest.raises(Exception) as e:
+        star_state = graph_states.star(n)
+    assert e.type == ValueError
+    assert "Input n should be an integer." in str(e.value)
+
 
 def test_complete_graph():
     """Check that complete graph state with n qubits has n(n-1)/2 edges"""
@@ -37,6 +49,17 @@ def test_complete_graph():
     complete_graph = graph_states.complete_graph(n)
     assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
 
+    n = 2
+    with pytest.raises(Exception) as e:
+        complete_graph = graph_states.complete_graph(n)
+    assert e.type == ValueError
+    assert "Input n should be 3 or larger." in str(e.value)
+
+    n = 'hello'
+    with pytest.raises(Exception) as e:
+        complete_graph = graph_states.complete_graph(n)
+    assert e.type == ValueError
+    assert "Input n should be an integer." in str(e.value)
 
 def test_ring_state():
     """Check that a ring state with n qubits has n edges"""
@@ -47,6 +70,18 @@ def test_ring_state():
     n = 5
     ring_graph = graph_states.ring_graph(n)
     assert ring_graph.number_of_edges() == n
+
+    n = 2
+    with pytest.raises(Exception) as e:
+        ring_graph = graph_states.ring_graph(n)
+    assert e.type == ValueError
+    assert "Input n should be 3 or larger." in str(e.value)
+
+    n = 'hello'
+    with pytest.raises(Exception) as e:
+        ring_graph = graph_states.ring_graph(n)
+    assert e.type == ValueError
+    assert "Input n should be an integer." in str(e.value)
 
 
 def test_linear_state():
@@ -59,8 +94,20 @@ def test_linear_state():
     linear_cluster = graph_states.linear_cluster(n)
     assert linear_cluster.number_of_edges() == n - 1
 
+    n = 1
+    with pytest.raises(Exception) as e:
+        linear_cluster = graph_states.linear_cluster(n)
+    assert e.type == ValueError
+    assert "Input n should be 2 or larger." in str(e.value)
+
+    n = 'hello'
+    with pytest.raises(Exception) as e:
+        linear_cluster = graph_states.linear_cluster(n)
+    assert e.type == ValueError
+    assert "Input n should be an integer." in str(e.value)
 
 def test_bell_state():
     """Check that the bell state generates"""
     bell = graph_states.bell()
     assert bell.number_of_edges() == 1
+

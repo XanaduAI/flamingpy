@@ -26,8 +26,11 @@ def star_graph(n):
     Returns:
         EGraph: the star graph state.
     """
-    assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
-    assert n >= 2, f"Input n should be 2 or larger. Current value is {n}"
+
+    if not isinstance(n, int):
+        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
+    if not n >= 2:
+        raise ValueError(f"Input n should be 2 or larger. Current value is {n}")
     star_graph_state = EGraph()
     for i in range(n - 1):
         degs = 2 * np.pi * i / (n - 1)
@@ -46,8 +49,10 @@ def complete_graph(n):
     Returns:
         EGraph: the complete graph state.
     """
-    assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
-    assert n >= 3, f"Input n should be 3 or larger. Current value is {n}"
+    if not isinstance(n, int):
+        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
+    if not n >= 3:
+        raise ValueError(f"Input n should be 3 or larger. Current value is {n}")
     complete_graph = EGraph()
     for i in range(n):
         degs = 2 * np.pi * i / n
@@ -69,8 +74,10 @@ def linear_cluster(n):
     Returns:
         linear_state (EGraph)
     """
-    assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
-    assert n >= 2, f"Input n should be 2 or larger. Current value is {n}"
+    if not isinstance(n, int):
+        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
+    if not n >= 2:
+        raise ValueError(f"Input n should be 2 or larger. Current value is {n}")
     linear_state = EGraph()
     for i in range(n - 1):
         edge = [(i, 0, 0), (i + 1, 0, 0)]
@@ -87,8 +94,10 @@ def ring_graph(n):
     Returns:
         ring_graph_state (EGraph)
     """
-    assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
-    assert n >= 3, f"Input n should be 3 or larger. Current value is {n}"
+    if not isinstance(n, int):
+        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
+    if not n >= 3:
+        raise ValueError(f"Input n should be 3 or larger. Current value is {n}")
     ring_graph_state = EGraph()
     for i in range(n):
         degs = 2 * np.pi * i / (n)
