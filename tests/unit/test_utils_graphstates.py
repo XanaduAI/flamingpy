@@ -19,7 +19,7 @@ from flamingpy.utils import graph_states
 def test_star_graph():
     """Check that star state with n qubits has n-1 edges"""
     n = 10
-    star_state = graph_states.star(n)
+    star_state = graph_states.star_graph(n)
     assert star_state.number_of_edges() == (n - 1)
 
     n = 5
@@ -27,37 +27,37 @@ def test_star_graph():
     assert star_state.number_of_edges() == (n - 1)
 
 
-def test_ghz_state():
-    """Check that ghz state with n qubits has n(n-1)/2 edges"""
+def test_complete_graph():
+    """Check that complete graph state with n qubits has n(n-1)/2 edges"""
     n = 10
-    ghz = graph_states.ghz(n)
-    assert ghz.number_of_edges() == (n * (n - 1) / 2)
+    complete_graph = graph_states.complete_graph(n)
+    assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
 
     n = 5
-    ghz = graph_states.ghz(n)
-    assert ghz.number_of_edges() == (n * (n - 1) / 2)
+    complete_graph = graph_states.complete_graph(n)
+    assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
 
 
 def test_ring_state():
     """Check that a ring state with n qubits has n edges"""
     n = 10
-    ring = graph_states.ring(n)
-    assert ring.number_of_edges() == n
+    ring_graph = graph_states.ring_graph(n)
+    assert ring_graph.number_of_edges() == n
 
     n = 5
-    ring = graph_states.ring(n)
-    assert ring.number_of_edges() == n
+    ring_graph = graph_states.ring_graph(n)
+    assert ring_graph.number_of_edges() == n
 
 
 def test_linear_state():
     """Check that a linear state with n qubits has n-1 edges"""
     n = 10
-    linear = graph_states.linear(n)
-    assert linear.number_of_edges() == n - 1
+    linear_cluster = graph_states.linear_cluster(n)
+    assert linear_cluster.number_of_edges() == n - 1
 
     n = 5
-    linear = graph_states.linear(n)
-    assert linear.number_of_edges() == n - 1
+    linear_cluster = graph_states.linear_cluster(n)
+    assert linear_cluster.number_of_edges() == n - 1
 
 
 def test_bell_state():

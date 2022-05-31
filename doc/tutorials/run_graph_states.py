@@ -8,7 +8,7 @@ Graph States
 
 
 ######################################################################
-# *Author: Ilan Tzitrin*
+# *Authors: Ilan Tzitrin and Luis Mantilla*
 #
 
 
@@ -151,7 +151,7 @@ import flamingpy.utils.viz as viz
 # Custom graph states
 # ^^^^^^^^^^^^^^
 # We can construct a GHZ state using FlamingPy. We can either use the built-in method
-# ``ghz`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
+# ``complete_graph`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
 # state, or we can construct it from scratch. To do the latter, 
 # we have to place its nodes in 3D space. There are infinite choices of 
 # coordinates available to us, but let us place the points at corners of 
@@ -195,21 +195,6 @@ GHZ_state.draw(**drawing_opts)
 
 
 ######################################################################
-# We can also extract some information about the graph state, including
-# the *adjacency matrix* :math:`A` of the underlying graph. The indices
-# (rows and columns) of this matrix correspond to the nodes of the graph.
-# The entry :math:`A_{ij}` is 0 if there is no edge connecting the nodes,
-# and 1 (or another number, for weighted graphs) otherwise. We can
-# generate the adjacency matrix and then plot its heat map:
-#
-
-GHZ_state.adj_generator(sparse=False)
-adj = GHZ_state.adj_mat
-
-viz.plot_params["figure.figsize"] = (5.4, 4)
-viz.plot_mat_heat_map(adj)
-
-######################################################################
 # Built-in graph states
 # ^^^^^^^^^^^^^^
 # Now that we know how to create custom cluster states in FlamingPy,
@@ -241,3 +226,22 @@ graph_states.complete_graph(15).draw(**drawing_opts)
 # you can better understand the structure of error correcting codes. Now, you can try to implement 
 # a resource state amenable to universal quantum computation, or check out our tutorial 
 # on error correction with the surface code: :ref:`run-error-correction`).
+
+
+######################################################################
+# We can also extract some information about the graph states, including
+# the *adjacency matrix* :math:`A` of the underlying graph. The indices
+# (rows and columns) of this matrix correspond to the nodes of the graph.
+# The entry :math:`A_{ij}` is 0 if there is no edge connecting the nodes,
+# and 1 (or another number, for weighted graphs) otherwise. We can
+# generate the adjacency matrix and then plot its heat map:
+#
+
+GHZ_state.adj_generator(sparse=False)
+adj = GHZ_state.adj_mat
+viz.plot_params["figure.figsize"] = (5.4, 4)
+GHZ_state.draw_adj()
+
+######################################################################
+# As expected, we have black tiles on the diagonal of the heat map, indicating no self connections 
+# (loops), and yellow tiles everywhere else, indicating maximal connectedness.

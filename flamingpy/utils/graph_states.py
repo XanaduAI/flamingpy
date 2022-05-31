@@ -56,7 +56,7 @@ def complete_graph(n):
             degs_adj = 2 * np.pi * j / n + degs
             x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
             edge = [(x, y, 0), (x_adj, y_adj, 0)]
-            complete_graph.add_edge(*edge, color="MidnightBlue")
+            complete_graph.add_edge(*edge)
     return complete_graph
 
 
@@ -96,10 +96,10 @@ def ring_graph(n):
         x, y = np.cos(degs), np.sin(degs)
         x_next, y_next = np.cos(degs_next), np.sin(degs_next)
         edge = [(x, y, 0), (x_next, y_next, 0)]
-        ring_graph_state.add_edge(*edge, color="MidnightBlue")
+        ring_graph_state.add_edge(*edge)
     return ring_graph_state
 
 
 def bell():
     """Return an EGraph of the two-qubit Bell pair."""
-    return linear(2)
+    return linear_cluster(2)
