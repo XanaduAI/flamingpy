@@ -227,7 +227,7 @@ viz.plot_params["figure.figsize"] = (8, 6)
 # graph of 10 qubits as an example:
 
 
-graph_states.star(10).draw(**drawing_opts)
+graph_states.star_graph(10).draw(**drawing_opts)
 
 ######################################################################
 # Now, let's see how the complete graph states in 15 qubits looks like:
