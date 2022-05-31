@@ -210,8 +210,10 @@ viz.plot_params["figure.figsize"] = (5.4, 4)
 viz.plot_mat_heat_map(adj)
 
 ######################################################################
-# Now that we know how to create custom cluster states in ``flamingpy``,
-# let's use some built-in functions to create some well known graph states.
+# Built-in graph states
+# ^^^^^^^^^^^^^^
+# Now that we know how to create custom cluster states in FlamingPy,
+# let's use some built-in functions to generate some well-known graph states.
 # First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
 
 from flamingpy.utils import graph_states
