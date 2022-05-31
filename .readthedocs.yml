@@ -6,7 +6,6 @@ build:
     python: "3.8"
   apt_packages:
     - graphviz
-    - libopenmpi-dev
 
 sphinx:
   configuration: doc/conf.py
