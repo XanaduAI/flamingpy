@@ -41,13 +41,15 @@ def test_star_graph():
 
 def test_complete_graph():
     """Check that complete graph state with n qubits has n(n-1)/2 edges"""
-    n = 10
+    n = 15
     complete_graph = graph_states.complete_graph(n)
     assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
+    assert complete_graph.number_of_nodes() == n
 
     n = 5
     complete_graph = graph_states.complete_graph(n)
     assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
+    assert complete_graph.number_of_nodes() == n
 
     n = 2
     with pytest.raises(Exception) as e:
@@ -64,13 +66,15 @@ def test_complete_graph():
 
 def test_ring_state():
     """Check that a ring state with n qubits has n edges"""
-    n = 10
+    n = 15
     ring_graph = graph_states.ring_graph(n)
     assert ring_graph.number_of_edges() == n
+    assert ring_graph.number_of_nodes() == n
 
     n = 5
     ring_graph = graph_states.ring_graph(n)
     assert ring_graph.number_of_edges() == n
+    assert ring_graph.number_of_nodes() == n
 
     n = 2
     with pytest.raises(Exception) as e:
@@ -87,13 +91,15 @@ def test_ring_state():
 
 def test_linear_state():
     """Check that a linear state with n qubits has n-1 edges"""
-    n = 10
+    n = 15
     linear_cluster = graph_states.linear_cluster(n)
     assert linear_cluster.number_of_edges() == n - 1
+    assert linear_cluster.number_of_nodes() == n
 
     n = 5
     linear_cluster = graph_states.linear_cluster(n)
     assert linear_cluster.number_of_edges() == n - 1
+    assert linear_cluster.number_of_nodes() == n
 
     n = 1
     with pytest.raises(Exception) as e:
@@ -112,3 +118,4 @@ def test_bell_state():
     """Check that the bell state generates"""
     bell = graph_states.bell()
     assert bell.number_of_edges() == 1
+    assert bell.number_of_nodes() == 2

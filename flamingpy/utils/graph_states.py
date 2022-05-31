@@ -60,7 +60,7 @@ def complete_graph(n):
         for j in range(1, n - i):
             degs_adj = 2 * np.pi * j / n + degs
             x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
-            edge = [(x, y, 0), (x_adj, y_adj, 0)]
+            edge = [(float(round(x, 5)), float(round(y, 5)), 0), ( float(round(x_adj, 5)), float(round(y_adj, 5)), 0)]
             complete_graph.add_edge(*edge)
     return complete_graph
 
@@ -99,13 +99,14 @@ def ring_graph(n):
     if not n >= 3:
         raise ValueError(f"Input n should be 3 or larger. Current value is {n}")
     ring_graph_state = EGraph()
-    for i in range(n):
+    x, y = np.cos(0), np.sin(0) 
+    for i in range(1, n+1):
         degs = 2 * np.pi * i / (n)
-        degs_next = 2 * np.pi * (i + 1) / (n)
-        x, y = np.cos(degs), np.sin(degs)
-        x_next, y_next = np.cos(degs_next), np.sin(degs_next)
-        edge = [(x, y, 0), (x_next, y_next, 0)]
+        x_next, y_next = np.cos(degs), np.sin(degs)
+        edge = [( float(round(x,5)) , float(round(y,5)), 0), ( float(round(x_next,5)), float(round(y_next,5)), 0)]
         ring_graph_state.add_edge(*edge)
+        x, y = x_next, y_next
+    
     return ring_graph_state
 
 

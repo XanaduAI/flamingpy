@@ -230,7 +230,6 @@ graph_states.complete_graph(10).draw(**drawing_opts)
 #
 
 complete_graph_state = graph_states.complete_graph(15)
-adj = complete_graph_state.adj_generator(sparse=False)
 complete_graph_state.draw_adj()
 
 ######################################################################
