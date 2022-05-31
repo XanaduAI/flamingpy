@@ -4,7 +4,7 @@
 * Add new functions to create different graph states (GHZ, Ring, Linear, Star, Bell).
 
 ### Bug fixes
-* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted.
+* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
 
 ### Improvements
