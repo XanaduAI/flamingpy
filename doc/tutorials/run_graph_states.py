@@ -202,7 +202,6 @@ GHZ_state.draw(**drawing_opts)
 # First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
 
 from flamingpy.utils import graph_states
-viz.plot_params["figure.figsize"] = (8, 6)
 
 ######################################################################
 # Some of the families of graph states that we have access to are
