@@ -38,7 +38,7 @@ def star_graph(n):
 
 
 def complete_graph(n):
-    """EGraph of a GHZ state with n nodes.
+    """EGraph of a complete graph state with n nodes.
 
     Args:
         n (int): Number of qubits
