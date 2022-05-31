@@ -221,14 +221,6 @@ graph_states.complete_graph(15).draw(**drawing_opts)
 
 ######################################################################
 # The two states above are both equivalent to GHZ states via local unitaries.
-#
-# Having gone over the fundamentals of the ``EGraph``, the representation of graph states in FlamingPy,
-# you can better understand the structure of error correcting codes. Now, you can try to implement 
-# a resource state amenable to universal quantum computation, or check out our tutorial 
-# on error correction with the surface code: :ref:`run-error-correction`).
-
-
-######################################################################
 # We can also extract some information about the graph states, including
 # the *adjacency matrix* :math:`A` of the underlying graph. The indices
 # (rows and columns) of this matrix correspond to the nodes of the graph.
@@ -237,11 +229,16 @@ graph_states.complete_graph(15).draw(**drawing_opts)
 # generate the adjacency matrix and then plot its heat map:
 #
 
-GHZ_state.adj_generator(sparse=False)
-adj = GHZ_state.adj_mat
+adj = GHZ_state.adj_generator(sparse=False)
 viz.plot_params["figure.figsize"] = (5.4, 4)
 GHZ_state.draw_adj()
 
 ######################################################################
 # As expected, we have black tiles on the diagonal of the heat map, indicating no self connections 
 # (loops), and yellow tiles everywhere else, indicating maximal connectedness.
+
+######################################################################
+# Having gone over the fundamentals of the ``EGraph``, the representation of graph states in FlamingPy,
+# you can better understand the structure of error correcting codes. Now, you can try to implement 
+# a resource state amenable to universal quantum computation, or check out our tutorial 
+# on error correction with the surface code: :ref:`run-error-correction`).
