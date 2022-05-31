@@ -48,7 +48,7 @@ def complete_graph(n):
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 3, f"Input n should be 3 or larger. Current value is {n}"
-    ghz_state = EGraph()
+    complete_graph = EGraph()
     for i in range(n):
         degs = 2 * np.pi * i / n
         x, y = np.cos(degs), np.sin(degs)
@@ -56,8 +56,8 @@ def complete_graph(n):
             degs_adj = 2 * np.pi * j / n + degs
             x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
             edge = [(x, y, 0), (x_adj, y_adj, 0)]
-            ghz_state.add_edge(*edge, color="MidnightBlue")
-    return ghz_state
+            complete_graph.add_edge(*edge, color="MidnightBlue")
+    return complete_graph
 
 
 def linear_cluster(n):
