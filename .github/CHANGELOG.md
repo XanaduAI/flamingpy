@@ -1,4 +1,4 @@
-## Release 0.8.1a5 (development release)
+## Release 0.8.2a5 (development release)
 
 ### New features since the last release
 
@@ -20,7 +20,7 @@ See full commit details ...
 
 ---
 
-## Release 0.8.1a5 (current release)
+## Release 0.8.2a5 (current release)
 
 ### New features since the last release
 
@@ -68,7 +68,7 @@ This release contains contributions from (in alphabetical order):
 
 [Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz), [Trevor Vincent](https://github.com/trevor-vincent)
 
-See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.7.0a4...v0.8.1a5).
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.7.0a4...v0.8.2a5).
 
 
 ## Release 0.7.0a4
