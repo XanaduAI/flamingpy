@@ -24,7 +24,7 @@ def star_graph(n):
         n (int): Number of qubits
 
     Returns:
-        star_graph_state (EGraph)
+        EGraph: the star graph state.
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 2, f"Input n should be 2 or larger. Current value is {n}"
