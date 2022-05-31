@@ -2,15 +2,6 @@
 
 ### New features since the last release
 
-<<<<<<< HEAD
-* Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary: [#32](https://github.com/XanaduAI/flamingpy/pull/32)(backward compatible)
- * The `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
-* The `dims` attribute of `EGraph` has been removed. Its function is replaced by the `dimensions` parameter that is passed to the `draw_EGraph` method. This method does not require the `EGraph` to have a `dims` attribute defined anymore. [#42](https://github.com/XanaduAI/flamingpy/pull/42)(backward incompatible)
-* Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI jobs through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
- MPI users on their local machines can simply run the following for a 4-processor job:
- `mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible)
-* Add new functions to create different graph states (GHZ, Ring, Linear, Star, Bell).
-=======
 
 ### Bug fixes
 
@@ -40,7 +31,6 @@ See full commit details ...
   * MPI users on their local machines can simply run the following for a 4-processor job:
   `mpirun -np 4 python flamingpy/simulations.py`
 
->>>>>>> main
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted.
