@@ -11,7 +11,7 @@
 
 
 ### Documentation changes
-* Mentions the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. 
+* Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
 
 ### Contributors
