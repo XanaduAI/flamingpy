@@ -108,9 +108,10 @@ def ec_monte_carlo(
         return_decoding_time (bool, optional): total decoding time is returned when set to True
 
     Returns:
-        errors (integer): the number of errors.
-        decoding_time_total (float): the total time is seconds taken by the decoder steps. This
-            parameter is returned only if return_decoding_time is set to True
+        tuple:
+            errors (integer): the number of errors.
+            prep_time_total (float): the total time in seconds taken by the state prep steps.
+            This parameter is returned only if return_decoding_time is set to True
     """
     weight_opts = decoder_args["weight_opts"]
     decoder = {"outer": decoder}
