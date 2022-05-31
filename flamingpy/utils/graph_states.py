@@ -33,7 +33,7 @@ def star_graph(n):
         degs = 2 * np.pi * i / (n - 1)
         x, y = np.cos(degs), np.sin(degs)
         edge = [(0, 0, 0), (x, y, 0)]
-        star_graph_state.add_edge(*edge, color="MidnightBlue")
+        star_graph_state.add_edge(*edge)
     return star_graph_state
 
 
