@@ -44,7 +44,7 @@ def complete_graph(n):
         n (int): Number of qubits
 
     Returns:
-        ghz_state (EGraph)
+        EGraph: the complete graph state.
     """
     assert isinstance(n, int), f"Input n should be an integer. Current type is {type(n)}"
     assert n >= 3, f"Input n should be 3 or larger. Current value is {n}"
