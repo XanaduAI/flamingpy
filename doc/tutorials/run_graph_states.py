@@ -232,6 +232,6 @@ graph_states.ghz(15).draw(**drawing_opts)
 
 ######################################################################
 # Having understood ``EGraph``, the basic building block of graph states in ``flamingpy``,
-# you are ready to move on to the next level. Try to implement a resource state
-#  capable of doing universal quantum computation! (or equivalently, 
+# you are ready to move on to the next level. Try to implement a resource state 
+# capable of doing universal quantum computation! (or equivalently, 
 # check out our tutorial in surface codes: :ref:`run-error-correction`)
