@@ -23,18 +23,18 @@ def test_star_graph():
     assert star_state.number_of_edges() == (n - 1)
 
     n = 5
-    star_state = graph_states.star(n)
+    star_state = graph_states.star_graph(n)
     assert star_state.number_of_edges() == (n - 1)
 
     n = 1
     with pytest.raises(Exception) as e:
-        star_state = graph_states.star(n)
+        star_state = graph_states.star_graph(n)
     assert e.type == ValueError
     assert "Input n should be 2 or larger." in str(e.value)
 
     n = "hello"
     with pytest.raises(Exception) as e:
-        star_state = graph_states.star(n)
+        star_state = graph_states.star_graph(n)
     assert e.type == ValueError
     assert "Input n should be an integer." in str(e.value)
 
