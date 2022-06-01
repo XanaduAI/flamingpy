@@ -4,6 +4,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXAPIDPC  = sphinx-apidoc
 SOURCEDIR     = ..
 BUILDDIR      = _build
+DEMOBUILDDIR  = tutorials/_out
 
 
 # Internal variables.
@@ -20,13 +21,13 @@ help:
 	@echo "  clean      to remove current _build/ dir"
 	@echo "  html       to make standalone HTML files"
 	@echo "  docs       to perform \`clean' and then \`html' together"
-	
+
 .PHONY: help
 
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/* $(DEMOBUILDDIR)/*
 
 
 .PHONY: html

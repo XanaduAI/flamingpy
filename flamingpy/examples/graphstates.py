@@ -14,7 +14,6 @@
 """Example for building and visualizing EGraphs with CV noise."""
 import matplotlib.pyplot as plt
 
-from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import CVLayer
 
@@ -22,8 +21,7 @@ show = __name__ == "__main__"
 
 # Bell state EGraph
 edge = [(0, 0, 0), (1, 1, 1)]
-dims = (1, 1, 1)
-bell_state = EGraph(dims=dims)
+bell_state = EGraph()
 bell_state.add_edge(*edge, color="MidnightBlue")
 # Plot the bell state
 bell_state.draw(color_edges="MidnightBlue", color_nodes="magenta", label="index")

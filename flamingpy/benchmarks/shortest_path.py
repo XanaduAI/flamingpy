@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Benchmark shortest-path-finding algorithms between networkx and retworkx."""
-
-# pylint: disable=no-member
-
 import time
 
 import matplotlib.pyplot as plt
@@ -22,6 +19,7 @@ import matplotlib.pyplot as plt
 from flamingpy.codes import SurfaceCode, alternating_polarity
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
+from flamingpy.decoders.mwpm.algos import build_match_graph
 
 
 # How many simulations to do for each algorithm.
@@ -63,12 +61,12 @@ for backend in ["networkx", "retworkx"]:
         CVRHG.apply_noise(cv_noise)
         # Measure syndrome
         CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
-        dec.assign_weights(RHG_code, **weight_options)
+        dec.assign_weights(RHG_code, "MWPM", **weight_options)
         # Inner decoder
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
 
         before = time.time()
-        matching_graph = dec.build_match_graph(RHG_code, "primal", backend)
+        matching_graph = build_match_graph(RHG_code, "primal", backend)
         after = time.time()
         times[backend].append(after - before)
 

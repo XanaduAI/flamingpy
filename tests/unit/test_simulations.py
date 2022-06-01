@@ -15,17 +15,37 @@
 
 # pylint: disable=no-self-use,protected-access,too-few-public-methods
 
+import warnings
+
 import itertools as it
+
 import re
 import pytest
+
+try:
+    import mpi4py.rc
+
+    mpi4py.rc.threaded = False
+    from mpi4py import MPI
+except ImportError:  # pragma: no cover
+    warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
-from flamingpy.benchmarks.simulations import run_sims_benchmark
+
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
+
+if "MPI" in locals():
+    world_comm = MPI.COMM_WORLD
+    mpi_size = world_comm.Get_size()
+    mpi_rank = world_comm.Get_rank()
+else:
+    world_comm = None
+    mpi_size = 1
+    mpi_rank = 0
 
 
 @pytest.fixture(scope="module", params=code_params)
@@ -47,7 +67,16 @@ class TestBlueprint:
         p_swap = 0
         delta = 0.001
         trials = 10
-        errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=None)
+        errors_py = ec_monte_carlo(
+            code,
+            trials,
+            delta,
+            p_swap,
+            passive_objects=None,
+            world_comm=world_comm,
+            mpi_rank=mpi_rank,
+            mpi_size=mpi_size,
+        )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
@@ -76,19 +105,30 @@ class TestPassive:
         # star at index 0, planets at indices 1-3.
         bs_network = BS_network(4)
         passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
-        errors_py = ec_monte_carlo(code, trials, delta, p_swap, passive_objects=passive_objects)
+        errors_py = ec_monte_carlo(
+            code,
+            trials,
+            delta,
+            p_swap,
+            passive_objects=passive_objects,
+            world_comm=world_comm,
+            mpi_rank=mpi_rank,
+            mpi_size=mpi_size,
+        )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors_py == 0
 
 
-@pytest.mark.parametrize("passive", [True, False])
 @pytest.mark.parametrize("empty_file", [True, False])
-@pytest.mark.parametrize("sim", [run_ec_simulation, run_sims_benchmark])
-def test_simulations_output_file(tmpdir, passive, empty_file, sim):
+@pytest.mark.parametrize("sim", [run_ec_simulation])
+def test_simulations_output_file(tmpdir, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
-    expected_header = "distance,ec,boundaries,delta,p_swap,errors_py,trials,current_time"
-    dummy_content = "2,primal,open,0.04,0.5,2,10,12:34:56"
+    expected_header = (
+        "distance,passive,ec,boundaries,delta,p_swap,decoder,errors_py,"
+        + "trials,current_time,decoding_time,simulation_time,mpi_size"
+    )
+    dummy_content = "2,True,primal,open,0.04,0.5,2,10,12:34:56,10,20"
     if "benchmark" in sim.__name__:
         expected_header += ",cpp_to_py_speedup"
         dummy_content += ",1"
@@ -107,9 +147,11 @@ def test_simulations_output_file(tmpdir, passive, empty_file, sim):
         "boundaries": "open",
         "delta": 0.04,
         "p_swap": 0.5,
-        "passive": passive,
-        "trials": 10,
-    }
+        "trials": 100,
+        "passive": True,
+        "decoder": "MWPM",
+    }  # Should we switch to using "passive": passive instead?
+
     sim(**params, fname=f)
 
     file_lines = f.readlines()

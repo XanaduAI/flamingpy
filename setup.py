@@ -64,7 +64,7 @@ class CMakeBuild(build_ext):
 
     def run(self):
         try:
-            out = subprocess.check_output(["cmake", "--version"]) # nosec
+            out = subprocess.check_output(["cmake", "--version"])  # nosec
         except OSError as exc:
             raise RuntimeError(
                 "CMake must be installed to build the following extensions: "
@@ -156,11 +156,11 @@ install_requires = [
     "pandas>=1.2.1",
     "retworkx>=0.10.2",
     "scipy>=1.6",
-    "thewalrus>=0.19.0"
+    "thewalrus>=0.19.0",
 ]
 
-description = """FlamingPy is a cross-platform Python library with a variety of backends for
-efficient simulations of error correction in fault-tolerant quantum computers."""
+description = ("FlamingPy is a cross-platform Python library with a variety of backends for "
+               "efficient simulations of error correction in fault-tolerant quantum computers.")
 
 setup(
     name="flamingpy",

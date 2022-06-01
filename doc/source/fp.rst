@@ -28,3 +28,48 @@ Module members
 .. automodapi:: flamingpy
     :no-heading:
     :include-all-objects:
+
+
+
+UML Diagrams
+------------
+
+Classes
+^^^^^^^
+
+
+.. raw:: html
+    <style>
+        .wrapper{
+        width:100%;
+        overflow-x:scroll;     
+        white-space: nowrap;
+        }
+    </style>
+
+    <div class="wrapper">   
+        <div class="text-center">
+            <img src="../_static/classes_flamingpy.svg" width="200%"/>
+        </div>
+    </div>
+    
+|
+Module relationships
+^^^^^^^^^^^^^^^^^^^^
+
+
+.. raw:: html
+
+    <style>
+        .wrapper{
+        width: 100%;
+        overflow-x: scroll;
+        white-space: nowrap;
+        }
+    </style>
+
+    <div class="wrapper">
+        <div class="text-center">
+            <img src="../_static/packages_flamingpy.svg" width="280%"/>
+        </div>
+    </div>

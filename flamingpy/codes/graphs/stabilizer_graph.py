@@ -140,6 +140,14 @@ class StabilizerGraph(ABC):
         graph."""
         raise NotImplementedError
 
+    def neighbors(self, node):
+        """Return the neighbours of node."""
+        raise NotImplementedError
+
+    def out_edges(self, node):
+        """Return the edges incident to node."""
+        raise NotImplementedError
+
     def shortest_paths_without_high_low(self, source):
         """Compute the shortest path from source to every other node in the
         graph, except the 'high' and 'low' connector.
@@ -342,7 +350,7 @@ class StabilizerGraph(ABC):
         """
         from flamingpy.utils.viz import draw_dec_graph
 
-        draw_dec_graph(self.to_nx(), **kwargs)
+        return draw_dec_graph(self.to_nx(), **kwargs)
 
 
 class NxStabilizerGraph(StabilizerGraph):
@@ -374,6 +382,12 @@ class NxStabilizerGraph(StabilizerGraph):
 
     def edges(self):
         return self.graph.edges()
+
+    def neighbors(self, node):
+        return self.graph.neighbors(node)
+
+    def out_edges(self, node):
+        return self.graph.edges(node)
 
     def shortest_paths_without_high_low(self, source):
         subgraph = self.graph.subgraph(
@@ -440,6 +454,18 @@ class RxStabilizerGraph(StabilizerGraph):
         return (
             (self.graph.get_node_data(edge[0]), self.graph.get_node_data(edge[1]))
             for edge in self.graph.edge_list()
+        )
+
+    def neighbors(self, node):
+        return (
+            self.index_to_node[neighbor_node]
+            for neighbor_node in self.graph.neighbors(self.node_to_index[node])
+        )
+
+    def out_edges(self, node):
+        return (
+            (self.graph.get_node_data(edge[0]), self.graph.get_node_data(edge[1]))
+            for edge in self.graph.out_edges(self.node_to_index[node])
         )
 
     def shortest_paths_without_high_low(self, source):

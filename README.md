@@ -28,7 +28,7 @@
   </a>
   <!-- License -->
   <a href="https://www.apache.org/licenses/LICENSE-2.0">
-    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache" />    
+    <img src="https://img.shields.io/pypi/l/flamingpy.svg?logo=apache" />
   </a>
 </p>
 
@@ -38,20 +38,20 @@
 
 ## Features
 
-<img src="https://user-images.githubusercontent.com/25132802/160343140-8d1f8742-d37a-4f18-aa4c-31b6cce587f3.svg" width="330px" align="right">
+<img src="https://user-images.githubusercontent.com/25132802/168440346-9e285190-9527-482e-8877-b64c348df3b5.svg" width="330px" align="right">
 
-* Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds. 
-* Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states). 
-* Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features. 
+* Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds.
+* Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states).
+* Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features.
 * Provides a host of visualization tools for ease of verifying correctness.
-  
-## Download and installation 
+
+## Download and installation
 
 FlamingPy requires **Python 3.8 or above**. The recommended method to download and install FlamingPy, as well as all dependencies and precompiled C++ binaries, is through `pip` and our [PyPI package](https://pypi.org/project/flamingpy). In your choice of CLI (with a Python environment activated) run the following single command:
 
 ```bash
 python -m pip install flamingpy
-``` 
+```
 
 #### Installation from Source (advanced users)
 
@@ -69,14 +69,15 @@ python -m pip install -r dev_requirements.txt
 python setup.py develop # only installs Python libraries
 python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backends
 python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
-``` 
+```
 
-The purpose of the commands is as follows:
+Note you will need to remove the comments manually if you use Windows prompt. The purpose of the commands is as follows:
 - The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
 - The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
-If you encountered a CMake error, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git`. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/stable/help/frequently_encountered_errors.html) page in the documentation.
+If you encountered **CMake** errors, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git` for **git**-related errors. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/latest/help/frequently_encountered_errors.html) page in the documentation.
+
 
 ## Getting started and basic usage
 
@@ -149,7 +150,7 @@ If you are having issues, please let us know by posting the issue on our GitHub 
 - **Source Code:** https://github.com/XanaduAI/flamingpy
 - **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
 
-You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions). 
+You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions).
 
 
 ## Attribution for authors
@@ -158,10 +159,10 @@ FlamingPy is the work of [many contributors](https://github.com/XanaduAI/flaming
 
 
 > Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
-> Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
-> [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353) 
+> Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021,
+> [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353)
 
-In addition to the authors above, the developers would like to thank Sanchit Bapat, Ashlesha Patil, Michael Vasmer, and Trevor Vincent for their contributions to the pre-release project. 
+In addition to the authors above, the developers would like to thank Sanchit Bapat, Ashlesha Patil, Michael Vasmer, and Trevor Vincent for their contributions to the pre-release project.
 ## License
 
 FlamingPy is **free** and **open source**, and released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

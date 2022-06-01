@@ -30,7 +30,7 @@ FlamingPy Documentation
             </div>
             <div class="col-lg-8 col-12 align-middle mb-2">
                 <p class="lead grey-text">
-                    FlamingPy (FP) is a cross-platform Python library with a variety of backends 
+                    FlamingPy (FP) is a cross-platform Python library with a variety of backends
                     for efficient simulations of error correction in fault-tolerant quantum computers.
                 </p>
             </div>
@@ -77,8 +77,8 @@ Attribution for authors
 FlamingPy is the work of `many contributors <https://github.com/XanaduAI/flamingpy/graphs/contributors>`__. If you are doing research using FlamingPy, please cite our paper below:
 
     Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
-    Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021, 
-    `DOI:10.1103/prxquantum.2.040353 <http://dx.doi.org/10.1103/PRXQuantum.2.040353>`__ 
+    Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021,
+    `DOI:10.1103/prxquantum.2.040353 <http://dx.doi.org/10.1103/PRXQuantum.2.040353>`__
 
 In addition to the authors above, the developers would like to thank Sanchit Bapat, Ashlesha Patil, Michael Vasmer, and Trevor Vincent for their contributions to the pre-release project.
 
@@ -94,7 +94,14 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    :hidden:
 
    self
-   easy_installation
+   quick_installation
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Background
+   :hidden:
+
+   quantum_error_correction
 
 .. toctree::
    :maxdepth: 2
@@ -112,12 +119,13 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    development/guide_for_devs
    build_docs
    development/contribution
-   
+
 .. toctree::
    :maxdepth: 2
    :caption: Getting Help
    :hidden:
 
+   faq
    help/support
    help/frequently_encountered_errors
 

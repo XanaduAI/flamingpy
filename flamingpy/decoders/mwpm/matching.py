@@ -180,7 +180,7 @@ class MatchingGraph(ABC):
         from flamingpy.utils.viz import draw_dec_graph
 
         nx_graph = self if isinstance(self, NxMatchingGraph) else self.to_nx()
-        draw_dec_graph(nx_graph, **kwargs)
+        return draw_dec_graph(nx_graph, **kwargs)
 
 
 class NxMatchingGraph(MatchingGraph):
@@ -214,7 +214,7 @@ class LemonMatchingGraph(NxMatchingGraph):
     """A matching graph class backed by the Lemon package."""
 
     def min_weight_perfect_matching(self) -> List[Edge]:
-        return lemon.max_weight_matching(self.graph, weight="inverse_weight")
+        return lemon.min_weight_matching(self.graph)
 
     def to_nx(self):
         """Return the same graph wrapped into a NxMatchingGraph.
@@ -287,7 +287,7 @@ class RxMatchingGraph(MatchingGraph):
         matches = rx.max_weight_matching(
             self.graph,
             max_cardinality=True,
-            weight_fn=lambda edge: -1 * edge.weight,
+            weight_fn=lambda edge: -edge.weight,
         )
         return [(self.index_to_node[pair[0]], self.index_to_node[pair[1]]) for pair in matches]
 

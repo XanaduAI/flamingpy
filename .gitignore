@@ -2,8 +2,8 @@
 *.stats
 
 # For the figures
-*.png
 *.pdf
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -81,6 +81,9 @@ doc/_build/
 doc/__pycache__/
 doc/build/
 doc/source/api/
+doc/tutorials/_out
+doc/_static/thumbs
+doc/backreferences
 
 # PyBuilder
 .pybuilder/

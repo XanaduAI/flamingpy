@@ -13,7 +13,7 @@
 # limitations under the License.
 """Continuous-variable operations, states, and noise models."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-instance-attributes
 
 import numpy as np
 from numpy.random import default_rng
@@ -90,7 +90,6 @@ def SCZ_apply(adj, quads, one_shot=True):
     return new_quads
 
 
-# pylint: disable=too-many-instance-attributes
 class CVLayer:
     """A class for applying to an EGraph a physical layer of continuous-
     variable states.
@@ -394,7 +393,7 @@ class CVLayer:
         colours: gold for GKP states and blue for p-squeezed
         states.
         """
-        cv_opts = {"color_nodes": "state", "state_colors": {"GKP": "gold", "p": "blue"}}
+        cv_opts = {"color_nodes": ("state", {"GKP": "gold", "p": "blue"})}
         updated_opts = {**cv_opts, **kwargs}
         return self.egraph.draw(**updated_opts)
 
