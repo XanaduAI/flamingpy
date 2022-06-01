@@ -33,11 +33,6 @@ def test_decoder_example(noise, decoder):
     assert result.__class__.__name__ == "bool_"
 
 
-def test_decoding_benchmark():
-    """Simple test for the decoding module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import decoding as dc_benchmarks
-
-
 def test_gkp_example():
     """Simple test for the gkp module in flamingpy.examples."""
     from flamingpy.examples import gkp
@@ -62,18 +57,3 @@ def test_surface_code_example(boundaries):
     err = "primal"
     polarity = None
     surface_code(d, boundaries, err, polarity, show=False)
-
-
-def test_lemon_benchmark():
-    """Simple test for the lemon module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import lemon
-
-
-def test_matching_benchmark():
-    """Simple test for the matching module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import matching
-
-
-def test_shortest_path_benchmark():
-    """Simple test for the shortest_path module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import shortest_path
