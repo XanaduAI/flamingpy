@@ -76,9 +76,8 @@ def test_draw_EGraph_RHG():
 
     n_ticks = 2 * d - 1
 
-    assert len(a.get_xticks()) == n_ticks
-    assert len(a.get_yticks()) == n_ticks
-    assert len(a.get_zticks()) == n_ticks
+    ticks = (a.get_xticks(), a.get_yticks(), a.get_zticks())
+    assert [len(tick) for tick in ticks] == [n_ticks] * 3
 
     actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
     assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
