@@ -15,6 +15,7 @@
 
 import math
 import numpy as np
+import pytest
 from numpy.random import default_rng as rng
 import matplotlib.pyplot as plt
 
@@ -64,10 +65,11 @@ def test_draw_EGraph_Bell():
     assert a.get_xlim() == (-1, 1)
 
 
-def test_draw_EGraph_RHG():
+@pytest.mark.parametrize("d_range", (2, 5))
+def test_draw_EGraph_RHG(d_range):
     """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
-    d = np.random.randint(2, 5)
+    d = np.random.randint(*d_range)
     RHG = SurfaceCode(d).graph
 
     # Test for drawing the EGraph
