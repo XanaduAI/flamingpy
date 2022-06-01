@@ -95,7 +95,7 @@ def str_to_bound(bound_name):
     if not isinstance(bound_name, str):
         raise ValueError("Boundary type must be string.")
 
-    return {
+    boundary_mapping_dict = {
         "open_primal": ["primal", "dual", "dual"],
         "open_dual": ["primal", "dual", "primal"],
         "primal": ["primal", "primal", "primal"],
@@ -103,7 +103,9 @@ def str_to_bound(bound_name):
         "all_periodic": ["periodic", "periodic", "periodic"],
         "periodic_primal": ["periodic", "periodic", "primal"],
         "periodic_dual": ["periodic", "periodic", "dual"],
-    }.get(bound_name)
+    }
+
+    return np.array(boundary_mapping_dict.get(bound_name))
 
 
 def RHG_graph(
@@ -129,6 +131,8 @@ def RHG_graph(
 
                 'open_primal': primal, dual, dual
                 'open_dual':,  primal, dual, primal
+                'periodic_primal': "periodic", "periodic", "primal"
+                'periodic_dual':,  "periodic", "periodic", "dual"
                 '{b}': b, b, b,
                 ['{b1}', '{b2}', '{b3}']: b1, b2, b3,
 
@@ -452,7 +456,7 @@ class SurfaceCode:
         'primal' or 'dual'.
         """
         for ec in self.ec:
-            if self.bound_str == "periodic":
+            if self.bound_str == "all_periodic":
                 setattr(self, ec + "_bound_points", [])
             else:
                 dims = self.dims
