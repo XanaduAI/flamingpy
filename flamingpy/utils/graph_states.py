@@ -18,15 +18,7 @@ from flamingpy.codes.graphs import EGraph
 
 
 def star_graph(n):
-    """EGraph of a star graph state with n nodes.
-
-    Args:
-        n (int): Number of qubits
-
-    Returns:
-        EGraph: the star graph state.
-    """
-
+    """Returns an EGraph of a star graph state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 2:
@@ -41,14 +33,7 @@ def star_graph(n):
 
 
 def complete_graph(n):
-    """EGraph of a complete graph state with n nodes.
-
-    Args:
-        n (int): Number of qubits
-
-    Returns:
-        EGraph: the complete graph state.
-    """
+    """Returns an EGraph of a complete graph state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 3:
@@ -69,14 +54,7 @@ def complete_graph(n):
 
 
 def linear_cluster(n):
-    """EGraph of a linear cluster state with n nodes.
-
-    Args:
-        n (int): Number of qubits
-
-    Returns:
-        linear_state (EGraph)
-    """
+    """Returns an EGraph of a linear cluster state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 2:
@@ -89,14 +67,7 @@ def linear_cluster(n):
 
 
 def ring_graph(n):
-    """EGraph of a ring graph state with n nodes.
-
-    Args:
-        n (int): Number of qubits
-
-    Returns:
-        ring_graph_state (EGraph)
-    """
+    """Returns an EGraph of a ring graph state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 3:
