@@ -20,7 +20,8 @@ avoids having to modify the global Matplotlib `rc_params`.
 
 To modify the plot parameters use, for example,
 
-  .. code::
+.. code-block:: python
+
     from flamingpy.utils.viz import plot_params as fp_plot_params
     fp_plot_params["font.size"] = 20
 """
@@ -28,11 +29,13 @@ To modify the plot parameters use, for example,
 # pylint: disable=too-many-statements,too-many-locals
 
 import itertools as it
+import math
 
 import numpy as np
 import networkx as nx
 import matplotlib as mpl
 from matplotlib.patches import Patch
+from matplotlib.ticker import Formatter
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -58,16 +61,19 @@ plot_params = {
 @mpl.rc_context(plot_params)
 def plot_integer_part(xs, ns, alpha, show=True):
     """Plot the integer part of real numbers mod alpha."""
-    xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(PiFormatter())
+
     plt.plot(xs, ns, ".")
     plt.title("Integer Part")
     plt.xlabel("$x$")
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
     plt.ylabel(r"$\mathrm{int}(x)$")
+
     if show:
         plt.show()
 
@@ -77,36 +83,45 @@ def plot_integer_part(xs, ns, alpha, show=True):
 @mpl.rc_context(plot_params)
 def plot_fractional_part(xs, fs, alpha, show=True):
     """Plot the fractional part of real numbers mod alpha."""
-    plt.title("Fractional Part")
-    plt.plot(xs, fs, ".")
+    fig = plt.figure()
+    ax = plt.gca()
+
     xmin, xmax = alpha * (xs[0] // alpha), alpha * (xs[-1] // alpha) + alpha
     newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
     newyticks = np.linspace(-alpha / 2, alpha / 2, num=7)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
-    newylabels = ["{:.3f}".format(tick) for tick in newyticks[1:-1]]
-    newylabels = [gkp.to_pi_string(-alpha / 2)] + newylabels + [gkp.to_pi_string(alpha / 2)]
-    plt.xticks(newxticks, newxlabels)
+    ax.xaxis.set_major_formatter(PiFormatter())
+    ax.yaxis.set_major_formatter(PiFormatter())
+
+    plt.plot(xs, fs, ".")
+    plt.title("Fractional Part")
+    plt.xticks(newxticks)
     plt.xlabel("$x$")
-    plt.yticks(newyticks, newylabels)
+    plt.yticks(newyticks)
     plt.ylabel(r"$\mathrm{frac}(x)$")
+
     if show:
         plt.show()
+
+    return fig, ax
 
 
 @mpl.rc_context(plot_params)
 def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
     """Plot binned real numbers mod alpha."""
-    xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    xmin, xmax = alpha * (outcomes[0] // alpha), alpha * (outcomes[-1] // alpha) + alpha
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(PiFormatter())
+
     plt.plot(outcomes, bit_values, ".")
     plt.title("Binned values")
-    plt.xticks(newxticks, newxlabels)
+    plt.xticks(newxticks)
     plt.xlabel("Outcomes")
     plt.yticks([0, 1], [0, 1])
     plt.ylabel("Bit values")
+
     if show:
         plt.show()
 
@@ -116,66 +131,79 @@ def plot_GKP_bins(outcomes, bit_values, alpha, show=True):
 @mpl.rc_context(plot_params)
 def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     """Plot conditional phase probabilities for GKP states."""
-    _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
-    val = hom_val if use_hom_val else frac
-    xmin, xmax = alpha * (hom_val[0] // alpha), alpha * (hom_val[-1] // alpha) + alpha
-    print(xmin, xmax, min(val), max(val))
-    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
-    newxlabels = [gkp.to_pi_string(tick) for tick in newxticks]
     fig = plt.figure()
     ax = plt.gca()
+
+    _, frac = gkp.GKP_binner(hom_val, return_fraction=True)
+    val = hom_val if use_hom_val else frac
+    # bounds for the plot
+    if use_hom_val:
+        xmin, xmax = alpha * np.array([hom_val[0] // alpha, hom_val[-1] // alpha + 1])
+    else:
+        xmin, xmax = -alpha / 2, alpha / 2
+
+    print(xmin, xmax, min(val), max(val))
+
+    newxticks = np.linspace(xmin, xmax, int((xmax - xmin) // alpha) + 1)
+    ax.xaxis.set_major_formatter(PiFormatter())
+
     plt.plot(val, error, ".")
+    plt.xticks(newxticks)
     plt.xlabel("Homodyne value")
     plt.ylabel("Error")
-    addendum = "Full homodyne value" if use_hom_val else "Central peak"
-    plt.title("Conditional phase probabilities: " + addendum)
-    plt.xticks(newxticks, newxlabels)
+    plt.title(
+        "Conditional phase probabilities: "
+        + ("Full homodyne value" if use_hom_val else "Central peak")
+    )
+
     if show:
         plt.show()
 
     return fig, ax
 
 
+# pylint: disable=too-many-arguments
 @mpl.rc_context(plot_params)
 def draw_EGraph(
     egraph,
     color_nodes=False,
     color_edges=False,
-    state_colors=None,
     label=None,
     title=False,
     legend=False,
     show_axes=True,
+    dimensions=None,
 ):
     """Draw the graph state represented by the EGraph.
 
     Args:
         color_nodes (bool or string or dict): Options are:
-
             True: color the nodes based on the 'color' attribute
-                attached to the node. If unavailable, color nodes black.
-            'state': color nodes based on the 'state' attribute. Uses
-                the color wheel by default, but colors can also be
-                specified via a dictionary in the state_colors argument.
-            string: color all nodes with the color specified by the stirng
-            dict: color nodes based on the 'type' attribute of the node,
-                with the dictionary specifying the colours. For example,
-                if the type can be primal or dual, the dictionary should
-                be of the form:
+            attached to the node. If unavailable, color nodes black.
 
-                    {"primal": primal_color, "dual": dual_color}.
+            string: color all nodes with the color specified by the string
 
-        color_edges (bool):
+            tuple[str, dict]: color nodes based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
 
+                ``["state", {"GKP": "b", "p": "r"}]``
+
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
+
+        color_edges (bool or string or dict):
             True: color the edges based on the 'color' attribute
-                attached to the node. If unavailable, color nodes grey.
-            string: color all edges with the color specified by the stirng
-            dict: color edges based on the 'weight' attribute of the node,
-                with the dictionary specifying the colours. For example,
-                if the weight can be +1 or -1, the dictionary should
-                be of the form:
+            attached to the node. If unavailable, color nodes grey.
 
-                    {-1: minus_color, +1: plus_color}.
+            string: color all edges with the color specified by the stirng
+
+            tuple: color edges based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -186,69 +214,162 @@ def draw_EGraph(
         title (bool): if True, display the title, depending on the label.
             For default labels, the titles are converted from attribute
             name to plane English and capitalized.
-        legend (bool): if True and label is set to 'state', display
-            the state color legend.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
         show_axes (bool): if False, turn off the axes.
+        dimensions (tuple): Dimensions of the region that should be plotted.
+            Should be of the form:
+
+                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
+
+            If None, sets the dimensions to the smallest rectangular space
+            containing all the nodes.
 
     Returns:
-        A Matplotib Axes object.
+        tuple: Matplotib Figure and Axes.
     """
-    if state_colors is None:
-        state_colors = {}
 
-    dims = egraph.graph.get("dims")
-    xmax, ymax, zmax = dims
+    if dimensions is None:
+        mins = map(min, zip(*egraph.nodes))
+        maxs = map(max, zip(*egraph.nodes))
+
+        dimensions = zip(mins, maxs)
+
+    xlim, ylim, zlim = [list(lim) for lim in dimensions]
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
 
+    # set title
+    title_dict = {
+        "p_phase": "Phase error probabilities",
+        "p_phase_cond": "Conditional phase error probabilities",
+        "hom_val_p": "p-homodyne outcomes",
+        "hom_val_q": "q-homodyne outcomes",
+        "bit_val": "Bit values",
+        "weight": "Weights",
+        "index": "Indices",
+    }
+    name = title_dict.get(label, label)
+    if title and label:
+        ax.set_title(name)
+        ax.title.set_size(plot_params.get("axes.titlesize"))
+
+    # plot graph
+    ax = _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend)
+    ax = _plot_EGraph_edges(ax, egraph, color_edges)
+
+    # plot generalities
+    plt.xticks(range(xlim[0], xlim[1] + 1))
+    plt.yticks(range(zlim[0], zlim[1] + 1))
+    ax.set_zticks(range(ylim[0], ylim[1] + 1))
+
+    for lim in [xlim, ylim, zlim]:
+        if lim[0] == lim[1]:
+            lim[0] -= 1
+            lim[1] += 1
+
+    plt.xlim(xlim)
+    plt.ylim(zlim)
+    ax.set_zlim(ylim)
+
+    ax.set_xlabel("x", labelpad=15)
+    ax.set_ylabel("z", labelpad=15)
+    ax.set_zlabel("y", labelpad=15)
+    if not show_axes:
+        ax.axis("off")
+    plt.tight_layout(pad=5)
+    plt.draw()
+
+    return fig, ax
+
+
+def _plot_EGraph_edges(ax, egraph, color_edges):
+    """Draw the edges of the graph state represented by the EGraph.
+
+    Args:
+        ax (matplotlib.axes.Axes): the axes to draw the lines in
+        color_edges (bool or string or dict):
+
+            True: color the edges based on the 'color' attribute
+                attached to the node. If unavailable, color nodes grey.
+            string: color all edges with the color specified by the stirng
+            dict: color edges based on attribute and defined colour
+                string by providing a tuple with [attribute, color_dictionary],
+                for example: if the edge attribute "weight" can be +1 or -1,
+                the tuple should be of the form:
+                ``("weight", {-1: minus_color, +1: plus_color})``.
+
+    Returns:
+        A Matplotib Axes object.
+    """
+    # Plotting edges.
+    for edge in egraph.edges:
+        # Color edges based on `color_edges` choices (see docstring)
+        if isinstance(color_edges, str):
+            color = color_edges
+        elif isinstance(color_edges, tuple):
+            edge_attribute, color_dict = color_edges
+            if not (isinstance(edge_attribute, str) and isinstance(color_dict, dict)):
+                raise ValueError(
+                    "Inappropiate value for `color_edges` argument:"
+                    "Check that it complies with the type `tuple(str, dict)`,"
+                    "where the string corresponds to a valid edge attribute,"
+                    "the dictionary keys to valid attribute values and"
+                    "dictionary values to valid matplotlib color strings."
+                )
+            edge_property = egraph.edges[edge].get(edge_attribute)
+            color = color_dict.get(edge_property)
+        elif color_edges == True:
+            color = egraph.edges[edge].get("color") or "grey"
+        else:
+            color = "grey"
+
+        x1, z1, y1 = edge[0]
+        x2, z2, y2 = edge[1]
+        ax.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
+
+    return ax
+
+
+def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
+    """Draw the nodes of the graph state represented by the EGraph.
+
+    Args:
+        ax (matplotlib.axes.Axes): the axes to draw the points in
+        color_nodes (bool or string or dict): Options are:
+
+            True: color the nodes based on the 'color' attribute
+                attached to the node. If unavailable, color nodes black.
+            string: color all nodes with the color specified by the string
+            tuple[str, dict]: color nodes based on attribute and defined colour
+                string by providing a tuple with (attribute, color_dictionary),
+                for example: ``("state", {"GKP": "b", "p": "r"})``
+                will look at the "state" attribute of the node, and colour
+                according to the dictionary.
+
+        label (NoneType or string): plot values next to each node
+            associated with the node attribute label. For example,
+            to plot bit values, set label to "bit_val". If set to 'index',
+            it will plot the integer indices of the nodes.
+        name (bool): attribute name to display as title.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
+
+    Returns:
+        A Matplotib Axes object.
+    """
+
     if label:
-        title_dict = {
-            "p_phase": "Phase error probabilities",
-            "p_phase_cond": "Conditional phase error probabilities",
-            "hom_val_p": "p-homodyne outcomes",
-            "hom_val_q": "q-homodyne outcomes",
-            "bit_val": "Bit values",
-            "weight": "Weights",
-            "index": "Indices",
-        }
-        name = title_dict.get(label) if title_dict.get(label) else label
         n_uncomputed = 0
-        if title:
-            ax.set_title(name)
-            ax.title.set_size(plot_params.get("axes.titlesize"))
         if label == "index":
             indices = egraph.index_generator()
-
-    if color_nodes == "state":
-        handles = []
-        color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-        i = 0
-        for state in state_colors.keys():
-            color = state_colors.get(state)
-            if not color:
-                color = color_cycle[i]
-            line = mlines.Line2D([], [], color=color, marker=".", label=state)
-            handles += [line]
-            state_colors[state] = color
-            i += 1
 
     # Plotting points. y and z are swapped in the loops so that
     # z goes into the page; however, the axes labels are correct.
     for point in egraph.nodes:
         x, z, y = point
-
-        # Color nodes based on color_nodes if string, or based on
-        # color attribute if True; black otherwise.
-        if color_nodes == "state":
-            color = state_colors.get(egraph.nodes[point].get("state"))
-        elif isinstance(color_nodes, dict):
-            color = color_nodes.get(egraph.nodes[point].get("type"))
-        elif isinstance(color_nodes, str):
-            color = color_nodes
-        else:
-            color = egraph.nodes[point].get("color") if color_nodes else "k"
-
+        color = _get_node_color(egraph, color_nodes, point)
         ax.scatter(x, y, z, c=color)
 
         if label:
@@ -264,7 +385,6 @@ def draw_EGraph(
                     z,
                     value,
                     color="MediumBlue",
-                    # backgroundcolor="w",
                     zorder=2,
                 )
             else:
@@ -274,35 +394,48 @@ def draw_EGraph(
         message = "{} at {} node(s) have not yet been computed."
         print(message.format(name.lower(), n_uncomputed))
 
-    for edge in egraph.edges:
-
-        # Color edges based on color_edges if string, or based on
-        # color attribute if True; black otherwise.
-        if isinstance(color_edges, str):
-            color = color_edges
-        elif isinstance(color_edges, dict):
-            color = color_edges.get(egraph.edges[edge].get("weight"))
-        else:
-            color = egraph.edges[edge].get("color") if color_edges else "grey"
-
-        x1, z1, y1 = edge[0]
-        x2, z2, y2 = edge[1]
-        plt.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
-
-    if color_nodes == "state" and legend:
+    # Plotting nodes legend
+    if isinstance(color_nodes, tuple) and legend:
+        # these two lines are just a handy way to create a legend for
+        # the node colors and attributes by generating handles of empty lines
+        # with the label and color of the node property
+        handles = [
+            mlines.Line2D([], [], marker="o", linewidth=0, color=color, label=node_property)
+            for node_property, color in color_nodes[1].items()
+        ]
         ax.legend(handles=handles)
 
-    plt.xticks(range(0, 2 * xmax))
-    plt.yticks(range(0, 2 * zmax))
-    ax.set_zticks(range(0, 2 * ymax))
-    ax.set_xlabel("x", labelpad=15)
-    ax.set_ylabel("z", labelpad=15)
-    ax.set_zlabel("y", labelpad=15)
-    if not show_axes:
-        ax.axis("off")
-    plt.tight_layout(pad=5)
-    plt.draw()
-    return fig, ax
+    return ax
+
+
+def _get_node_color(egraph, color_nodes, point):
+    """Color nodes based on ``color_nodes`` arg:
+
+    - if `color_nodes` is a string use the string as color,
+    - using the attribute and color dict if `color_nodes` is a tuple(str,dict),
+    - or based on color attribute (when available) if `color_nodes` is bool and True;
+    - black otherwise.
+    """
+    if isinstance(color_nodes, str):
+        color = color_nodes
+    elif isinstance(color_nodes, tuple):
+        node_attribute, color_dict = color_nodes
+        if not (isinstance(node_attribute, str) and isinstance(color_dict, dict)):
+            raise ValueError(
+                "Inappropiate value for `color_nodes` argument:"
+                "Check that it complies with the type `tuple(str, dict)`,"
+                "where the string corresponds to a valid node attribute,"
+                "the dictionary keys to valid attribute values and"
+                "dictionary values to valid matplotlib color strings."
+            )
+        node_property = egraph.nodes[point].get(node_attribute)
+        color = color_dict.get(node_property)
+
+    elif color_nodes == True:
+        color = egraph.nodes[point].get("color") or "k"
+    else:
+        color = "k"
+    return color
 
 
 @mpl.rc_context(plot_params)
@@ -458,11 +591,10 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # Default drawing options.
     draw_dict = {
         "show_nodes": False,
-        "color_nodes": "state",
+        "color_nodes": ("state", {"p": None, "GKP": None}),
         "color_edges": "k",
         "label": None,
         "legend": True,
-        "state_colors": {"p": None, "GKP": None},
         "show_title": True,
         "show_axes": True,
         "label_stabilizers": True,
@@ -482,7 +614,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         egraph_args = [
             "color_nodes",
             "color_edges",
-            "state_colors",
             "label",
             "legend",
             "show_axes",
@@ -582,7 +713,8 @@ def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
 
     Keyword arguments:
         **kwargs: all other parameters are forwarded to
-            ```Poly3DColletion`` <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
+            ```Poly3DColletion``
+            <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
 
     Returs:
         Poly3DCollection: A collection of 3D polygons defining the cubes.
@@ -615,7 +747,7 @@ def _cuboid_data(origin, size=(1, 1, 1)):
 
 
 @mpl.rc_context(plot_params)
-def draw_recovery(ax, **kwargs):
+def add_recovery_drawing(ax, **kwargs):
     """Plot the recovery."""
     if kwargs.get("show_title"):
         ax.set_title("Syndrome and recovery")
@@ -648,6 +780,7 @@ def draw_recovery(ax, **kwargs):
                     c=np.random.rand(3),
                     linewidth=plot_params.get("lines.linewidth", None) * 0.9,
                 )
+
     return ax
 
 
@@ -656,6 +789,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     if drawing_opts is None:
         drawing_opts = {}
 
+    # Drawing the stabilizer graph
     G_stabilizer = getattr(code, ec + "_stab_graph")
     G_match = dec_objects.get("matching_graph")
     # An integer label for each node in the stabilizer and matching
@@ -674,15 +808,18 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
     label_edges = bool(drawing_opts.get("label_edges"))
     show_title = bool(drawing_opts.get("show_title"))
     # title = drawing_opts.get_title()
-    code.draw_stabilizer_graph(
+    fig1, ax1 = code.draw_stabilizer_graph(
         ec,
         title=ec.capitalize() + " stabilizer graph" if show_title else "",
         label_edges=label_edges,
         node_labels=node_labels,
     )
+
+    # Drawing the matching graph
+    fig2, ax2 = (None, None)
     if G_match:
         if len(G_match.graph):
-            G_match.draw(
+            fig2, ax2 = G_match.draw(
                 title=ec.capitalize() + " matching graph" if show_title else "",
                 label_edges=label_edges,
                 node_labels=node_labels,
@@ -690,6 +827,49 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
         else:
             print("\nMatching graph empty!\n")
 
-    _, ax = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
+    # Drawing the syndrome
+    fig3, ax3 = syndrome_plot(code, ec, drawing_opts=drawing_opts, index_dict=node_labels)
     if drawing_opts.get("show_recovery"):
-        draw_recovery(ax, show_title=drawing_opts.get("show_title"), **dec_objects)
+        ax3 = add_recovery_drawing(ax3, show_title=drawing_opts.get("show_title"), **dec_objects)
+
+    return (fig1, ax1), (fig2, ax2), (fig3, ax3)
+
+
+def to_pi_string(x, tex: bool = True, d=2):
+    """Convert x, a multiple of sqrt(pi)/2, to a pretty string.
+
+    If x is not a multiple of sqrt(pi)/2, return the unmodified string
+    of x with `d` integers after the decimal. If tex is True, add LaTeX
+    $ signs.
+    """
+    remainder = math.remainder(x, np.sqrt(np.pi) / 2)
+    if np.isclose(remainder, 0):
+        integer = round(x / (np.sqrt(np.pi) / 2))
+        pref = int(integer * ((1 - integer % 2) / 2 + integer % 2))
+        x_str = (not bool(round(x))) * "0" + bool(round(x)) * (
+            bool(tex) * "$"
+            + (not bool(1 + pref)) * "-"
+            + bool(1 - abs(pref)) * str(pref)
+            + r"\sqrt{\pi}"
+            + (integer % 2) * "/2"
+            + bool(tex) * "$"
+        )
+        return x_str
+    return f"{x:.{d}f}"
+
+
+class PiFormatter(Formatter):
+    """Formatter for axis-ticks containing multiples of sqrt(pi)/2."""
+
+    def __init__(self, tex: bool = True, d: int = 2):
+        """Initialize the formatter.
+
+        Args:
+            tex: Whether to use LaTeX formatting (i.e. adding $ around the string).
+            d: Number of decimals to use.
+        """
+        self.tex = tex
+        self.d = d
+
+    def __call__(self, x, pos=None):
+        return to_pi_string(x, tex=self.tex, d=self.d)

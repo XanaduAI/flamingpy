@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for the Union Find decoder."""
 
-# pylint: disable=too-many-function-args,no-self-use,unsubscriptable-object,consider-using-dict-items,too-few-public-methods,too-many-locals
+# pylint: disable=too-many-function-args,no-self-use,unsubscriptable-object,consider-using-dict-items,too-few-public-methods,too-many-locals,unused-argument,pointless-statement
 
 import itertools as it
 import random
@@ -295,7 +295,7 @@ class TestUnionFindFunctions:
             elif ec == "dual":
                 stabilizer_graph = enc_state[0].dual_stab_graph
             # Initializing the clusters based on erased edges and non-trivial syndrome
-            node_dict, cluster_trees, odd_clusters = initialize_cluster_trees(stabilizer_graph)
+            _, cluster_trees, _ = initialize_cluster_trees(stabilizer_graph)
 
             # Generate the erasure graph
             erasure_graph = rx.PyGraph()
@@ -387,31 +387,6 @@ class PeelingDecoder:
 
         spanning_forest = rx.PyGraph()
         spanning_forest.add_nodes_from(range(23))
-        node_to_index_dict = {
-            0: (0, 0, 0),
-            1: (2, 5, 0),
-            2: (3, 4, 0),
-            3: (3, 5, 0),
-            4: (3, 6, 0),
-            5: (4, 5, 0),
-            6: (4, 6, 0),
-            7: (5, 5, 0),
-            8: (5, 6, 0),
-            9: (5, 7, 0),
-            10: (6, 6, 0),
-            11: (7, 8, 0),
-            12: (7, 9, 0),
-            13: (7, 10, 0),
-            14: (7, 11, 0),
-            15: (8, 4, 0),
-            16: (8, 5, 0),
-            17: (8, 8, 0),
-            18: (8, 9, 0),
-            19: (8, 10, 0),
-            20: (8, 11, 0),
-            21: (9, 4, 0),
-            22: (9, 5, 0),
-        }
         # Add edges from the graph used in the slides of UF decoder demo
         # in QPU Decoder Session at FTQC HW Wkshp
         spanning_forest.add_edges_from(

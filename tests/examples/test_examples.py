@@ -14,9 +14,10 @@
 """Check that we can run all the example and benchmark files without showing
 the plots."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,unused-import
 
 import pytest
+from flamingpy.codes import alternating_polarity
 
 
 @pytest.mark.parametrize("noise", ["cv", "dv"])
@@ -51,9 +52,24 @@ def test_macro_reduce_example():
 @pytest.mark.parametrize("boundaries", ["periodic", "open"])
 def test_surface_code_example(boundaries):
     """Simple test for the surface_code module in flamingpy.examples."""
-    from flamingpy.examples.surface_code import surface_code
+    from flamingpy.examples.surface_code import illustrate_surface_code
 
     d = 2
     err = "primal"
     polarity = None
-    surface_code(d, boundaries, err, polarity, show=False)
+    illustrate_surface_code(d, boundaries, err, polarity, show=False)
+
+
+def test_lemon_benchmark():
+    """Simple test for the lemon module in flamingpy.benchmarks."""
+    from flamingpy.benchmarks import lemon
+
+
+def test_matching_benchmark():
+    """Simple test for the matching module in flamingpy.benchmarks."""
+    from flamingpy.benchmarks import matching
+
+
+def test_shortest_path_benchmark():
+    """Simple test for the shortest_path module in flamingpy.benchmarks."""
+    from flamingpy.benchmarks import shortest_path

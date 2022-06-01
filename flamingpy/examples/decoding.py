@@ -13,9 +13,12 @@
 # limitations under the License.
 """Example of instantiating, applying noise, decoding, recovering, and
 visualizing this procedure for the measurement-based surface code."""
+
+# pylint: disable=too-many-arguments,too-many-locals
+
 import matplotlib.pyplot as plt
 
-from flamingpy.codes import alternating_polarity, SurfaceCode
+from flamingpy.codes import SurfaceCode
 from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
 from flamingpy.noise import IidNoise
@@ -30,7 +33,6 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         distance=distance,
         ec=ec,
         boundaries=boundaries,
-        polarity=alternating_polarity,
     )
 
     # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
@@ -66,7 +68,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         decoder = {"outer": decoder}
 
     # Drawing options
-    node_colors = "state" if noise == "cv" else False
+    node_colors = ("state", {"GKP": "gold", "p": "blue"}) if noise == "cv" else True
     dw = {
         "show_nodes": True,
         "color_nodes": node_colors,

@@ -145,7 +145,7 @@ def RHG_graph(
     # plotting purposes.
     if np.size(dims) == 1:
         dims = (dims, dims, dims)
-    G = EGraph(dims=dims)
+    G = EGraph()
 
     # Dealing with boundaries.
     if isinstance(boundaries, str):
@@ -475,9 +475,9 @@ class SurfaceCode:
         edge_colors = "grey"
         if self.polarity is not None:
             if self.polarity.__name__ == "alternating_polarity":
-                edge_colors = {1: "b", -1: "r"}
+                edge_colors = ("weight", {1: "b", -1: "r"})
         default_opts = {
-            "color_nodes": {"primal": "k", "dual": "grey"},
+            "color_nodes": ("type", {"primal": "k", "dual": "grey"}),
             "color_edges": edge_colors,
         }
         updated_opts = {**default_opts, **kwargs}
