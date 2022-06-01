@@ -16,7 +16,7 @@ as well as the following Python packages for development purposes:
 * `cython <https://cython.org/>`_ >= 0.29.28
 * `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
 * `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
-* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (required only for Linux users)
+* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (optional, only for Linux users)
 * `networkx <https://networkx.org/>`_ >= 2.5
 * `NumPy <http://numpy.org/>`_ >= 1.21
 * `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
@@ -24,6 +24,7 @@ as well as the following Python packages for development purposes:
 * `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
 * `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
 * `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `setuptools <https://pypi.org/project/setuptools/>`_ >= 62.3.2
 * `scipy <https://scipy.org/>`_ >= 1.6
 * `thewalrus <https://the-walrus.readthedocs.io/en/latest/>`_ >= 0.19.0
 
@@ -52,6 +53,28 @@ and other requirements as stated in the above section can be installed via ``pip
 
     python -m pip install -r dev_requirements.txt
 
+Using MPI
+---------
+FamingPy's frontend simulator script, ``simulations.py``, now supports simple and highly-scalable MPI jobs through ``mpi4py``
+libraries in a non-intrusive manner. The users who do not have or want MPI, can run ``simulations.py`` single-threaded as
+per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many
+processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
+
+To setup FlamingPy's MPI dependencies on a linux system run
+
+.. code-block:: bash
+
+    sudo apt install libopenmpi-dev
+    python -m pip install mpi4py>=3.1.3
+
+and continue with the steps described in the following section.
+
+Then, MPI users on their local machines can simply run the following for a 4-processor job:
+
+.. code-block:: bash
+
+    mpirun -np 4 python flamingpy/simulations.py
+
 Installation from Source
 ------------------------
 
@@ -70,8 +93,8 @@ The purpose of the commands is as follows:
 * The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed).
 
 If you encountered a CMake error, you may need to (re-)install it through
-`conda install cmake` or other means before re-attempting the above. Furthermore,
-you may wish to try `conda install git`. For more detailed instructions and
+``conda install cmake``` or other means before re-attempting the above. Furthermore,
+you may wish to try ``conda install git```. For more detailed instructions and
 recommendations, including how to configure your environments, compilers and
 resolve errors, see our Frequently Encountered Errors page.
 
@@ -106,19 +129,4 @@ To obtain coverage, the ``pytest-cov`` plugin is needed.
 Documentation
 -------------
 
-Additional packages are required to build the documentation, as specified in
-``doc/dev_requirements.txt``. These packages can be installed using:
-
-.. code-block:: bash
-
-    pip install -r doc/dev_requirements.txt
-
-from the `doc` directory to then build the HTML documentation, run
-
-.. code-block:: bash
-
-    make html
-
-You may need to run ``make clean`` beforehand.
-
-The documentation can be found in the :file:`doc/_build/html/` directory.
+See :doc:`build_docs` for the details on how to build the HTML documentation.

@@ -63,14 +63,13 @@ Module relationships
     <style>
         .wrapper{
         width: 100%;
-        overflow-x:scroll;
+        overflow-x: scroll;
         white-space: nowrap;
         }
     </style>
 
-    <div class="wrapper">   
+    <div class="wrapper">
         <div class="text-center">
             <img src="../_static/packages_flamingpy.svg" width="280%"/>
         </div>
     </div>
-    
