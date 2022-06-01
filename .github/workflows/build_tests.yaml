@@ -26,6 +26,7 @@ jobs:
 
     env:
       USE_MPI: ${{ matrix.config.use_mpi }}
+      COVERAGE_FLAGS: "--cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95"
 
     steps:
       - uses: actions/checkout@v2
@@ -54,7 +55,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95
+          python -m pytest tests/ $COVERAGE_FLAGS -n auto
           if [ "$USE_MPI" == "mpi" ]; then
             mpirun -np 2 python flamingpy/simulations.py
           fi

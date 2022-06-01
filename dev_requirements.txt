@@ -10,6 +10,7 @@ pytest>=6.2
 pytest-cov>=3.0
 pytest-logger>=0.5.1
 pytest-mock>=3.6.1
+pytest-xdist>=2.5.0
 retworkx>=0.10.2
 setuptools>=62.3.2
 scipy>=1.6
