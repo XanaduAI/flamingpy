@@ -62,6 +62,9 @@ class CVLayer:
         else:
             self.egraph = code.graph
         self._N = len(self.egraph)
+        # Generate indices if not already done
+        self.egraph.index_generator()
+        self.to_points = self.egraph.to_points
 
         self._init_quads = None
         self._noise_cov = None
@@ -69,7 +72,6 @@ class CVLayer:
         self._perfect_inds = None
         self._sampling_order = None
         self._delta = None
-        self.to_points = None
 
         # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
@@ -88,9 +90,6 @@ class CVLayer:
         self._apply_state_labels()
 
     def _apply_state_labels(self):
-        self.egraph.index_generator()
-        self.to_points = self.egraph.to_points
-
         for psi in self._states:
             for ind in self._states[psi]:
                 self.egraph.nodes[self.to_points[ind]]["state"] = psi
