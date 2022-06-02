@@ -120,8 +120,9 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
         """Coordinates of all potential neighbours of green vertices."""
         return [(p[0], p[1], p[2] - displace), (p[0], p[1], p[2] + displace)]
 
-    # Polarity-dependent color function: blue for +1, red for -1.
-    color = lambda pol: ((pol + 1) // 2) * "b" + abs((pol - 1) // 2) * "r"
+    def color(pol):
+        """Polarity-dependent color function: blue for +1, red for -1."""
+        return ((pol + 1) // 2) * "b" + abs((pol - 1) // 2) * "r"
 
     if macronodes:
         lattice.macro_to_micro = {}
