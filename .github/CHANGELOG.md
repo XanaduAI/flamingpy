@@ -3,25 +3,26 @@
 ### New features since the last release
 
 * Node and edge coloring can now be done based on any attribute and personalized colors can be defined via a dictionary: [#32](https://github.com/XanaduAI/flamingpy/pull/32)(backward compatible)
- * The `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
+* The `EGraph` plot legend is not limited to the "state" attribute of the node but to any attribute.
 * The `dims` attribute of `EGraph` has been removed. Its function is replaced by the `dimensions` parameter that is passed to the `draw_EGraph` method. This method does not require the `EGraph` to have a `dims` attribute defined anymore. [#42](https://github.com/XanaduAI/flamingpy/pull/42)(backward incompatible)
 * Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI jobs through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters.
- MPI users on their local machines can simply run the following for a 4-processor job:
- `mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible)
+  MPI users on their local machines can simply run the following for a 4-processor job:
+  `mpirun -np 4 python flamingpy/simulations.py` [#47](https://github.com/XanaduAI/flamingpy/pull/47)(backward compatible)
 
 ### Bug fixes
+
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Improvements
 
 * Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
 * Improvements to the decoding example. [#51](https://github.com/XanaduAI/flamingpy/pull/44/files)
- * Rename function and add dosctring.
- * Decrease size of markers for plotting stabilizer nodes.
- * Improve way to scatter stabilizers via specifying indices.
+* Rename function and add dosctring.
+* Decrease size of markers for plotting stabilizer nodes.
+* Improve way to scatter stabilizers via specifying indices.
 * The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
- * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
- * `display_axes` is changed to `show_axes` for consistency.
+* This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+* `display_axes` is changed to `show_axes` for consistency.
 * `xlim` in `viz.plot_Z_err_cond` is adjusted to the relevant domain when plotting the central peak. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Both upper and lower axes limits can now be specified for `EGraph` plots. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
@@ -33,7 +34,7 @@
 ### Documentation changes
 
 * A pipeline for adding tutorials to the docs was introduced. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
- * To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
+* To add a tutorial, use the `gallery-item` directive from the `xanadu-sphinx-theme`. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
 * Brief tutorials about graph states and error correction were added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
@@ -50,7 +51,6 @@ This release contains contributions from (in alphabetical order):
 See full commit details ...
 
 ---
-
 
 ## Release 0.7.0a4 (current release)
 
@@ -70,9 +70,10 @@ See full commit details ...
 * The visuals produced by FlamingPy have been improved and made more consistent. [(#20)](https://github.com/XanaduAI/flamingpy/pull/20)
 
   * The figure, marker, line, label and title size, font family, and colormaps were modified.
-  When drawing, FlamingPy no longer changes the global matplotlib's `rcParams`,
-  but uses `rc_context` together with the plot parameters defined within the `viz` module.
-  To customize such parameters, simply use the following and every new plot produced by FlamingPy will use them accordingly.
+    When drawing, FlamingPy no longer changes the global matplotlib's `rcParams`,
+    but uses `rc_context` together with the plot parameters defined within the `viz` module.
+    To customize such parameters, simply use the following and every new plot produced by FlamingPy will use them accordingly.
+
   ```python
   from flamingpy.utils.viz import plot_params as fp_plot_params
   fp_plot_params["font.size"] = 20
@@ -81,9 +82,11 @@ See full commit details ...
   * Most functions in the visualization module now return the figure and axes for further processing.
   * The offered method to draw voxels is much clearer and has an easier-to-use API.
   * Graphs of decoding objects (stabilizer and matching graphs) are prettier and easier
-  to parse, thanks partially to a new function, `draw_curved_edges`.
+    to parse, thanks partially to a new function, `draw_curved_edges`.
   * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
+
 * Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [(#23)](https://github.com/XanaduAI/flamingpy/pull/23)
+
   * A function (`draw_decoding`) was added to the `viz` module and new options were added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial.
   * The appearance and presence of node labels (specifically the virtual nodes of the matching graph) were fixed.
   * The `label_cubes` argument was renamed to the more accurate `label_stabilizers`.
@@ -94,7 +97,7 @@ See full commit details ...
 * The _display_axes_ option has been changed to show_axes and title to show_title for consistency. The show_title option is now respected. [(#37)](https://github.com/XanaduAI/flamingpy/pull/37)
 * Decoders have become more organized and compartmentalized. [(#37)](https://github.com/XanaduAI/flamingpy/pull/37)
   * They are located in a directory with their name, with separate modules for decoding objects and algorithms. The latter -- `algos.py` -- contains
-  a cumulative decoding function combining all the steps. This function is imported by `decoder.py`, which is now a more general module.
+    a cumulative decoding function combining all the steps. This function is imported by `decoder.py`, which is now a more general module.
   * The `draw_decoding` function in `viz` can now accommodate plotting generic decoding procedures: a stabilizer graph, a syndrome plot, and the recovery.
 * Tests were added to improve the overall test coverage. These included changes to
   `.coveragerc` as well as the refactoring of some examples to allow for proper
@@ -123,7 +126,6 @@ This release contains contributions from (in alphabetical order):
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.6.1a3...v0.7.0a4).
 
-
 ## Release 0.6.1a3 (current release)
 
 ### New features since the last release
@@ -145,6 +147,7 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 ### Documentation changes
 
 * The new Xanadu Sphinx theme has been applied. Currently, most Xanadu OSS projects include their own version of the Xanadu Sphinx theme; however, the Xanadu Sphinx Theme repository is now publicly available and is the preferred way to access the Xanadu CSS theme and Sphinx directives. [(#17)](https://github.com/XanaduAI/flamingpy/pull/17)
+
   * Deleted the doc/xanadu_theme directory
   * Updated doc/requirements.txt and doc/conf.py to reference and use the (centralized) Xanadu Sphinx Theme.
   * Replaced the Quantum Error Correction, Install, and FAQ static HTML files with reST ones.
@@ -158,7 +161,6 @@ This release contains contributions from (in alphabetical order):
 [Mikhail Andrenkov](https://github.com/Mandrenkov), [Sebastián Duque Mesa](https://github.com/sduquemesa), Nariman Saadatmand, [Maxime Tremblay](https://github.com/maxtremblay), [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1...v0.6.1a3).
-
 
 ## Release 0.4.9a1
 
@@ -179,11 +181,11 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 ### Documentation changes
 
 * Making Documentation more usable and consistent with other Xanadu projects [(#5)](https://github.com/XanaduAI/flamingpy/pull/5):
-   * API details and inheritance diagrams should be now correctly displayed.
-   * "Edit on Github" links were fixed
-   * The general style and section structures made more consistent with the company requirements and other packages such as StrawberryFields.
-   * Fixed the documentation links in `README.md`
-   * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`.
+  * API details and inheritance diagrams should be now correctly displayed.
+  * "Edit on Github" links were fixed
+  * The general style and section structures made more consistent with the company requirements and other packages such as StrawberryFields.
+  * Fixed the documentation links in `README.md`
+  * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`.
 
 ### Contributors
 
@@ -192,7 +194,6 @@ This release contains contributions from (in alphabetical order):
 Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1).
-
 
 ## Release 0.4.6a1
 
@@ -204,7 +205,7 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 ### Improvements
 
 * More options for Installation from Source:
-`setup.py` was updated to provide a no-compilation option for only installing (purely) Python libraries and separate options to compile `cmake` and `cython`-based codes. See the new [README.md](https://github.com/XanaduAI/ft-stack/blob/mc-cpp/README.md) for details.
+  `setup.py` was updated to provide a no-compilation option for only installing (purely) Python libraries and separate options to compile `cmake` and `cython`-based codes. See the new [README.md](https://github.com/XanaduAI/ft-stack/blob/mc-cpp/README.md) for details.
 
 ### Contributors
 

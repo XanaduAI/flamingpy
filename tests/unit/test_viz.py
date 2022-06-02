@@ -14,12 +14,11 @@
 """"Unit tests for functions in the viz module."""
 
 import math
-from datetime import datetime
-
 import numpy as np
 import pytest
 from numpy.random import default_rng as rng
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
@@ -70,18 +69,14 @@ def test_draw_EGraph_Bell():
     assert a.get_xlim() == (-1, 1)
 
 
-#@pytest.mark.parametrize("d", int(rng(int_time).integers(low=2, high=6)))
+@pytest.mark.parametrize("d", rng(int_time).integers(low=2, high=5))
 def test_draw_EGraph_RHG(d):
     """Test for the draw method of EGraph of RHG lattice."""
-    d = 3
-    
-    # RHG EGraph
+    # Bell state EGraph
     RHG = SurfaceCode(d).graph
 
-    # Test for drawing of EGraph
-    test_label = "test"
-    include_title = False
-    f, a = draw_EGraph(RHG, title=include_title, label=test_label)
+    # Test for drawing the EGraph
+    f, a = draw_EGraph(RHG)
     plt.close()
 
     n_ticks = 2 * d - 1
@@ -91,5 +86,3 @@ def test_draw_EGraph_RHG(d):
 
     actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
     assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
-
-    assert a.get_title() == test_label*include_title
