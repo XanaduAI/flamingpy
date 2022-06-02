@@ -455,24 +455,36 @@ class SurfaceCode:
         end, the attributes {b}_bound_points are set, where b can be
         'primal' or 'dual'.
         """
+
         for ec in self.ec:
+            syndrome_coords = getattr(self, ec + "_syndrome_coords")
+
             if self.bound_str == "all_periodic":
-                setattr(self, ec + "_bound_points", [])
+                ec_bound_points = []
+            # TODO: check if the ec assignation for this two cases id correct with @ilan
+            elif self.bound_str.startswith("periodic"):
+                z_ec = self.boundaries[-1]
+                ec_bound_points = self._get_ec_bounds(z_ec, syndrome_coords)
             else:
-                dims = self.dims
-                syndrome_coords = getattr(self, ec + "_syndrome_coords")
-                bound_ind = np.where(self.boundaries == ec)[0][0]
-                plane_dict = {0: "x", 1: "y", 2: "z"}
+                ec_bound_points = self._get_ec_bounds(ec, syndrome_coords)
 
-                low_index = 0 if ec == "primal" else 1
-                low_bound_points = self.graph.slice_coords(plane_dict[bound_ind], low_index)
-                final_low_set = set(low_bound_points).intersection(syndrome_coords)
+            setattr(self, ec + "_bound_points", ec_bound_points)
 
-                high_index = 2 * dims[bound_ind] - 2 if ec == "primal" else 2 * dims[bound_ind] - 1
-                high_bound_points = self.graph.slice_coords(plane_dict[bound_ind], high_index)
-                final_high_set = set(high_bound_points).intersection(syndrome_coords)
+    def _get_ec_bounds(self, ec, syndrome_coords):
+        dims = self.dims
+        plane_dict = {0: "x", 1: "y", 2: "z"}
 
-                setattr(self, ec + "_bound_points", list(final_low_set) + list(final_high_set))
+        bound_ind = np.where(self.boundaries == ec)[0][0]
+        low_index = 0 if ec == "primal" else 1
+        high_index = 2 * dims[bound_ind] - 2 if ec == "primal" else 2 * dims[bound_ind] - 1
+
+        low_bound_points = self.graph.slice_coords(plane_dict[bound_ind], low_index)
+        final_low_set = set(low_bound_points).intersection(syndrome_coords)
+
+        high_bound_points = self.graph.slice_coords(plane_dict[bound_ind], high_index)
+        final_high_set = set(high_bound_points).intersection(syndrome_coords)
+
+        return list(final_low_set) + list(final_high_set)
 
     def draw(self, **kwargs):
         """Draw the cluster state with matplotlib.
