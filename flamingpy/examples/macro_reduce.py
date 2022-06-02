@@ -18,7 +18,7 @@ from flamingpy.decoders.decoder import correct
 from flamingpy.noise.cv import CVMacroLayer
 
 # Number of trials
-total = 100
+total = 10
 # Code parameters
 d = 3
 boundaries = "open"
