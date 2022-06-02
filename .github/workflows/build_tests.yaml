@@ -55,7 +55,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ $COVERAGE_FLAGS -n auto
+          python -m pytest tests/ $COVERAGE_FLAGS -n 1
           if [ "$USE_MPI" == "mpi" ]; then
             mpirun -np 2 python flamingpy/simulations.py
           fi

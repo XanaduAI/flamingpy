@@ -10,7 +10,7 @@ pytest>=6.2
 pytest-cov>=3.0
 pytest-logger>=0.5.1
 pytest-mock>=3.6.1
-pytest-xdist==1.29.0 # newer xdist versions currently have known issues with parameterized/data-driven tests 
+pytest-xdist>=1.29.0 
 retworkx>=0.10.2
 setuptools>=62.3.2
 scipy>=1.6
