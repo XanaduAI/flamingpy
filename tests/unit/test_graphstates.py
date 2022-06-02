@@ -85,10 +85,9 @@ class TestEGraph:
 
     def test_draw(self):
         E = random_graph[0]
-        f,a = E.draw()
+        f, a = E.draw()
         assert type(f) is matplotlib.figure.Figure
         assert type(a) is matplotlib.axes._subplots.Axes3DSubplot
-
 
 
 class TestCVHelpers:
