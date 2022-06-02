@@ -20,8 +20,8 @@ import pytest
 from flamingpy.codes import alternating_polarity
 
 
-@pytest.mark.parametrize("noise", ["cv", "dv"])
-@pytest.mark.parametrize("decoder", ["MWPM", "UF"])
+@pytest.mark.parametrize("noise", sorted(["cv", "dv"]))
+@pytest.mark.parametrize("decoder", sorted(["MWPM", "UF"]))
 def test_decoder_example(noise, decoder):
     """Simple test for the decoding module in flamingpy.examples."""
     from flamingpy.examples.decoding import decode_surface_code
@@ -49,7 +49,7 @@ def test_macro_reduce_example():
     from flamingpy.examples import macro_reduce
 
 
-@pytest.mark.parametrize("boundaries", ["periodic", "open"])
+@pytest.mark.parametrize("boundaries", sorted(["periodic", "open"]))
 def test_surface_code_example(boundaries):
     """Simple test for the surface_code module in flamingpy.examples."""
     from flamingpy.examples.surface_code import illustrate_surface_code

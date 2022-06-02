@@ -233,7 +233,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     return lattice
 
 
-@pytest.mark.parametrize("d", range(2, 5))
+@pytest.mark.parametrize("d", sorted(range(2, 5)))
 class TestRHGGraph:
     """Test the RHG_graph function."""
 
@@ -271,7 +271,7 @@ class TestRHGGraph:
 
         assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
-    @pytest.mark.parametrize("boundaries", all_bound_combs)
+    @pytest.mark.parametrize("boundaries", sorted(all_bound_combs))
     def test_polarity(self, d, boundaries):
         """Test whether lattice polarity behaves as expected."""
         RHG_reduced = RHG_graph(d, boundaries)

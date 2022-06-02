@@ -32,7 +32,7 @@ alpha_vals = np.append(np.random.rand(5) * 5, np.sqrt(np.pi))
 class TestGKPBinning:
     """Tests for GKP binning functions."""
 
-    @pytest.mark.parametrize("alpha", alpha_vals)
+    @pytest.mark.parametrize("alpha", sorted(alpha_vals))
     def test_integer_fractional(self, alpha):
         """Test that the integer and fractional part as obtained by
         integer_fractional matches that of constructed numbers."""
@@ -79,7 +79,7 @@ class TestPhaseProbs:
         assert np.allclose(low_probs, 0)
         assert np.allclose(high_probs, 0.5)
 
-    @pytest.mark.parametrize("use_hom_val", [False, True])
+    @pytest.mark.parametrize("use_hom_val", sorted([False, True]))
     def test_Z_err_cond(self, use_hom_val):
         """Test high-squeezing (low delta) regime."""
         for delta in (high_delta, low_delta):
