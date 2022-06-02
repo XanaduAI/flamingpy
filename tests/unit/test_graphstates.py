@@ -27,6 +27,7 @@ import scipy.sparse as sp
 from flamingpy.codes import SurfaceCode
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import CVLayer, SCZ_mat, SCZ_apply
+import matplotlib
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
@@ -85,7 +86,8 @@ class TestEGraph:
     def test_draw(self):
         E = random_graph[0]
         f,a = E.draw()
-        assert f is not None and a is not None
+        assert type(f) is matplotlib.figure.Figure
+        assert type(a) is matplotlib.axes._subplots.Axes3DSubplot
 
 
 
