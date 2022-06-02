@@ -17,6 +17,8 @@
 
 import string
 
+from datetime import datetime
+
 import networkx as nx
 import numpy as np
 import numpy.random as rand
@@ -133,6 +135,9 @@ class TestCVHelpers:
         assert np.allclose(new_quads, expected_quads)
 
 
+now=datetime.now()
+int_time = int(str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute))
+
 class TestCVLayer:
     """Tests for functions in the CVLayer class."""
 
@@ -163,7 +168,7 @@ class TestCVLayer:
         assert np.array_equal(G._states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
-    @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * rng().random() + 0.01, 1]))
+    @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * rng(int_time).random() + 0.01, 1]))
     def test_hybridize(self, random_graph, p_swap):
         """Test whether CVLayer properly populates p-squeezed states for non-
         zero p-swap."""

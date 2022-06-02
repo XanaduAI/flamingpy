@@ -15,6 +15,8 @@
 
 # pylint: disable=no-self-use
 
+from datetime import datetime
+
 import numpy as np
 from numpy import sqrt, pi
 from numpy.random import default_rng as rng
@@ -24,20 +26,22 @@ from flamingpy.cv.gkp import integer_fractional, GKP_binner, Z_err, Z_err_cond
 
 
 N = 50
+now=datetime.now()
+int_time = int(str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute))
 
 # Construct random numbers from an integer and fractional part.
-alpha_vals = np.append(np.random.rand(5) * 5, np.sqrt(np.pi))
+alpha_vals = np.append(rng(int_time).random(5) * 5, np.sqrt(np.pi))
 
 
 class TestGKPBinning:
     """Tests for GKP binning functions."""
 
-    @pytest.mark.parametrize("alpha", sorted(alpha_vals))
+    @pytest.mark.parametrize("alpha", alpha_vals)
     def test_integer_fractional(self, alpha):
         """Test that the integer and fractional part as obtained by
         integer_fractional matches that of constructed numbers."""
-        integers = rng().integers(-N // 2, N // 2, N)
-        fractions = (rng().random(N) - 0.5) * alpha
+        integers = rng(int_time).integers(-N // 2, N // 2, N)
+        fractions = (rng(int_time).random(N) - 0.5) * alpha
         numbers = integers * alpha + fractions
         int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(int_part == integers)

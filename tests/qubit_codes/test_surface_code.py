@@ -233,7 +233,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     return lattice
 
 
-@pytest.mark.parametrize("d", sorted(range(2, 5)))
+@pytest.mark.parametrize("d", range(2, 5))
 class TestRHGGraph:
     """Test the RHG_graph function."""
 
