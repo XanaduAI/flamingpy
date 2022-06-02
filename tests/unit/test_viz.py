@@ -72,10 +72,10 @@ def test_draw_EGraph_Bell():
 @pytest.mark.parametrize("d", rng(int_time).integers(low=2, high=5))
 def test_draw_EGraph_RHG(d):
     """Test for the draw method of EGraph of RHG lattice."""
-    # Bell state EGraph
+    # RHG EGraph
     RHG = SurfaceCode(d).graph
 
-    # Test for drawing the EGraph
+    # Test for drawing of EGraph
     test_label = "test"
     f, a = draw_EGraph(RHG, title=True, label=test_label)
     plt.close()
