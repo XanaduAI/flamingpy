@@ -13,7 +13,7 @@
 # limitations under the License.
 """Continuous-variable operations, states, and noise models."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-instance-attributes
 
 import numpy as np
 from numpy.random import default_rng
@@ -90,7 +90,6 @@ def SCZ_apply(adj, quads, one_shot=True):
     return new_quads
 
 
-# pylint: disable=too-many-instance-attributes
 class CVLayer:
     """A class for applying to an EGraph a physical layer of continuous-
     variable states.

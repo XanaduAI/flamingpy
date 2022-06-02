@@ -171,6 +171,7 @@ def draw_EGraph(
     title=False,
     legend=False,
     show_axes=True,
+    dimensions=None,
 ):
     """Draw the graph state represented by the EGraph.
 
@@ -209,13 +210,25 @@ def draw_EGraph(
         legend (bool): if True and color_nodes argument is a tuple(str, dict),
             display the a color legend with node attributes.
         show_axes (bool): if False, turn off the axes.
+        dimensions (tuple): Dimensions of the region that should be plotted.
+            Should be of the form:
+
+                ([xmin, xmax], [ymin, ymax], [zmin, zmax]).
+
+            If None, set the dimensions to the smallest rectangular space
+            containing all the nodes.
 
     Returns:
         tuple: Matplotib Figure and Axes.
     """
 
-    dims = egraph.graph.get("dims")
-    xmax, ymax, zmax = dims
+    if dimensions is None:
+        mins = map(min, zip(*egraph.nodes))
+        maxs = map(max, zip(*egraph.nodes))
+
+        dimensions = zip(mins, maxs)
+
+    xlim, ylim, zlim = [list(lim) for lim in dimensions]
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
@@ -240,9 +253,19 @@ def draw_EGraph(
     ax = _plot_EGraph_edges(ax, egraph, color_edges)
 
     # plot generalities
-    plt.xticks(range(0, 2 * xmax))
-    plt.yticks(range(0, 2 * zmax))
-    ax.set_zticks(range(0, 2 * ymax))
+    plt.xticks(range(xlim[0], xlim[1] + 1))
+    plt.yticks(range(zlim[0], zlim[1] + 1))
+    ax.set_zticks(range(ylim[0], ylim[1] + 1))
+
+    for lim in [xlim, ylim, zlim]:
+        if lim[0] == lim[1]:
+            lim[0] -= 1
+            lim[1] += 1
+
+    plt.xlim(xlim)
+    plt.ylim(zlim)
+    ax.set_zlim(ylim)
+
     ax.set_xlabel("x", labelpad=15)
     ax.set_ylabel("z", labelpad=15)
     ax.set_zlabel("y", labelpad=15)

@@ -2,7 +2,7 @@
 # A comma-separated list of package or module names from where C/C++ extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code
-extension-pkg-whitelist=numpy,scipy,networkx,flamingpy.cpp
+extension-pkg-whitelist=numpy,scipy,networkx,mpi4py.MPI,flamingpy.cpp
 ignore-patterns=doc/tutorials/*
 
 [TYPECHECK]
@@ -11,7 +11,6 @@ ignore-patterns=doc/tutorials/*
 # and thus existing member attributes cannot be deduced by static analysis. It
 # supports qualified module names, as well as Unix pattern matching.
 ignored-modules=numpy,scipy,networkx,retworkx
-generated-members=pandas
 
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set). This supports can work
