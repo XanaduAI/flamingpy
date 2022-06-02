@@ -18,10 +18,14 @@ import numpy as np
 import pytest
 from numpy.random import default_rng as rng
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import SurfaceCode
+
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
 
 
 def test_to_pi_string():
@@ -65,11 +69,10 @@ def test_draw_EGraph_Bell():
     assert a.get_xlim() == (-1, 1)
 
 
-@pytest.mark.parametrize("d_range", (2, 5))
-def test_draw_EGraph_RHG(d_range):
+@pytest.mark.parametrize("d", rng(int_time).randint(2, 5))
+def test_draw_EGraph_RHG(d):
     """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
-    d = np.random.randint(*d_range)
     RHG = SurfaceCode(d).graph
 
     # Test for drawing the EGraph
