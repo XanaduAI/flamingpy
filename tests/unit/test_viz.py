@@ -71,7 +71,7 @@ def test_draw_EGraph_Bell():
 
 
 #@pytest.mark.parametrize("d", rng(int_time).integers(low=2, high=5))
-def test_draw_EGraph_RHG(d):
+def test_draw_EGraph_RHG():
     d = 3
     """Test for the draw method of EGraph of RHG lattice."""
     # RHG EGraph
