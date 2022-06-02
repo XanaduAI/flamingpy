@@ -19,7 +19,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa)
+[Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark)
 
 See full commit details ...
 
