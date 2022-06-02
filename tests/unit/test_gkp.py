@@ -13,7 +13,6 @@
 # limitations under the License.
 """"Unit tests for GKP-specific functions in the GKP module."""
 
-# pylint: disable=no-self-use
 
 import numpy as np
 from numpy import sqrt, pi
