@@ -271,7 +271,7 @@ class TestRHGGraph:
 
         assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
-    @pytest.mark.parametrize("boundaries", sorted(all_bound_combs))
+    @pytest.mark.parametrize("boundaries", all_bound_combs)
     def test_polarity(self, d, boundaries):
         """Test whether lattice polarity behaves as expected."""
         RHG_reduced = RHG_graph(d, boundaries)
