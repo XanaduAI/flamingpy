@@ -292,17 +292,15 @@ class CVLayer:
 
     def hom_outcomes(self, inds=None, quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
-        N = self._N
         if inds is None:
-            inds = range(N)
+            inds = range(self._N)
         outcomes = [self.egraph.nodes[self.to_points[i]].get("hom_val_" + quad) for i in inds]
         return outcomes
 
     def bit_values(self, inds=None):
         """array: bit values associated with the p measurement."""
-        N = self._N
         if inds is None:
-            inds = range(N)
+            inds = range(self._N)
         bits = [self.egraph.nodes[self.to_points[i]].get("bit_val") for i in inds]
         return bits
 
@@ -388,7 +386,7 @@ class CVMacroLayer(CVLayer):
         index in the resulting list and every four indices thereafter correspond
         to star modes. The rest are 'planets' ('satellite' modes).
 
-        For each star, associate a 'body_index' of 1, and 2, 3, and 4 for the
+        For each star, associate a 'body_index' of 1, 2, 3, and 4 for the
         subsequent planets. Additionally, if a macronode contains at least one GKP
         state, label the reduced state as 'GKP' (otherwise 'p').
 
@@ -463,7 +461,7 @@ class CVMacroLayer(CVLayer):
         """Measure the syndrome of self.egraph.
 
         Conduct p-homodyne measurements on the stars (central modes) of
-        self.egrapg and q-homodyne measurements to the planets
+        self.egraph and q-homodyne measurements to the planets
         (satellite modes). This effectively conducts an X-basis measurement
         on the modes of the reduced lattice.
 
