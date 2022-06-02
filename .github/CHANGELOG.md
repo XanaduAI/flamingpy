@@ -16,12 +16,12 @@ MPI users on their local machines can simply run the following for a 4-processor
 
 * Improved codefactor score for several key files. [#51](https://github.com/XanaduAI/flamingpy/pull/51)
 * Improvements to the decoding example. [#51](https://github.com/XanaduAI/flamingpy/pull/44/files)
- * Rename function and add dosctring.
- * Decrease size of markers for plotting stabilizer nodes.
- * Improve way to scatter stabilizers via specifying indices.
+  * Rename function and add dosctring.
+  * Decrease size of markers for plotting stabilizer nodes.
+  * Improve way to scatter stabilizers via specifying indices.
 * The `draw_EGraph` function is refactored. [#32](https://github.com/XanaduAI/flamingpy/pull/32)
- * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
- * `display_axes` is changed to `show_axes` for consistency.
+  * This reduces the function complexity; ensures nodes, edges and general plot attributes are handled in different places; and allows for better code maintenance and readability.
+  * `display_axes` is changed to `show_axes` for consistency.
 * `xlim` in `viz.plot_Z_err_cond` is adjusted to the relevant domain when plotting the central peak. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Added `fig, ax` returns for the draw methods in `utils/viz.py`. [#33](https://github.com/XanaduAI/flamingpy/pull/33)
 * Both upper and lower axes limits can now be specified for `EGraph` plots. [#42](https://github.com/XanaduAI/flamingpy/pull/42)
@@ -33,7 +33,7 @@ MPI users on their local machines can simply run the following for a 4-processor
 ### Documentation changes
 
 * A pipeline for adding tutorials to the docs was introduced. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
- * To add a tutorial, use the `gallery-item` directive from the `xanadu-sphinx-theme`. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
+  * To add a tutorial, use the ``gallery-item`` directive from the ``xanadu-sphinx-theme``. For the new document to be compiled its filename should start with `run_`. Thumbnails will be created out of the first figure generated and stored in `tutorials/_out/images/thumb/` with the same name of the tutorial prepended with `sphx_glr_`.
 * Brief tutorials about graph states and error correction were added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * An introduction to quantum error correction was added. [#24](https://github.com/XanaduAI/flamingpy/pull/24)
 * Added UML class and package diagrams for `fp` page. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
@@ -50,6 +50,7 @@ This release contains contributions from (in alphabetical order):
 See full commit details ...
 
 ---
+
 
 
 ## Release 0.7.0a4 (current release)
