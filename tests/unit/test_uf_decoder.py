@@ -40,7 +40,7 @@ from flamingpy.decoders.unionfind.algos import (
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
+    [2, 3, 4], ["primal", "dual"], ["open", "all_periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
 )  # distance, ec, boundaries, delta, p_swap
 
 
@@ -62,7 +62,7 @@ def enc_state(request):
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01]
+    [2, 3, 4], ["primal", "dual"], ["open", "all_periodic"], [1, 0.1, 0.01]
 )  # distance, ec, boundaries, delta, p_swap
 
 
@@ -74,7 +74,7 @@ def enc_state_swap_list(request):
     """
     distance, ec, boundaries, delta = request.param
 
-    if boundaries == "periodic":
+    if boundaries == "all_periodic":
         psqueezed = random.sample(range(6 * distance**3), random.randint(1, 6 * distance**3))
     else:
         # Here:
