@@ -15,10 +15,11 @@
 
 import math
 import numpy as np
+from datetime import datetime
+
 import pytest
 from numpy.random import default_rng as rng
 import matplotlib.pyplot as plt
-from datetime import datetime
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
@@ -88,4 +89,4 @@ def test_draw_EGraph_RHG(d):
     actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
     assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
 
-    assert (a.get_title() == test_label)
+    assert a.get_title() == test_label
