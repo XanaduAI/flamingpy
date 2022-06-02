@@ -122,6 +122,7 @@ This release contains contributions from (in alphabetical order):
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.6.1a3...v0.7.0a4).
 
+
 ## Release 0.6.1a3 (current release)
 
 ### New features since the last release
@@ -157,10 +158,10 @@ This release contains contributions from (in alphabetical order):
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1...v0.6.1a3).
 
+
 ## Release 0.4.9a1
 
 ### Improvements since the last release
-
 
 * Relative paths cannot be used in README.md logos and were replaced with GitHub-hosted links. [(#5)](https://github.com/XanaduAI/flamingpy/pull/5)
 
@@ -177,11 +178,11 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 ### Documentation changes
 
 * Making Documentation more usable and consistent with other Xanadu projects [(#5)](https://github.com/XanaduAI/flamingpy/pull/5):
-  * API details and inheritance diagrams should be now correctly displayed.
-  * "Edit on Github" links were fixed
-  * The general style and section structures made more consistent with the company requirements and other packages such as StrawberryFields.
-  * Fixed the documentation links in `README.md`
-  * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`.
+   * API details and inheritance diagrams should be now correctly displayed.
+   * "Edit on Github" links were fixed
+   * The general style and section structures made more consistent with the company requirements and other packages such as StrawberryFields.
+   * Fixed the documentation links in `README.md`
+   * Minor updates to `doc/conf.py`, `doc/dev_requirements.txt`, and `doc/Makefile`.
 
 ### Contributors
 
