@@ -90,7 +90,7 @@ class TestCVHelpers:
     """Tests for CVLayer helper functions."""
 
     @pytest.mark.parametrize(
-        "sparse, expected_out_type", [(True, sp.coo_matrix), (False, np.ndarray)]
+        "sparse, expected_out_type", sorted([(True, sp.coo_matrix), (False, np.ndarray)])
     )
     def test_SCZ_mat_sparse_param(self, random_graph, sparse, expected_out_type):
         """Tests the SCZ_mat function outputs sparse or dense arrays."""
@@ -112,8 +112,8 @@ class TestCVHelpers:
             assert np.array_equal(mat[N:, :N], random_graph[1])
             assert np.array_equal(mat[N:, N:], np.identity(N))
 
-    @pytest.mark.parametrize("one_shot", [True, False])
-    @pytest.mark.parametrize("n", [1, 2])
+    @pytest.mark.parametrize("one_shot", sorted([True, False]))
+    @pytest.mark.parametrize("n", sorted([1, 2]))
     def test_SCZ_apply(self, random_graph, one_shot, n):
         """Test SCZ matrix application."""
 
@@ -163,7 +163,7 @@ class TestCVLayer:
         assert np.array_equal(G._states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
-    @pytest.mark.parametrize("p_swap", [0, 0.99 * rng().random() + 0.01, 1])
+    @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * rng().random() + 0.01, 1]))
     def test_hybridize(self, random_graph, p_swap):
         """Test whether CVLayer properly populates p-squeezed states for non-
         zero p-swap."""
@@ -196,7 +196,7 @@ class TestCVLayer:
         assert np.array_equal(G.p_inds, p_inds)
         assert np.array_equal(G.GKP_inds, gkp_inds)
 
-    @pytest.mark.parametrize("order", ["initial", "final", "two-step"])
+    @pytest.mark.parametrize("order", sorted(["initial", "final", "two-step"]))
     def test_apply_noise(self, random_graph, order):
         """Check _delta, _sampling_order attributes with default noise
         model."""
@@ -246,7 +246,7 @@ class TestCVLayer:
         assert np.isclose(np.max(G._init_quads[:n]), np.sqrt(np.pi))
         assert np.isclose(np.min(G._init_quads[:n]), 0)
 
-    @pytest.mark.parametrize("order", ["initial", "final"])
+    @pytest.mark.parametrize("order", sorted(["initial", "final"]))
     def test_measure_hom(self, random_graph, order):
         """Test closeness of average homodyne outcomes value to 0 in the all-
         GKP high-squeezing limit."""
