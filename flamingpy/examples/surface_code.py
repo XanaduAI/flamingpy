@@ -45,7 +45,7 @@ def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, 
     RHG_fig = RHG_code.draw()
 
     # Check edges between boundaries for periodic boundary conditions.
-    if boundaries == "periodic":
+    if boundaries == "all_periodic":
         all_boundaries = []
         for plane in ("x", "y", "z"):
             for i in (0, 2 * d - 1):

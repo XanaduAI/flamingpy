@@ -27,7 +27,7 @@ num_trials = 10
 
 # DV (outer) code
 distance = 3
-boundaries = "periodic"
+boundaries = "all_periodic"
 RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
 
 # Noise model parameters
