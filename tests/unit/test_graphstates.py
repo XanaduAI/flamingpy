@@ -82,8 +82,11 @@ class TestEGraph:
     # def test_slice_coords(self):
     # pass
 
-    # def test_draw(self):
-    # pass
+    def test_draw(self):
+        E = random_graph[0]
+        f,a = E.draw()
+        assert f is not None and a is not None
+
 
 
 class TestCVHelpers:
