@@ -106,8 +106,8 @@ if __name__ == "__main__":
     params = {
         # QEC code parameters
         "distance": 3,
-        # Boundaries ("open" or "periodic")
-        "boundaries": "open",
+        # Boundaries ("open", "periodic", "all_periodic")
+        "boundaries": "all_periodic",
         # Error complex ("primal" or "dual")
         "ec": "primal",
         # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
