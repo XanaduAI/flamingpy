@@ -81,7 +81,7 @@ See full commit details ...
   * Most functions in the visualization module now return the figure and axes for further processing.
   * The offered method to draw voxels is much clearer and has an easier-to-use API.
   * Graphs of decoding objects (stabilizer and matching graphs) are prettier and easier
-    to parse, thanks partially to a new function, `draw_curved_edges`.
+to parse, thanks partially to a new function, `draw_curved_edges`.
   * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
 * Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [(#23)](https://github.com/XanaduAI/flamingpy/pull/23)
   * A function (`draw_decoding`) was added to the `viz` module and new options were added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial.
