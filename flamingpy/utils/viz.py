@@ -26,7 +26,7 @@ To modify the plot parameters use, for example,
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements,too-many-locals
+# pylint: disable=too-many-statements,too-many-locals,too-many-arguments
 
 import itertools as it
 import math
@@ -162,7 +162,6 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     return fig, ax
 
 
-# pylint: disable=too-many-arguments
 @mpl.rc_context(plot_params)
 def draw_EGraph(
     egraph,
