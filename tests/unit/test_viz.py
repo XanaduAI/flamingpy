@@ -14,9 +14,9 @@
 """"Unit tests for functions in the viz module."""
 
 import math
-import numpy as np
 from datetime import datetime
 
+import numpy as np
 import pytest
 from numpy.random import default_rng as rng
 import matplotlib.pyplot as plt
@@ -70,9 +70,8 @@ def test_draw_EGraph_Bell():
     assert a.get_xlim() == (-1, 1)
 
 
-#@pytest.mark.parametrize("d", rng(int_time).integers(low=2, high=5))
-def test_draw_EGraph_RHG():
-    d = 3
+@pytest.mark.parametrize("d", int(rng(int_time).integers(low=2, high=6)))
+def test_draw_EGraph_RHG(d):
     """Test for the draw method of EGraph of RHG lattice."""
     # RHG EGraph
     RHG = SurfaceCode(d).graph
