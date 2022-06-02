@@ -70,8 +70,9 @@ def test_draw_EGraph_Bell():
     assert a.get_xlim() == (-1, 1)
 
 
-@pytest.mark.parametrize("d", rng(int_time).integers(low=2, high=5))
+#@pytest.mark.parametrize("d", rng(int_time).integers(low=2, high=5))
 def test_draw_EGraph_RHG(d):
+    d = 3
     """Test for the draw method of EGraph of RHG lattice."""
     # RHG EGraph
     RHG = SurfaceCode(d).graph
