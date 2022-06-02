@@ -14,11 +14,13 @@
 """"Unit tests for functions in the viz module."""
 
 import math
-import numpy as np
-import pytest
-from numpy.random import default_rng as rng
-import matplotlib.pyplot as plt
 from datetime import datetime
+
+import numpy as np
+from numpy.random import default_rng as rng
+import pytest
+import matplotlib.pyplot as plt
+
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
