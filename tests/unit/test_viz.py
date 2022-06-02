@@ -78,7 +78,8 @@ def test_draw_EGraph_RHG(d):
 
     # Test for drawing of EGraph
     test_label = "test"
-    f, a = draw_EGraph(RHG, title=True, label=test_label)
+    include_title = False
+    f, a = draw_EGraph(RHG, title=include_title, label=test_label)
     plt.close()
 
     n_ticks = 2 * d - 1
@@ -89,4 +90,4 @@ def test_draw_EGraph_RHG(d):
     actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
     assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
 
-    assert a.get_title() == test_label
+    assert a.get_title() == test_label*include_title
