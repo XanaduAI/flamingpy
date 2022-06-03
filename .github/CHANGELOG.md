@@ -1,9 +1,10 @@
 ## Release 0.8.2a5 (development release)
 
 ### New features since the last release
-
+* Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
 
 ### Bug fixes
+* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
 
 ### Improvements
@@ -12,13 +13,14 @@
 * Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
 
 ### Documentation changes
+* Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa)
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark)
 
 See full commit details ...
 
