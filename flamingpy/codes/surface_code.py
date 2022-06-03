@@ -90,6 +90,11 @@ def str_to_bound(bound_name):
 
         'open_primal': [primal, dual, dual]
         'open_dual': [primal, dual, primal]
+        'primal': [primal, primal, primal],
+        'dual': [dual, dual, dual],
+        'all_periodic': [periodic, periodic, periodic],
+        'periodic_primal': [periodic, periodic, primal],
+        'periodic_dual': [periodic, periodic, dual],
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
     """
     if not isinstance(bound_name, str):
