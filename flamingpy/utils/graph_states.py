@@ -54,7 +54,7 @@ def complete_graph(n):
 
 
 def linear_cluster(n):
-    """Returns an EGraph of a linear cluster state with n nodes."""
+    """Return an EGraph of a linear cluster state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 2:
