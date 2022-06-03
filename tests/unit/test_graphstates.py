@@ -84,7 +84,7 @@ class TestEGraph:
     # pass
 
     def test_draw(self):
-        E = random_graph[0]
+        E = EGraph(random_graph[0])
         f, a = E.draw()
         assert issubclass(type(f), matplotlib.figure.Figure)
         assert issubclass(type(a), matplotlib.axes.Axes)
