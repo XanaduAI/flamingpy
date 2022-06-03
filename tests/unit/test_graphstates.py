@@ -23,7 +23,6 @@ import numpy.random as rand
 from numpy.random import default_rng as rng
 import pytest
 import scipy.sparse as sp
-import matplotlib
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.codes.graphs import EGraph
