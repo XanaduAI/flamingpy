@@ -13,7 +13,6 @@
 # limitations under the License.
 """"Unit tests for GKP-specific functions in the GKP module."""
 
-# pylint: disable=no-self-use
 
 from datetime import datetime
 

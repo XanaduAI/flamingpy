@@ -23,7 +23,7 @@ jobs:
       - name: Get the latest pip and pylint
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install pylint
+          python3 -m pip install pylint==2.14.0
 
       - uses: actions/checkout@v2
 
