@@ -67,7 +67,7 @@ def linear_cluster(n):
 
 
 def ring_graph(n):
-    """Returns an EGraph of a ring graph state with n nodes."""
+    """Return an EGraph of a ring graph state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 3:
