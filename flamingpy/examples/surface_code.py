@@ -88,7 +88,7 @@ if __name__ == "__main__":
         "polarity": None,
         # polarity = alternating_polarity,
         # indices of stabilizer nodes to scatter
-        # "stabilizer_inds": [0, 3],
+        # "stabilizer_inds": [0, 3]
         "show": True,
     }
 
