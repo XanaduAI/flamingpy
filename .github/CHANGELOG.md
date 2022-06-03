@@ -36,7 +36,6 @@ See full commit details ...
   `mpirun -np 4 python flamingpy/simulations.py`
 
 ### Bug fixes
-
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
 
 ### Improvements
@@ -98,10 +97,9 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 * The visuals produced by FlamingPy have been improved and made more consistent. [#20](https://github.com/XanaduAI/flamingpy/pull/20)
 
   * The figure, marker, line, label and title size, font family, and colormaps were modified.
-    When drawing, FlamingPy no longer changes the global matplotlib's `rcParams`,
-    but uses `rc_context` together with the plot parameters defined within the `viz` module.
-    To customize such parameters, simply use the following and every new plot produced by FlamingPy will use them accordingly.
-
+  When drawing, FlamingPy no longer changes the global matplotlib's `rcParams`,
+  but uses `rc_context` together with the plot parameters defined within the `viz` module.
+  To customize such parameters, simply use the following and every new plot produced by FlamingPy will use them accordingly.
   ```python
   from flamingpy.utils.viz import plot_params as fp_plot_params
   fp_plot_params["font.size"] = 20
@@ -110,7 +108,7 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
   * Most functions in the visualization module now return the figure and axes for further processing.
   * The offered method to draw voxels is much clearer and has an easier-to-use API.
   * Graphs of decoding objects (stabilizer and matching graphs) are prettier and easier
-    to parse, thanks partially to a new function, `draw_curved_edges`.
+  to parse, thanks partially to a new function, `draw_curved_edges`.
   * `draw_adj` and `draw_SCZ` wrapper methods were added to `EGraph` and `CVLayer`, respectively.
 * Several changes were made to improve the visualization of MWPM decoding for debugging and understanding purposes. [#23](https://github.com/XanaduAI/flamingpy/pull/23)
   * A function (`draw_decoding`) was added to the `viz` module and new options were added to the `correct` function in the decoder module to be able to simply plot all decoding objects (stabilizer graph, matching graph, matching, syndrome plot) in sync with the actual error correction trial.
@@ -184,6 +182,7 @@ This release contains contributions from (in alphabetical order):
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.4.9a1...v0.6.1a3).
 
+
 ## Release 0.4.9a1
 
 ### Improvements since the last release
@@ -217,6 +216,7 @@ Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.4.6a1...v0.4.9a1).
 
+
 ## Release 0.4.6a1
 
 ### New features since the last private release
@@ -227,7 +227,7 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 ### Improvements
 
 * More options for Installation from Source:
-  `setup.py` was updated to provide a no-compilation option for only installing (purely) Python libraries and separate options to compile `cmake` and `cython`-based codes. See the new [README.md](https://github.com/XanaduAI/ft-stack/blob/mc-cpp/README.md) for details.
+`setup.py` was updated to provide a no-compilation option for only installing (purely) Python libraries and separate options to compile `cmake` and `cython`-based codes. See the new [README.md](https://github.com/XanaduAI/ft-stack/blob/mc-cpp/README.md) for details.
 
 ### Contributors
 
