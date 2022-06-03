@@ -1,5 +1,5 @@
-Installation
-============
+Full Installation
+=================
 
 .. raw:: html
 
