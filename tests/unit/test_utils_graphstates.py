@@ -71,7 +71,7 @@ def test_complete_graph_inputs():
 
 
 def test_ring_state():
-    """Check that a ring state with n qubits has n edges"""
+    """Check that a ring state with n qubits has n edges."""
     n = 15
     ring_graph = graph_states.ring_graph(n)
     assert ring_graph.number_of_edges() == n
