@@ -83,14 +83,6 @@ class TestEGraph:
     # def test_slice_coords(self):
     # pass
 
-    def test_draw(self):
-        """Tests the returned object of EGraph.draw of EGraph with one node."""
-        E = EGraph()
-        E.add_node((0, 0, 0))
-        f, a = E.draw()
-        assert issubclass(type(f), matplotlib.figure.Figure)
-        assert issubclass(type(a), matplotlib.axes.Axes)
-
 
 class TestCVHelpers:
     """Tests for CVLayer helper functions."""

@@ -19,8 +19,8 @@ from datetime import datetime
 import numpy as np
 from numpy.random import default_rng as rng
 import pytest
+import matplotlib
 import matplotlib.pyplot as plt
-
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
@@ -66,6 +66,15 @@ def test_draw_egraph_bell():
 
     assert len(a.get_xticks()) == 1
     assert a.get_xlim() == (-1, 1)
+
+
+def test_wrapper_draw_egraph():
+    """Tests the returned object of EGraph.draw of EGraph with one node."""
+    E = EGraph()
+    E.add_node((0, 0, 0))
+    f, a = E.draw()
+    assert issubclass(type(f), matplotlib.figure.Figure)
+    assert issubclass(type(a), matplotlib.axes.Axes)
 
 
 @pytest.mark.parametrize("d", (2, 3))
