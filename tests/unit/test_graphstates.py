@@ -86,8 +86,8 @@ class TestEGraph:
     def test_draw(self):
         E = random_graph[0]
         f, a = E.draw()
-        assert type(f) is matplotlib.figure.Figure
-        assert type(a) is matplotlib.axes._subplots.Axes3DSubplot
+        assert issubclass(type(f), matplotlib.figure.Figure)
+        assert issubclass(type(a), matplotlib.axes.Axes)
 
 
 class TestCVHelpers:
