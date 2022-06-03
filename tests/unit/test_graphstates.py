@@ -83,7 +83,7 @@ class TestEGraph:
     # def test_slice_coords(self):
     # pass
 
-    def test_draw(self):
+    def test_draw(self, random_graph):
         E = EGraph(random_graph[0])
         f, a = E.draw()
         assert issubclass(type(f), matplotlib.figure.Figure)
