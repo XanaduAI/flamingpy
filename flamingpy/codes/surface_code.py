@@ -131,8 +131,8 @@ def RHG_graph(
 
                 'open_primal': primal, dual, dual
                 'open_dual':,  primal, dual, primal
-                'periodic_primal': "periodic", "periodic", "primal"
-                'periodic_dual':,  "periodic", "periodic", "dual"
+                'periodic_primal': periodic, periodic, primal
+                'periodic_dual': periodic, periodic, dual
                 '{b}': b, b, b,
                 ['{b1}', '{b2}', '{b3}']: b1, b2, b3,
 
