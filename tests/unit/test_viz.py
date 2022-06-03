@@ -14,7 +14,6 @@
 """"Unit tests for functions in the viz module."""
 
 import math
-from datetime import datetime
 
 import numpy as np
 from numpy.random import default_rng as rng
@@ -22,7 +21,7 @@ import pytest
 import matplotlib.pyplot as plt
 
 
-import flamingpy.utils.viz as viz
+from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import SurfaceCode
 
