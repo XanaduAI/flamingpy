@@ -18,7 +18,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa)
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa)
 
 See full commit details ...
 
