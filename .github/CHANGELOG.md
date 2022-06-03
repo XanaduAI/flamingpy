@@ -9,6 +9,8 @@
 ### Improvements
 * Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
  * pylint no-self-use tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)). 
+* Unit tests have been re-grouped in individual sub-dirs inside `tests/` based on error correction and software layers. This helps manage and target each test unit. [#70](https://github.com/XanaduAI/flamingpy/pull/70)  
+* `build_tests.yaml` workflow now supports executing unit tests in parallel using `pytest-xdist` package. GitHub runners have at least 2 processors, which helps speed up the pytest blocks by ~1.5 times in practice. [#70](https://github.com/XanaduAI/flamingpy/pull/70)
 
 ### Documentation changes
 
