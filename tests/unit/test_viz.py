@@ -60,7 +60,7 @@ def test_draw_egraph_bell():
     bell_state.add_edge(*edge, color="MidnightBlue")
 
     # Test for drawing the EGraph
-    f, a = draw_EGraph(bell_state)
+    _, a = draw_EGraph(bell_state)
     plt.close()
 
     assert len(a.get_xticks()) == 1
@@ -74,7 +74,7 @@ def test_draw_egraph_rhg(d):
     RHG = SurfaceCode(d).graph
 
     # Test for drawing the EGraph
-    f, a = draw_EGraph(RHG)
+    _, a = draw_EGraph(RHG)
     plt.close()
 
     n_ticks = 2 * d - 1
