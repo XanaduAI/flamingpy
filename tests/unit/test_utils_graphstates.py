@@ -17,7 +17,7 @@ from flamingpy.utils import graph_states
 
 
 def test_star_graph():
-    """Check that star state with n qubits has n-1 edges"""
+    """Check that the star graph state with n qubits has n-1 edges."""
     n = 10
     star_state = graph_states.star_graph(n)
     assert star_state.number_of_edges() == (n - 1)
@@ -43,7 +43,7 @@ def test_star_graph_inputs():
 
 
 def test_complete_graph():
-    """Check that complete graph state with n qubits has n(n-1)/2 edges"""
+    """Check that a complete graph state with n qubits has n(n-1)/2 edges."""
     n = 15
     complete_graph = graph_states.complete_graph(n)
     assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
@@ -127,7 +127,7 @@ def test_linear_state_inputs():
 
 
 def test_bell_state():
-    """Check that the bell state generates"""
+    """Check that the Bell state properly generates."""
     bell = graph_states.bell()
     assert bell.number_of_edges() == 1
     assert bell.number_of_nodes() == 2
