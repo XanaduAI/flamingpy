@@ -8,6 +8,7 @@
 
 ### Improvements
 
+* Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
 
 ### Documentation changes
 
@@ -51,7 +52,6 @@ See full commit details ...
 * Pandas is removed from the package requirements. [#63](https://github.com/XanaduAI/flamingpy/pull/63)
 * `mpi4py` is **not** a development requirement for Linux users. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
 * CI test check that code executes properly with and without MPI. [#64](https://github.com/XanaduAI/flamingpy/pull/64)
-* Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
 
 ### Documentation changes
 
