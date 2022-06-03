@@ -34,7 +34,7 @@ See full commit details ...
 * Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI jobs through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters. [#47](https://github.com/XanaduAI/flamingpy/pull/47) (backward compatible)
   * MPI users on their local machines can simply run the following for a 4-processor job:
   `mpirun -np 4 python flamingpy/simulations.py`
-* Added `fig, ax` returns for the draw methods in `utils/viz.py`.
+* Added `fig, ax` returns for the draw methods in `utils/viz.py`.  [#55](https://github.com/XanaduAI/flamingpy/pull/55)
 
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
