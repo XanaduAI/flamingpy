@@ -84,7 +84,7 @@ def test_ring_state():
 
 
 def test_ring_state_inputs():
-    """Checks that invalid inputs in ring_state raise a warning"""
+    """Check that invalid inputs to ring_state raise a warning."""
     n = 2
     with pytest.raises(Exception) as e:
         graph_states.ring_graph(n)
