@@ -112,7 +112,7 @@ def test_linear_state():
 
 
 def test_linear_state_inputs():
-    """Checks that invalid inputs in linear_state raise a warning"""
+    """Check that invalid inputs to linear_cluster raise a warning."""
     n = 1
     with pytest.raises(Exception) as e:
         graph_states.linear_cluster(n)
