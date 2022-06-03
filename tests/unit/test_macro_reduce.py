@@ -13,7 +13,6 @@
 # limitations under the License.
 """Unit tests for passive_construct module members."""
 
-# pylint: disable=no-self-use
 
 import itertools as it
 
