@@ -16,74 +16,76 @@
 import numpy as np
 from flamingpy.codes.graphs import EGraph
 
+def _generic_graph_state(n):
+    """Return an EGraph when n is an integer and n>=1."""
+    if not isinstance(n, int):
+        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
+    if n < 1:
+        raise ValueError(f"Input n should be 1 or larger. Current value is {n}")
+    return EGraph()
 
 def star_graph(n):
     """Return an EGraph of a star graph state with n nodes."""
-    if not isinstance(n, int):
-        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
-    if n < 2:
-        raise ValueError(f"Input n should be 2 or larger. Current value is {n}")
-    star_graph_state = EGraph()
-    for i in range(n - 1):
-        degs = 2 * np.pi * i / (n - 1)
-        x, y = np.cos(degs), np.sin(degs)
-        edge = [(0, 0, 0), (x, y, 0)]
-        star_graph_state.add_edge(*edge)
+    star_graph_state = _generic_graph_state(n)
+    if n==1:
+        star_graph_state.add_node((0, 0, 0))
+    else:
+        for i in range(n - 1):
+            degs = 2 * np.pi * i / (n - 1)
+            x, y = np.cos(degs), np.sin(degs)
+            edge = [(0, 0, 0), (x, y, 0)]
+            star_graph_state.add_edge(*edge)
     return star_graph_state
 
 
 def complete_graph(n):
     """Return an EGraph of a complete graph state with n nodes."""
-    if not isinstance(n, int):
-        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
-    if not n >= 3:
-        raise ValueError(f"Input n should be 3 or larger. Current value is {n}")
-    complete_graph = EGraph()
-    for i in range(n):
-        degs = 2 * np.pi * i / n
-        x, y = np.cos(degs), np.sin(degs)
-        for j in range(1, n - i):
-            degs_adj = 2 * np.pi * j / n + degs
-            x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
-            edge = [
-                (float(round(x, 5)), float(round(y, 5)), 0),
-                (float(round(x_adj, 5)), float(round(y_adj, 5)), 0),
-            ]
-            complete_graph.add_edge(*edge)
+    complete_graph = _generic_graph_state(n)
+    if n==1:
+        complete_graph.add_node((0, 0, 0))
+    else:
+        for i in range(n):
+            degs = 2 * np.pi * i / n
+            x, y = np.cos(degs), np.sin(degs)
+            for j in range(1, n - i):
+                degs_adj = 2 * np.pi * j / n + degs
+                x_adj, y_adj = np.cos(degs_adj), np.sin(degs_adj)
+                edge = [
+                    (float(round(x, 5)), float(round(y, 5)), 0),
+                    (float(round(x_adj, 5)), float(round(y_adj, 5)), 0),
+                ]
+                complete_graph.add_edge(*edge)
     return complete_graph
 
 
 def linear_cluster(n):
     """Return an EGraph of a linear cluster state with n nodes."""
-    if not isinstance(n, int):
-        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
-    if not n >= 2:
-        raise ValueError(f"Input n should be 2 or larger. Current value is {n}")
-    linear_state = EGraph()
-    for i in range(n - 1):
-        edge = [(i, 0, 0), (i + 1, 0, 0)]
-        linear_state.add_edge(*edge)
+    linear_state = _generic_graph_state(n)
+    if n==1:
+        linear_state.add_node((0, 0, 0))
+    else:
+        for i in range(n - 1):
+            edge = [(i, 0, 0), (i + 1, 0, 0)]
+            linear_state.add_edge(*edge)
     return linear_state
 
 
 def ring_graph(n):
     """Return an EGraph of a ring graph state with n nodes."""
-    if not isinstance(n, int):
-        raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
-    if not n >= 3:
-        raise ValueError(f"Input n should be 3 or larger. Current value is {n}")
-    ring_graph_state = EGraph()
-    x, y = np.cos(0), np.sin(0)
-    for i in range(1, n + 1):
-        degs = 2 * np.pi * i / (n)
-        x_next, y_next = np.cos(degs), np.sin(degs)
-        edge = [
-            (float(round(x, 5)), float(round(y, 5)), 0),
-            (float(round(x_next, 5)), float(round(y_next, 5)), 0),
-        ]
-        ring_graph_state.add_edge(*edge)
-        x, y = x_next, y_next
-
+    ring_graph_state = _generic_graph_state(n)
+    if n==1:
+        ring_graph_state.add_node((0, 0, 0))
+    else:
+        x, y = np.cos(0), np.sin(0)
+        for i in range(1, n + 1):
+            degs = 2 * np.pi * i / (n)
+            x_next, y_next = np.cos(degs), np.sin(degs)
+            edge = [
+                (float(round(x, 5)), float(round(y, 5)), 0),
+                (float(round(x_next, 5)), float(round(y_next, 5)), 0),
+            ]
+            ring_graph_state.add_edge(*edge)
+            x, y = x_next, y_next
     return ring_graph_state
 
 

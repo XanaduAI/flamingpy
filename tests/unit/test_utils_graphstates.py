@@ -22,18 +22,18 @@ def test_star_graph():
     star_state = graph_states.star_graph(n)
     assert star_state.number_of_edges() == (n - 1)
 
-    n = 5
+    n = 1
     star_state = graph_states.star_graph(n)
     assert star_state.number_of_edges() == (n - 1)
 
 
 def test_star_graph_inputs():
-    """Checks that invalid inputs in star_graph raise a warning"""
-    n = 1
+    """Check that invalid inputs in star_graph raise a warning"""
+    n = 0
     with pytest.raises(Exception) as e:
         graph_states.star_graph(n)
     assert e.type == ValueError
-    assert "Input n should be 2 or larger." in str(e.value)
+    assert "Input n should be 1 or larger." in str(e.value)
 
     n = "hello"
     with pytest.raises(Exception) as e:
@@ -49,19 +49,19 @@ def test_complete_graph():
     assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
     assert complete_graph.number_of_nodes() == n
 
-    n = 5
+    n = 1
     complete_graph = graph_states.complete_graph(n)
     assert complete_graph.number_of_edges() == (n * (n - 1) / 2)
     assert complete_graph.number_of_nodes() == n
 
 
 def test_complete_graph_inputs():
-    """Checks that invalid inputs in complete_graph raise a warning"""
-    n = 2
+    """Check that invalid inputs in complete_graph raise a warning"""
+    n = 0
     with pytest.raises(Exception) as e:
         graph_states.complete_graph(n)
     assert e.type == ValueError
-    assert "Input n should be 3 or larger." in str(e.value)
+    assert "Input n should be 1 or larger." in str(e.value)
 
     n = "hello"
     with pytest.raises(Exception) as e:
@@ -77,19 +77,19 @@ def test_ring_state():
     assert ring_graph.number_of_edges() == n
     assert ring_graph.number_of_nodes() == n
 
-    n = 5
+    n = 1
     ring_graph = graph_states.ring_graph(n)
-    assert ring_graph.number_of_edges() == n
-    assert ring_graph.number_of_nodes() == n
+    assert ring_graph.number_of_edges() == 0
+    assert ring_graph.number_of_nodes() == 1
 
 
 def test_ring_state_inputs():
     """Check that invalid inputs to ring_state raise a warning."""
-    n = 2
+    n = 0
     with pytest.raises(Exception) as e:
         graph_states.ring_graph(n)
     assert e.type == ValueError
-    assert "Input n should be 3 or larger." in str(e.value)
+    assert "Input n should be 1 or larger." in str(e.value)
 
     n = "hello"
     with pytest.raises(Exception) as e:
@@ -105,7 +105,7 @@ def test_linear_state():
     assert linear_cluster.number_of_edges() == n - 1
     assert linear_cluster.number_of_nodes() == n
 
-    n = 5
+    n = 1
     linear_cluster = graph_states.linear_cluster(n)
     assert linear_cluster.number_of_edges() == n - 1
     assert linear_cluster.number_of_nodes() == n
@@ -113,11 +113,11 @@ def test_linear_state():
 
 def test_linear_state_inputs():
     """Check that invalid inputs to linear_cluster raise a warning."""
-    n = 1
+    n = 0
     with pytest.raises(Exception) as e:
         graph_states.linear_cluster(n)
     assert e.type == ValueError
-    assert "Input n should be 2 or larger." in str(e.value)
+    assert "Input n should be 1 or larger." in str(e.value)
 
     n = "hello"
     with pytest.raises(Exception) as e:
