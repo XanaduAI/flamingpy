@@ -23,11 +23,11 @@ import numpy.random as rand
 from numpy.random import default_rng as rng
 import pytest
 import scipy.sparse as sp
+import matplotlib
 
 from flamingpy.codes import SurfaceCode
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import CVLayer, SCZ_mat, SCZ_apply
-import matplotlib
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
@@ -84,6 +84,7 @@ class TestEGraph:
     # pass
 
     def test_draw(self, random_graph):
+        """Tests the returned object of EGraph.draw of a random graph."""
         E = EGraph(random_graph[0])
         f, a = E.draw()
         assert issubclass(type(f), matplotlib.figure.Figure)
