@@ -84,8 +84,9 @@ class TestEGraph:
     # pass
 
     def test_draw(self):
-        """Tests the returned object of EGraph.draw of a empty EGraph."""
+        """Tests the returned object of EGraph.draw of EGraph with one node."""
         E = EGraph()
+        E.add_node((0, 0, 0))
         f, a = E.draw()
         assert issubclass(type(f), matplotlib.figure.Figure)
         assert issubclass(type(a), matplotlib.axes.Axes)
