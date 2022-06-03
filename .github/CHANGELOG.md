@@ -7,8 +7,9 @@
 
 
 ### Improvements
-
-* Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
+* Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
+ * pylint no-self-use tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)). 
+ * Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
 
 ### Documentation changes
 
@@ -16,6 +17,8 @@
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+[Sebastián Duque Mesa](https://github.com/sduquemesa)
 
 See full commit details ...
 
