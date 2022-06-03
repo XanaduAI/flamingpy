@@ -16,6 +16,7 @@
 import numpy as np
 from flamingpy.codes.graphs import EGraph
 
+
 def _generic_graph_state(n):
     """Return an EGraph when n is an integer and n>=1."""
     if not isinstance(n, int):
@@ -24,10 +25,11 @@ def _generic_graph_state(n):
         raise ValueError(f"Input n should be 1 or larger. Current value is {n}")
     return EGraph()
 
+
 def star_graph(n):
     """Return an EGraph of a star graph state with n nodes."""
     star_graph_state = _generic_graph_state(n)
-    if n==1:
+    if n == 1:
         star_graph_state.add_node((0, 0, 0))
     else:
         for i in range(n - 1):
@@ -41,7 +43,7 @@ def star_graph(n):
 def complete_graph(n):
     """Return an EGraph of a complete graph state with n nodes."""
     complete_graph = _generic_graph_state(n)
-    if n==1:
+    if n == 1:
         complete_graph.add_node((0, 0, 0))
     else:
         for i in range(n):
@@ -61,7 +63,7 @@ def complete_graph(n):
 def linear_cluster(n):
     """Return an EGraph of a linear cluster state with n nodes."""
     linear_state = _generic_graph_state(n)
-    if n==1:
+    if n == 1:
         linear_state.add_node((0, 0, 0))
     else:
         for i in range(n - 1):
@@ -73,7 +75,7 @@ def linear_cluster(n):
 def ring_graph(n):
     """Return an EGraph of a ring graph state with n nodes."""
     ring_graph_state = _generic_graph_state(n)
-    if n==1:
+    if n == 1:
         ring_graph_state.add_node((0, 0, 0))
     else:
         x, y = np.cos(0), np.sin(0)
