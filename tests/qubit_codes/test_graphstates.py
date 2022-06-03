@@ -135,8 +135,9 @@ class TestCVHelpers:
         assert np.allclose(new_quads, expected_quads)
 
 
-now=datetime.now()
-int_time = int(str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute))
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+
 
 class TestCVLayer:
     """Tests for functions in the CVLayer class."""
