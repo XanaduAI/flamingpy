@@ -21,7 +21,7 @@ def star_graph(n):
     """Return an EGraph of a star graph state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
-    if not n >= 2:
+    if n < 2:
         raise ValueError(f"Input n should be 2 or larger. Current value is {n}")
     star_graph_state = EGraph()
     for i in range(n - 1):
