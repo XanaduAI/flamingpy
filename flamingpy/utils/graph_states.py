@@ -18,7 +18,7 @@ from flamingpy.codes.graphs import EGraph
 
 
 def star_graph(n):
-    """Returns an EGraph of a star graph state with n nodes."""
+    """Return an EGraph of a star graph state with n nodes."""
     if not isinstance(n, int):
         raise ValueError(f"Input n should be an integer. Current type is {type(n)}")
     if not n >= 2:
