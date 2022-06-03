@@ -90,11 +90,11 @@ def str_to_bound(bound_name):
 
         'open_primal': [primal, dual, dual]
         'open_dual': [primal, dual, primal]
-        'primal': [primal, primal, primal],
-        'dual': [dual, dual, dual],
-        'all_periodic': [periodic, periodic, periodic],
-        'periodic_primal': [periodic, periodic, primal],
-        'periodic_dual': [periodic, periodic, dual],
+        'primal': [primal, primal, primal]
+        'dual': [dual, dual, dual]
+        'all_periodic': [periodic, periodic, periodic]
+        'periodic_primal': [periodic, periodic, primal]
+        'periodic_dual': [periodic, periodic, dual]
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
     """
     if not isinstance(bound_name, str):
@@ -134,10 +134,13 @@ def RHG_graph(
             dual = rough, to align with surface code terminology.
             Available choices in the order x, y, z are:
 
-                'open_primal': primal, dual, dual
-                'open_dual':,  primal, dual, primal
-                'periodic_primal': periodic, periodic, primal
-                'periodic_dual': periodic, periodic, dual
+                'open_primal': [primal, dual, dual]
+                'open_dual': [primal, dual, primal]
+                'primal': [primal, primal, primal]
+                'dual': [dual, dual, dual]
+                'all_periodic': [periodic, periodic, periodic]
+                'periodic_primal': [periodic, periodic, primal]
+                'periodic_dual': [periodic, periodic, dual]
                 '{b}': b, b, b,
                 ['{b1}', '{b2}', '{b3}']: b1, b2, b3,
 
