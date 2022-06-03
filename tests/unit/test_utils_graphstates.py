@@ -99,7 +99,7 @@ def test_ring_state_inputs():
 
 
 def test_linear_state():
-    """Check that a linear state with n qubits has n-1 edges"""
+    """Check that a linear cluster state with n qubits has n-1 edges."""
     n = 15
     linear_cluster = graph_states.linear_cluster(n)
     assert linear_cluster.number_of_edges() == n - 1
