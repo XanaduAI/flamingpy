@@ -26,6 +26,7 @@ from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import SurfaceCode
 
+
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
     # Test +- sqrt(pi) and sqrt(pi)/2.
@@ -67,7 +68,7 @@ def test_draw_egraph_bell():
     assert a.get_xlim() == (-1, 1)
 
 
-@pytest.mark.parametrize("d", (2,3))
+@pytest.mark.parametrize("d", (2, 3))
 def test_draw_egraph_rhg(d):
     """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
