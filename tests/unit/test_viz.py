@@ -52,7 +52,7 @@ def test_to_pi_string():
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 
-def test_draw_EGraph_Bell():
+def test_draw_egraph_bell():
     """Test for the draw method of EGraph of Bell state."""
     # Bell state EGraph
     edge = [(0, 0, 0), (0, 0, 1)]
@@ -68,7 +68,7 @@ def test_draw_EGraph_Bell():
 
 
 @pytest.mark.parametrize("d", (2,3))
-def test_draw_EGraph_RHG(d):
+def test_draw_egraph_rhg(d):
     """Test for the draw method of EGraph of RHG lattice."""
     # Bell state EGraph
     RHG = SurfaceCode(d).graph
