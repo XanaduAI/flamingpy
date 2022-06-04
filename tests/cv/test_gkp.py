@@ -56,7 +56,7 @@ class TestGKPBinning:
         numbers = integers * alpha + fractions
 
         bits = integers % 2
-        int_part, frac_part = integer_fractional(numbers, alpha)
+        # int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(GKP_binner(numbers) == bits)
         assert np.allclose(GKP_binner(numbers, return_fraction=True)[1], fractions)
 

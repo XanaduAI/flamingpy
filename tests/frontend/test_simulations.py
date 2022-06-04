@@ -13,7 +13,7 @@
 # limitations under the License.
 """Unit tests for Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=protected-access,too-few-public-methods
+# pylint: disable=protected-access
 
 import warnings
 

@@ -134,8 +134,10 @@ def Z_err_cond(var, hom_val, var_num=10, replace_undefined=0, use_hom_val=False)
     else:
         # Initiate a list with length same as var
         error = np.zeros(np.shape(var))
+
         def ex(z, n):
             return np.exp(-((z - n * np.sqrt(np.pi)) ** 2) / var)
+
         numerator = np.sum([ex(val, 2 * i + factor) for i in range(-n_max, n_max)], 0)
         denominator = np.sum([ex(val, i) for i in range(-n_max, n_max)], 0)
         # Dealing with 0 denonimators
