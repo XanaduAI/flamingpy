@@ -14,7 +14,6 @@
 """"Unit tests for functions in the viz module."""
 
 import math
-from datetime import datetime
 
 import numpy as np
 from numpy.random import default_rng as rng

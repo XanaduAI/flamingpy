@@ -14,7 +14,7 @@
 """Check that we can run all the example and benchmark files without showing
 the plots."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,unused-import
 
 
 def test_decoding_benchmark():
