@@ -19,10 +19,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {python-version: 3.8, use_mpi: 'single-processor'}
+          - {python-version: 3.8, use_mpi: 'no-mpi'}
           - {python-version: 3.8, use_mpi: 'mpi'}
-          - {python-version: 3.9, use_mpi: 'single-processor'}
-          - {python-version: '3.10', use_mpi: 'single-processor'}
+          - {python-version: 3.9, use_mpi: 'no-mpi'}
+          - {python-version: '3.10', use_mpi: 'no-mpi'}
 
     env:
       USE_MPI: ${{ matrix.config.use_mpi }}
