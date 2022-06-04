@@ -14,7 +14,7 @@
 """Implementation of the Union-Find decoder, adapted from arXiv:1709.06218 and
 arXiv:1703.01517 ."""
 
-# pylint: disable=import-outside-toplevel,too-many-locals
+# pylint: disable=import-outside-toplevel
 
 import retworkx as rx
 

@@ -26,7 +26,7 @@ To modify the plot parameters use, for example,
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements,too-many-locals,singleton-comparison
+# pylint: disable=too-many-statements,singleton-comparison
 
 import itertools as it
 import math

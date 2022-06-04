@@ -13,7 +13,8 @@
 # limitations under the License.
 """Decoding and recovery functions."""
 
-# pylint: disable=import-outside-toplevel,too-many-locals
+# pylint: disable=import-outside-toplevel
+
 import sys
 import numpy as np
 
