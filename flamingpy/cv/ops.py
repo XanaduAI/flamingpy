@@ -280,8 +280,10 @@ class CVLayer:
         # For two-step sampling, sample for initial (ideal) state-dependent
         # quadrature values.
         if self._sampling_order == "two-step":
-            q_val_for_p = lambda n: rng.random(size=n) * (2 * np.sqrt(np.pi))
-            q_val_for_GKP = lambda n: rng.integers(0, 2, size=n) * np.sqrt(np.pi)
+            def q_val_for_p(n):
+                return rng.random(size=n) * (2 * np.sqrt(np.pi))
+            def q_val_for_GKP(n):
+                return rng.integers(0, 2, size=n) * np.sqrt(np.pi)
             val_funcs = {"p": q_val_for_p, "GKP": q_val_for_GKP}
             self._init_quads = np.zeros(2 * N, dtype=np.float32)
             for state, indices in self._states.items():

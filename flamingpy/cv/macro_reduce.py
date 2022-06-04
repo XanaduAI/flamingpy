@@ -19,9 +19,9 @@ import numpy as np
 from numpy.random import default_rng
 from scipy.linalg import block_diag
 
+from thewalrus.symplectic import expand, beam_splitter
 from flamingpy.cv.ops import CVLayer, SCZ_apply
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
-from thewalrus.symplectic import expand, beam_splitter
 
 
 def invert_permutation(p):
