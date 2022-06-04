@@ -13,7 +13,7 @@
 # limitations under the License.
 """Functions for reducing a macronode lattice to a canonical lattice."""
 
-# pylint: disable=protected-access,too-many-statements,too-many-locals,too-many-arguments
+# pylint: disable=protected-access,too-many-statements,too-many-locals
 
 import numpy as np
 from numpy.random import default_rng

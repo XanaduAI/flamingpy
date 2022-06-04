@@ -289,7 +289,6 @@ class CVLayer:
                 if n_inds > 0:
                     self._init_quads[indices] = val_funcs[state](n_inds)
 
-    # pylint: disable=too-many-arguments
     def measure_hom(
         self,
         quad="p",

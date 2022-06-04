@@ -13,7 +13,7 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position,consider-using-with
+# pylint: disable=too-many-locals,wrong-import-position,consider-using-with
 
 import argparse
 import csv
