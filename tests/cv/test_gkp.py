@@ -27,7 +27,7 @@ from flamingpy.cv.gkp import integer_fractional, GKP_binner, Z_err, Z_err_cond
 N = 50
 now = datetime.now()
 int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
-logging.info('the following seed was used for random number generation: %i', int_time)
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 # Construct random numbers from an integer and fractional part.
 alpha_vals = np.append(rng(int_time).random(5) * 5, np.sqrt(np.pi))

@@ -138,7 +138,7 @@ class TestCVHelpers:
 
 now = datetime.now()
 int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
-logging.info('the following seed was used for random number generation: %i', int_time)
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 
 class TestCVLayer:
