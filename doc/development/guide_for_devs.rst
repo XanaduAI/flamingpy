@@ -94,8 +94,8 @@ The purpose of the commands is as follows:
 * The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed).
 
 If you encountered a CMake error, you may need to (re-)install it through
-``conda install cmake``` or other means before re-attempting the above. Furthermore,
-you may wish to try ``conda install git```. For more detailed instructions and
+``conda install cmake`` or other means before re-attempting the above. Furthermore,
+you may wish to try ``conda install git``. For more detailed instructions and
 recommendations, including how to configure your environments, compilers and
 resolve errors, see our Frequently Encountered Errors page.
 

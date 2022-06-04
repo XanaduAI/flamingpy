@@ -1,25 +1,29 @@
 ## Release 0.8.2a5 (development release)
 
 ### New features since the last release
-
+* Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
 
 ### Bug fixes
+* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
 
 ### Improvements
-* Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
- * pylint no-self-use tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)). 
-* Unit tests have been re-grouped in individual sub-dirs inside `tests/` based on error correction and software layers. This helps manage and target each test unit. [#70](https://github.com/XanaduAI/flamingpy/pull/70)  
+
+* Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
+* Unit tests have been re-grouped in individual sub-dirs inside `tests/` based on error correction and software layers. This helps manage and target each test unit. [#70](https://github.com/XanaduAI/flamingpy/pull/70)
 * `build_tests.yaml` workflow now supports executing unit tests in parallel using `pytest-xdist` package. GitHub runners have at least 2 processors, which helps speed up the pytest blocks by ~1.5 times in practice. [#70](https://github.com/XanaduAI/flamingpy/pull/70)
+* Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
+ * pylint `no-self-use` tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)). 
 
 ### Documentation changes
+* Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Sebastián Duque Mesa](https://github.com/sduquemesa)
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark)
 
 See full commit details ...
 
