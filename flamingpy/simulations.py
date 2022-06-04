@@ -19,11 +19,13 @@ import argparse
 import csv
 import sys
 import warnings
+import logging
 
 from datetime import datetime
 from time import perf_counter
 
 int_time = int(str(datetime.now().timestamp()).replace(".", ""))
+logging.info('the following seed was used for random number generation: %i', int_time)
 
 try:
     import mpi4py.rc
