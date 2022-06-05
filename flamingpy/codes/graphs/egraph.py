@@ -212,5 +212,5 @@ class EGraph(nx.Graph):
         """
         from flamingpy.utils.viz import plot_mat_heat_map
 
-        adj = self.adj_mat or self.adj_generator(sparse=False)
+        adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)

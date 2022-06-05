@@ -14,10 +14,17 @@
 """"Unit tests for functions in the viz module."""
 
 import math
+from datetime import datetime
+
 import numpy as np
 from numpy.random import default_rng as rng
+import pytest
+import matplotlib.pyplot as plt
 
-from flamingpy.utils.viz import to_pi_string
+
+from flamingpy.utils.viz import to_pi_string, draw_EGraph
+from flamingpy.codes.graphs import EGraph
+from flamingpy.codes import SurfaceCode
 
 
 def test_to_pi_string():
@@ -44,3 +51,37 @@ def test_to_pi_string():
 
     # Test for tex=False
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
+
+
+def test_draw_egraph_bell():
+    """Test for the draw method of EGraph of Bell state."""
+    # Bell state EGraph
+    edge = [(0, 0, 0), (0, 0, 1)]
+    bell_state = EGraph()
+    bell_state.add_edge(*edge, color="MidnightBlue")
+
+    # Test for drawing the EGraph
+    _, a = draw_EGraph(bell_state)
+    plt.close()
+
+    assert len(a.get_xticks()) == 1
+    assert a.get_xlim() == (-1, 1)
+
+
+@pytest.mark.parametrize("d", (2, 3))
+def test_draw_egraph_rhg(d):
+    """Test for the draw method of EGraph of RHG lattice."""
+    # Bell state EGraph
+    RHG = SurfaceCode(d).graph
+
+    # Test for drawing the EGraph
+    _, a = draw_EGraph(RHG)
+    plt.close()
+
+    n_ticks = 2 * d - 1
+
+    ticks = (a.get_xticks(), a.get_yticks(), a.get_zticks())
+    assert [len(tick) for tick in ticks] == [n_ticks] * 3
+
+    actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
+    assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
