@@ -465,24 +465,24 @@ class SurfaceCode:
         """
 
         for ec in self.ec:
-            syndrome_coords = getattr(self, ec + "_syndrome_coords")
 
             if self.bound_str == "all_periodic":
                 ec_bound_points = []
-            # TODO: check if the ec assignation for this two cases id correct with @ilan
             elif self.bound_str.startswith("periodic"):
-                z_ec = self.boundaries[-1]
-                ec_bound_points = self._get_ec_bounds(z_ec, syndrome_coords)
+                bound_ind = 0 if ec == "primal" else 1
+                ec_bound_points = self._get_ec_bounds(ec, bound_ind)
             else:
-                ec_bound_points = self._get_ec_bounds(ec, syndrome_coords)
+                bound_ind = np.where(self.boundaries == ec)[0][0]
+                ec_bound_points = self._get_ec_bounds(ec, bound_ind)
 
+            print(ec_bound_points)
             setattr(self, ec + "_bound_points", ec_bound_points)
 
-    def _get_ec_bounds(self, ec, syndrome_coords):
+    def _get_ec_bounds(self, ec, bound_ind):
         dims = self.dims
         plane_dict = {0: "x", 1: "y", 2: "z"}
+        syndrome_coords = getattr(self, ec + "_syndrome_coords")
 
-        bound_ind = np.where(self.boundaries == ec)[0][0]
         low_index = 0 if ec == "primal" else 1
         high_index = 2 * dims[bound_ind] - 2 if ec == "primal" else 2 * dims[bound_ind] - 1
 
