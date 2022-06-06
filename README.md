@@ -40,7 +40,7 @@
 
 <img src="https://user-images.githubusercontent.com/25132802/168440346-9e285190-9527-482e-8877-b64c348df3b5.svg" width="330px" align="right">
 
-* Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds.
+* Simulates error correction on combinations of continuous-variable (CV) and discrete-variable (DV) codes to obtain estimations of fault-tolerant thresholds.
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states).
 * Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features.
 * Provides a host of visualization tools for ease of verifying correctness.
