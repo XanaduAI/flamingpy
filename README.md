@@ -91,7 +91,7 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import correct
 ```
 
-Next, let us instantiate an RHG lattice -- the measurement-based version of the surface code that we will use as our DV layer:
+Next, let us instantiate an RHG lattice -- the measurement-based version of the surface code:
 
 ```
 RHG = SurfaceCode(3)
