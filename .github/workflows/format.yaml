@@ -31,4 +31,4 @@ jobs:
         run: python -m black -l 100 tests flamingpy doc --check
 
       - name: Run docformatter
-        run: python -m docformatter --in-place **.py
+        run: python -m docformatter --check **.py
