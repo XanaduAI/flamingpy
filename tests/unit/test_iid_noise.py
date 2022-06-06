@@ -23,8 +23,9 @@ from flamingpy.decoders.decoder import correct
 def test_zero_noise():
     """Check that bit values are all 0 when the error probability is 0."""
     code = SurfaceCode(3)
-    noise = IidNoise(code, 0.0)
-    noise.apply_noise()
+    noise = IidNoise(len(code), 0.0)
+    error = noise.sample()
+    code.apply_error(error)
     for _, node_data in code.graph.nodes.data():
         assert node_data["bit_val"] == 0
 
@@ -32,8 +33,9 @@ def test_zero_noise():
 def test_full_noise():
     """Check that bit values are all 1 when the error probability is 1."""
     code = SurfaceCode(3)
-    noise = IidNoise(code, 1.0)
-    noise.apply_noise()
+    noise = IidNoise(len(code), 1.0)
+    error = noise.sample()
+    code.apply_error(error)
     for _, node_data in code.graph.nodes.data():
         assert node_data["bit_val"] == 1
 
@@ -44,8 +46,8 @@ def test_finite_prob_noise():
     """
     code = SurfaceCode(3)
     for prob in [0.1, 0.5, 0.9]:
-        noise = IidNoise(code, prob)
-        noise.apply_noise()
+        noise = IidNoise(len(code), prob)
+        code.apply_error(noise.sample())
         for _, node_data in code.graph.nodes.data():
             assert node_data["bit_val"] in [0, 1]
 
@@ -54,8 +56,8 @@ def test_decoding():
     """Check that we can use the correct function to decode the code
     after applying iid noise."""
     code = SurfaceCode(3)
-    noise = IidNoise(code, 0.1)
-    noise.apply_noise()
+    noise = IidNoise(len(code), 0.1)
+    code.apply_error(noise.sample())
     assert correct(code, {"outer": "MWPM"}) in [True, False]
 
 
@@ -65,6 +67,6 @@ def test_warning(prob):
 
     code = SurfaceCode(3)
     with pytest.raises(Exception) as exc:
-        IidNoise(code, prob)
+        IidNoise(len(code), prob)
 
     assert str(exc.value) == "Probability is not between 0 and 1."
