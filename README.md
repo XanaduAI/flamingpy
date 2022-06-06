@@ -81,7 +81,7 @@ If you encountered **CMake** errors, you may need to (re-)install it through `co
 
 ## Getting started and basic usage
 
-There is a vast literature available to understand the theoretical concepts behind FlamingPy. For a self-contained description, see Xanadu's [blueprint](https://quantum-journal.org/papers/q-2021-02-04-392/) for a fault-tolerant photonic quantum computer. You can also visit the documentation, which will be updated with more resources over time.
+There is a vast literature available to understand the theoretical concepts behind FlamingPy. For a self-contained description, see Xanadu's [blueprint](https://quantum-journal.org/papers/q-2021-02-04-392/){:target="_blank"} for a fault-tolerant photonic quantum computer. You can also visit the documentation, which will be updated with more resources over time.
 
 To see a sample of what FlamingPy can do, let us first import a few important objects:
 
@@ -140,7 +140,7 @@ See our [documentation](https://flamingpy.readthedocs.io/en/latest/usage/tutoria
 
 ## Contribution
 
-See our contributions policy and list of contributors to FlamingPy [here](https://github.com/XanaduAI/flamingpy/blob/main/.github/CONTRIBUTING.rst).
+See our contributions policy and list of contributors to FlamingPy [here](https://github.com/XanaduAI/flamingpy/blob/main/.github/CONTRIBUTING.rst){:target="_blank"}.
 
 
 ## Support
@@ -150,19 +150,19 @@ If you are having issues, please let us know by posting the issue on our GitHub 
 - **Source Code:** https://github.com/XanaduAI/flamingpy
 - **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
 
-You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions).
+You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions){:target="_blank"}.
 
 
 ## Attribution for authors
 
-FlamingPy is the work of [many contributors](https://github.com/XanaduAI/flamingpy/graphs/contributors). If you are doing research using FlamingPy, please cite our paper below:
+FlamingPy is the work of [many contributors](https://github.com/XanaduAI/flamingpy/graphs/contributors){:target="_blank"}. If you are doing research using FlamingPy, please cite our paper below:
 
 
 > Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
 > Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021,
-> [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353)
+> [DOI:10.1103/prxquantum.2.040353](http://dx.doi.org/10.1103/PRXQuantum.2.040353){:target="_blank"}
 
 In addition to the authors above, the developers would like to thank Sanchit Bapat, Ashlesha Patil, Michael Vasmer, and Trevor Vincent for their contributions to the pre-release project.
 ## License
 
-FlamingPy is **free** and **open source**, and released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+FlamingPy is **free** and **open source**, and released under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0){:target="_blank"}.
