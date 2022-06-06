@@ -97,13 +97,13 @@ Next, let us instantiate an RHG lattice -- the measurement-based version of the 
 RHG = SurfaceCode(3)
 ```
 
-The integer denotes the code distance. By default, the boundaries are set to "open". Next, we associate the nodes of the RHG lattice with CV-encoded qubits. Specifically, we utilize both GKP states and p-squeezed states as our CV layer. In FlamingPy, we make use of the `CVLayer` class to do this:
+The integer denotes the code distance. By default, the boundaries are set to "open". Next, let us associate the nodes in the RHG lattice with CV states:
 
 ```
 CVRHG = CVLayer(RHG, p_swap=0.5)
 ```
 
-The probability of a qubit in the lattice being encoded as GKP state and p-squeezed state is `1-p_swap` and `p_swap`, respectively. Next, we can apply a noise model to the states:
+Now, half the lattice (on average) will be labelled a GKP state, and the other half a p-squeezed state. Next, we can apply a noise model to the states:
 
 ```
 grn_model = {"noise": "grn", "delta": 0.1}
@@ -122,7 +122,7 @@ At this point, we are ready to perform error correction on the lattice. First, w
 decoder = {"inner": "basic", "outer": "MWPM"}
 ```
 
-This corresponds to a basic GKP binning function for the inner decoder (CV layer), and minimum-weight perfect matching (MWPM) for the outer decoder (DV layer). Lastly, we can detect and correct for errors, and print a message identifying success or failure:
+This corresponds to a basic GKP binning function for the inner decoder, and minimum-weight perfect matching (MWPM) for the outer decoder. Lastly, we can detect and correct for errors, and print a message identifying success or failure:
 
 ```
 c = correct(code=RHG, decoder=decoder)
