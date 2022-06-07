@@ -42,7 +42,7 @@ def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, 
     # Instantiate a surface code.
     RHG_code = SurfaceCode(d, ec=err, boundaries=boundaries, polarity=polarity)
     RHG_lattice = RHG_code.graph
-    RHG_fig, RHG_ax = RHG_code.draw()
+    _, RHG_ax = RHG_code.draw()
 
     # Check edges between boundaries for periodic boundary conditions.
     if boundaries == "periodic":
