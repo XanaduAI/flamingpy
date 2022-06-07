@@ -24,8 +24,9 @@ __licence__ = "BSD (3 clause)"
 
 
 def get_github_url(app, view, path):
-    """A function to generate github url based on __app__, __view__, and
-    __path__ inputs."""
+    """A function to generate github url based on __app__, __view__,
+    and __path__ inputs.
+    """
     return "https://github.com/{project}/{view}/{branch}/{path}".format(
         project=app.config.edit_on_github_project,
         view=view,
@@ -35,7 +36,7 @@ def get_github_url(app, view, path):
 
 
 def html_page_context(app, pagename, templatename, context, doctree):
-    """A function to set html page context and return warnings as needed."""
+    """A function to set html page context and return warnings as needed"""
     if templatename != "page.html":
         return
 
@@ -55,7 +56,7 @@ def html_page_context(app, pagename, templatename, context, doctree):
 
 
 def setup(app):
-    """A handy function to set up edit_on_github links."""
+    """A handy function to set up edit_on_github links"""
     app.add_config_value("edit_on_github_project", "", True)
     app.add_config_value("edit_on_github_branch", "master", True)
     app.connect("html-page-context", html_page_context)
