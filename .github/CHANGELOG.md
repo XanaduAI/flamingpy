@@ -6,12 +6,12 @@
 ### Bug fixes
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 
-
 ### Improvements
 * Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
   * pylint no-self-use tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)). 
 * Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
 * Added `.gitattributes` to the repository, so git automatically handles consistent `eol`'s for all commits and contributors across different operating systems. [#78](https://github.com/XanaduAI/flamingpy/pull/78)
+* Added `fig, ax` returns for the draw methods in `utils/viz.py` and some additional tests. [#55](https://github.com/XanaduAI/flamingpy/pull/55)
 
 ### Documentation changes
 * Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
@@ -38,7 +38,6 @@ See full commit details ...
 * Our frontend simulator script, [`simulations.py`](flamingpy/simulations.py), now supports simple and highly-scalable MPI jobs through `mpi4py` libraries in a non-intrusive manner. The users who do **not** have or want MPI, can run `simulations.py` single-threaded as per usual without facing any errors. MPI users can speed up Monte Carlo samplings in EC steps virtually up to as many processors they can throw at it. The script support jobs both on local machines and large-scale clusters. [#47](https://github.com/XanaduAI/flamingpy/pull/47) (backward compatible)
   * MPI users on their local machines can simply run the following for a 4-processor job:
   `mpirun -np 4 python flamingpy/simulations.py`
-* Added `fig, ax` returns for the draw methods in `utils/viz.py`.  [#55](https://github.com/XanaduAI/flamingpy/pull/55)
 
 ### Bug fixes
 * Fixed the class inheretance diagram displayed in `fp.codes`. [#41](https://github.com/XanaduAI/flamingpy/pull/41)
