@@ -1,9 +1,7 @@
-"""
-.. _run-error-correction:
+""".. _run-error-correction:
 
 A complete round of error correction
 ====================================
-
 """
 
 
