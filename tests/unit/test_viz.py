@@ -19,8 +19,8 @@ from datetime import datetime
 import numpy as np
 from numpy.random import default_rng as rng
 import pytest
+import matplotlib
 import matplotlib.pyplot as plt
-
 
 from flamingpy.utils.viz import to_pi_string, draw_EGraph
 from flamingpy.codes.graphs import EGraph
@@ -53,35 +53,45 @@ def test_to_pi_string():
     assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 
-def test_draw_egraph_bell():
-    """Test for the draw method of EGraph of Bell state."""
-    # Bell state EGraph
-    edge = [(0, 0, 0), (0, 0, 1)]
-    bell_state = EGraph()
-    bell_state.add_edge(*edge, color="MidnightBlue")
+class TestDrawEGraph:
+    """Tests for visualizing EGraphs."""
 
-    # Test for drawing the EGraph
-    _, a = draw_EGraph(bell_state)
-    plt.close()
+    def test_draw_egraph_bell(self):
+        """Test for the draw method of EGraph of Bell state."""
+        # Bell state EGraph
+        edge = [(0, 0, 0), (0, 0, 1)]
+        bell_state = EGraph()
+        bell_state.add_edge(*edge, color="MidnightBlue")
 
-    assert len(a.get_xticks()) == 1
-    assert a.get_xlim() == (-1, 1)
+        # Test for drawing the EGraph
+        _, a = draw_EGraph(bell_state)
+        plt.close()
 
+        assert len(a.get_xticks()) == 1
+        assert a.get_xlim() == (-1, 1)
 
-@pytest.mark.parametrize("d", (2, 3))
-def test_draw_egraph_rhg(d):
-    """Test for the draw method of EGraph of RHG lattice."""
-    # Bell state EGraph
-    RHG = SurfaceCode(d).graph
+    def test_wrapper_draw_egraph(self):
+        """Tests the returned object of EGraph.draw of EGraph with one node."""
+        E = EGraph()
+        E.add_node((0, 0, 0))
+        f, a = E.draw()
+        assert issubclass(type(f), matplotlib.figure.Figure)
+        assert issubclass(type(a), matplotlib.axes.Axes)
 
-    # Test for drawing the EGraph
-    _, a = draw_EGraph(RHG)
-    plt.close()
+    @pytest.mark.parametrize("d", (2, 3))
+    def test_draw_egraph_rhg(self, d):
+        """Test for the draw method of EGraph of RHG lattice."""
+        # Bell state EGraph
+        RHG = SurfaceCode(d).graph
 
-    n_ticks = 2 * d - 1
+        # Test for drawing the EGraph
+        _, a = draw_EGraph(RHG)
+        plt.close()
 
-    ticks = (a.get_xticks(), a.get_yticks(), a.get_zticks())
-    assert [len(tick) for tick in ticks] == [n_ticks] * 3
+        n_ticks = 2 * d - 1
 
-    actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
-    assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
+        ticks = (a.get_xticks(), a.get_yticks(), a.get_zticks())
+        assert [len(tick) for tick in ticks] == [n_ticks] * 3
+
+        actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
+        assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
