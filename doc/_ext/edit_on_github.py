@@ -59,4 +59,3 @@ def setup(app):
     app.add_config_value("edit_on_github_project", "", True)
     app.add_config_value("edit_on_github_branch", "master", True)
     app.connect("html-page-context", html_page_context)
-
