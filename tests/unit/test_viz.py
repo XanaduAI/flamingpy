@@ -54,7 +54,7 @@ def test_to_pi_string():
 
 
 class TestDrawEGraph:
-    """Tests for EGraphs."""
+    """Tests for visualizing EGraphs."""
 
     def test_draw_egraph_bell(self):
         """Test for the draw method of EGraph of Bell state."""
