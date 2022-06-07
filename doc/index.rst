@@ -94,7 +94,6 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    :hidden:
 
    self
-   quick_installation
    install
 
 .. toctree::
