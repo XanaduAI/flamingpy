@@ -15,7 +15,7 @@
 * Added `.gitattributes` to the repository, so git automatically handles consistent `eol`'s for all commits and contributors across different operating systems. [#78](https://github.com/XanaduAI/flamingpy/pull/78)
 
 * Increase the scope of `docformatter` to all `.py` files in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
-* The scope of `black` has been extended to include `doc/` as well. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* The scope of `black` formatter has been extended to include `doc/` as well. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 
 ### Documentation changes
 
