@@ -82,9 +82,6 @@ class TestEGraph:
     # def test_slice_coords(self):
     # pass
 
-    # def test_draw(self):
-    # pass
-
 
 class TestCVHelpers:
     """Tests for CVLayer helper functions."""
