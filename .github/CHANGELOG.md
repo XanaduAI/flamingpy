@@ -14,9 +14,11 @@
 
 * Added `.gitattributes` to the repository, so git automatically handles consistent `eol`'s for all commits and contributors across different operating systems. [#78](https://github.com/XanaduAI/flamingpy/pull/78)
 
-* Increase scope of docformatter to all py files present in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* Increase the scope of `docformatter` to all `.py` files in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* The scope of `black` has been extended to include `doc/` as well. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 
 ### Documentation changes
+
 * Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 * Typo fix and minor README change. [#70](https://github.com/XanaduAI/flamingpy/pull/80)
 
