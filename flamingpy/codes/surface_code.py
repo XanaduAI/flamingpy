@@ -466,11 +466,8 @@ class SurfaceCode:
 
         for ec in self.ec:
 
-            if self.bound_str == "all_periodic":
+            if "periodic" in self.bound_str:
                 ec_bound_points = []
-            elif self.bound_str.startswith("periodic"):
-                bound_ind = 0 if ec == "primal" else 1
-                ec_bound_points = self._get_ec_bounds(ec, bound_ind)
             else:
                 bound_ind = np.where(self.boundaries == ec)[0][0]
                 ec_bound_points = self._get_ec_bounds(ec, bound_ind)
