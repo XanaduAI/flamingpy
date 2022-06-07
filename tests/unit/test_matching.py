@@ -28,7 +28,7 @@ from flamingpy.decoders.decoder import CV_decoder, GKP_binner, assign_weights
 from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 
 
-try:
+try:  # pylint: disable=unused-import
     import flamingpy.cpp.lemonpy as lp
     import flamingpy.cpp.cpp_mc_loop as cmc
 
