@@ -12,8 +12,11 @@
 * Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
 * Added `.gitattributes` to the repository, so git automatically handles consistent `eol`'s for all commits and contributors across different operating systems. [#78](https://github.com/XanaduAI/flamingpy/pull/78)
 * Added `fig, ax` returns for the draw methods in `utils/viz.py` and some additional tests. [#55](https://github.com/XanaduAI/flamingpy/pull/55)
+* Increased the scope of `docformatter` to all `.py` files in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 
 ### Documentation changes
+
 * Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 * Typo fix and minor README change. [#70](https://github.com/XanaduAI/flamingpy/pull/80)
 
@@ -22,7 +25,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand, [WingCode](https://github.com/WingCode) 
 
 See full commit details ...
 
