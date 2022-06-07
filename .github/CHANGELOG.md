@@ -10,12 +10,10 @@
 * Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
   * pylint no-self-use tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)). 
 * Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
-
 * Added `.gitattributes` to the repository, so git automatically handles consistent `eol`'s for all commits and contributors across different operating systems. [#78](https://github.com/XanaduAI/flamingpy/pull/78)
 * Added `fig, ax` returns for the draw methods in `utils/viz.py` and some additional tests. [#55](https://github.com/XanaduAI/flamingpy/pull/55)
-
-* Increase the scope of `docformatter` to all `.py` files in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
-* The scope of `black` formatter has been extended to include `doc/` as well. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* Increased the scope of `docformatter` to all `.py` files in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 
 ### Documentation changes
 
