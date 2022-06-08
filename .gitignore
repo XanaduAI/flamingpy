@@ -83,6 +83,7 @@ doc/build/
 doc/source/api/
 doc/tutorials/_out
 doc/_static/thumbs
+doc/_static/*.svg
 doc/backreferences
 
 # PyBuilder
