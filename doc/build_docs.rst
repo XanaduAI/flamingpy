@@ -77,28 +77,28 @@ The documentation can be found in the :file:`doc/_build/html/` directory.
 
 .. |sphinxcontrib_bibtex| raw:: html
 
-   <a href="https://sphinxcontrib-bibtex.readthedocs.io/en/latest/" target="_blank">sphinxcontrib-bibtex/a>
+   <a href="https://sphinxcontrib-bibtex.readthedocs.io/en/latest/" target="_blank">sphinxcontrib-bibtex</a>
 
 .. |sphinx_autodoc_typehints| raw:: html
 
-   <a href="https://pypi.org/project/sphinx-autodoc-typehints/" target="_blank">sphinx_autodoc_typehints/a>
+   <a href="https://pypi.org/project/sphinx-autodoc-typehints/" target="_blank">sphinx_autodoc_typehints</a>
 
 .. |sphinx_automodapi| raw:: html
 
-   <a href="https://sphinx-automodapi.readthedocs.io/en/latest/" target="_blank">sphinx-automodapi/a>
+   <a href="https://sphinx-automodapi.readthedocs.io/en/latest/" target="_blank">sphinx-automodapi</a>
 
 .. |sphinx_copybutton| raw:: html
 
-   <a href="https://sphinx-copybutton.readthedocs.io/en/latest/" target="_blank">sphinx-copybutton/a>
+   <a href="https://sphinx-copybutton.readthedocs.io/en/latest/" target="_blank">sphinx-copybutton</a>
 
 .. |thewalrus| raw:: html
 
-   <a href="https://the-walrus.readthedocs.io/en/latest/" target="_blank">thewalrus/a>
+   <a href="https://the-walrus.readthedocs.io/en/latest/" target="_blank">thewalrus</a>
 
 .. |toml| raw:: html
 
-   <a href="https://pypi.org/project/toml/" target="_blank">toml/a>
+   <a href="https://pypi.org/project/toml/" target="_blank">toml</a>
 
 .. |makefile_guide| raw:: html
 
-   <a href="https://pakstech.com/blog/make-windows/#:~:text=make%20%3A%20The%20term%20'make',choose%20Path%20and%20click%20Edit." target="_blank">this guide/a>
+   <a href="https://pakstech.com/blog/make-windows/#:~:text=make%20%3A%20The%20term%20'make',choose%20Path%20and%20click%20Edit." target="_blank">this guide</a>
