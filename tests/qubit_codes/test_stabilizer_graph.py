@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-Unit tests for StablizerGraph classes in stab_graph.py.
+"""Unit tests for StablizerGraph classes in stab_graph.py.
 
 The networkx implementation is used as a reference.
 """
@@ -103,7 +102,7 @@ def compute_enc_state(request):
 def convert_dict_of_weights(weights):
     """Convert RHGCubes into tuples of nodes and return a dictionary between
     them and path weights."""
-    conversion = dict()
+    conversion = {}
     for (n, w) in weights.items():
         if isinstance(n, Stabilizer):
             conversion[tuple(n.egraph.nodes())] = int(w)

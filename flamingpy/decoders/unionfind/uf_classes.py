@@ -13,8 +13,6 @@
 # limitations under the License.
 """A collection of classes used for UnionFind decoder."""
 
-# pylint: disable=too-few-public-methods
-
 import retworkx as rx
 
 

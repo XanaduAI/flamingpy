@@ -202,8 +202,8 @@ class EGraph(nx.Graph):
         """
         from flamingpy.utils.viz import draw_EGraph
 
-        _, ax = draw_EGraph(self, **kwargs)
-        return ax
+        fig, ax = draw_EGraph(self, **kwargs)
+        return fig, ax
 
     def draw_adj(self, **kwargs):
         """Draw the adjacency matrix with matplotlib.
@@ -212,5 +212,5 @@ class EGraph(nx.Graph):
         """
         from flamingpy.utils.viz import plot_mat_heat_map
 
-        adj = self.adj_mat or self.adj_generator(sparse=False)
+        adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)

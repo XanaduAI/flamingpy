@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for MWPM and decoding funcions in the decoder module."""
 
-# pylint: disable=no-member,protected-access,no-self-use
+# pylint: disable=no-member,protected-access
 
 import itertools as it
 

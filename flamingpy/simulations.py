@@ -13,17 +13,19 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position,consider-using-with
+# pylint: disable=wrong-import-position,consider-using-with
 
 import argparse
 import csv
 import sys
 import warnings
+import logging
 
 from datetime import datetime
 from time import perf_counter
 
 int_time = int(str(datetime.now().timestamp()).replace(".", ""))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 try:
     import mpi4py.rc
@@ -244,7 +246,7 @@ def run_ec_simulation(
     if mpi_rank == 0:
         # Store results in the provided file-path or by default in
         # a sims_data directory in the file simulations_results.csv.
-        file_name = fname or ".flamingpy/sims_data/sims_results.csv"
+        file_name = fname or "./flamingpy/sims_data/sims_results.csv"
 
         # Create a CSV file if it doesn't already exist.
         try:
@@ -265,6 +267,7 @@ def run_ec_simulation(
                     "current_time",
                     "decoding_time",
                     "simulation_time",
+                    "mpi_size",
                 ]
             )
         # Open the file for appending if it already exists.
@@ -287,6 +290,7 @@ def run_ec_simulation(
                 current_time,
                 decoding_time_total,
                 (simulation_stop_time - simulation_start_time),
+                mpi_size,
             ]
         )
         file.close()

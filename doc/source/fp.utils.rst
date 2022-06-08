@@ -10,6 +10,7 @@ Available modules
     :toctree: api
 
     ~viz
+    ~graph_states
 
 Module members
 --------------

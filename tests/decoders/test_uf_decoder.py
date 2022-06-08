@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for the Union Find decoder."""
 
-# pylint: disable=too-many-function-args,no-self-use,unsubscriptable-object,consider-using-dict-items,too-few-public-methods,too-many-locals,unused-argument,pointless-statement
+# pylint: disable=too-many-function-args,unsubscriptable-object,consider-using-dict-items,unused-argument,pointless-statement
 
 import itertools as it
 import random
@@ -67,10 +67,8 @@ code_params = it.product(
 
 @pytest.fixture(scope="module", params=code_params)
 def enc_state_swap_list(request):
-    """
-    In this function, lattice is generated based on a list of psqueezed states,
-    which are generated randomly.
-    """
+    """In this function, lattice is generated based on a list of psqueezed
+    states, which are generated randomly."""
     distance, ec, boundaries, delta = request.param
 
     if boundaries == "periodic":
@@ -171,7 +169,7 @@ class TestUnionFindStructures:
                     assert support.status[frozenset((edge[0], edge[1]))] == "grown"
 
     def test_support_value(self, enc_state_swap_list):
-        """Test Support function assignments"""
+        """Test Support function assignments."""
         CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
 
@@ -229,7 +227,7 @@ class TestUnionFindStructures:
 
 
 class TestUnionFindFunctions:
-    """Test function members of UnionFind decoder"""
+    """Test function members of UnionFind decoder."""
 
     def test_union(self):
         """Test the union of trees."""
@@ -337,10 +335,11 @@ class TestUnionFindFunctions:
 
 
 class PeelingDecoder:
-    """A class to host methods for testing peeling decoder assignments"""
+    """A class to host methods for testing peeling decoder assignments."""
 
     def test_peeling(self):
-        """Test the peeling decoder for the surface code with periodic boundary conditions."""
+        """Test the peeling decoder for the surface code with periodic boundary
+        conditions."""
         # Test 1: Check if the peeling decoder works fine for one even cluster
         spanning_forest = rx.PyGraph()
 
@@ -442,9 +441,8 @@ class UnionFindDecoder:
         assert set(enc_state_swap_list[2]) == set(erased_qubits)
 
     def test_assign_weight_UF(self):
-        """
-        Testing the different types of weights and number of weight levels in
-        different weighted UF decoders in UFdecoder.py
+        """Testing the different types of weights and number of weight levels
+        in different weighted UF decoders in UFdecoder.py.
 
         The graph considered is
         (0,0,0) A'p' -
@@ -456,10 +454,8 @@ class UnionFindDecoder:
         """
 
         class MinimalCode:
-            """
-            A class similar to SurfaceCode class but only with
-            attributes that are required for the testing.
-            """
+            """A class similar to SurfaceCode class but only with attributes
+            that are required for the testing."""
 
             def __init__(self, G, synd_coords):
                 self.graph = G
@@ -504,9 +500,7 @@ class UnionFindDecoder:
         assert G.nodes[(6, 3, 2)]["weight"] == 2
 
     def test_UF(self):
-        """
-        Testing the UFdecoder
-        """
+        """Testing the UFdecoder."""
         syndrome_dict = {1: 1, 2: 0, 3: 1, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0, 9: 0}
         syndrome_nodes = []
         for i in range(len(syndrome_dict)):

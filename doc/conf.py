@@ -5,9 +5,7 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
-"""
-flamingpy configuration file for the Sphinx documentation builder.
-"""
+"""flamingpy configuration file for the Sphinx documentation builder."""
 import os
 import sys
 import re
@@ -28,7 +26,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(".")), "doc"))
 
 
 class Mock(MagicMock):
-    """An auxiliary class to create mocked modules"""
+    """An auxiliary class to create mocked modules."""
 
     __name__ = "foo"
 
@@ -79,7 +77,6 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
     "sphinx.ext.graphviz",
-    "sphinx.ext.imgmath",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx_automodapi.automodapi",

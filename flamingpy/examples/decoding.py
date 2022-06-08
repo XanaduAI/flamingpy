@@ -14,8 +14,6 @@
 """Example of instantiating, applying noise, decoding, recovering, and
 visualizing this procedure for the measurement-based surface code."""
 
-# pylint: disable=too-many-arguments,too-many-locals
-
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import SurfaceCode

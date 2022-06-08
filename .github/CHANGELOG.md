@@ -1,20 +1,39 @@
 ## Release 0.8.2a5 (development release)
 
 ### New features since the last release
-
+* Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
 
 ### Bug fixes
-
+* Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
+* Tutorial files are appropriately ignored in the pylint configuration file. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
 
 ### Improvements
 
+* Added tests for `EGraph` plots. [#60](https://github.com/XanaduAI/flamingpy/pull/60)
+* Added `fig, ax` returns for the draw methods in `utils/viz.py` and some additional tests. [#55](https://github.com/XanaduAI/flamingpy/pull/55)
+* Unit tests have been re-grouped in individual sub-dirs inside `tests/` based on error correction and software layers. This helps manage and target each test unit. [#70](https://github.com/XanaduAI/flamingpy/pull/70), [#65](https://github.com/XanaduAI/flamingpy/pull/65)
+* `build_tests.yaml` workflow now supports executing unit tests in parallel using `pytest-xdist` package. GitHub runners have at least 2 processors, which helps speed up the pytest blocks by ~1.5 times in practice. [#70](https://github.com/XanaduAI/flamingpy/pull/70)
+* Pylint is pinned to stable version `pylint==2.14.0` and added to `dev_requirements.txt`. [#76](https://github.com/XanaduAI/flamingpy/pull/76)
+ * pylint `no-self-use` tags are removed as this check has been removed from pylint (see [here](https://github.com/PyCQA/pylint/issues/5502)).
+* Added `.gitattributes` to the repository, so git automatically handles consistent `eol`'s for all commits and contributors across different operating systems. [#78](https://github.com/XanaduAI/flamingpy/pull/78)
+* Increased the scope of `docformatter` to all `.py` files in the repository. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
+* Added automatically generated `.svg` files to gitignore. [#84](https://github.com/XanaduAI/flamingpy/pull/84)
+* Tests that required cpp libraries are skipped if they are not installed, hence avoiding failing tests from unmet dependencies. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
 
 ### Documentation changes
+
+* Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
+* Typo fix and minor changes for README file. [#80](https://github.com/XanaduAI/flamingpy/pull/80)
+* non-Xanadu links now open in a new tab, while HTML references are listed scientific-style at the end of a file. [#82](https://github.com/XanaduAI/flamingpy/pull/82)
+* Changed the math rendering Sphinx to MathJax (before equations were rendered as png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
 
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz), [WingCode](https://github.com/WingCode)
 
 See full commit details ...
 
