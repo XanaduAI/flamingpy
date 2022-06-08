@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for classes and methods in the surface_code module."""
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-many-statements
 
 import itertools as it
 
