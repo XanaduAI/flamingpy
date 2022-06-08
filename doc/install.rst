@@ -37,7 +37,7 @@ Installation
             </p>
             <p class="lead grey-text w-responsive mx-auto mb-6">
                 If you currently do not have Python 3 installed, we recommend
-                <a href="https://www.anaconda.com/download/">Anaconda for Python 3</a>,
+                <a href="https://www.anaconda.com/download/" target="_blank">Anaconda for Python 3</a>,
                 a distributed version of Python packaged for scientific computation.
             </p>
         </div>
