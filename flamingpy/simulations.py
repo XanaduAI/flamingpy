@@ -54,7 +54,8 @@ def ec_mc_trial(
     weight_options,
     rng=default_rng(),
 ):
-    """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
+    """Runs a single trial of Monte Carlo simulations of error-correction for
+    the given code."""
     if passive_objects is not None:
         reduce_macro_and_simulate(*passive_objects, p_swap, delta, rng)
     else:
