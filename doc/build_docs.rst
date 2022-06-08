@@ -15,8 +15,8 @@ The FlamingPy documentation is built using ``sphinx``. To build the documentatio
 * |sphinx| >= 4.3.1
 * |sphinxcontrib_bibtex| >= 0.4.2
 * |sphinx_autodoc_typehints| >= 1.10.3
-* |sphinx-automodapi| >= 0.13
-* |sphinx-copybutton| >= 0.4
+* |sphinx_automodapi| >= 0.13
+* |sphinx_copybutton| >= 0.4
 * |thewalrus| >= 0.19.0
 * |toml| >= 0.10.2
 
