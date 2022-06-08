@@ -74,7 +74,8 @@ distances = [3, 5]
 
 @pytest.fixture(scope="module", params=it.product(matching_graph_types, distances))
 def code_matching_graphs(request):
-    """Return a matching graph type built from a surface code with given distance.
+    """Return a matching graph type built from a surface code with given
+    distance.
 
     Also return the corresponding NxMatchingGraph for comparison.
     """

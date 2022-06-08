@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""""Unit tests for the utils.graph_states module"""
+""""Unit tests for the utils.graph_states module."""
 import pytest
 from flamingpy.utils import graph_states
 
@@ -28,7 +28,7 @@ def test_star_graph():
 
 
 def test_star_graph_inputs():
-    """Check that invalid inputs in star_graph raise a warning"""
+    """Check that invalid inputs in star_graph raise a warning."""
     n = 0
     with pytest.raises(Exception) as e:
         graph_states.star_graph(n)
@@ -56,7 +56,7 @@ def test_complete_graph():
 
 
 def test_complete_graph_inputs():
-    """Check that invalid inputs in complete_graph raise a warning"""
+    """Check that invalid inputs in complete_graph raise a warning."""
     n = 0
     with pytest.raises(Exception) as e:
         graph_states.complete_graph(n)
