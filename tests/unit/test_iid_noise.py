@@ -40,8 +40,7 @@ def test_full_noise():
 
 def test_finite_prob_noise():
     """Check that all bit values are either 0 or 1 when the error probability
-    is between 0 and 1.
-    """
+    is between 0 and 1."""
     code = SurfaceCode(3)
     for prob in [0.1, 0.5, 0.9]:
         noise = IidNoise(code, prob)
@@ -51,8 +50,8 @@ def test_finite_prob_noise():
 
 
 def test_decoding():
-    """Check that we can use the correct function to decode the code
-    after applying iid noise."""
+    """Check that we can use the correct function to decode the code after
+    applying iid noise."""
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.1)
     noise.apply_noise()
@@ -61,7 +60,8 @@ def test_decoding():
 
 @pytest.mark.parametrize("prob", [-0.1, 1.1])
 def test_warning(prob):
-    """Test that a warning is raised when the probability is not between 0 and 1."""
+    """Test that a warning is raised when the probability is not between 0 and
+    1."""
 
     code = SurfaceCode(3)
     with pytest.raises(Exception) as exc:
