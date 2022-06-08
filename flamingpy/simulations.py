@@ -59,7 +59,8 @@ def ec_mc_trial(
     weight_options,
     rng=default_rng(),
 ):
-    """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
+    """Runs a single trial of Monte Carlo simulations of error-correction for
+    the given code."""
     if noise == CVLayer:
         CVRHG = CVLayer(code, p_swap=p_swap, rng=rng)
         CVRHG.apply_noise(noise_model, rng=rng)

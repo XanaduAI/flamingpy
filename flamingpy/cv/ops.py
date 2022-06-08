@@ -16,7 +16,7 @@
 # pylint: disable=import-outside-toplevel,too-many-instance-attributes
 
 import numpy as np
-from numpy.random import default_rng
+from scipy.linalg import block_diag
 import scipy.sparse as sp
 from thewalrus.symplectic import expand, beam_splitter
 
