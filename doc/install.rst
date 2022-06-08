@@ -42,7 +42,7 @@ Installation
             </p>
             <p class="lead grey-text w-responsive mx-auto mb-6">
                 Upon activating a Python environment, run one of the following
-                in you choice of CLI: 
+                in your choice of CLI: 
             </p>
         </div>
 
