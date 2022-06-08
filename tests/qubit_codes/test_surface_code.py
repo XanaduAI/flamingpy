@@ -259,8 +259,8 @@ class TestRHGGraph:
         # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
     def test_all_periodic_boundaries(self, d):
-        """Test whether periodic boundary conditions on every direction
-        produce a lattice with the expected size."""
+        """Test whether periodic boundary conditions on every direction produce
+        a lattice with the expected size."""
         RHG_lattice = RHG_graph(d, "all_periodic")
         assert len(RHG_lattice) == 6 * (d**3)
 
