@@ -12,4 +12,4 @@ and our |PyPI packages|. In your choice of CLI
 
 .. |PyPI packages| raw:: html
 
-    <a href="https://pypi.org/project/flamingpy" target="_blank">toml</a>
+    <a href="https://pypi.org/project/flamingpy" target="_blank">PyPI packages</a>
