@@ -1,7 +1,7 @@
 Getting Started and Basic Usage
 ===============================
 
-There is a vast literature available to understand the theoretical concepts behind FlamingPy. For a self-contained description, see Xanadu's `blueprint <https://quantum-journal.org/papers/q-2021-02-04-392/>`__ for a fault-tolerant photonic quantum computer.
+There is a vast literature available to understand the theoretical concepts behind FlamingPy. For a self-contained description, see Xanadu's |blueprint| for a fault-tolerant photonic quantum computer.
 
 To see a sample of what FlamingPy can do, let us first import a few important objects:
 
@@ -55,3 +55,8 @@ This corresponds to a basic GKP binning function for the inner decoder, and mini
    outcome = "succeeded." * bool(c) + "failed." * (1 - bool(c))
    message = "Error correction {}".format(outcome)
    print(message)
+
+
+.. |blueprint| raw:: html
+
+   <a href="https://quantum-journal.org/papers/q-2021-02-04-392/" target="_blank">blueprint</a>
