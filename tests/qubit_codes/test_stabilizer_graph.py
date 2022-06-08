@@ -103,7 +103,7 @@ def compute_enc_state(request):
 def convert_dict_of_weights(weights):
     """Convert RHGCubes into tuples of nodes and return a dictionary between
     them and path weights."""
-    conversion = dict()
+    conversion = {}
     for (n, w) in weights.items():
         if isinstance(n, Stabilizer):
             conversion[tuple(n.egraph.nodes())] = int(w)

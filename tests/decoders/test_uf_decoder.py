@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for the Union Find decoder."""
 
-# pylint: disable=too-many-function-args,unsubscriptable-object,consider-using-dict-items,too-few-public-methods,too-many-locals,unused-argument,pointless-statement
+# pylint: disable=too-many-function-args,unsubscriptable-object,consider-using-dict-items,unused-argument,pointless-statement
 
 import itertools as it
 import random

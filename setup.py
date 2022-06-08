@@ -13,8 +13,6 @@
 # limitations under the License.
 """setup.py instructions for FlamingPy installation from Source."""
 
-# pylint: disable=too-few-public-methods
-
 import os
 import re
 import sys
