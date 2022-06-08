@@ -13,7 +13,7 @@
 # limitations under the License.
 """Unit tests for Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=protected-access,too-few-public-methods
+# pylint: disable=protected-access
 
 import warnings
 
@@ -119,7 +119,7 @@ class TestPassive:
         assert errors_py == 0
 
 
-@pytest.mark.parametrize("empty_file", [True, False])
+@pytest.mark.parametrize("empty_file", sorted([True, False]))
 @pytest.mark.parametrize("sim", [run_ec_simulation])
 def test_simulations_output_file(tmpdir, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
