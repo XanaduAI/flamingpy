@@ -114,7 +114,7 @@ def RHG_graph(
     the surface code, with specified dimensions and boundary types.
 
     Args:
-        dims (int or tuple): the dimensions of the lattice. If int,
+        dims (int or 3-tuple): the dimensions of the lattice. If int,
             generates a cube corresponding to a code of distance dims.
             If a three-tuple (dx, dy, dz), assumes distances
             dx, dy, dz in x, y, z directions, respectively.
