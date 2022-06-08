@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Unit tests for functions in the viz module."""
+
 import math
 
 import numpy as np
@@ -20,7 +21,7 @@ import pytest
 import matplotlib
 import matplotlib.pyplot as plt
 
-from flamingpy.utils.viz import to_pi_string, draw_EGraph
+from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import SurfaceCode
 
@@ -28,27 +29,27 @@ from flamingpy.codes import SurfaceCode
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
     # Test +- sqrt(pi) and sqrt(pi)/2.
-    assert to_pi_string(np.sqrt(np.pi)) == "$\\sqrt{\\pi}$"
-    assert to_pi_string(-np.sqrt(np.pi)) == "$-\\sqrt{\\pi}$"
-    assert to_pi_string(np.sqrt(np.pi) / 2) == "$\\sqrt{\\pi}/2$"
-    assert to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
+    assert viz.to_pi_string(np.sqrt(np.pi)) == "$\\sqrt{\\pi}$"
+    assert viz.to_pi_string(-np.sqrt(np.pi)) == "$-\\sqrt{\\pi}$"
+    assert viz.to_pi_string(np.sqrt(np.pi) / 2) == "$\\sqrt{\\pi}/2$"
+    assert viz.to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
 
     # Test random odd integer multiples of sqrt(pi)/2, eccept 1 and -1
     odd_int = (2 * rng().integers(2, 25) - 1) * (-1) ** rng().integers(2)
-    assert to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
+    assert viz.to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
 
     #  Test random even multiples of sqrt(pi).
     even_int = odd_int + 1
-    assert to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(even_int)
+    assert viz.to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(even_int)
 
     # Check everything else converted into a str.
     rand_numb = rng().random()
     rand_d = rng().integers(2, 25)
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
-        assert to_pi_string(rand_numb, d=rand_d) == "{:.{}f}".format(rand_numb, rand_d)
+        assert viz.to_pi_string(rand_numb, d=rand_d) == "{:.{}f}".format(rand_numb, rand_d)
 
     # Test for tex=False
-    assert to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
+    assert viz.to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 
 class TestDrawEGraph:
@@ -62,7 +63,7 @@ class TestDrawEGraph:
         bell_state.add_edge(*edge, color="MidnightBlue")
 
         # Test for drawing the EGraph
-        _, a = draw_EGraph(bell_state)
+        _, a = viz.draw_EGraph(bell_state)
         plt.close()
 
         assert len(a.get_xticks()) == 1
@@ -83,7 +84,7 @@ class TestDrawEGraph:
         RHG = SurfaceCode(d).graph
 
         # Test for drawing the EGraph
-        _, a = draw_EGraph(RHG)
+        _, a = viz.draw_EGraph(RHG)
         plt.close()
 
         n_ticks = 2 * d - 1

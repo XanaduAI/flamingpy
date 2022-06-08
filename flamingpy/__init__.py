@@ -28,7 +28,10 @@ import matplotlib
 try:
     import flamingpy.cpp.lemonpy as lp
     import flamingpy.cpp.cpp_mc_loop as cmc
+
+    cpp_libraries_available = True
 except ImportError:  # pragma: no cover
+    cpp_libraries_available = False
     warnings.warn("Failed to import flamingpy.cpp libraries.", ImportWarning)
 
 from ._version import __version__
@@ -69,5 +72,13 @@ def about():
     print("NetworkX version:            {}".format(networkx.__version__))
     print("RetworkX version:            {}".format(retworkx.__version__))
     print("Matplotlib version:          {}".format(matplotlib.__version__))
-    print("lemonpy shared object:       {}".format(lp))
-    print("cpp_mc_loop shared object:   {}".format(cmc))
+    print(
+        "lemonpy shared object:       {}".format(
+            "Not installed" if not cpp_libraries_available else lp
+        )
+    )
+    print(
+        "cpp_mc_loop shared object:   {}".format(
+            "Not installed" if not cpp_libraries_available else cmc
+        )
+    )

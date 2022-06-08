@@ -15,6 +15,8 @@
 
 The networkx implementation is used as a reference.
 """
+# pylint: disable=unused-import
+
 import itertools as it
 from copy import deepcopy
 
@@ -27,6 +29,14 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import CV_decoder, GKP_binner, assign_weights
 from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
 
+
+try:
+    import flamingpy.cpp.lemonpy as lp
+    import flamingpy.cpp.cpp_mc_loop as cmc
+
+    cpp_libraries_available = True
+except ImportError:  # pragma: no cover
+    cpp_libraries_available = False
 
 # Test parameters
 matching_graph_types = [LemonMatchingGraph, RxMatchingGraph]
@@ -57,6 +67,7 @@ def test_conversion(matching_graphs):
     assert nx.is_isomorphic(graph.to_nx().graph, nx_graph.graph)
 
 
+@pytest.mark.skipif(not cpp_libraries_available, reason="flamingpy.cpp libraries not available")
 def test_matching_has_same_weight(matching_graphs):
     """Test that different backends return matching similar to networkx."""
     graph, nx_graph = matching_graphs
@@ -109,6 +120,7 @@ def test_code_matching_conversion(code_matching_graphs):
     assert nx.is_isomorphic(graph.to_nx().graph, nx_graph.graph)
 
 
+@pytest.mark.skipif(not cpp_libraries_available, reason="flamingpy.cpp libraries not available")
 def test_code_matching_has_same_weight(code_matching_graphs):
     """Test that different backends return a matching similar to networkx."""
     graph, nx_graph = code_matching_graphs
