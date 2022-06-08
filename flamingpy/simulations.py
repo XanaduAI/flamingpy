@@ -13,17 +13,19 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position,consider-using-with
+# pylint: disable=wrong-import-position,consider-using-with
 
 import argparse
 import csv
 import sys
 import warnings
+import logging
 
 from datetime import datetime
 from time import perf_counter
 
 int_time = int(str(datetime.now().timestamp()).replace(".", ""))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 try:
     import mpi4py.rc

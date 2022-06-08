@@ -19,13 +19,15 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {python-version: 3.8, use_mpi: 'single-processor'}
+          - {python-version: 3.8, use_mpi: 'no-mpi'}
           - {python-version: 3.8, use_mpi: 'mpi'}
-          - {python-version: 3.9, use_mpi: 'single-processor'}
-          - {python-version: '3.10', use_mpi: 'single-processor'}
+          - {python-version: 3.9, use_mpi: 'no-mpi'}
+          - {python-version: '3.10', use_mpi: 'no-mpi'}
 
     env:
       USE_MPI: ${{ matrix.config.use_mpi }}
+      COVERAGE_FLAGS: "--cov=flamingpy --cov-report=xml --cov-report=term-missing --cov-fail-under=95"
+      XDIST_FLAGS: "-n auto --dist=loadfile"
 
     steps:
       - uses: actions/checkout@v2
@@ -54,7 +56,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ --cov=flamingpy --cov-report=xml --cov-report=term-missing -p no:warnings --tb=native --cov-fail-under=95
+          python -m pytest tests/ $COVERAGE_FLAGS $XDIST_FLAGS
           if [ "$USE_MPI" == "mpi" ]; then
             mpirun -np 2 python flamingpy/simulations.py
           fi

@@ -10,23 +10,24 @@ FlamingPy requires the following Python version to be installed:
 
 as well as the following Python packages for development purposes:
 
-* |black| >= 19.3b0
-* |cmake| >= 3.14
-* |codecov| >= 2.1.12
-* |cython| >= 0.29.28
-* |docformatter| >= 1.4
-* |matplotlib| >= 3.3.3
-* |mpi4py| >= 3.1.3 (optional, only for Linux users)
-* |networkx| >= 2.5
-* |NumPy| >= 1.21
-* |pytest| >= 6.2
-* |pytest-cov| >= 3.0
-* |pytest-logger| >= 0.5.1
-* |pytest-mock| >= 3.6.1
-* |retworkx| >= 0.10.2
-* |setuptools| >= 62.3.2
-* |scipy| >= 1.6
-* |thewalrus| >= 0.19.0
+* `black <https://pypi.org/project/black/>`_ >= 19.3b0
+* `cmake <https://pypi.org/project/cmake/>`_ >= 3.14
+* `codecov <https://about.codecov.io/language/python/>`_ >= 2.1.12
+* `cython <https://cython.org/>`_ >= 0.29.28
+* `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
+* `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
+* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (optional, only for Linux users)
+* `networkx <https://networkx.org/>`_ >= 2.5
+* `NumPy <http://numpy.org/>`_ >= 1.21
+* `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
+* `pytest-cov <https://pypi.org/project/pytest-cov/>`_ >= 3.0
+* `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
+* `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
+* `pytest-xdist <https://pypi.org/project/pytest-xdist/>`_ >= 1.29.0
+* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
+* `setuptools <https://pypi.org/project/setuptools/>`_ >= 62.3.2
+* `scipy <https://scipy.org/>`_ >= 1.6
+* `thewalrus <https://the-walrus.readthedocs.io/en/latest/>`_ >= 0.19.0
 
 If you currently do not have Python 3 installed, we recommend
 |Anaconda|, a distributed version

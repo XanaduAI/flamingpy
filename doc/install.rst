@@ -37,14 +37,18 @@ Installation
             </p>
             <p class="lead grey-text w-responsive mx-auto mb-6">
                 If you currently do not have Python 3 installed, we recommend
-                <a href="https://www.anaconda.com/download/" target="_blank">Anaconda for Python 3</a>,
-                a distributed version of Python packaged for scientific computation.
+                <a href="https://www.anaconda.com/download/">Anaconda for Python 3</a>,
+                a distributed version of Python packaged for scientific computation. 
+            </p>
+            <p class="lead grey-text w-responsive mx-auto mb-6">
+                Upon activating a Python environment, run one of the following
+                in your choice of CLI: 
             </p>
         </div>
 
         <ul class="picker nav nav-pills nav-justified mt-6" id="version">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#stable" role="tab">Stable</a>
+                <a class="nav-link active" data-toggle="tab" href="#stable" role="tab">Stable (recommended)</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Source and Testing</a>
@@ -57,7 +61,8 @@ Installation
             <div class="tab-pane in show active" id="stable" role="tabpanel">
                 <pre>
                     <code class="bash">
-    # Install the latest released version of FlamingPy, all in a single package.
+    # Install the latest released PyPI version of FlamingPy (including
+    # dependencies and precompiled C++ binaries), all in a single package.
     python -m pip install flamingpy
                     </code>
                 </pre>
@@ -69,7 +74,7 @@ Installation
     git clone https://github.com/XanaduAI/flamingpy.git
     cd flamingpy
     python -m pip install -r dev-requirements.txt
-    # Choose one of the following:
+    # Choose one or some of the following:
     python setup.py develop # Only install Python libraries.
     python setup.py build_cython --inplace # Compile Cython-based backends.
     python setup.py build_cmake --inplace # Compile CMake-based backends.

@@ -58,7 +58,7 @@ def test_decoding():
     assert correct(code, {"outer": "MWPM"}) in [True, False]
 
 
-@pytest.mark.parametrize("prob", [-0.1, 1.1])
+@pytest.mark.parametrize("prob", sorted([-0.1, 1.1]))
 def test_warning(prob):
     """Test that a warning is raised when the probability is not between 0 and
     1."""
