@@ -20,12 +20,13 @@ avoids having to modify the global Matplotlib `rc_params`.
 
 To modify the plot parameters use, for example,
 
-  .. code::
+.. code-block:: python
+
     from flamingpy.utils.viz import plot_params as fp_plot_params
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements,too-many-locals
+# pylint: disable=too-many-statements,singleton-comparison
 
 import itertools as it
 import math
@@ -161,7 +162,6 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     return fig, ax
 
 
-# pylint: disable=too-many-arguments
 @mpl.rc_context(plot_params)
 def draw_EGraph(
     egraph,
@@ -177,26 +177,32 @@ def draw_EGraph(
 
     Args:
         color_nodes (bool or string or dict): Options are:
-
             True: color the nodes based on the 'color' attribute
-                attached to the node. If unavailable, color nodes black.
+            attached to the node. If unavailable, color nodes black.
+
             string: color all nodes with the color specified by the string
+
             tuple[str, dict]: color nodes based on attribute and defined colour
-                string by providing a tuple with [attribute, color_dictionary],
-                for example: ``["state", {"GKP": "b", "p": "r"}]``
-                will look at the "state" attribute of the node, and colour
-                according to the dictionary.
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
+
+                ``["state", {"GKP": "b", "p": "r"}]``
+
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
 
         color_edges (bool or string or dict):
-
             True: color the edges based on the 'color' attribute
-                attached to the node. If unavailable, color nodes grey.
+            attached to the node. If unavailable, color nodes grey.
+
             string: color all edges with the color specified by the stirng
+
             tuple: color edges based on attribute and defined colour
-                string by providing a tuple with [attribute, color_dictionary],
-                for example: if the edge attribute "weight" can be +1 or -1,
-                the tuple should be of the form:
-                ``("weight", {-1: minus_color, +1: plus_color})``.
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -213,9 +219,9 @@ def draw_EGraph(
         dimensions (tuple): Dimensions of the region that should be plotted.
             Should be of the form:
 
-                ([xmin, xmax], [ymin, ymax], [zmin, zmax]).
+                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
 
-            If None, set the dimensions to the smallest rectangular space
+            If None, sets the dimensions to the smallest rectangular space
             containing all the nodes.
 
     Returns:
@@ -225,7 +231,8 @@ def draw_EGraph(
     if dimensions is None:
         mins = map(min, zip(*egraph.nodes))
         maxs = map(max, zip(*egraph.nodes))
-
+        mins = map(lambda x: int(np.floor(x)), mins)
+        maxs = map(lambda x: int(np.ceil(x)), maxs)
         dimensions = zip(mins, maxs)
 
     xlim, ylim, zlim = [list(lim) for lim in dimensions]

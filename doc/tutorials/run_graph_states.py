@@ -1,15 +1,12 @@
-"""
-
-.. _graph-states-tutorial:
+""".. _graph-states-tutorial:
 
 Graph States
 ============
-
 """
 
 
 ######################################################################
-# *Author: Ilan Tzitrin*
+# *Authors: Ilan Tzitrin and Luis Mantilla*
 #
 
 
@@ -150,14 +147,19 @@ import flamingpy.utils.viz as viz
 # assumes that the nodes are specified by three-tuples :math:`(x, y, z)`
 # corresponding to coordinates in three dimensions.
 #
-# We can construct a GHZ state using FlamingPy. To do so, we have to place its nodes in 3D
-# space. There are infinite choices of coordinates available to us, but
-# let us place the points at corners of the unit cube:
+# Custom graph states
+# ^^^^^^^^^^^^^^^^^^^^^^
+# We can construct a GHZ state using FlamingPy. We can either use the built-in method
+# ``complete_graph`` in ``flamingpy.utils.graph_states`` to obtain the ``EGraph`` of this
+# state, or we can construct it from scratch. To do the latter,
+# we have to place its nodes in 3D space. There are infinite choices of
+# coordinates available to us, but let us place the points at corners of
+# the unit cube:
 #
 
 GHZ_edge_1 = {(0, 0, 0), (0, 0, 1)}
 GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
-
+GHZ_edge_3 = {(0, 0, 0), (1, 0, 1)}
 
 ######################################################################
 # We can give an ``EGraph`` its edges right away, but let us instead first
@@ -165,7 +167,7 @@ GHZ_edge_2 = {(0, 0, 1), (1, 0, 1)}
 #
 
 GHZ_state = EGraph()
-GHZ_state.add_edges_from([GHZ_edge_1, GHZ_edge_2])
+GHZ_state.add_edges_from([GHZ_edge_1, GHZ_edge_2, GHZ_edge_3])
 
 
 ######################################################################
@@ -192,7 +194,30 @@ GHZ_state.draw(**drawing_opts)
 
 
 ######################################################################
-# We can also extract some information about the graph state, including
+# Built-in graph states
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Now that we know how to create custom cluster states in FlamingPy,
+# let's use some built-in functions to generate some well-known graph states.
+# First, we need to import the module ``graph_states`` from ``flamingpy.utils``:
+
+from flamingpy.utils import graph_states
+
+######################################################################
+# Some of the families of graph states that we have access to are
+# star graph and complete graph states, linear cluster states (including
+# Bell pairs as a special case), and ring or polygon states. Let us plot a star
+# graph of 10 qubits as an example:
+
+graph_states.star_graph(10).draw(**drawing_opts)
+
+######################################################################
+# Now, let's see how the complete graph states in 10 qubits looks like:
+
+graph_states.complete_graph(10).draw(**drawing_opts)
+
+######################################################################
+# The two states above are both equivalent to GHZ states via local unitaries.
+# We can also extract some information about the graph states, including
 # the *adjacency matrix* :math:`A` of the underlying graph. The indices
 # (rows and columns) of this matrix correspond to the nodes of the graph.
 # The entry :math:`A_{ij}` is 0 if there is no edge connecting the nodes,
@@ -200,8 +225,14 @@ GHZ_state.draw(**drawing_opts)
 # generate the adjacency matrix and then plot its heat map:
 #
 
-GHZ_state.adj_generator(sparse=False)
-adj = GHZ_state.adj_mat
+complete_graph_state = graph_states.complete_graph(15)
+complete_graph_state.draw_adj()
 
-viz.plot_params["figure.figsize"] = (5.4, 4)
-viz.plot_mat_heat_map(adj)
+######################################################################
+# As expected, we have black tiles on the diagonal of the heat map, indicating no self connections
+# (loops), and yellow tiles everywhere else, indicating maximal connectedness.
+#
+# Having gone over the fundamentals of the ``EGraph``, the representation of graph states in FlamingPy,
+# you can better understand the structure of error correcting codes. Now, you can try to implement
+# a resource state amenable to universal quantum computation, or check out our tutorial
+# on error correction with the surface code: :ref:`run-error-correction`).

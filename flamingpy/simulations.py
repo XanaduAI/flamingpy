@@ -13,17 +13,19 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=too-many-locals,too-many-arguments,wrong-import-position
+# pylint: disable=wrong-import-position,consider-using-with
 
 import argparse
 import csv
 import sys
 import warnings
+import logging
 
 from datetime import datetime
 from time import perf_counter
 
 int_time = int(str(datetime.now().timestamp()).replace(".", ""))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 try:
     import mpi4py.rc
@@ -52,7 +54,8 @@ def ec_mc_trial(
     weight_options,
     rng=default_rng(),
 ):
-    """Runs a single trial of Monte Carlo simulations of error-correction for the given code."""
+    """Runs a single trial of Monte Carlo simulations of error-correction for
+    the given code."""
     if passive_objects is not None:
         reduce_macro_and_simulate(*passive_objects, p_swap, delta, rng)
     else:
@@ -103,9 +106,11 @@ def ec_monte_carlo(
         return_decoding_time (bool, optional): total decoding time is returned when set to True
 
     Returns:
-        errors (integer): the number of errors.
-        decoding_time (float): the total number of seconds taken by the decoder. This parameter is
-            returned only if return_decoding_time is set to True
+        (tuple): tuple containing:
+            errors (integer): the number of errors.
+
+            prep_time_total (float): the total time in seconds taken by the state prep steps.
+            This parameter is returned only if return_decoding_time is set to True
     """
     if passive_objects is not None:
         decoder = {"outer": decoder}
@@ -155,6 +160,8 @@ def ec_monte_carlo(
 
     if "MPI" in globals():
         world_comm.Reduce(local_successes, successes, op=MPI.SUM, root=0)
+    else:
+        successes[0] = local_successes[0]
 
     errors = int(trials - successes[0])
 
@@ -202,7 +209,7 @@ def run_ec_simulation(
 
     # Perform the simulation
     simulation_start_time = perf_counter()
-    errors, decoding_time = ec_monte_carlo(
+    errors, decoding_time_total = ec_monte_carlo(
         RHG_code,
         trials,
         delta,
@@ -222,7 +229,6 @@ def run_ec_simulation(
         file_name = fname or "./flamingpy/sims_data/sims_results.csv"
 
         # Create a CSV file if it doesn't already exist.
-        # pylint: disable=consider-using-with
         try:
             file = open(file_name, "x", newline="", encoding="utf8")
             writer = csv.writer(file)
@@ -261,7 +267,7 @@ def run_ec_simulation(
                 errors,
                 trials,
                 current_time,
-                decoding_time,
+                decoding_time_total,
                 (simulation_stop_time - simulation_start_time),
                 mpi_size,
             ]

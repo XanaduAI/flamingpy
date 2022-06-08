@@ -40,7 +40,7 @@
 
 <img src="https://user-images.githubusercontent.com/25132802/168440346-9e285190-9527-482e-8877-b64c348df3b5.svg" width="330px" align="right">
 
-* Simulates error correction on combinations of CV and DV codes to obtain estimations of fault-tolerant thresholds.
+* Simulates error correction on combinations of continuous-variable (CV) and discrete-variable (DV) codes to obtain estimations of fault-tolerant thresholds.
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states).
 * Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features.
 * Provides a host of visualization tools for ease of verifying correctness.
@@ -76,7 +76,7 @@ Note you will need to remove the comments manually if you use Windows prompt. Th
 - The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
-If you encountered **CMake** errors, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. You may wish to also try `conda install git` for git-related errors. Furthermore, Linux users must install an **MPI** library for `mpi4py` requirements before attempting the above (e.g. `sudo apt install libopenmpi-dev` on Debian-based systems). For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/latest/help/frequently_encountered_errors.html) page in the documentation.
+If you encountered **CMake** errors, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git` for **git**-related errors. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/latest/help/frequently_encountered_errors.html) page in the documentation.
 
 
 ## Getting started and basic usage
