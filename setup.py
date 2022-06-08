@@ -11,10 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""setup.py instructions for FlamingPy installation from Source
-"""
-
-# pylint: disable=too-few-public-methods
+"""setup.py instructions for FlamingPy installation from Source."""
 
 import os
 import re
@@ -36,7 +33,7 @@ with open("flamingpy/_version.py", encoding="utf8") as f:
 
 
 class BinaryDistribution(dist.Distribution):
-    """A class to define Binary Distribution objects"""
+    """A class to define Binary Distribution objects."""
 
     def has_ext_modules(foo):
         """Check for external modules."""
@@ -159,8 +156,10 @@ install_requires = [
     "thewalrus>=0.19.0",
 ]
 
-description = ("FlamingPy is a cross-platform Python library with a variety of backends for "
-               "efficient simulations of error correction in fault-tolerant quantum computers.")
+description = (
+    "FlamingPy is a cross-platform Python library with a variety of backends for "
+    "efficient simulations of error correction in fault-tolerant quantum computers."
+)
 
 setup(
     name="flamingpy",

@@ -42,10 +42,10 @@ def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, 
     # Instantiate a surface code.
     RHG_code = SurfaceCode(d, ec=err, boundaries=boundaries, polarity=polarity)
     RHG_lattice = RHG_code.graph
-    RHG_fig = RHG_code.draw()
+    _, RHG_ax = RHG_code.draw()
 
     # Check edges between boundaries for periodic boundary conditions.
-    if boundaries == "all_periodic":
+    if boundaries == "periodic":
         all_boundaries = []
         for plane in ("x", "y", "z"):
             for i in (0, 2 * d - 1):
@@ -67,7 +67,7 @@ def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, 
             color = np.random.rand(3)
             for point in stabilizer.egraph:
                 x, z, y = point
-                RHG_fig.scatter(x, z, y, color=color, s=40)
+                RHG_ax.scatter(x, z, y, color=color, s=40)
 
     if show:
         plt.show()

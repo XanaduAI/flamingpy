@@ -14,8 +14,6 @@
 """Example of instantiating, applying noise, decoding, recovering, and
 visualizing this procedure for the measurement-based surface code."""
 
-# pylint: disable=too-many-arguments,too-many-locals
-
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import SurfaceCode
@@ -106,8 +104,8 @@ if __name__ == "__main__":
     params = {
         # QEC code parameters
         "distance": 3,
-        # Boundaries ("open", "periodic", "all_periodic")
-        "boundaries": "all_periodic",
+        # Boundaries ("open" or "periodic")
+        "boundaries": "open",
         # Error complex ("primal" or "dual")
         "ec": "primal",
         # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
