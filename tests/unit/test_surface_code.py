@@ -23,6 +23,7 @@ from networkx.algorithms.operators import difference
 import numpy as np
 from numpy.random import default_rng as rng
 import pytest
+from sympy import intersection
 
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity
@@ -257,9 +258,9 @@ class TestRHGGraph:
         # since the new method creates a lattice with a different shape.
         # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
-    def test_periodic_boundaries(self, d):
-        """Test whether periodic boundary conditions produce a lattice with the
-        expected size."""
+    def test_all_periodic_boundaries(self, d):
+        """Test whether periodic boundary conditions on every direction
+        produce a lattice with the expected size."""
         RHG_lattice = RHG_graph(d, "all_periodic")
         assert len(RHG_lattice) == 6 * (d**3)
 
@@ -273,6 +274,35 @@ class TestRHGGraph:
             assert len(RHG_lattice[point]) == 4
 
         assert not set(RHG_lattice.edges) - set(RHG_graph(d, "all_periodic").edges)
+
+    @pytest.mark.parametrize("boundary_type", ["periodic_primal", "periodic_dual"])
+    def test_periodic_boundaries(self, d, boundary_type):
+        """Test whether periodic boundary conditions on x and y direction
+        produce a lattice with the expected neighbors."""
+        RHG_lattice = RHG_graph(d, boundary_type)
+        # assert len(RHG_lattice) == 6 * (d**3)
+
+        # test that sites on the edges of periodic boundaries have
+        # their corresponding relations by sticking one side to the
+        # other
+        for plane in ("x", "y"):
+            # define the plane displacement
+            dd = {"x": 0, "y": 0, "z": 0}
+            dd[plane] = 2 * d - 1
+
+            lower_boundary = RHG_lattice.slice_coords(plane, 0)
+            displaced_boundary = set(
+                (x + dd["x"], y + dd["y"], z + dd["z"]) for x, y, z in lower_boundary
+            )
+
+            upper_boundary = set(RHG_lattice.slice_coords(plane, 2 * d - 1))
+
+            intersection = displaced_boundary.intersection(upper_boundary)
+
+            if plane in ("x", "y"):
+                assert len(intersection) > 0
+            else:
+                assert len(intersection) == 0
 
     @pytest.mark.parametrize("boundaries", all_bound_combs)
     def test_polarity(self, d, boundaries):
