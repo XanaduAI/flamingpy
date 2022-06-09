@@ -133,9 +133,6 @@ def RHG_graph(
 
             where each b above can be 'primal', 'dual', or 'periodic'.
             By default, 'primal'  is used (i.e. ['primal', 'primal', 'primal']).
-            Note that in the above boundaries, we consider the z-axis to have
-            the role of temporal dimension. This is relevant for quantum memory
-            simulations and gives the temporal boundaries a special role.
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
 
