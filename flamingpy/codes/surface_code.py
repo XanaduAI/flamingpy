@@ -16,6 +16,7 @@
 import itertools as it
 
 import numpy as np
+from typing import Tuple, Union
 
 from flamingpy.codes import Stabilizer
 from flamingpy.codes.graphs import EGraph
@@ -103,7 +104,7 @@ def str_to_bound(bound_name):
 
 
 def RHG_graph(
-    dims,
+    dims: Union[int, Tuple[int, int, int]],
     boundaries="primal",
     polarity=None,
 ):
@@ -142,12 +143,6 @@ def RHG_graph(
     Returns:
         EGraph: the RHG lattice.
     """
-    # Check if dims is an int or a 3-tuple
-    if not isinstance(dims, (int, tuple, list, np.ndarray)):
-        raise TypeError("distance must be an integer or a 3-tuple")
-    if not np.size(dims) in (1, 3):
-        raise ValueError("distance must be a integer or a 3-tuple")
-
     # Create an EGraph with the graph attribute 'dims' (used for
     # plotting purposes.
     if np.size(dims) == 1:
@@ -284,7 +279,7 @@ class SurfaceCode:
 
     def __init__(
         self,
-        distance,
+        distance: Union[int, Tuple[int, int, int]],
         ec="primal",
         boundaries="open",
         polarity=None,
