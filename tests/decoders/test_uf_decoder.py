@@ -62,7 +62,7 @@ def enc_state(request):
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01]
+    [2, 3, 4], ["primal", "dual"], ["open", "all_periodic"], [1, 0.1, 0.01]
 )  # distance, ec, boundaries, delta, p_swap
 
 
