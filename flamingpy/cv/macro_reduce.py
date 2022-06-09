@@ -13,15 +13,16 @@
 # limitations under the License.
 """Functions for reducing a macronode lattice to a canonical lattice."""
 
-# pylint: disable=protected-access,too-many-statements,too-many-locals,too-many-arguments
+# pylint: disable=protected-access,too-many-statements
 
 import numpy as np
 from numpy.random import default_rng
 from scipy.linalg import block_diag
 
+from thewalrus.symplectic import expand, beam_splitter
+
 from flamingpy.cv.ops import CVLayer, SCZ_apply
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
-from thewalrus.symplectic import expand, beam_splitter
 
 
 def invert_permutation(p):

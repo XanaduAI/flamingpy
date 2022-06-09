@@ -78,14 +78,14 @@ FlamingPy is the work of `many contributors <https://github.com/XanaduAI/flaming
 
     Ilan Tzitrin, Takaya Matsuura, Rafael N. Alexander, Guillaume Dauphinais, J. Eli Bourassa, Krishna K. Sabapathy, Nicolas C. Menicucci, and Ish Dhand,
     Fault-Tolerant Quantum Computation with Static Linear Optics, PRX Quantum, Vol. 2, No. 4, 2021,
-    `DOI:10.1103/prxquantum.2.040353 <http://dx.doi.org/10.1103/PRXQuantum.2.040353>`__
+    |PRX_Quantum|
 
 In addition to the authors above, the developers would like to thank Sanchit Bapat, Ashlesha Patil, Michael Vasmer, and Trevor Vincent for their contributions to the pre-release project.
 
 License
 -------
 
-FlamingPy is **free** and **open source**, and released under the `Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`__.
+FlamingPy is **free** and **open source**, and released under the |Apache2|.
 
 
 .. toctree::
@@ -94,7 +94,7 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    :hidden:
 
    self
-   quick_installation
+   install
 
 .. toctree::
    :maxdepth: 2
@@ -141,3 +141,13 @@ FlamingPy is **free** and **open source**, and released under the `Apache Licens
    source/fp.noise
    source/fp.simulations
    source/fp.utils
+
+
+.. |PRX_Quantum| raw:: html
+
+   <a href="http://dx.doi.org/10.1103/PRXQuantum.2.040353" target="_blank">DOI:10.1103/prxquantum.2.040353</a>
+
+
+.. |Apache2| raw:: html
+
+   <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License, Version 2.0</a>

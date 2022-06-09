@@ -13,8 +13,6 @@
 # limitations under the License.
 """Class for the measurement-based surface code and related functions."""
 
-# pylint: disable=too-many-locals
-
 import itertools as it
 
 import numpy as np
