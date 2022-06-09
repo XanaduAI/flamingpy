@@ -142,6 +142,12 @@ def RHG_graph(
     Returns:
         EGraph: the RHG lattice.
     """
+    # Check if dims is an int or a 3-tuple
+    if not isinstance(dims, (int, tuple, list, np.ndarray)):
+        raise TypeError("distance must be an integer or a 3-tuple")
+    if not np.size(dims) in (1, 3):
+        raise ValueError("distance must be a integer or a 3-tuple")
+
     # Create an EGraph with the graph attribute 'dims' (used for
     # plotting purposes.
     if np.size(dims) == 1:
@@ -284,8 +290,6 @@ class SurfaceCode:
         polarity=None,
         backend="retworkx",
     ):
-        assert np.size(distance) in (1, 3), "distance must be a scalar or a 3-tuple"
-
         self.distance = distance
         if np.size(distance) == 1:
             self.dims = (distance, distance, distance)
