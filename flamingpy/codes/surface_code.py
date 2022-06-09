@@ -470,7 +470,7 @@ class SurfaceCode:
                 bound_ind = np.where(self.boundaries == ec)[0][0]
                 ec_bound_points = self._get_ec_bounds(ec, bound_ind)
 
-            print(ec_bound_points)
+            print("ec boundary points",  ec_bound_points) #TODO remove this
             setattr(self, ec + "_bound_points", ec_bound_points)
 
     def _get_ec_bounds(self, ec, bound_ind):
