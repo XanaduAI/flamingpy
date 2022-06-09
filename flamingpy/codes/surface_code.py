@@ -252,6 +252,9 @@ class SurfaceCode:
                     ['primal', 'dual', 'primal'] for 'dual' EC
             'periodic': 'periodic' in all three directions.
 
+            Note that in the z-axis is considered as the temporal dimension
+            in quantum memory simulations.
+
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
 
