@@ -118,7 +118,7 @@ def RHG_graph(
         dims (int or 3-tuple): the dimensions of the lattice. If int,
             generates a cube corresponding to a code of distance dims.
             If a three-tuple (dx, dy, dz), assumes distances
-            dx, dy, dz in x, y, z directions, respectively. Note, for
+            dx, dy, dz in x, y, z directions, respectively. For
             axes with open boundaries, the corresponding distance
             should be greater than 1.
         boundaries (str or list-type, optional): the boundary types
