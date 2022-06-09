@@ -28,7 +28,7 @@ To modify the plot parameters use, for example,
 
 # pylint: disable=too-many-statements,singleton-comparison
 
-import itertools as it
+from itertools import product
 import math
 
 import numpy as np
@@ -587,7 +587,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     """
 
     cubes = getattr(code, ec + "_stabilizers")
-    boundaries = "open" if "open" in code.bound_str else "periodic"
     # Default drawing options.
     draw_dict = {
         "show_nodes": False,
@@ -633,49 +632,15 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         ax.set_ylabel("z", labelpad=20)
         ax.set_zlabel("y", labelpad=20)
         leg = None
+
     # Illustrate stabilizers with voxels colored green for even
     # parity and red for odd pariy.
     positions, colors, sizes = [], [], []
     for cube in cubes:
 
-        # Obtain smallest and largest coordinates for each
-        # cube and calculate its position.
-        xmin, xmax = np.array(cube.xlims())
-        ymin, ymax = np.array(cube.ylims())
-        zmin, zmax = np.array(cube.zlims())
-        midpoint = np.array(cube.midpoint())
-
-        gap = 0.15  # gap defines the distance between adjacent cubes
-        min_arr = np.array([xmin, ymin, zmin])
-        max_arr = np.array([xmax, ymax, zmax])
-
-        # Find the size of the cube: if it corresponds to an incomplete
-        # stabilizer, draw a rectangular prism
-        size = np.abs(max_arr - min_arr) - 2 * gap
-
-        dual_factor = 1 if ec == "dual" else 0
-
-        in_low_boundary = midpoint == 1 - dual_factor
-        in_high_boundary = midpoint == 2 * shape - 1 - dual_factor
-        midpoint_coord_in_boundary = np.logical_or(in_low_boundary, in_high_boundary)
-        # "open" will always have incomplete stabs in the boundaries
-        if boundaries == "open" and (midpoint_coord_in_boundary.any()):
-            # values corresponding to the x-axis shouldn't be resized/displaced
-            # if ec is primal to draw voxels correctly
-            if ec == "primal":
-                midpoint_coord_in_boundary[0], in_low_boundary[0] = False, False
-            else:  # dual
-                midpoint_coord_in_boundary[1], in_low_boundary[1] = False, False
-                midpoint_coord_in_boundary[2], in_low_boundary[2] = False, False
-            # resize voxel
-            size[midpoint_coord_in_boundary] = size[midpoint_coord_in_boundary] / 2 - gap
-            sizes.append(size)
-            # displace voxel if needed
-            min_arr[in_low_boundary] += 1
-        else:
-            sizes.append(size)
-
-        positions.append(min_arr + gap)
+        cube_origin, size = _calculate_cube_size_and_position(code, cube)
+        sizes.append(size)
+        positions.append(cube_origin)
 
         # Fill in the color arrays depending on parity.
         if cube.parity:
@@ -687,7 +652,8 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
         if drawing_opts["label_stabilizers"] and index_dict:
             if cube in index_dict:
-                ax.text(*cube.midpoint(), index_dict[cube])
+                mid_x, mid_z, mid_y = cube.midpoint()
+                ax.text(mid_x, mid_y, mid_z, index_dict[cube])
 
     # draw cubes
     pc = _plot_cubes_at(positions, colors=colors, sizes=sizes)
@@ -720,6 +686,51 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         ax.set_title(ec.capitalize() + " syndrome")
 
     return fig, ax
+
+
+def _calculate_cube_size_and_position(code, cube):
+    # Obtain cube coords
+    # NOTE: coords y and z are swapped by convention!
+    xmin, xmax = np.array(cube.xlims())
+    ymin, ymax = np.array(cube.zlims())
+    zmin, zmax = np.array(cube.ylims())
+
+    midx, midz, midy = cube.midpoint()
+    midpoint = np.array([midx, midy, midz])
+
+    # coordinates of the stabilizers
+    cube_coords = np.array(cube.coords())
+    cube_coords[:, [1, 2]] = cube_coords[:, [2, 1]]
+
+    # Find the size of the cube
+    gap = 0.15  # gap defines the distance between adjacent cubes
+    cube_origin = np.array([xmin, ymin, zmin]) + gap
+    max_arr = np.array([xmax, ymax, zmax])
+    size = np.abs(max_arr - cube_origin) - 2 * gap
+
+    # if there is any incomplete stabilizer, halve its size on
+    # the missing direction
+    is_incomplete_stab = len(cube_coords) != len(cube.physical)
+    if is_incomplete_stab:
+        # to do so the cube is tranlated to the origin of coordinates
+        centered_cube = cube_coords - np.tile(midpoint, (cube_coords.shape[0], 1))
+        # then stabilizers are paired (meaning 2 stabilizers) by finding the number
+        # of points lying over an axis. Unpaired points appear for incomplete
+        # stabilizers and determine the direction in which the cube has to be
+        # resized.
+        for idx, _ in enumerate(size):
+            num_stabs = centered_cube[centered_cube[:, idx] != 0].shape[0]
+            if num_stabs < 2:
+                size[idx] = size[idx] / 2 - gap
+
+            # cubes lying on a lower boundary should be relocated
+            # to lie inside the graph
+        bound_ind = np.array(code.boundaries == "dual", dtype=int)
+        bound_ind[[1, 2]] = bound_ind[[2, 1]]
+        in_low_index = midpoint == bound_ind
+        cube_origin[in_low_index] += 1
+
+    return cube_origin, size
 
 
 def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
@@ -786,7 +797,7 @@ def add_recovery_drawing(ax, **kwargs):
     if matching:
         virtual_points = G_match.virtual_points
         for pair in matching:
-            if pair not in it.product(virtual_points, virtual_points):
+            if pair not in product(virtual_points, virtual_points):
                 xlist, ylist, zlist = [], [], []
                 path = G_match.edge_path(pair)
                 for node in path:
