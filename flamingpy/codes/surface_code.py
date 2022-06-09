@@ -14,9 +14,9 @@
 """Class for the measurement-based surface code and related functions."""
 
 import itertools as it
+from typing import Tuple, Union
 
 import numpy as np
-from typing import Tuple, Union
 
 from flamingpy.codes import Stabilizer
 from flamingpy.codes.graphs import EGraph
