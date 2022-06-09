@@ -19,6 +19,7 @@ import numpy as np
 from numpy.random import default_rng
 import scipy.sparse as sp
 
+from flamingpy.codes import EGraph
 from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply, splitter_symp
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
@@ -30,187 +31,123 @@ class CVLayer:
     Associates the nodes of an EGraph with continuous-variable quantum states,
     and its edges with continuous-variable CZ gates.
 
-    For now, only a hybrid state of p-squeezed and GKP states is considered.
+    Currently, a hybrid lattice of p-squeezed and GKP+ states is considered.
 
     Args:
         code (SurfaceCode or EGraph): the code object (so that code.graph is
-            an EGraph) or an EGraph directly.
+            an EGraph), or an EGraph directly, to which the noise is applied.
+        delta (float): the quadrature blurring parameter, related to the 
+            squeezing of the GKP states and the momentum-quadrature variance of 
+            the p-squeezed states.
         state (dict, optional): the dictionary of all non-GKP states and their
             indices, of the form {'state': []}. By default, all states are
             GKP states.
         p_swap (float, optional): if supplied, the probability of a node being
             a p-squeezed state. Overrides the indices given in state.
+        sampling_order (str, optional): the scheme for conducting samplign
+            for the homodyne measurements. Options are "initial" and "two-step".
         rng (numpy.random.Generator, optional): a random number generator
             following the NumPy API. It can be seeded for reproducibility.
             By default, numpy.random.default_rng is used without a fixed seed.
 
     Attributes:
         egraph (EGraph): the unerlying graph representation.
-        _N (int): the number of qubits in the lattice.
+        to_points (dict): the index-to-coordinate dictionary, taken from egraph.
+        N (int): the number of qubits in the lattice.
+        delta (float): the delta from the Args above.
+        p_swap (float): the swap-out probability from the Args above.
         _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph.
         _states (dict): states along with their indices.
-        _delta (float): the delta from the Args above (after noise applied)
-        _adj (array): adjancency matrix of the underlying graph.
-        to_points (dict): pointer to self.egraph.to_points, the dictionary from
-            indices to coordinates.
+        _sampling_order (str): sampling order from above.
+        _perfect_inds (list or NoneType): the indices of qubits to treat as 
+            ideal.
     """
 
-    def __init__(self, code, states=None, p_swap=0, rng=default_rng()):
-        """Initialize the CVGraph."""
-        if code.__class__.__name__ == "EGraph":
+    def __init__(self, code, **kwargs):
+        if isinstance(code, EGraph):
             self.egraph = code
         else:
+            self.code = code
             self.egraph = code.graph
-        self._N = len(self.egraph)
         # Generate indices if not already done
         self.egraph.index_generator()
+        
+        # Set some egraph properties to attributes of self
+        self.N = len(self.egraph)
         self.to_points = self.egraph.to_points
-
-        self._init_quads = None
-        self._noise_cov = None
-        self._init_noise = None
-        self._perfect_inds = None
-        self._sampling_order = None
-        self._delta = None
-
-        # Instantiate the adjacency matrix
         self._adj = self.egraph.adj_generator(sparse=True)
 
-        self._states = states or {"p": np.empty(0, dtype=int)}
+        self.delta = kwargs.get("delta")
+        self.p_swap = kwargs.get("p_swap")
+        self._states = kwargs.get("states") or {"p": np.empty(0, dtype=int)}
+        self._sampling_order = kwargs.get("sampling_order")
+        self._perfect_inds = self.egraph.graph.get("perfect_inds")
 
+    def apply_noise(self, rng=default_rng()):
+        """Apply cv-level noise to the graph state.
+        
+        First, label the states; then, measure the syndrome and populate 
+        self.egraph with bit values.
+        
+        This method modifies self.egraph."""
+        self.populate_states(rng=rng)
+        self.measure_syndrome(rng=rng)
+
+    def populate_states(self, rng=default_rng()):
+        """Populate the graph state with state labels.
+        
+        Assume the graph states consists of a combination of squeezed states 
+        and GKP+ states. A non-zero self.p_swap overrides indices specified in 
+        self._states and uses a binomial distribution to identify some indices 
+        as p-squeezed states.
+
+        Print a message if both p_swap and p indices are supplied.
+        
+        This method modifies self.egraph."""
         # Generate indices of squeezed states based on swap-out
-        # probability p_swap.
-        if p_swap:
-            self._generate_squeezed_indices(p_swap, rng)
+        # probability self.p_swap, if supplied.
+        if self.p_swap:
+            self._generate_squeezed_indices(self.p_swap, rng)
 
         # Associate remaining indices with GKP states.
         self._generate_gkp_indices()
 
         # Give the EGraph nodes state attributes.
         self._apply_state_labels()
-
-    def _apply_state_labels(self):
-        for psi in self._states:
-            for ind in self._states[psi]:
-                self.egraph.nodes[self.to_points[ind]]["state"] = psi
+         
+    def _generate_squeezed_indices(self, rng):
+        """Generate the indices of squeezed states."""
+        if len(self._states["p"]):
+            print(
+                "Both swap-out probability and indices of p-squeezed states supplied. "
+                "Ignoring the indices."
+            )
+        if self.p_swap == 1:
+            self._states["p"] = np.arange(self.N)
+        else:
+            num_p = rng.binomial(self.N, self.p_swap)
+            inds = rng.choice(range(self.N), size=int(np.floor(num_p)), replace=False)
+            self._states["p"] = inds
 
     def _generate_gkp_indices(self):
         """Associate remaining indices with GKP states."""
         used_inds = np.empty(0, dtype=int)
         for psi in self._states:
             used_inds = np.concatenate([used_inds, self._states[psi]])
-        remaining_inds = list(set(range(self._N)) - set(used_inds))
+        remaining_inds = list(set(range(self.N)) - set(used_inds))
         self._states["GKP"] = np.array(remaining_inds, dtype=int)
+      
+    def _apply_state_labels(self):
+        """Add state labels as node attributes to the graph state."""
+        for psi in self._states:
+            for ind in self._states[psi]:
+                self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
-    def _generate_squeezed_indices(self, p_swap, rng):
-        """Use swap-out probability p_swap to hybridize the CV graph state.
-
-        A non-zero p_swap overrides indices specified in states and uses
-        a binomial distribution to associate some indices as p-squeezed
-        states.
-
-        Print a message if both p_swap and p indices are supplied.
-
-        Args:
-            p_swap (float): the swap-out probability.
-            rng (numpy.random.Generator, optional): A random number generator
-                following the NumPy API. It can be seeded for reproducibility.
-                By default, numpy.random.default_rng is used without a fixed seed.
-        """
-        if len(self._states["p"]):
-            print(
-                "Both swap-out probability and indices of p-squeezed states supplied. "
-                "Ignoring the indices."
-            )
-        if p_swap == 1:
-            self._states["p"] = np.arange(self._N)
-        else:
-            num_p = rng.binomial(self._N, p_swap)
-            inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
-            self._states["p"] = inds
-
-    def apply_noise(self, model=None, rng=default_rng()):
-        """Apply the noise model in model with a random number generator rng.
-
-        Args:
-            model (dict, optional): the noise model dictionary of the form
-                (default values displayed):
-
-                {'model': 'grn', 'sampling_order': 'initial', 'delta': 0.01,
-                 'perfect_inds': self.egraph.graph.get('perfect_inds')}
-
-                'grn; stands for Gaussian Random Noise; sampling_order dictates
-                how to simulate measurement outcomes: sample from an
-                uncorrelated noise matrix initially ('initial'), a correlated
-                noise matrix finally ('final'), or for ideal homodyne outcomes
-                initially and from a separable noise covariance matrix finally
-                ('two-step'); 'delta' is the quadrature blurring parameter,
-                related to the squeezing of the GKP states and the
-                momentum-quadrature variance of the p-squeezed states.
-                'perfect_inds' is a list of indices to which noise should not
-                be applied. By default, looks to the "perfect_inds" attribute
-                of egraph.graph.
-
-            rng (numpy.random.Generator, optional): a random number generator
-                following the NumPy API. It can be seeded for reproducibility.
-                By default, numpy.random.default_rng is used without a fixed
-                seed.
-        """
-        if model is None:
-            model = {}
-
-        # Modelling the states.
-        perfect_inds = self.egraph.graph.get("perfect_inds")
-        default_model = {
-            "noise": "grn",
-            "delta": 0.01,
-            "sampling_order": "initial",
-            "perfect_inds": perfect_inds,
-        }
-        model = {**default_model, **model}
-        self._delta = model["delta"]
-        self._sampling_order = model["sampling_order"]
-        self._perfect_inds = model["perfect_inds"]
-        if model["noise"] == "grn":
-            self.grn_model(rng)
-
-    def grn_model(self, rng=default_rng()):
-        """Apply Gaussian Random Noise model to the CVGraph.
-
-        Store quadrature or noise information as attributes depending on the
-        sampling order.
-
-        Args:
-            rng (numpy.random.Generator, optional): a random number generator
-                following the NumPy API. It can be seeded for reproducibility.
-                By default, numpy.random.default_rng is used without a fixed
-                seed.
-        """
-        N = self._N
-        delta = self._delta
-
-        # For initial and final sampling, generate noise array depending on
-        # quadrature and state.
-        if self._sampling_order in ("initial", "final"):
-            noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
-            noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
-            self._init_noise = np.zeros(2 * N, dtype=np.float32)
-            for state, inds in self._states.items():
-                if self._perfect_inds:
-                    inds = np.array(list(set(inds).difference(self._perfect_inds)))
-                if len(inds) > 0:
-                    self._init_noise[inds] = noise_q[state]
-                    self._init_noise[inds + N] = noise_p[state]
-
-        # For final sampling, apply a symplectic CZ matrix to the initial noise
-        # covariance.
-        if self._sampling_order == "final":
-            self._noise_cov = SCZ_apply(self._adj, sp.diags(self._init_noise) ** 2)
-
-        # For two-step sampling, sample for initial (ideal) state-dependent
-        # quadrature values.
+    def _means_sampler(self, propagate=False, rng=default_rng()):
+        """Return the means for the homodyne measurement sample."""
+        means = np.zeros(2 * self.N, dtype=np.float32)
         if self._sampling_order == "two-step":
-
+            
             def q_val_for_p(n):
                 return rng.random(size=n) * (2 * np.sqrt(np.pi))
 
@@ -218,21 +155,53 @@ class CVLayer:
                 return rng.integers(0, 2, size=n) * np.sqrt(np.pi)
 
             val_funcs = {"p": q_val_for_p, "GKP": q_val_for_GKP}
-            self._init_quads = np.zeros(2 * N, dtype=np.float32)
+
             for state, indices in self._states.items():
                 n_inds = len(indices)
                 if n_inds > 0:
-                    self._init_quads[indices] = val_funcs[state](n_inds)
+                    means[indices] = val_funcs[state](n_inds)
+            if propagate:
+                means = SCZ_apply(self._adj, covs)
+        return means
+            
+    def _covs_sampler(self, inds=None, rng=default_rng()):
+        """Return the covariances for the homodyne measurement sample."""
+        delta = self._delta
+        covs = np.zeros(2 * self.N, dtype=np.float32)
+        if self._sampling_order == "initial":
+            noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
+            noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
+            for state, inds in self._states.items():
+                if self._perfect_inds:
+                    inds = np.array(list(set(inds).difference(self._perfect_inds)))
+                if len(inds) > 0:
+                    covs[inds] = noise_q[state]
+                    covs[inds + self.N] = noise_p[state]
+        
+        if self._sampling_order == "two-step":
+            if inds is None:
+                inds = range(self.N)
+            N_inds = len(inds)
+            covs = np.full(N_inds, (self._delta / 2) ** 0.5, dtype=np.float32)
+            if self._perfect_inds:
+                inds_to_0 = set(inds).intersection(self._perfect_inds)
+                ind_arr = np.empty(len(inds_to_0), dtype=np.int64)
+                for i, perfect_ind in enumerate(inds_to_0):
+                    ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
+                covs[ind_arr] = (self._delta / 2) ** 0.5
+        
+        return covs
 
-    def measure_hom(
+    def _measure_hom(
         self,
         quad="p",
         inds=None,
-        method="cholesky",
-        updated_quads=None,
+        updated_means=None,
+        updated_covs=None,
+        propagate=True,
         rng=default_rng(),
     ):
-        """Conduct a homodyne measurement on the lattice.
+        """Conduct a homodyne measurement of states in the lattice.
 
         Simulate a homodyne measurement of quadrature quad of states at indices
         inds according to sampling order specified by self._sampling_order. Use
@@ -245,45 +214,30 @@ class CVLayer:
                 NumPy API. It can be seeded for reproducibility. By default,
                 numpy.random.default_rng is used without a fixed seed.
         """
-        N = self._N
+        N = self.N
         if inds is None:
             inds = range(N)
         N_inds = len(inds)
+        
+        means = updated_means or self._means_sampler(propagate=propagate, rng=rng)
+        covs = updated_covs or self._covs_sampler(rng=rng)
+        if self._sampling_order == "two-step":
+            if quad == "q":
+                means = means[:N][inds]
+            elif quad == "p":
+                means = means[N:][inds]
+        outcomes = rng.normal(means, covs)
         if self._sampling_order == "initial":
-            init_samples = rng.normal(0, self._init_noise)
-            outcomes = SCZ_apply(self._adj, init_samples)
+            outcomes = SCZ_apply(self._adj, covs)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
                 outcomes = outcomes[N:][inds]
-        if self._sampling_order == "two-step":
-            if updated_quads is not None:
-                updated = updated_quads
-            else:
-                means = self._init_quads
-                adj = self.egraph.adj_generator(sparse=True)
-                updated = SCZ_apply(adj, means)
-            if quad == "q":
-                means = updated[:N][inds]
-            elif quad == "p":
-                means = updated[N:][inds]
-            sigma = np.full(N_inds, (self._delta / 2) ** 0.5, dtype=np.float32)
-            if self._perfect_inds:
-                inds_to_0 = set(inds).intersection(self._perfect_inds)
-                ind_arr = np.empty(len(inds_to_0), dtype=np.int64)
-                for i, perfect_ind in enumerate(inds_to_0):
-                    ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
-                sigma[ind_arr] = (self._delta / 2) ** 0.5
-            outcomes = rng.normal(means, sigma)
-        if self._sampling_order == "final":
-            cov_q = self._noise_cov[:N, :N]
-            cov_p = self._noise_cov[N:, N:]
-            cov_dict = {"q": cov_q, "p": cov_p}
-            means = np.zeros(N_inds, dtype=bool)
-            covs = cov_dict[quad][inds, :][:, inds].toarray()
-            outcomes = rng.multivariate_normal(mean=means, cov=covs, method=method)
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
+
+    def measure_syndrome(self, rng):
+        return self._measure_hom(quad="p", inds=self.code.all_syndrome_inds, rng=rng)
 
     def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
@@ -297,14 +251,14 @@ class CVLayer:
     def hom_outcomes(self, inds=None, quad="p"):
         """array: quad-homodyne measurement outcomes for modes inds."""
         if inds is None:
-            inds = range(self._N)
+            inds = range(self.N)
         outcomes = [self.egraph.nodes[self.to_points[i]].get("hom_val_" + quad) for i in inds]
         return outcomes
 
     def bit_values(self, inds=None):
         """array: bit values associated with the p measurement."""
         if inds is None:
-            inds = range(self._N)
+            inds = range(self.N)
         bits = [self.egraph.nodes[self.to_points[i]].get("bit_val") for i in inds]
         return bits
 
@@ -339,9 +293,6 @@ class CVLayer:
         return plot_mat_heat_map(self.SCZ(), **kwargs)
 
 
-four_splitter = splitter_symp()
-
-
 class CVMacroLayer(CVLayer):
     """A class for reducing a macronode CV graph to a canonical graph.
 
@@ -358,29 +309,58 @@ class CVMacroLayer(CVLayer):
             the standard four-splitter.
     """
 
-    def __init__(self, *args, reduced_graph, bs_network=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.reduced_graph = reduced_graph
-        if bs_network is None:
-            self.bs_network = four_splitter
-
-    def _apply_initial_noise(self, noise_model):
-        """Set up the two-step noise model for macro_graph.
-
-        Based on noise_model, populate macro_graph with states and sample for
-        the initial (ideal) measurement outcomes.
-
-        This method modifies self.egraph.
-        """
-        macro_graph = self.egraph
+    def __init__(self, code, bs_network=None, **kwargs):
+        macro_graph = code.graph.macronize(pad_boundary=True)
+        macro_graph.index_generator()
+        macro_graph.adj_generator(sparse=True)
+        
         perfect_points = macro_graph.graph.get("perfect_points")
         if perfect_points:
             perfect_inds = [macro_graph.to_indices[point] for point in perfect_points]
         else:
             perfect_inds = None
-        noise_model["perfect_inds"] = perfect_inds
-        noise_model["sampling_order"] = "two-step"
-        self.apply_noise(noise_model)
+        
+        noise_args = {}
+        noise_args["perfect_inds"] = perfect_inds
+        noise_args["sampling_order"] = "two-step"
+        super().__init__(macro_graph, noise_args={}, **kwargs)
+
+        self.reduced_graph = code.graph
+        if bs_network is None:
+            self.bs_network = splitter_symp()
+
+    def apply_noise(self):
+        """Reduce the macronode lattice macro_graph to the canonical
+        reduced_graph.
+
+        Follow the procedure in arXiv:2104.03241. Take the macronode lattice
+        macro_graph, apply noise based on noise_layer and noise_model, designate
+        micronodes as planets and stars, conduct homodyne measurements, process
+        these measurements, and compute conditional phase error probabilities.
+
+        Modify reduced_graph into a canonical lattice with effective measurement
+        outcomes and phase error probabilities stored as node attributes.
+
+        Args:
+            macro_graph (EGraph): the macronode lattice
+            reduced_graph (EGraph): the reduced lattice
+            noise_layer (CVLayer): the noise layer
+            noise_model (dict): the dictionary of noise parameters to be fed into
+                noise_layer
+            bs_network (np.array): the beamsplitter network used to entangle the
+                macronodes.
+
+        Returns:
+            None
+        """
+        # Sample for the initial state
+        self._permute_indices_and_label()
+        self._entangle_states()
+        self._measure_syndrome()
+        # Process homodyne outcomes and calculate phase error probabilities
+        for j in range(0, self.N - 3, 4):
+            self._reduce_jth_macronode(j)
+
 
     def _permute_indices_and_label(self):
         """Obtain permuted indices and set type of reduced node.
@@ -397,7 +377,7 @@ class CVMacroLayer(CVLayer):
         This method sets the attribute self.permuted_inds to the permuted
         indices and modifies self.egraph and self.reduced_graph.
         """
-        N = self._N
+        N = self.N
         macro_graph = self.egraph
         to_points = macro_graph.to_points
         # A list of permuted indices where each block of four
@@ -443,10 +423,10 @@ class CVMacroLayer(CVLayer):
         vector.
         """
         macro_graph = self.egraph
-        quads = SCZ_apply(macro_graph.adj_mat, self._init_quads)
+        quads = self._means_sampler(propagate=True)
         # Permute the quadrature values to align with the permuted
         # indices in order to apply the beamsplitter network.
-        N = self._N
+        N = self.N
         quad_permutation = np.concatenate([self.permuted_inds, N + self.permuted_inds])
         permuted_quads = quads[quad_permutation]
         # The beamsplitter network
@@ -471,15 +451,15 @@ class CVMacroLayer(CVLayer):
 
         This method modifies self.egraph.
         """
-        N = self._N
+        N = self.N
         unpermuted_quads = self.permuted_quads[invert_permutation(self.quad_permutation)]
         # Indices of stars and planets.
         stars = self.permuted_inds[::4]
         planets = np.delete(self.permuted_inds, np.arange(0, N, 4))
         # Update quadrature values after CZ gate application.
         # Measure stars in p, planets in q.
-        self.measure_hom(quad="p", inds=stars, updated_quads=unpermuted_quads)
-        self.measure_hom(quad="q", inds=planets, updated_quads=unpermuted_quads)
+        self.measure_hom(quad="p", inds=stars, updated_means=unpermuted_quads)
+        self.measure_hom(quad="q", inds=planets, updated_means=unpermuted_quads)
 
     def _neighbor_of_micro_i_macro_j(self, i, j):
         """Return the neighbor of the ith micronode, jth macronode in
@@ -561,7 +541,7 @@ class CVMacroLayer(CVLayer):
 
         # Here, j corresponds to the macronode and i to to micronode.
         # i ranges from 1 to 4, to align with manuscript.
-        verts_and_inds = [self._neighbor_of_micro_i_macro_j(i, j) for i in (1, 2, 3, 4)]
+        verts_and_inds = [self.Neighbor_of_micro_i_macro_j(i, j) for i in (1, 2, 3, 4)]
         neighbors = [tup[0] if tup else None for tup in verts_and_inds]
         body_indices = [tup[1] if tup else None for tup in verts_and_inds]
 
@@ -615,36 +595,3 @@ class CVMacroLayer(CVLayer):
         self.reduced_graph.nodes[central_vert]["bit_val"] = processed_bit_val
         self.reduced_graph.nodes[central_vert]["p_phase_cond"] = p_err
 
-    def reduce(self, noise_model):
-        """Reduce the macronode lattice macro_graph to the canonical
-        reduced_graph.
-
-        Follow the procedure in arXiv:2104.03241. Take the macronode lattice
-        macro_graph, apply noise based on noise_layer and noise_model, designate
-        micronodes as planets and stars, conduct homodyne measurements, process
-        these measurements, and compute conditional phase error probabilities.
-
-        Modify reduced_graph into a canonical lattice with effective measurement
-        outcomes and phase error probabilities stored as node attributes.
-
-        Args:
-            macro_graph (EGraph): the macronode lattice
-            reduced_graph (EGraph): the reduced lattice
-            noise_layer (CVLayer): the noise layer
-            noise_model (dict): the dictionary of noise parameters to be fed into
-                noise_layer
-            bs_network (np.array): the beamsplitter network used to entangle the
-                macronodes.
-
-        Returns:
-            None
-        """
-        macro_graph = self.egraph
-        # Sample for the initial state
-        self._apply_initial_noise(noise_model)
-        self._permute_indices_and_label()
-        self._entangle_states()
-        self._measure_syndrome()
-        # Process homodyne outcomes and calculate phase error probabilities
-        for j in range(0, len(macro_graph) - 3, 4):
-            self._reduce_jth_macronode(j)
