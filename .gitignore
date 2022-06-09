@@ -83,6 +83,8 @@ doc/build/
 doc/source/api/
 doc/tutorials/_out
 doc/_static/thumbs
+doc/_static/packages_flamingpy.svg
+doc/_static/classes_flamingpy.svg
 doc/backreferences
 
 # PyBuilder

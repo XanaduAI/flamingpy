@@ -6,30 +6,31 @@ Dependencies
 
 FlamingPy requires the following Python version to be installed:
 
-* `Python <http://python.org/>`_ >= 3.8
+* |Python| >= 3.8
 
 as well as the following Python packages for development purposes:
 
-* `black <https://pypi.org/project/black/>`_ >= 19.3b0
-* `cmake <https://pypi.org/project/cmake/>`_ >= 3.14
-* `codecov <https://about.codecov.io/language/python/>`_ >= 2.1.12
-* `cython <https://cython.org/>`_ >= 0.29.28
-* `docformatter <https://pypi.org/project/docformatter/>`_ >= 1.4
-* `matplotlib <https://matplotlib.org/>`_ >= 3.3.3
-* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ >= 3.1.3 (optional, only for Linux users)
-* `networkx <https://networkx.org/>`_ >= 2.5
-* `NumPy <http://numpy.org/>`_ >= 1.21
-* `pytest <https://docs.pytest.org/en/7.1.x/>`_ >= 6.2
-* `pytest-cov <https://pypi.org/project/pytest-cov/>`_ >= 3.0
-* `pytest-logger <https://pypi.org/project/pytest-logger/>`_ >= 0.5.1
-* `pytest-mock <https://pypi.org/project/pytest-mock/>`_ >= 3.6.1
-* `retworkx <https://qiskit.org/documentation/retworkx/>`_ >= 0.10.2
-* `setuptools <https://pypi.org/project/setuptools/>`_ >= 62.3.2
-* `scipy <https://scipy.org/>`_ >= 1.6
-* `thewalrus <https://the-walrus.readthedocs.io/en/latest/>`_ >= 0.19.0
+* |black| >= 19.3b0
+* |cmake| >= 3.14
+* |codecov| >= 2.1.12
+* |cython| >= 0.29.28
+* |docformatter| >= 1.4
+* |matplotlib| >= 3.3.3
+* |mpi4py| >= 3.1.3 (optional, only for Linux users)
+* |networkx| >= 2.5
+* |NumPy| >= 1.21
+* |pytest| >= 6.2
+* |pytest-cov| >= 3.0
+* |pytest-logger| >= 0.5.1
+* |pytest-mock| >= 3.6.1
+* |pytest-xdist| >= 1.29.0
+* |retworkx| >= 0.10.2
+* |setuptools| >= 62.3.2
+* |scipy| >= 1.6
+* |thewalrus| >= 0.19.0
 
 If you currently do not have Python 3 installed, we recommend
-`Anaconda for Python 3 <https://www.anaconda.com/download/>`_, a distributed version
+|Anaconda|, a distributed version
 of Python packaged for scientific computation.
 
 Setting up a development environment
@@ -93,16 +94,16 @@ The purpose of the commands is as follows:
 * The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed).
 
 If you encountered a CMake error, you may need to (re-)install it through
-``conda install cmake``` or other means before re-attempting the above. Furthermore,
-you may wish to try ``conda install git```. For more detailed instructions and
+``conda install cmake`` or other means before re-attempting the above. Furthermore,
+you may wish to try ``conda install git``. For more detailed instructions and
 recommendations, including how to configure your environments, compilers and
 resolve errors, see our Frequently Encountered Errors page.
 
 Software tests
 --------------
 
-The FlamingPy test suite includes `pytest <https://docs.pytest.org/en/latest/>`_
-and `pytest-cov <https://pytest-cov.readthedocs.io/en/latest/>`_ for coverage reports.
+The FlamingPy test suite includes |pytest|
+and |pytest-cov| for coverage reports.
 
 To ensure that FlamingPy is working correctly after installation, the test suite
 can be run by navigating to the source code folder and running
@@ -130,3 +131,84 @@ Documentation
 -------------
 
 See :doc:`build_docs` for the details on how to build the HTML documentation.
+
+
+.. |Python| raw:: html
+
+   <a href="http://python.org/" target="_blank">Python</a>
+
+.. |black| raw:: html
+
+   <a href="https://pypi.org/project/black/" target="_blank">black</a>
+
+.. |cmake| raw:: html
+
+   <a href="https://pypi.org/project/cmake/" target="_blank">cmake</a>
+
+.. |codecov| raw:: html
+
+   <a href="https://about.codecov.io/language/python/" target="_blank">codecov</a>
+
+.. |cython| raw:: html
+
+   <a href="https://cython.org/" target="_blank">cython</a>
+
+.. |docformatter| raw:: html
+
+   <a href="https://pypi.org/project/docformatter/" target="_blank">docformatter</a>
+
+.. |matplotlib| raw:: html
+
+   <a href="https://matplotlib.org/" target="_blank">matplotlib</a>
+
+.. |mpi4py| raw:: html
+
+   <a href="https://mpi4py.readthedocs.io/en/stable/" target="_blank">mpi4py</a>
+
+.. |networkx| raw:: html
+
+   <a href="https://networkx.org/" target="_blank">networkx</a>
+
+.. |NumPy| raw:: html
+
+   <a href="http://numpy.org/" target="_blank">NumPy</a>
+
+.. |pytest| raw:: html
+
+   <a href="https://docs.pytest.org/en/latest/" target="_blank">pytest</a>
+
+.. |pytest-cov| raw:: html
+
+   <a href="https://pypi.org/project/pytest-cov/" target="_blank">pytest-cov</a>
+
+.. |pytest-logger| raw:: html
+
+   <a href="https://pypi.org/project/pytest-logger/" target="_blank">pytest-logger</a>
+
+.. |pytest-mock| raw:: html
+
+   <a href="https://pypi.org/project/pytest-mock/" target="_blank">pytest-mock</a>
+
+.. |pytext-xdist| raw:: html
+   
+   <a href="https://pypi.org/project/pytest-xdist/" target="_blank">pytest-xdist</a>
+
+.. |retworkx| raw:: html
+
+   <a href="https://qiskit.org/documentation/retworkx/" target="_blank">retworkx</a>
+
+.. |setuptools| raw:: html
+
+   <a href="https://pypi.org/project/setuptools/" target="_blank">setuptools</a>
+
+.. |scipy| raw:: html
+
+   <a href="https://scipy.org/" target="_blank">scipy</a>
+
+.. |thewalrus| raw:: html
+
+   <a href="https://the-walrus.readthedocs.io/en/latest/" target="_blank">thewalrus</a>
+
+.. |Anaconda| raw:: html
+
+   <a href="https://www.anaconda.com/download/" target="_blank">Anaconda for Python 3</a>

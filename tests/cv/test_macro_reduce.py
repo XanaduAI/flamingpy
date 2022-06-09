@@ -13,7 +13,6 @@
 # limitations under the License.
 """Unit tests for passive_construct module members."""
 
-# pylint: disable=no-self-use
 
 import itertools as it
 
@@ -39,7 +38,7 @@ def macro_RHG(request):
     RHG_reduced = RHG_code.graph
     RHG_reduced.index_generator()
     # The lattice with macronodes.
-    pad_bool = True if boundaries == "open" else False
+    pad_bool = boundaries == "open"
     RHG_macro = RHG_reduced.macronize(pad_boundary=pad_bool)
     RHG_macro.index_generator()
     RHG_macro.adj_generator(sparse=True)

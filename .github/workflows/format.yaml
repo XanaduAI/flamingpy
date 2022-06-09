@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run black
-        run: python -m black -l 100 tests flamingpy --check
+        run: python -m black -l 100 tests flamingpy doc --check
 
       - name: Run docformatter
-        run: python -m docformatter --check flamingpy/*/*.py
+        run: python -m docformatter -r --check .
