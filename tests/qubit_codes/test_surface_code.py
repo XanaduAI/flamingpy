@@ -23,7 +23,6 @@ from networkx.algorithms.operators import difference
 import numpy as np
 from numpy.random import default_rng as rng
 import pytest
-from sympy import intersection
 
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity

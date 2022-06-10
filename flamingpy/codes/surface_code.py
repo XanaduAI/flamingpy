@@ -96,7 +96,7 @@ def str_to_bound(bound_name):
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
     """
     if not isinstance(bound_name, str):
-        raise ValueError("Boundary type must be string.")
+        raise TypeError("Boundary type must be string.")
 
     boundary_mapping_dict = {
         "open_primal": ["primal", "dual", "dual"],
@@ -475,10 +475,14 @@ class SurfaceCode:
                 bound_ind = np.where(self.boundaries == ec)[0][0]
                 ec_bound_points = self._get_ec_bounds(ec, bound_ind)
 
-            print("ec boundary points", ec_bound_points)  # TODO remove this
             setattr(self, ec + "_bound_points", ec_bound_points)
 
     def _get_ec_bounds(self, ec, bound_ind):
+        """Obtain coordinates of syndrome qubits on the boundary determined by
+        ``bound_ind`` via ``plane_dict``.
+
+        The relevant boundaries are determined by the ``ec`` string.
+        """
         dims = self.dims
         plane_dict = {0: "x", 1: "y", 2: "z"}
         syndrome_coords = getattr(self, ec + "_syndrome_coords")
