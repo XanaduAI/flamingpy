@@ -248,7 +248,7 @@ def correct(
     decoder_opts=None,
     draw=False,
     drawing_opts=None,
-):
+) -> bool:
     """Run through all the error-correction steps.
 
     Combines weight assignment, inner decoding and outer decoding. The last
