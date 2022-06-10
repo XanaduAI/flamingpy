@@ -169,7 +169,7 @@ def ec_monte_carlo(
     if return_decoding_time:
         return errors, decoding_time_total
 
-    return errors
+    return errors, -1
 
 
 def run_ec_simulation(
