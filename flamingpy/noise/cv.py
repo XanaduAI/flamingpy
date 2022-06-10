@@ -36,8 +36,8 @@ class CVLayer:
     Args:
         code (SurfaceCode or EGraph): the code object (so that code.graph is
             an EGraph), or an EGraph directly, to which the noise is applied.
-        delta (float): the quadrature blurring parameter, related to the 
-            squeezing of the GKP states and the momentum-quadrature variance of 
+        delta (float): the quadrature blurring parameter, related to the
+            squeezing of the GKP states and the momentum-quadrature variance of
             the p-squeezed states.
         state (dict, optional): the dictionary of all non-GKP states and their
             indices, of the form {'state': []}. By default, all states are
@@ -59,7 +59,7 @@ class CVLayer:
         _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph.
         _states (dict): states along with their indices.
         _sampling_order (str): sampling order from above.
-        _perfect_inds (list or NoneType): the indices of qubits to treat as 
+        _perfect_inds (list or NoneType): the indices of qubits to treat as
             ideal.
     """
 
@@ -71,7 +71,7 @@ class CVLayer:
             self.egraph = code.graph
         # Generate indices if not already done
         self.egraph.index_generator()
-        
+
         # Set some egraph properties to attributes of self
         self.N = len(self.egraph)
         self.to_points = self.egraph.to_points
@@ -85,11 +85,12 @@ class CVLayer:
 
     def apply_noise(self, sampling_order=None, rng=default_rng()):
         """Apply cv-level noise to the graph state.
-        
-        First, label the states; then, measure the syndrome and populate 
+
+        First, label the states; then, measure the syndrome and populate
         self.egraph with bit values.
-        
-        This method modifies self.egraph."""
+
+        This method modifies self.egraph.
+        """
         if sampling_order is None:
             sampling_order = self._sampling_order
         self.populate_states(rng=rng)
@@ -98,15 +99,16 @@ class CVLayer:
 
     def populate_states(self, rng=default_rng()):
         """Populate the graph state with state labels.
-        
-        Assume the graph states consists of a combination of squeezed states 
-        and GKP+ states. A non-zero self.p_swap overrides indices specified in 
-        self._states and uses a binomial distribution to identify some indices 
+
+        Assume the graph states consists of a combination of squeezed states
+        and GKP+ states. A non-zero self.p_swap overrides indices specified in
+        self._states and uses a binomial distribution to identify some indices
         as p-squeezed states.
 
         Print a message if both p_swap and p indices are supplied.
-        
-        This method modifies self.egraph."""
+
+        This method modifies self.egraph.
+        """
         # Generate indices of squeezed states based on swap-out
         # probability self.p_swap, if supplied.
         if self.p_swap:
@@ -117,7 +119,7 @@ class CVLayer:
 
         # Give the EGraph nodes state attributes.
         self._apply_state_labels()
-         
+
     def _generate_squeezed_indices(self, rng=default_rng()):
         """Generate the indices of squeezed states."""
         if len(self._states["p"]):
@@ -139,7 +141,7 @@ class CVLayer:
             used_inds = np.concatenate([used_inds, self._states[psi]])
         remaining_inds = list(set(range(self.N)) - set(used_inds))
         self._states["GKP"] = np.array(remaining_inds, dtype=int)
-      
+
     def _apply_state_labels(self):
         """Add state labels as node attributes to the graph state."""
         for psi in self._states:
@@ -150,7 +152,7 @@ class CVLayer:
         """Return the means for the homodyne measurement sample."""
         means = np.zeros(2 * self.N, dtype=np.float32)
         if sampling_order == "two-step":
-            
+
             def q_val_for_p(n):
                 return rng.random(size=n) * (2 * np.sqrt(np.pi))
 
@@ -166,7 +168,7 @@ class CVLayer:
             if propagate:
                 means = SCZ_apply(self._adj, covs)
         return means
-            
+
     def _covs_sampler(self, sampling_order="initial", inds=None, rng=default_rng()):
         """Return the covariances for the homodyne measurement sample."""
         delta = self.delta
@@ -180,7 +182,7 @@ class CVLayer:
                 if len(inds) > 0:
                     covs[inds] = noise_q[state]
                     covs[inds + self.N] = noise_p[state]
-        
+
         elif sampling_order == "two-step":
             if inds is None:
                 inds = range(self.N)
@@ -192,7 +194,7 @@ class CVLayer:
                 for i, perfect_ind in enumerate(inds_to_0):
                     ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
                 covs[ind_arr] = (self.delta / 2) ** 0.5
-        
+
         return covs
 
     def measure_hom(
@@ -222,8 +224,10 @@ class CVLayer:
         if inds is None:
             inds = range(N)
         N_inds = len(inds)
-        
-        means = updated_means or self._means_sampler(sampling_order=sampling_order, propagate=propagate, rng=rng)
+
+        means = updated_means or self._means_sampler(
+            sampling_order=sampling_order, propagate=propagate, rng=rng
+        )
         covs = updated_covs or self._covs_sampler(sampling_order=sampling_order, rng=rng)
         if sampling_order == "two-step":
             if quad == "q":
@@ -241,7 +245,9 @@ class CVLayer:
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
     def measure_syndrome(self, sampling_order="initial", rng=default_rng()):
-        return self.measure_hom(quad="p", inds=self.code.all_syndrome_inds, sampling_order=sampling_order, rng=rng)
+        return self.measure_hom(
+            quad="p", inds=self.code.all_syndrome_inds, sampling_order=sampling_order, rng=rng
+        )
 
     def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
@@ -295,7 +301,7 @@ class CVLayer:
         from flamingpy.utils.viz import plot_mat_heat_map
 
         return plot_mat_heat_map(self.SCZ(), **kwargs)
-    
+
     def inner_decoder(self, translator=GKP_binner):
         """Convert homodyne outcomes to bit values according to translator.
 
@@ -314,7 +320,6 @@ class CVLayer:
             hom_val = self.code.graph.nodes[point]["hom_val_p"]
             bit_val = translator([hom_val])[0]
             self.code.graph.nodes[point]["bit_val"] = bit_val
-
 
 
 class CVMacroLayer(CVLayer):
@@ -337,13 +342,13 @@ class CVMacroLayer(CVLayer):
         macro_graph = code.graph.macronize(pad_boundary=True)
         macro_graph.index_generator()
         macro_graph.adj_generator(sparse=True)
-        
+
         perfect_points = macro_graph.graph.get("perfect_points")
         if perfect_points:
             perfect_inds = [macro_graph.to_indices[point] for point in perfect_points]
         else:
             perfect_inds = None
-        
+
         noise_args = {}
         noise_args["perfect_inds"] = perfect_inds
         noise_args["sampling_order"] = "two-step"
@@ -385,7 +390,6 @@ class CVMacroLayer(CVLayer):
         # Process homodyne outcomes and calculate phase error probabilities
         for j in range(0, self.N - 3, 4):
             self._reduce_jth_macronode(j)
-
 
     def _permute_indices_and_label(self):
         """Obtain permuted indices and set type of reduced node.
@@ -619,4 +623,3 @@ class CVMacroLayer(CVLayer):
         central_vert = tuple(round(i) for i in vertex)
         self.reduced_graph.nodes[central_vert]["bit_val"] = processed_bit_val
         self.reduced_graph.nodes[central_vert]["p_phase_cond"] = p_err
-

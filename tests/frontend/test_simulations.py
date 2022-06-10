@@ -99,7 +99,7 @@ class TestPassive:
         p_swap = 0
         delta = 0.001
         trials = 10
-        
+
         noise_instance = CVMacroLayer(code, delta=delta, p_swap=p_swap)
         decoder_args = {"weight_opts": None}
         errors_py = ec_monte_carlo(

@@ -210,7 +210,7 @@ class TestCVLayer:
     def test_apply_noise(self, random_graph, order):
         """Check _delta, _sampling_order attributes with default noise
         model."""
-        delta=rng().random()
+        delta = rng().random()
         G = CVLayer(random_graph[0], delta=delta, sampling_order=order)
         assert G.delta == delta
         assert G._sampling_order == order
