@@ -258,6 +258,11 @@ class SurfaceCode:
             'all_periodic': 'periodic' in all three directions.
             'periodic': 'periodic' in x and y but not z.
 
+            For the "open" and "periodic" boundary choice, we imagine qubits
+            are encoded into the x-y plane and propagated in time. The z-axis
+            is interpreted as the temporal axis which is relevant in quantum
+            memory simulations. #TODO: possibly rename periodic to toric.
+
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
 
@@ -470,7 +475,7 @@ class SurfaceCode:
                 bound_ind = np.where(self.boundaries == ec)[0][0]
                 ec_bound_points = self._get_ec_bounds(ec, bound_ind)
 
-            print("ec boundary points",  ec_bound_points) #TODO remove this
+            print("ec boundary points", ec_bound_points)  # TODO remove this
             setattr(self, ec + "_bound_points", ec_bound_points)
 
     def _get_ec_bounds(self, ec, bound_ind):
