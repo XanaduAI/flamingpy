@@ -48,34 +48,19 @@ reverse_dict = {b: a for a, b in noise_dict.items()}
 
 
 def ec_mc_trial(
-    noise,
-    bs_network,
-    p_swap,
-    p_err,
-    noise_model,
-    code,
+    code_instance,
+    noise_instance,
     decoder,
-    macro_graph,
     weight_options,
     rng=default_rng(),
 ):
     """Runs a single trial of Monte Carlo simulations of error-correction for
     the given code."""
-    if noise == CVLayer:
-        CVRHG = CVLayer(code, p_swap=p_swap, rng=rng)
-        CVRHG.apply_noise(noise_model, rng=rng)
-        CVRHG.measure_hom("p", code.all_syndrome_inds, rng=rng)
-    elif noise == CVMacroLayer:
-        CV_macro = CVMacroLayer(
-            macro_graph, p_swap=p_swap, reduced_graph=code.graph, bs_network=bs_network, rng=rng
-        )
-        CV_macro.reduce(noise_model)
-    elif noise == IidNoise:
-        IidNoise(code, p_err).apply_noise(rng=rng)
+    noise_instance.apply_noise(rng)
 
     decoding_start_time = perf_counter()
 
-    result = correct(code=code, decoder=decoder, weight_options=weight_options)
+    result = correct(code=code_instance, decoder=decoder, weight_options=weight_options)
 
     decoding_stop_time = perf_counter()
     decoding_time = decoding_stop_time - decoding_start_time
@@ -85,9 +70,8 @@ def ec_mc_trial(
 
 def ec_monte_carlo(
     trials,
-    code,
-    noise,
-    noise_args,
+    code_instance,
+    noise_instance,
     decoder,
     decoder_args,
     return_decoding_time=False,
@@ -118,20 +102,6 @@ def ec_monte_carlo(
     """
     weight_opts = decoder_args["weight_opts"]
     decoder = {"outer": decoder}
-    bs_network = None
-    p_err = 0
-    macro_graph = None
-
-    if noise in (CVLayer, CVMacroLayer):
-        delta, p_swap = noise_args["delta"], noise_args["p_swap"]
-        noise_model = {"noise": "grn", "delta": delta}
-    if noise == CVLayer:
-        noise_model["sampling_order"] = "initial"
-        decoder["inner"] = "basic"
-    elif noise == CVMacroLayer:
-        macro_graph, bs_network = noise_args["macro_graph"], noise_args.get("bs_network")
-    elif noise == IidNoise:
-        p_err = noise_args["p_err"]
 
     successes = np.zeros(1)
     local_successes = np.zeros(1)
@@ -144,14 +114,9 @@ def ec_monte_carlo(
     for i in range(trials):
         if i % mpi_size == mpi_rank:
             result, decoding_time = ec_mc_trial(
-                noise,
-                bs_network,
-                p_swap,
-                p_err,
-                noise_model,
-                code,
+                code_instance,
+                noise_instance,
                 decoder,
-                macro_graph,
                 weight_opts,
                 rng,
             )
@@ -182,9 +147,8 @@ def run_ec_simulation(
 
     # Instance of the qubit QEC code
     code_instance = code(**code_args)
-    code_instance.graph.index_generator()
+    noise_instance = noise(code_instance, **noise_args)
 
-    # The noise model
     # For the blueprint
     if noise == CVLayer:
         if decoder == "MWPM":
@@ -203,12 +167,6 @@ def run_ec_simulation(
 
     # For the passive architecture
     elif noise == CVMacroLayer:
-        pad_bool = code_args["boundaries"] != "periodic"
-        # Instantiate macronode graph and beamsplitter network
-        macro_graph = code_instance.graph.macronize(pad_boundary=pad_bool)
-        macro_graph.index_generator()
-        macro_graph.adj_generator(sparse=True)
-        noise_args.update({"bs_network": None, "macro_graph": macro_graph})
         if decoder == "MWPM":
             weight_opts = {"method": "blueprint", "prob_precomputed": True}
         else:
@@ -233,8 +191,7 @@ def run_ec_simulation(
     errors, decoding_time_total = ec_monte_carlo(
         trials,
         code_instance,
-        noise,
-        noise_args,
+        noise_instance,
         decoder,
         decoder_args,
         True,
