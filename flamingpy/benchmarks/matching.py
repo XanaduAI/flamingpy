@@ -33,7 +33,7 @@ RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=altern
 # Noise model parameters
 p_swap = 0.2
 delta = 0.1
-cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+sampling_order = "initial"
 
 # Decoding options
 decoder = {"inner": "basic", "outer": "MWPM"}
@@ -55,11 +55,9 @@ for alg in ["networkx", "lemon", "retworkx"]:
     for i in range(num_trials):
         print(f"-- {i} --")
         # Instantiate the CV layer
-        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
+        CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap, sampling_order="initial")
         # Apply noise
-        CVRHG.apply_noise(cv_noise)
-        # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
+        CVRHG.apply_noise()
 
         # Manually decode so as to benchmark just the matching portion
         dec.assign_weights(RHG_code, "MWPM", **weight_options)

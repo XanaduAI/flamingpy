@@ -93,10 +93,8 @@ def code_matching_graphs(request):
 
     code = SurfaceCode(distance=distance, boundaries="open")
 
-    noise = CVLayer(code.graph, p_swap=0.05)
-    cv_noise = {"noise": "grn", "delta": 0.1, "sampling_order": "initial"}
-    noise.apply_noise(cv_noise)
-    noise.measure_hom("p", code.all_syndrome_inds)
+    noise = CVLayer(code, delta=0.1, p_swap=0.05, sampling_order="initial")
+    noise.apply_noise()
     CV_decoder(code, translator=GKP_binner)
 
     weight_options = {

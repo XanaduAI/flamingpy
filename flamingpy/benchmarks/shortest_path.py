@@ -28,10 +28,10 @@ num_trials = 10
 distance = 3
 boundaries = "periodic"
 
-# Noise model
+# Noise model parameters
 p_swap = 0.2
 delta = 0.1
-cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+sampling_order = "initial"
 
 # Decoding options
 decoder = {"inner": "basic", "outer": "MWPM"}
@@ -55,11 +55,9 @@ for backend in ["networkx", "retworkx"]:
     )
     for i in range(num_trials):
         print(f"-- {i} --")
-        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
+        CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap, sampling_order=sampling_order)
         # Apply noise
-        CVRHG.apply_noise(cv_noise)
-        # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
+        CVRHG.apply_noise()
         dec.assign_weights(RHG_code, "MWPM", **weight_options)
         # Inner decoder
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)

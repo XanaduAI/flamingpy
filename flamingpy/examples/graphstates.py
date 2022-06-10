@@ -34,10 +34,9 @@ else:
 bell_state.adj_generator(sparse=False)
 print("Adjacency matrix: \n", bell_state.adj_mat, "\n")
 
-CVbell = CVLayer(bell_state, p_swap=0.5)
+CVbell = CVLayer(bell_state, delta=1, p_swap=0.5, sampling_order="initial")
 # Noise model for CVLayer
-model = {"noise": "grn", "delta": 1, "sampling_order": "initial"}
-CVbell.apply_noise(model)
+CVbell.populate_states()
 CVbell.measure_hom("p", [0])
 CVbell.measure_hom("q", [1])
 

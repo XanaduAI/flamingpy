@@ -38,13 +38,11 @@ RHG_macro.index_generator()
 RHG_macro.adj_generator(sparse=True)
 
 
-noise_model = {"noise": "grn", "delta": delta}
-
 successes = 0
 for trial in range(total):
     # The CV macronode noise layer and reduction
-    CV_macro = CVMacroLayer(RHG_macro, p_swap=p_swap, reduced_graph=RHG_reduced)
-    CV_macro.reduce(noise_model)
+    CV_macro = CVMacroLayer(RHG_code, delta=delta, p_swap=p_swap)
+    CV_macro.apply_noise()
     decoder = {"outer": "MWPM"}
     decoder_opts = {"backend": "networkx"}
     if decoder["outer"] == "MWPM":

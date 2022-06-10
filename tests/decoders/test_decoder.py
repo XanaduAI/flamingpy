@@ -43,13 +43,9 @@ def enc_state(request):
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity)
     # CV (inner) code/state
-    CVRHG = CVLayer(DVRHG, p_swap=p_swap)
-    # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap, sampling_order="initial")
     # Apply noise
-    CVRHG.apply_noise(cv_noise)
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds)
+    CVRHG.apply_noise()
     return DVRHG, CVRHG
 
 
@@ -78,7 +74,7 @@ class TestAssignWeights:
             "method": "blueprint",
             "integer": True,
             "multiplier": 100,
-            "delta": enc_state[1]._delta,
+            "delta": enc_state[1].delta,
         }
         assign_weights(enc_state[0], "MWPM", **weight_options)
         for point in enc_state[0].all_syndrome_coords:

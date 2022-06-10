@@ -74,11 +74,11 @@ class TestBlueprint:
             "multiplier": 1,
             "delta": noise_args.get("delta"),
         }
+        noise_instance = CVLayer(code, delta=delta, p_swap=p_swap)
         errors_py = ec_monte_carlo(
             trials,
             code,
-            CVLayer,
-            noise_args,
+            noise_instance,
             "MWPM",
             decoder_args,
             world_comm=world_comm,
@@ -99,20 +99,13 @@ class TestPassive:
         p_swap = 0
         delta = 0.001
         trials = 10
-
-        pad_bool = code.bound_str != "periodic"
-        # The lattice with macronodes.
-        RHG_macro = code.graph.macronize(pad_boundary=pad_bool)
-        RHG_macro.index_generator()
-        RHG_macro.adj_generator(sparse=True)
-
-        noise_args = {"delta": delta, "p_swap": p_swap, "macro_graph": RHG_macro}
+        
+        noise_instance = CVMacroLayer(code, delta=delta, p_swap=p_swap)
         decoder_args = {"weight_opts": None}
         errors_py = ec_monte_carlo(
             trials,
             code,
-            CVMacroLayer,
-            noise_args,
+            noise_instance,
             "MWPM",
             decoder_args,
             world_comm=world_comm,

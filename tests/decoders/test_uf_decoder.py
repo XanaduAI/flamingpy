@@ -48,15 +48,10 @@ def enc_state(request):
     """An RHGCode object and an encoded CVLayer for use in this module."""
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="retworkx")
-    RHG_lattice = DVRHG.graph
     # CV (inner) code/state
-    CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
-    # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap, sampling_order="initial")
     # Apply noise
-    CVRHG.apply_noise(cv_noise)
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds)
+    CVRHG.apply_noise()
     return DVRHG, CVRHG
 
 
@@ -83,15 +78,10 @@ def enc_state_swap_list(request):
     states = {"p": np.array(psqueezed)}
 
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="retworkx")
-    RHG_lattice = DVRHG.graph
     # CV (inner) code/state
-    CVRHG = CVLayer(RHG_lattice, states=states)
-    # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    CVRHG = CVLayer(DVRHG, delta=delta, states=states)
     # Apply noise
-    CVRHG.apply_noise(cv_noise)
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds)
+    CVRHG.apply_noise()
 
     num_psqueezed_neighbor = {}
     for p in psqueezed:

@@ -28,20 +28,13 @@ code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "periodic"],
 
 
 @pytest.fixture(scope="module", params=code_params)
-def macro_RHG(request):
+def code_and_noise(request):
     """Defines a macronode RHG lattice, the reduced lattice, and the
     delta/p-swap paramaters for use in this module."""
     d, delta, p_swap, boundaries, ec = request.param
     # The reduced lattice.
     RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
-    RHG_reduced = RHG_code.graph
-    RHG_reduced.index_generator()
-    # The lattice with macronodes.
-    pad_bool = boundaries == "open"
-    RHG_macro = RHG_reduced.macronize(pad_boundary=pad_bool)
-    RHG_macro.index_generator()
-    RHG_macro.adj_generator(sparse=True)
-    return delta, p_swap, RHG_macro, RHG_reduced
+    return delta, p_swap, RHG_code
 
 
 class TestHelpers:
@@ -65,15 +58,16 @@ class TestHelpers:
 class TestReduction:
     """Test reduction of the macronode to the canonical RHG lattice."""
 
-    def test_reduce_macro_and_simulate(self, macro_RHG):
+    def test_reduce_macro_and_simulate(self, code_and_noise):
         """Test the reduce_macro_and_simulate function."""
-        delta, p_swap, RHG_macro, RHG_reduced = macro_RHG
+        delta, p_swap, RHG_code = code_and_noise
         # Define the 4X4 beamsplitter network for a given macronode.
         # star at index 0, planets at indices 1-3.
-        noise_model = {"noise": "grn", "delta": delta}
-        CV_macro = CVMacroLayer(RHG_macro, p_swap=p_swap, reduced_graph=RHG_reduced)
-        CV_macro.reduce(noise_model)
+        CV_macro = CVMacroLayer(RHG_code, delta=delta, p_swap=p_swap)
+        CV_macro.apply_noise()
         # Check proper reduction to effective node type.
+        RHG_macro = CV_macro.egraph
+        RHG_reduced = CV_macro.reduced_graph
         for central_node in RHG_macro.macro_to_micro:
             micronodes = RHG_macro.macro_to_micro[central_node]
             effective_type = RHG_reduced.nodes[central_node]["state"]

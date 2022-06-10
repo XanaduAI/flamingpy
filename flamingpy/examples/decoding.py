@@ -35,15 +35,12 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
     # Noise model: set to "dv" for iid Z errors; "cv" for Gaussian Random Noise
     # over a GKP/sqeezed state architecture
     if noise == "cv":
-        # CV (inner) code / state preparation
+        # Define the CV noise parameters and insantiate the CV layer
         p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
-        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
-        # Noise model
-        delta = 0.1  # GKP squeezing parameter
-        cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+        delta = 0.01  # GKP squeezing parameter
+        CVRHG = CVLayer(RHG_code, p_swap=p_swap, delta=delta, sampling_order="initial")
         # Apply noise, measure syndrome, translate to bit values
-        CVRHG.apply_noise(cv_noise)
-        CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
+        CVRHG.apply_noise()
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         # Decoding options
         if decoder == "MWPM":
