@@ -48,10 +48,14 @@ class Stabilizer:
         the EGraph of the code.
 
         Returns:
-            int: the total parity
+            int, None: the total parity or ``None`` if bit values are not define
         """
-        bit_vals = [self.egraph.nodes[node]["bit_val"] for node in self.egraph]
-        par = int(np.sum(bit_vals) % 2)
+        bit_vals = [
+            self.egraph.nodes[node]["bit_val"]
+            for node in self.egraph
+            if "bit_val" in self.egraph.nodes[node]
+        ]
+        par = int(np.sum(bit_vals) % 2) if len(bit_vals) > 0 else None
         return par
 
     def coords(self):

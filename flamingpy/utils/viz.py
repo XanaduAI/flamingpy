@@ -514,14 +514,17 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
             bbox={"alpha": 0},
         )
 
-    cax, kw = mpl.colorbar.make_axes(ax, location="right", fraction=0.15)
-    cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, **kw)
-    cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
-    cbar.set_label(
-        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
-    )
+    axs = [ax]
 
-    axs = [ax, cax]
+    if (cmap is not None) and (norm is not None):
+        cax, kw = mpl.colorbar.make_axes(ax, location="right", fraction=0.15)
+        cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, **kw)
+        cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
+        cbar.set_label(
+            "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
+        )
+        axs = [ax, cax]
+
     return fig, axs
 
 
@@ -538,15 +541,21 @@ def draw_curved_edges(graph, layout, ax, rad=0.5):
     """
 
     edges = graph.edges
-    edge_weights = [edges[edge]["weight"] for edge in edges]
+    edge_weights = [edges[edge]["weight"] for edge in edges if edges[edge]["weight"] is not None]
+    has_edge_weights = len(edge_weights) > 0
 
-    cmap = mpl.cm.get_cmap("Spectral")
-    norm = mpl.colors.Normalize(vmin=np.min(edge_weights), vmax=np.max(edge_weights))
+    if has_edge_weights:
+        cmap = mpl.cm.get_cmap("Spectral")
+        norm = mpl.colors.Normalize(vmin=np.min(edge_weights), vmax=np.max(edge_weights))
+    else:
+        cmap, norm = None, None
+
     for edge in graph.edges():
         source, target = edge
+        edge_color = cmap(norm(edges[edge]["weight"])) if has_edge_weights else "#82828215"
         arrowprops = dict(
             arrowstyle="-",
-            color=cmap(norm(edges[edge]["weight"])),
+            color=edge_color,
             connectionstyle=f"arc3,rad={rad}",
             linestyle="-",
             linewidth=plot_params.get("lines.linewidth", 1) / 2,
@@ -643,10 +652,12 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         positions.append(cube_origin)
 
         # Fill in the color arrays depending on parity.
-        if cube.parity:
+        if cube.parity == 1:
             color = "#FF000015"
-        else:
+        elif cube.parity == 0:
             color = "#00FF0015"
+        else:
+            color = "#82828215"
 
         colors.append(color)
 
