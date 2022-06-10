@@ -26,7 +26,7 @@ num_trials = 10
 
 # DV (outer) code parameters
 distance = 5
-boundaries = "all_periodic"
+boundaries = "periodic"
 
 # Noise model
 p_swap = 0.1

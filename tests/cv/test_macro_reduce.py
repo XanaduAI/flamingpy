@@ -25,9 +25,7 @@ from flamingpy.cv.ops import CVLayer
 from flamingpy.cv.macro_reduce import invert_permutation, BS_network, reduce_macro_and_simulate
 
 
-code_params = it.product(
-    [2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "all_periodic"], ["primal", "dual"]
-)
+code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "periodic"], ["primal", "dual"])
 
 
 @pytest.fixture(scope="module", params=code_params)

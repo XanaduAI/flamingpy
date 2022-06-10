@@ -70,7 +70,7 @@ def RHG_graph_old(dims, boundaries="finite", macronodes=False, polarity=False):
     # Dealing with boundaries
     if boundaries == "finite":
         boundaries = ["primal", "dual", "dual"]
-    elif boundaries == "all_periodic":
+    elif boundaries == "periodic":
         boundaries = ["periodic"] * 3
     elif isinstance(boundaries, str):
         boundaries = [boundaries] * 3
@@ -250,17 +250,17 @@ class TestRHGGraph:
             # The following test requires a modification to RHG_graph_old,
             # since the new method creates a lattice with a different shape.
             # assert not set(RHG_lattice.edges) - set(RHG_graph_old(d, boundaries).edges)
-        for boundaries in ["primal", "dual", "all_periodic", "open_primal", "open_dual"]:
+        for boundaries in ["primal", "dual", "periodic", "open_primal", "open_dual"]:
             RHG_lattice = RHG_graph(d, boundaries)
             assert len(RHG_lattice)
         # The following test requires a modification to RHG_graph_old,
         # since the new method creates a lattice with a different shape.
         # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
-    def test_all_periodic_boundaries(self, d):
+    def test_periodic_boundaries(self, d):
         """Test whether periodic boundary conditions on every direction produce
         a lattice with the expected size."""
-        RHG_lattice = RHG_graph(d, "all_periodic")
+        RHG_lattice = RHG_graph(d, "periodic")
         assert len(RHG_lattice) == 6 * (d**3)
 
         all_boundaries = []
@@ -272,36 +272,36 @@ class TestRHGGraph:
         for point in all_boundaries:
             assert len(RHG_lattice[point]) == 4
 
-        assert not set(RHG_lattice.edges) - set(RHG_graph(d, "all_periodic").edges)
+        assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
-    @pytest.mark.parametrize("boundary_type", ["periodic_primal", "periodic_dual"])
-    def test_periodic_boundaries(self, d, boundary_type):
-        """Test whether periodic boundary conditions on x and y direction
-        produce a lattice with the expected neighbors."""
-        RHG_lattice = RHG_graph(d, boundary_type)
-        # assert len(RHG_lattice) == 6 * (d**3)
+    # @pytest.mark.parametrize("boundary_type", ["periodic_primal", "periodic_dual"])
+    # def test_toric_boundaries(self, d, boundary_type):
+    #     """Test whether periodic boundary conditions on x and y direction
+    #     produce a lattice with the expected neighbors."""
+    #     RHG_lattice = RHG_graph(d, boundary_type)
+    #     # assert len(RHG_lattice) == 6 * (d**3)
 
-        # test that sites on the edges of periodic boundaries have
-        # their corresponding relations by sticking one side to the
-        # other
-        for plane in ("x", "y"):
-            # define the plane displacement
-            dd = {"x": 0, "y": 0, "z": 0}
-            dd[plane] = 2 * d - 1
+    #     # test that sites on the edges of periodic boundaries have
+    #     # their corresponding relations by sticking one side to the
+    #     # other
+    #     for plane in ("x", "y"):
+    #         # define the plane displacement
+    #         dd = {"x": 0, "y": 0, "z": 0}
+    #         dd[plane] = 2 * d - 1
 
-            lower_boundary = RHG_lattice.slice_coords(plane, 0)
-            displaced_boundary = set(
-                (x + dd["x"], y + dd["y"], z + dd["z"]) for x, y, z in lower_boundary
-            )
+    #         lower_boundary = RHG_lattice.slice_coords(plane, 0)
+    #         displaced_boundary = set(
+    #             (x + dd["x"], y + dd["y"], z + dd["z"]) for x, y, z in lower_boundary
+    #         )
 
-            upper_boundary = set(RHG_lattice.slice_coords(plane, 2 * d - 1))
+    #         upper_boundary = set(RHG_lattice.slice_coords(plane, 2 * d - 1))
 
-            intersection = displaced_boundary.intersection(upper_boundary)
+    #         intersection = displaced_boundary.intersection(upper_boundary)
 
-            if plane in ("x", "y"):
-                assert len(intersection) > 0
-            else:
-                assert len(intersection) == 0
+    #         if plane in ("x", "y"):
+    #             assert len(intersection) > 0
+    #         else:
+    #             assert len(intersection) == 0
 
     @pytest.mark.parametrize("boundaries", all_bound_combs)
     def test_polarity(self, d, boundaries):
@@ -341,7 +341,7 @@ class TestRHGGraph:
     def test_macronodes(self, d):
         """Check that the macronode lattice was generated as expected."""
         # Tests for periodic boundaries.
-        for boundaries in ["all_periodic"]:
+        for boundaries in ["periodic"]:
             RHG_reduced = RHG_graph(d, boundaries)
             macronode_lattice = RHG_reduced.macronize()
             RHG_macronodes = macronode_lattice.macro_to_micro
@@ -370,7 +370,7 @@ class TestRHGGraph:
             assert len(macronode_lattice) == 4 * len(RHG_reduced)
 
 
-code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "all_periodic"])
+code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "periodic"])
 
 
 @pytest.fixture(scope="module", params=code_params)
@@ -415,7 +415,7 @@ class TestSurfaceCode:
                     assert len(cubes) == (d - 1) ** 2 * d
                 else:
                     assert len(cubes) == d**2 * (d - 1)
-            elif surface_code.bound_str == "all_periodic":
+            elif surface_code.bound_str == "periodic":
                 assert len(cubes) == d**3
             # Check that each stabilizer has 6 corresponing physical
             # vertices, even if it's an n-body stabilizer with n < 6.
@@ -423,7 +423,7 @@ class TestSurfaceCode:
                 assert len(cube.physical) == 6
                 # For periodic boundaries, check that there are
                 # only 6-body stabilizers.
-                if surface_code.bound_str == "all_periodic":
+                if surface_code.bound_str == "periodic":
                     assert len(cube.egraph) == 6
 
     def test_syndrome(self, surface_code):
@@ -444,7 +444,7 @@ class TestSurfaceCode:
                     assert len(syndrome_coords) == (d - 1) ** 3 + 2 * (d - 1) * d**2
                 else:
                     assert len(syndrome_coords) == d**3 + 2 * d * (d - 1) ** 2
-            elif surface_code.bound_str == "all_periodic":
+            elif surface_code.bound_str == "periodic":
                 assert len(syndrome_coords) == 3 * d**3
 
     def test_boundary(self, surface_code):
@@ -457,7 +457,7 @@ class TestSurfaceCode:
                     assert len(bound_points) == 2 * d * (d - 1)
                 else:
                     assert len(bound_points) == 2 * d**2
-            elif surface_code.bound_str == "all_periodic":
+            elif surface_code.bound_str == "periodic":
                 assert not bound_points
 
 

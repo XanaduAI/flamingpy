@@ -90,7 +90,7 @@ def str_to_bound(bound_name):
         'open_dual': [primal, dual, primal]
         'primal': [primal, primal, primal]
         'dual': [dual, dual, dual]
-        'all_periodic': [periodic, periodic, periodic]
+        'periodic': [periodic, periodic, periodic]
         'periodic_primal': [periodic, periodic, primal]
         'periodic_dual': [periodic, periodic, dual]
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
@@ -103,9 +103,7 @@ def str_to_bound(bound_name):
         "open_dual": ["primal", "dual", "primal"],
         "primal": ["primal", "primal", "primal"],
         "dual": ["dual", "dual", "dual"],
-        "all_periodic": ["periodic", "periodic", "periodic"],
-        "periodic_primal": ["periodic", "periodic", "primal"],
-        "periodic_dual": ["periodic", "periodic", "dual"],
+        "periodic": ["periodic", "periodic", "periodic"],
     }
 
     return np.array(boundary_mapping_dict.get(bound_name))
@@ -136,7 +134,7 @@ def RHG_graph(
                 'open_dual': [primal, dual, primal]
                 'primal': [primal, primal, primal]
                 'dual': [dual, dual, dual]
-                'all_periodic': [periodic, periodic, periodic]
+                'periodic': [periodic, periodic, periodic]
                 'periodic_primal': [periodic, periodic, primal]
                 'periodic_dual': [periodic, periodic, dual]
                 '{b}': b, b, b,
@@ -255,7 +253,7 @@ class SurfaceCode:
 
             'open': ['primal', 'dual', 'dual'] for 'primal' EC
                     ['primal', 'dual', 'primal'] for 'dual' EC
-            'all_periodic': 'periodic' in all three directions.
+            'periodic': 'periodic' in all three directions.
             'periodic': 'periodic' in x and y but not z.
 
             For the "open" and "periodic" boundary choice, we imagine qubits
@@ -303,9 +301,14 @@ class SurfaceCode:
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
+        if {ec, boundaries} == {"primal", "dual"}:
+            raise ValueError(
+                f"The combination `ec={ec}` and `boundaries={boundaries} is not valid.`"
+            )  # TODO: fill in message
+
         if boundaries == "open":
             self.bound_str = "open_primal" if ec in ("primal", "both") else "open_dual"
-        elif boundaries == "periodic":
+        elif boundaries == "toric":
             self.bound_str = "periodic_dual" if ec in ("primal", "both") else "periodic_primal"
         else:
             self.bound_str = boundaries
