@@ -83,15 +83,18 @@ class CVLayer:
         self._sampling_order = kwargs.get("sampling_order")
         self._perfect_inds = self.egraph.graph.get("perfect_inds")
 
-    def apply_noise(self, rng=default_rng()):
+    def apply_noise(self, sampling_order=None, rng=default_rng()):
         """Apply cv-level noise to the graph state.
         
         First, label the states; then, measure the syndrome and populate 
         self.egraph with bit values.
         
         This method modifies self.egraph."""
+        if sampling_order is None:
+            sampling_order = self._sampling_order
         self.populate_states(rng=rng)
-        self.measure_syndrome(rng=rng)
+        self.measure_syndrome(sampling_order=sampling_order, rng=rng)
+        self.inner_decoder()
 
     def populate_states(self, rng=default_rng()):
         """Populate the graph state with state labels.
@@ -107,7 +110,7 @@ class CVLayer:
         # Generate indices of squeezed states based on swap-out
         # probability self.p_swap, if supplied.
         if self.p_swap:
-            self._generate_squeezed_indices(self.p_swap, rng)
+            self._generate_squeezed_indices(rng)
 
         # Associate remaining indices with GKP states.
         self._generate_gkp_indices()
@@ -115,7 +118,7 @@ class CVLayer:
         # Give the EGraph nodes state attributes.
         self._apply_state_labels()
          
-    def _generate_squeezed_indices(self, rng):
+    def _generate_squeezed_indices(self, rng=default_rng()):
         """Generate the indices of squeezed states."""
         if len(self._states["p"]):
             print(
@@ -143,10 +146,10 @@ class CVLayer:
             for ind in self._states[psi]:
                 self.egraph.nodes[self.to_points[ind]]["state"] = psi
 
-    def _means_sampler(self, propagate=False, rng=default_rng()):
+    def _means_sampler(self, sampling_order="initial", propagate=False, rng=default_rng()):
         """Return the means for the homodyne measurement sample."""
         means = np.zeros(2 * self.N, dtype=np.float32)
-        if self._sampling_order == "two-step":
+        if sampling_order == "two-step":
             
             def q_val_for_p(n):
                 return rng.random(size=n) * (2 * np.sqrt(np.pi))
@@ -164,11 +167,11 @@ class CVLayer:
                 means = SCZ_apply(self._adj, covs)
         return means
             
-    def _covs_sampler(self, inds=None, rng=default_rng()):
+    def _covs_sampler(self, sampling_order="initial", inds=None, rng=default_rng()):
         """Return the covariances for the homodyne measurement sample."""
-        delta = self._delta
+        delta = self.delta
         covs = np.zeros(2 * self.N, dtype=np.float32)
-        if self._sampling_order == "initial":
+        if sampling_order == "initial":
             noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
             noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
             for state, inds in self._states.items():
@@ -178,27 +181,28 @@ class CVLayer:
                     covs[inds] = noise_q[state]
                     covs[inds + self.N] = noise_p[state]
         
-        if self._sampling_order == "two-step":
+        elif sampling_order == "two-step":
             if inds is None:
                 inds = range(self.N)
             N_inds = len(inds)
-            covs = np.full(N_inds, (self._delta / 2) ** 0.5, dtype=np.float32)
+            covs = np.full(N_inds, (self.delta / 2) ** 0.5, dtype=np.float32)
             if self._perfect_inds:
                 inds_to_0 = set(inds).intersection(self._perfect_inds)
                 ind_arr = np.empty(len(inds_to_0), dtype=np.int64)
                 for i, perfect_ind in enumerate(inds_to_0):
                     ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
-                covs[ind_arr] = (self._delta / 2) ** 0.5
+                covs[ind_arr] = (self.delta / 2) ** 0.5
         
         return covs
 
-    def _measure_hom(
+    def measure_hom(
         self,
         quad="p",
         inds=None,
         updated_means=None,
         updated_covs=None,
         propagate=True,
+        sampling_order="initial",
         rng=default_rng(),
     ):
         """Conduct a homodyne measurement of states in the lattice.
@@ -219,15 +223,15 @@ class CVLayer:
             inds = range(N)
         N_inds = len(inds)
         
-        means = updated_means or self._means_sampler(propagate=propagate, rng=rng)
-        covs = updated_covs or self._covs_sampler(rng=rng)
-        if self._sampling_order == "two-step":
+        means = updated_means or self._means_sampler(sampling_order=sampling_order, propagate=propagate, rng=rng)
+        covs = updated_covs or self._covs_sampler(sampling_order=sampling_order, rng=rng)
+        if sampling_order == "two-step":
             if quad == "q":
                 means = means[:N][inds]
             elif quad == "p":
                 means = means[N:][inds]
         outcomes = rng.normal(means, covs)
-        if self._sampling_order == "initial":
+        if sampling_order == "initial":
             outcomes = SCZ_apply(self._adj, covs)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
@@ -236,8 +240,8 @@ class CVLayer:
         for i in range(N_inds):
             self.egraph.nodes[self.to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
-    def measure_syndrome(self, rng):
-        return self._measure_hom(quad="p", inds=self.code.all_syndrome_inds, rng=rng)
+    def measure_syndrome(self, sampling_order="initial", rng=default_rng()):
+        return self.measure_hom(quad="p", inds=self.code.all_syndrome_inds, sampling_order=sampling_order, rng=rng)
 
     def SCZ(self, sparse=False):
         """Return the symplectic matrix associated with CZ application.
@@ -291,6 +295,26 @@ class CVLayer:
         from flamingpy.utils.viz import plot_mat_heat_map
 
         return plot_mat_heat_map(self.SCZ(), **kwargs)
+    
+    def inner_decoder(self, translator=GKP_binner):
+        """Convert homodyne outcomes to bit values according to translator.
+
+        The inner (CV) decoder, a.k.a. translator, a.k.a binning function. Set
+        converted values to the bit_val attribute for nodes in G.
+
+        Args:
+            code (SurfaceCode): the qubit QEC code
+            translator (func): the choice of binning function; by default, the
+                standard GKP binning function that snaps to the closest
+                integer multiple of sqrt(pi).
+        Returns:
+            None
+        """
+        for point in self.code.all_syndrome_coords:
+            hom_val = self.code.graph.nodes[point]["hom_val_p"]
+            bit_val = translator([hom_val])[0]
+            self.code.graph.nodes[point]["bit_val"] = bit_val
+
 
 
 class CVMacroLayer(CVLayer):
@@ -323,13 +347,13 @@ class CVMacroLayer(CVLayer):
         noise_args = {}
         noise_args["perfect_inds"] = perfect_inds
         noise_args["sampling_order"] = "two-step"
-        super().__init__(macro_graph, noise_args={}, **kwargs)
+        super().__init__(macro_graph, **kwargs)
 
         self.reduced_graph = code.graph
         if bs_network is None:
             self.bs_network = splitter_symp()
 
-    def apply_noise(self):
+    def apply_noise(self, rng=default_rng()):
         """Reduce the macronode lattice macro_graph to the canonical
         reduced_graph.
 
@@ -354,9 +378,10 @@ class CVMacroLayer(CVLayer):
             None
         """
         # Sample for the initial state
+        super().populate_states(rng=rng)
         self._permute_indices_and_label()
         self._entangle_states()
-        self._measure_syndrome()
+        self._measure_syndrome(rng=rng)
         # Process homodyne outcomes and calculate phase error probabilities
         for j in range(0, self.N - 3, 4):
             self._reduce_jth_macronode(j)
@@ -441,7 +466,7 @@ class CVMacroLayer(CVLayer):
         self.permuted_quads = permuted_quads
         self.quad_permutation = quad_permutation
 
-    def _measure_syndrome(self):
+    def _measure_syndrome(self, rng=default_rng()):
         """Measure the syndrome of self.egraph.
 
         Conduct p-homodyne measurements on the stars (central modes) of
@@ -458,8 +483,8 @@ class CVMacroLayer(CVLayer):
         planets = np.delete(self.permuted_inds, np.arange(0, N, 4))
         # Update quadrature values after CZ gate application.
         # Measure stars in p, planets in q.
-        self.measure_hom(quad="p", inds=stars, updated_means=unpermuted_quads)
-        self.measure_hom(quad="q", inds=planets, updated_means=unpermuted_quads)
+        self.measure_hom(quad="p", inds=stars, updated_means=list(unpermuted_quads))
+        self.measure_hom(quad="q", inds=planets, updated_means=list(unpermuted_quads))
 
     def _neighbor_of_micro_i_macro_j(self, i, j):
         """Return the neighbor of the ith micronode, jth macronode in
@@ -535,13 +560,13 @@ class CVMacroLayer(CVLayer):
         This method modifies self.reduced_graph.
         """
         macro_graph = self.egraph
-        delta = self._delta
+        delta = self.delta
         star_index = self.permuted_inds[j]
         vertex = self.to_points[star_index]
 
         # Here, j corresponds to the macronode and i to to micronode.
         # i ranges from 1 to 4, to align with manuscript.
-        verts_and_inds = [self.Neighbor_of_micro_i_macro_j(i, j) for i in (1, 2, 3, 4)]
+        verts_and_inds = [self._neighbor_of_micro_i_macro_j(i, j) for i in (1, 2, 3, 4)]
         neighbors = [tup[0] if tup else None for tup in verts_and_inds]
         body_indices = [tup[1] if tup else None for tup in verts_and_inds]
 
