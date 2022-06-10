@@ -86,7 +86,7 @@ def ec_monte_carlo(
     world_comm=None,
     mpi_rank=0,
     mpi_size=1,
-):
+) -> int:
     """Run Monte Carlo simulations of error-correction for the given code.
 
     Given a code object code, a noise parameter delta, and a
