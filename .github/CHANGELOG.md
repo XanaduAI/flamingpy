@@ -20,6 +20,7 @@
 * Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 * Added automatically generated `.svg` files to gitignore. [#84](https://github.com/XanaduAI/flamingpy/pull/84)
 * Tests that required cpp libraries are skipped if they are not installed, hence avoiding failing tests from unmet dependencies. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
+* Incomplete stabilizers are drawn as rectangular prisms. When no bit values are defined in the cluster state, voxels are colored in gray. Similarly, grey edges are used on the stabilizer graph when no bit values are defined. [#35](https://github.com/XanaduAI/flamingpy/pull/35)
 
 ### Documentation changes
 
