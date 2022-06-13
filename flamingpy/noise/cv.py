@@ -367,6 +367,7 @@ class CVMacroLayer(CVLayer):
         # Instantiate the CVLayer parent class with the right noise model.
         super().__init__(macro_graph, delta=delta, sampling_order="two-step", **kwargs)
         self.reduced_graph = code.graph
+        code.graph.index_generator()
         if bs_network is None:
             self.bs_network = splitter_symp()
 
