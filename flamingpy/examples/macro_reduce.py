@@ -29,14 +29,6 @@ p_swap = 0.25
 
 # The reduced lattice.
 RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
-RHG_reduced = RHG_code.graph
-RHG_reduced.index_generator()
-# The lattice with macronodes
-pad_bool = boundaries != "periodic"
-RHG_macro = RHG_code.graph.macronize(pad_boundary=pad_bool)
-RHG_macro.index_generator()
-RHG_macro.adj_generator(sparse=True)
-
 
 successes = 0
 for trial in range(total):
