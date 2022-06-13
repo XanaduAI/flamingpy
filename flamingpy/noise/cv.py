@@ -384,61 +384,46 @@ class CVMacroLayer(CVLayer):
         """
         # Sample for the initial state
         super().populate_states(rng=rng)
-        self._permute_indices_and_label()
+        self._permute_star_inds()
+        self._apply_macro_and_reduced_labels()
         self._entangle_states()
         self._measure_syndrome(rng=rng)
         # Process homodyne outcomes and calculate phase error probabilities
         for j in range(0, self.N - 3, 4):
             self._reduce_jth_macronode(j)
 
-    def _permute_indices_and_label(self):
-        """Obtain permuted indices and set type of reduced node.
+    def _permute_star_inds(self):
+        """Obtain permuted indices for the macronode graph with stars in front.
 
-        For each macronode, permute indices so that the first encountered GKP state
-        comes first, designating it as the 'star' ('central') mode. The first
-        index in the resulting list and every four indices thereafter correspond
-        to star modes. The rest are 'planets' ('satellite' modes).
-
-        For each star, associate a 'body_index' of 1, 2, 3, and 4 for the
-        subsequent planets. Additionally, if a macronode contains at least one GKP
-        state, label the reduced state as 'GKP' (otherwise 'p').
-
-        This method sets the attribute self.permuted_inds to the permuted
-        indices and modifies self.egraph and self.reduced_graph.
+        For each macronode, permute indices so that the first encountered GKP 
+        state comes first, designating it as the 'star' ('central') mode. The 
+        first index in the resulting list and every four indices thereafter 
+        correspond to star modes. The rest are 'planets' ('satellite' modes).
         """
-        N = self.N
-        macro_graph = self.egraph
-        to_points = macro_graph.to_points
-        # A list of permuted indices where each block of four
-        # corresponds to [star, planet, planet, planet].
-        permuted_inds = np.empty(N, dtype=np.int32)
-        for i in range(0, N - 3, 4):
-            # Indices of GKP micronodes in macronode i.
-            gkps = []
-            for j in range(4):
-                micronode = to_points[i + j]
-                if macro_graph.nodes[micronode]["state"] == "GKP":
-                    gkps.append(j)
-            centre_point = tuple(round(i) for i in micronode)
-            if gkps:
-                star_ind, reduced_state = i + gkps[0], "GKP"
-            else:
-                star_ind, reduced_state = i, "p"
-            # Set type of node in the reduced lattice as a p-squeezed
-            # state if all micronodes are p, else GKP.
-            self.reduced_graph.nodes[centre_point]["state"] = reduced_state
-            # Old and permuted indices of all micronodes in macronode i.
-            old_inds = [i, i + 1, i + 2, i + 3]
-            old_inds.pop(star_ind - i)
-            new_inds = [star_ind] + old_inds
-            # Associate a 'body index' (1 to 4) to each micronode,
-            # with 1 being the star index and the rest being planets.
-            k = 1
-            for ind in new_inds:
-                macro_graph.nodes[to_points[ind]]["body_index"] = k
-                k += 1
-            permuted_inds[[i, i + 1, i + 2, i + 3]] = new_inds
-        self.permuted_inds = permuted_inds
+        inds = np.reshape(np.arange(self.N), (self.N // 4, 4))
+        self.permuted_inds = np.apply_along_axis(self._permute_gkp_inds_in_macronode, 1, inds).flatten()
+
+    def _permute_gkp_inds_in_macronode(self, indices):
+        """Place the GKP indices in indices to the front."""
+        gkps = [self.egraph.nodes[self.to_points[ind]]["state"] == "GKP" for ind in indices]
+        return np.concatenate((indices[gkps], indices[[not ind for ind in gkps]]))
+    
+    def _apply_macro_and_reduced_labels(self):
+        """Label body indices and types of reduced nodes.
+
+        In the macronode graph: for each star, associate a 'body_index' of 1, 
+        and 2, 3, and 4 for the subsequent planets. In the reduced graph: if a 
+        macronode contains at least one GKP state, label the reduced state as 
+        'GKP' (otherwise 'p').
+
+        This method modifies self.egraph and self.reduced_graph.
+        """
+        for i, ind in enumerate(self.permuted_inds):
+            self.egraph.nodes[self.to_points[ind]]["body_index"] = i % 4 + 1
+        for ind in self.permuted_inds[::4]:
+            point = self.to_points[ind]
+            centre_point = tuple(round(i) for i in point)
+            self.reduced_graph.nodes[centre_point]["state"] = self.egraph.nodes[point]["state"]
 
     def _entangle_states(self):
         """Entangle the states in the macro_graph.
@@ -451,7 +436,6 @@ class CVMacroLayer(CVLayer):
         quadratures and self.quad_permutation to the corresponding permutation
         vector.
         """
-        macro_graph = self.egraph
         quads = self._means_sampler(propagate=True)
         # Permute the quadrature values to align with the permuted
         # indices in order to apply the beamsplitter network.
