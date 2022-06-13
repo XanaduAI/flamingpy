@@ -32,7 +32,6 @@ except ImportError:  # pragma: no cover
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
-from flamingpy.cv.ops import splitter_symp
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
