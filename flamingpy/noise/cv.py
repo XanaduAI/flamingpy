@@ -89,6 +89,9 @@ class CVLayer:
         self.states = kwargs.get("states") or {"p": np.empty(0, dtype=int)}
         self.sampling_order = kwargs.get("sampling_order")
 
+        # Assign state labels.
+        self.populate_states()
+
     # Error correction methods
     def apply_noise(self, sampling_order=None, rng=default_rng()):
         """Apply cv-level noise to the graph state.
@@ -101,7 +104,6 @@ class CVLayer:
         """
         if sampling_order is None:
             sampling_order = self.sampling_order
-        self.populate_states(rng=rng)
         self.measure_syndrome(sampling_order=sampling_order, rng=rng)
         self.inner_decoder()
 
@@ -382,8 +384,6 @@ class CVMacroLayer(CVLayer):
         This method modifies the node attributes of self.reduced_graph to include
         effective bit values and phase error probabilities.
         """
-        # Sample for the initial state types
-        self.populate_states(rng=rng)
         # Obtain permuted indices, with stars (central nodes at the front)
         self._permute_star_inds()
         # Apply body indices to the macronode graph and effective state labels

@@ -58,7 +58,6 @@ for alg in ["networkx", "lemon", "retworkx"]:
         CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap, sampling_order="initial")
         # Apply noise
         CVRHG.apply_noise()
-
         # Manually decode so as to benchmark just the matching portion
         dec.assign_weights(RHG_code, "MWPM", **weight_options)
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
