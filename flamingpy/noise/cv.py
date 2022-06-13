@@ -75,7 +75,7 @@ class CVLayer:
         self._adj = self.egraph.adj_generator(sparse=True)
         self._N = len(self.egraph)
         self._to_points = self.egraph.to_points
-        
+
         # Get indices of nodes we wish to designate as ideal.
         perfect_points = self.egraph.graph.get("perfect_points")
         if perfect_points is None:
@@ -371,57 +371,32 @@ class CVMacroLayer(CVLayer):
             self.bs_network = splitter_symp()
 
     def apply_noise(self, rng=default_rng()):
-        """Reduce the macronode lattice macro_graph to the canonical
-        reduced_graph.
+        """Reduce the macronode code lattice to the canonical code lattice.
 
         Follow the procedure in arXiv:2104.03241. Take the macronode lattice
         macro_graph, apply noise based on noise_layer and noise_model, designate
         micronodes as planets and stars, conduct homodyne measurements, process
         these measurements, and compute conditional phase error probabilities.
 
-        Modify reduced_graph into a canonical lattice with effective measurement
-        outcomes and phase error probabilities stored as node attributes.
-
-        Args:
-            macro_graph (EGraph): the macronode lattice
-            reduced_graph (EGraph): the reduced lattice
-            noise_layer (CVLayer): the noise layer
-            noise_model (dict): the dictionary of noise parameters to be fed into
-                noise_layer
-            bs_network (np.array): the beamsplitter network used to entangle the
-                macronodes.
-
-        Returns:
-            None
+        This method modifies the node attributes of self.reduced_graph to include
+        effective bit values and phase error probabilities.
         """
-        # Sample for the initial state
-        super().populate_states(rng=rng)
+        # Sample for the initial state types
+        self.populate_states(rng=rng)
+        # Obtain permuted indices, with stars (central nodes at the front)
         self._permute_star_inds()
+        # Apply body indices to the macronode graph and effective state labels
+        # to the reduced graph.
         self._apply_macro_and_reduced_labels()
+        # Apply symplectic matrices corresponding to CZ gates and the
+        # beamsplitter networks.
         self._entangle_states()
+        # Measure the syndrome, corresponding to memory-mode operaiton.
         self._measure_syndrome(rng=rng)
-        # Process homodyne outcomes and calculate phase error probabilities
+        # Process homodyne outcomes to calculate effective bit values
+        # and phase error probabilities for the reduced nodes.
         for j in range(0, self._N - 3, 4):
             self._reduce_jth_macronode(j)
-
-    def _permute_star_inds(self):
-        """Obtain permuted indices for the macronode graph with stars in front.
-
-        For each macronode, permute indices so that the first
-        encountered GKP state comes first, designating it as the 'star'
-        ('central') mode. The first index in the resulting list and
-        every four indices thereafter correspond to star modes. The rest
-        are 'planets' ('satellite' modes).
-        """
-        inds = np.reshape(np.arange(self._N), (self._N // 4, 4))
-        self.permuted_inds = np.apply_along_axis(
-            self._permute_gkp_inds_in_macronode, 1, inds
-        ).flatten()
-
-    def _permute_gkp_inds_in_macronode(self, indices):
-        """Place the GKP indices in indices to the front."""
-        gkps = [self.egraph.nodes[self._to_points[ind]]["state"] == "GKP" for ind in indices]
-        return np.concatenate((indices[gkps], indices[[not ind for ind in gkps]]))
 
     def _apply_macro_and_reduced_labels(self):
         """Label body indices and types of reduced nodes.
@@ -469,6 +444,30 @@ class CVMacroLayer(CVLayer):
         self.permuted_quads = permuted_quads
         self.quad_permutation = quad_permutation
 
+    def _hom_outcomes(self, vertex):
+        """Measurement outcomes in the macronode containing vertex.
+
+        Return the values of the homodyne measurements of the macronode
+        containing vertex. Note we are only interested in q-homodyne
+        outcomes; the returned list is of the form [0, 0, q2, q3, q4].
+        If vertex is None, return a list of 0s, so that the processing
+        is unaltered by the outcomes.
+        """
+        macro_graph = self.egraph
+        if vertex is None:
+            return [0, 0, 0, 0, 0]
+        meas = np.zeros(5)
+        # The central node corresponding to the neighboring
+        # macronode.
+        central_node = tuple(round(i) for i in vertex)
+        for micro in macro_graph.macro_to_micro[central_node]:
+            index = macro_graph.nodes[micro]["body_index"]
+            # Populate meas with the q-homodyne outcomes for
+            # the planet modes.
+            if index != 1:
+                meas[index] = macro_graph.nodes[micro]["hom_val_q"]
+        return meas
+
     def _measure_syndrome(self, rng=default_rng()):
         """Measure the syndrome of self.egraph.
 
@@ -510,29 +509,24 @@ class CVMacroLayer(CVLayer):
             return ith_neighbor, ith_body_index
         return None
 
-    def _hom_outcomes(self, vertex):
-        """Measurement outcomes in the macronode containing vertex.
+    def _permute_star_inds(self):
+        """Obtain permuted indices for the macronode graph with stars in front.
 
-        Return the values of the homodyne measurements of the macronode
-        containing vertex. Note we are only interested in q-homodyne
-        outcomes; the returned list is of the form [0, 0, q2, q3, q4].
-        If vertex is None, return a list of 0s, so that the processing
-        is unaltered by the outcomes.
+        For each macronode, permute indices so that the first
+        encountered GKP state comes first, designating it as the 'star'
+        ('central') mode. The first index in the resulting list and
+        every four indices thereafter correspond to star modes. The
+        restare 'planets' ('satellite' modes).
         """
-        macro_graph = self.egraph
-        if vertex is None:
-            return [0, 0, 0, 0, 0]
-        meas = np.zeros(5)
-        # The central node corresponding to the neighboring
-        # macronode.
-        central_node = tuple(round(i) for i in vertex)
-        for micro in macro_graph.macro_to_micro[central_node]:
-            index = macro_graph.nodes[micro]["body_index"]
-            # Populate meas with the q-homodyne outcomes for
-            # the planet modes.
-            if index != 1:
-                meas[index] = macro_graph.nodes[micro]["hom_val_q"]
-        return meas
+        inds = np.reshape(np.arange(self._N), (self._N // 4, 4))
+        self.permuted_inds = np.apply_along_axis(
+            self._permute_gkp_inds_in_macronode, 1, inds
+        ).flatten()
+
+    def _permute_gkp_inds_in_macronode(self, inds):
+        """Place the indices of GKP states within inds to the front."""
+        gkps = [self.egraph.nodes[self._to_points[ind]]["state"] == "GKP" for ind in inds]
+        return np.concatenate((inds[gkps], inds[[not ind for ind in gkps]]))
 
     def _process_neighboring_outcomes(self, neighbor_hom_vals, neighbor_body_index):
         """Process homodyne outcomes for a neighboring macronode.
