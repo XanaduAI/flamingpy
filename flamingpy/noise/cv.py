@@ -75,7 +75,13 @@ class CVLayer:
         self._adj = self.egraph.adj_generator(sparse=True)
         self._N = len(self.egraph)
         self._to_points = self.egraph.to_points
-        self._perfect_inds = self.egraph.graph.get("perfect_inds")
+        
+        # Get indices of nodes we wish to designate as ideal.
+        perfect_points = self.egraph.graph.get("perfect_points")
+        if perfect_points is None:
+            self._perfect_inds = None
+        else:
+            self._perfect_inds = [self.egraph.to_indices[point] for point in perfect_points]
 
         # Set some noise model parameters.
         self.delta = delta
@@ -341,7 +347,7 @@ class CVMacroLayer(CVLayer):
     macronodes, measures the syndrome, and populates the canonical graph
     reduced_graph with the reduced states, bit values, and error probabilities.
 
-    In addition to CVLayer args, the following --
+    In addition to CVLayer args, the following:
 
     Args:
         reduced_graph (EGraph): the canonical (reduced) code graph.
@@ -351,20 +357,15 @@ class CVMacroLayer(CVLayer):
     """
 
     def __init__(self, code, *, delta, bs_network=None, **kwargs):
-        macro_graph = code.graph.macronize(pad_boundary=True)
-        macro_graph.index_generator()
+        # Macronize the code lattice. Pad the boundary (i.e. ensure that all
+        # macronodes have exactly 4 nodes) in the case that the boundaries
+        # are not all-periodic.
+        pad_bool = code.bound_str != "periodic"
+        macro_graph = code.graph.macronize(pad_bool)
         macro_graph.adj_generator(sparse=True)
 
-        perfect_points = macro_graph.graph.get("perfect_points")
-        if perfect_points:
-            perfect_inds = [macro_graph.to_indices[point] for point in perfect_points]
-        else:
-            perfect_inds = None
-
-        noise_args = {}
-        noise_args["perfect_inds"] = perfect_inds
-        noise_args["sampling_order"] = "two-step"
-        super().__init__(macro_graph, delta=delta, **kwargs)
+        # Instantiate the CVLayer parent class with the right noise model.
+        super().__init__(macro_graph, delta=delta, sampling_order="two-step", **kwargs)
         self.reduced_graph = code.graph
         if bs_network is None:
             self.bs_network = splitter_symp()
