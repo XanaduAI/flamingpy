@@ -340,13 +340,14 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         color_nodes (bool or string or dict): Options are:
 
             True: color the nodes based on the 'color' attribute
-                attached to the node. If unavailable, color nodes black.
+                attached to the node. If unavailable, color nodes gray.
             string: color all nodes with the color specified by the string
             tuple[str, dict]: color nodes based on attribute and defined colour
                 string by providing a tuple with (attribute, color_dictionary),
                 for example: ``("state", {"GKP": "b", "p": "r"})``
                 will look at the "state" attribute of the node, and colour
-                according to the dictionary.
+                according to the dictionary. If the attribute is not available,
+                nodes will be colored gray.
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -412,7 +413,8 @@ def _get_node_color(egraph, color_nodes, point):
     """Color nodes based on ``color_nodes`` arg:
 
     - if `color_nodes` is a string use the string as color,
-    - using the attribute and color dict if `color_nodes` is a tuple(str,dict),
+    - using the attribute and color dict if `color_nodes` is a tuple(str,dict), if
+      the attribute is not available on the egraph then the node is colored gray;
     - or based on color attribute (when available) if `color_nodes` is bool and True;
     - black otherwise.
     """
@@ -429,7 +431,7 @@ def _get_node_color(egraph, color_nodes, point):
                 "dictionary values to valid matplotlib color strings."
             )
         node_property = egraph.nodes[point].get(node_attribute)
-        color = color_dict.get(node_property)
+        color = color_dict.get(node_property, "gray")
 
     elif color_nodes == True:
         color = egraph.nodes[point].get("color") or "k"
@@ -598,8 +600,8 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     cubes = getattr(code, ec + "_stabilizers")
     # Default drawing options.
     draw_dict = {
-        "show_nodes": False,
-        "color_nodes": ("state", {"p": None, "GKP": None}),
+        "show_nodes": True,
+        "color_nodes": ("state", {"p": "gold", "GKP": "b"}),
         "color_edges": "k",
         "label": None,
         "legend": True,
@@ -839,7 +841,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
 
     # Drawing the stabilizer graph
     G_stabilizer = getattr(code, ec + "_stab_graph")
-    G_match = dec_objects.get("matching_graph")
+    G_match = dec_objects.get("matching_graph") if dec_objects else None
     # An integer label for each node in the stabilizer and matching
     # graphs. This is useful to identify the nodes in the plots.
     if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):
