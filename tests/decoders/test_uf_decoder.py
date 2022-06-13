@@ -85,7 +85,7 @@ def enc_state_swap_list(request):
 
     num_psqueezed_neighbor = {}
     for p in psqueezed:
-        for key in dict(DVRHG.graph[CVRHG.to_points[p]]).keys():
+        for key in dict(DVRHG.graph[CVRHG._to_points[p]]).keys():
             if key in set(DVRHG.all_syndrome_coords):
                 num_psqueezed_neighbor[key] = (
                     num_psqueezed_neighbor[key] + 1 if key in num_psqueezed_neighbor else 1

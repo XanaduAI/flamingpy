@@ -144,30 +144,30 @@ class TestCVLayer:
 
     def test_empty_init(self, random_graph):
         """Test the instantiation of CVLayer from codes and EGraphs."""
-        G = CVLayer(random_graph[0], states=None)
+        G = CVLayer(random_graph[0], delta=0.1, states=None)
         G_array = nx.to_numpy_array(G.egraph)
-        H = CVLayer(EGraph(random_graph[0]), states=None)
+        H = CVLayer(EGraph(random_graph[0]), delta=0.1, states=None)
         H_array = nx.to_numpy_array(H.egraph)
         # Check that the _N attribute is populated with the number
         # of nodes in the random graph.
-        assert G.N == len(random_graph[0])
+        assert G._N == len(random_graph[0])
         # Check that instantiating a CVLayer with an EGraph or with
         # a regular NetworkX graph has the same effect.
         assert np.array_equal(random_graph[1], H_array)
         assert np.array_equal(random_graph[1], G_array)
-        CVRHG = CVLayer(SurfaceCode(2))
-        assert CVRHG.N == len(SurfaceCode(2).graph)
+        CVRHG = CVLayer(SurfaceCode(2), delta=0.1)
+        assert CVRHG._N == len(SurfaceCode(2).graph)
 
     def test_all_GKP_init(self, random_graph):
         """Test the all-GKP initialization of EGraph."""
-        G = CVLayer(random_graph[0])
+        G = CVLayer(random_graph[0], delta=0.1)
         G.populate_states()
         n = len(random_graph[0])
         for node in G.egraph:
             assert G.egraph.nodes[node]["state"] == "GKP"
-        assert len(G._states["p"]) == 0
+        assert len(G.states["p"]) == 0
         assert len(G.p_inds) == 0
-        assert np.array_equal(G._states["GKP"], np.arange(n))
+        assert np.array_equal(G.states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
     @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * rng(int_time).random() + 0.01, 1]))
@@ -176,19 +176,19 @@ class TestCVLayer:
         zero p-swap."""
         n = len(random_graph[0])
         # Test all-p case
-        G = CVLayer(random_graph[0], p_swap=1)
+        G = CVLayer(random_graph[0], delta=0.1, p_swap=1)
         G.populate_states()
         for node in G.egraph:
             assert G.egraph.nodes[node]["state"] == "p"
-        assert len(G._states["GKP"]) == 0
-        assert np.array_equal(G._states["p"], np.arange(n))
+        assert len(G.states["GKP"]) == 0
+        assert np.array_equal(G.states["p"], np.arange(n))
         # Test various swap-out probabilities; mean p population
         # should be close to p_swap parameter, within tolerance.
         p_list = []
         for _ in range(1000):
-            G = CVLayer(random_graph[0], p_swap=p_swap)
+            G = CVLayer(random_graph[0], delta=0.1, p_swap=p_swap)
             G.populate_states()
-            p_list += [len(G._states["p"]) / n]
+            p_list += [len(G.states["p"]) / n]
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
 
@@ -199,21 +199,20 @@ class TestCVLayer:
         num_ps = rng().integers(n)
         p_inds = rng().choice(n, num_ps, replace=False)
         gkp_inds = list(set(np.arange(n)) - set(p_inds))
-        G = CVLayer(random_graph[0], states={"p": p_inds})
+        G = CVLayer(random_graph[0], delta=0.1, states={"p": p_inds})
         G.populate_states()
-        assert np.array_equal(G._states.get("p"), p_inds)
-        assert np.array_equal(G._states.get("GKP"), gkp_inds)
+        assert np.array_equal(G.states.get("p"), p_inds)
+        assert np.array_equal(G.states.get("GKP"), gkp_inds)
         assert np.array_equal(G.p_inds, p_inds)
         assert np.array_equal(G.GKP_inds, gkp_inds)
 
     @pytest.mark.parametrize("order", sorted(["initial", "two-step"]))
     def test_apply_noise(self, random_graph, order):
-        """Check _delta, _sampling_order attributes with default noise
-        model."""
+        """Check delta, sampling_order attributes with default noise model."""
         delta = rng().random()
         G = CVLayer(random_graph[0], delta=delta, sampling_order=order)
         assert G.delta == delta
-        assert G._sampling_order == order
+        assert G.sampling_order == order
 
     def test_grn_model(self, random_graph):
         """Compare expected noise objects (quadratures, covariance matrix) with
