@@ -370,7 +370,7 @@ class TestRHGGraph:
             assert len(macronode_lattice) == 4 * len(RHG_reduced)
 
 
-code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "periodic"])
+code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "toric", "periodic"])
 
 
 @pytest.fixture(scope="module", params=code_params)
@@ -444,7 +444,7 @@ class TestSurfaceCode:
                     assert len(syndrome_coords) == (d - 1) ** 3 + 2 * (d - 1) * d**2
                 else:
                     assert len(syndrome_coords) == d**3 + 2 * d * (d - 1) ** 2
-            elif surface_code.bound_str == "periodic":
+            elif surface_code.bound_str == ("toric", "periodic"):
                 assert len(syndrome_coords) == 3 * d**3
 
     def test_boundary(self, surface_code):
@@ -457,7 +457,7 @@ class TestSurfaceCode:
                     assert len(bound_points) == 2 * d * (d - 1)
                 else:
                     assert len(bound_points) == 2 * d**2
-            elif surface_code.bound_str == "periodic":
+            elif surface_code.bound_str in ("toric", "periodic"):
                 assert not bound_points
 
 

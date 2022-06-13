@@ -86,8 +86,8 @@ def str_to_bound(bound_name):
 
     The options are:
 
-        'open_primal': [primal, dual, dual]
-        'open_dual': [primal, dual, primal]
+        'open_primal': [primal, dual, primal]
+        'open_dual': [primal, dual, dual]
         'primal': [primal, primal, primal]
         'dual': [dual, dual, dual]
         'periodic': [periodic, periodic, periodic]
@@ -99,11 +99,13 @@ def str_to_bound(bound_name):
         raise TypeError("Boundary type must be string.")
 
     boundary_mapping_dict = {
-        "open_primal": ["primal", "dual", "dual"],
-        "open_dual": ["primal", "dual", "primal"],
+        "open_primal": ["primal", "dual", "primal"],
+        "open_dual": ["primal", "dual", "dual"],
         "primal": ["primal", "primal", "primal"],
         "dual": ["dual", "dual", "dual"],
         "periodic": ["periodic", "periodic", "periodic"],
+        "periodic_primal": ["periodic", "periodic", "primal"],
+        "periodic_dual": ["periodic", "periodic", "dual"],
     }
 
     return np.array(boundary_mapping_dict.get(bound_name))
@@ -130,8 +132,8 @@ def RHG_graph(
             dual = rough, to align with surface code terminology.
             Available choices in the order x, y, z are:
 
-                'open_primal': [primal, dual, dual]
-                'open_dual': [primal, dual, primal]
+                'open_primal': [primal, dual, primal]
+                'open_dual': [primal, dual, dual]
                 'primal': [primal, primal, primal]
                 'dual': [dual, dual, dual]
                 'periodic': [periodic, periodic, periodic]
@@ -251,15 +253,16 @@ class SurfaceCode:
         ec (str): the error complex ('primal' or 'dual').
         boundaries (str): the boundary conditions. The options are:
 
-            'open': ['primal', 'dual', 'dual'] for 'primal' EC
-                    ['primal', 'dual', 'primal'] for 'dual' EC
+            'open': ['primal', 'dual', 'dual'] for 'primal' EC,
+                    ['primal', 'dual', 'primal'] for 'dual' EC.
             'periodic': 'periodic' in all three directions.
-            'periodic': 'periodic' in x and y but not z.
+            'toric':  ['periodic', 'periodic', 'dual'] for 'primal' EC,
+                      ['periodic', 'periodic', 'primal'] for 'dual' EC.
 
-            For the "open" and "periodic" boundary choice, we imagine qubits
+            For the "open" and "toric" boundary choice, we imagine qubits
             are encoded into the x-y plane and propagated in time. The z-axis
             is interpreted as the temporal axis which is relevant in quantum
-            memory simulations. #TODO: possibly rename periodic to toric.
+            memory simulations.
 
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
@@ -307,7 +310,7 @@ class SurfaceCode:
             )  # TODO: fill in message
 
         if boundaries == "open":
-            self.bound_str = "open_primal" if ec in ("primal", "both") else "open_dual"
+            self.bound_str = "open_dual" if ec in ("primal", "both") else "open_primal"
         elif boundaries == "toric":
             self.bound_str = "periodic_dual" if ec in ("primal", "both") else "periodic_primal"
         else:
