@@ -283,6 +283,7 @@ class CVLayer:
                 if len(inds) > 0:
                     covs[inds] = noise_q[state]
                     covs[inds + self._N] = noise_p[state]
+            self._init_covs = covs
 
         elif sampling_order == "two-step":
             if inds is None:
@@ -337,8 +338,11 @@ class CVLayer:
                 n_inds = len(indices)
                 if n_inds > 0:
                     means[indices] = val_funcs[state](n_inds)
+            self._init_means = means
+
             if propagate:
                 means = SCZ_apply(self._adj, means)
+
         return means
 
 

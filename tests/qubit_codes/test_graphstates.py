@@ -214,18 +214,19 @@ class TestCVLayer:
         """Compare expected noise objects (quadratures, covariance matrix) with
         those obtained through supplying the grn_model dictionary with
         different parameters."""
-        # delta = rng().random()
+        delta = rng().random()
 
-        # n = len(random_graph[0])
-        # G = CVLayer(random_graph[0], delta=delta)
-        # H = CVLayer(random_graph[0], delta=delta, p_swap=1)
-        # H.apply_noise(sampling_order="initial")
-        # init_noise_all_GKP = np.full(2 * n, (delta / 2) ** 0.5, dtype=np.float32)
-        # init_noise_all_p = np.array(
-        #     [1 / (2 * delta) ** 0.5] * n + [(delta / 2) ** 0.5] * n, dtype=np.float32
-        # )
-        # assert np.array_equal(G._init_noise, init_noise_all_GKP)
-        # assert np.array_equal(H._init_noise, init_noise_all_p)
+        n = len(random_graph[0])
+        G = CVLayer(random_graph[0], delta=delta)
+        H = CVLayer(random_graph[0], delta=delta, p_swap=1)
+        H._covs_sampler(sampling_order="initial")
+        G._covs_sampler(sampling_order="initial")
+        init_noise_all_GKP = np.full(2 * n, (delta / 2) ** 0.5, dtype=np.float32)
+        init_noise_all_p = np.array(
+            [1 / (2 * delta) ** 0.5] * n + [(delta / 2) ** 0.5] * n, dtype=np.float32
+        )
+        assert np.array_equal(G._init_covs, init_noise_all_GKP)
+        assert np.array_equal(H._init_covs, init_noise_all_p)
 
         # G.apply_noise(sampling_order="final")
         # H.apply_noise(sampling_order="final")
@@ -234,12 +235,12 @@ class TestCVLayer:
         # assert np.array_equal(G.Noise_cov.toarray(), noise_cov_all_GKP)
         # assert np.array_equal(H.Noise_cov.toarray(), noise_cov_all_p)
 
-        # G.apply_noise(sampling_order="two_step")
-        # H.apply_noise(sampling_order="two_step")
-        # assert np.max(H._init_quads[:n]) <= 2 * np.sqrt(np.pi)
-        # assert np.min(H._init_quads[:n]) >= 0
-        # assert np.isclose(np.max(G._init_quads[:n]), np.sqrt(np.pi))
-        # assert np.isclose(np.min(G._init_quads[:n]), 0)
+        G._means_sampler(sampling_order="two-step")
+        H._means_sampler(sampling_order="two-step")
+        assert np.max(H._init_means[:n]) <= 2 * np.sqrt(np.pi)
+        assert np.min(H._init_means[:n]) >= 0
+        assert np.isclose(np.max(G._init_means[:n]), np.sqrt(np.pi))
+        assert np.isclose(np.min(G._init_means[:n]), 0)
 
     @pytest.mark.parametrize("order", sorted(["initial", "final"]))
     def test_measure_hom(self, random_graph, order):
