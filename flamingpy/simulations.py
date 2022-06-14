@@ -220,7 +220,7 @@ def run_ec_simulation(
                     "p_swap",
                     "p_err",
                     "decoder",
-                    "errors_py",
+                    "errors",
                     "trials",
                     "current_time",
                     "decoding_time",
