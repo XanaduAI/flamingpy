@@ -70,18 +70,20 @@ class TestBlueprint:
             "multiplier": 1,
             "delta": noise_args.get("delta"),
         }
+
         noise_instance = CVLayer(code, delta=delta, p_swap=p_swap)
+
         errors = ec_monte_carlo(
             trials,
             code,
             noise_instance,
-            "MWPM",
+            "UF",
             decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,
             mpi_size=mpi_size,
         )
-        # Check that there are no errors in all-GKP high-squeezing limit.
+        # Check that there are no errors in all-GKP high-squeezing limit for selected decoder:
         assert errors == 0
 
 
@@ -98,30 +100,31 @@ class TestPassive:
 
         noise_instance = CVMacroLayer(code, delta=delta, p_swap=p_swap)
         decoder_args = {"weight_opts": None}
+
         errors = ec_monte_carlo(
             trials,
             code,
             noise_instance,
-            "MWPM",
+            "UF",
             decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,
             mpi_size=mpi_size,
         )
-        # Check that there are no errors in all-GKP high-squeezing limit.
+        # Check that there are no errors in all-GKP high-squeezing limit for selected decoder:
         assert errors == 0
 
 
 @pytest.mark.parametrize("empty_file", sorted([True, False]))
-@pytest.mark.parametrize("sim", [run_ec_simulation])
-def test_simulations_output_file(tmpdir, empty_file, sim):
+@pytest.mark.parametrize("noise", sorted(["blueprint", "passive", "iid"]))
+@pytest.mark.parametrize("decoder", sorted(["MWPM", "UF"]))
+def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
         "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors,"
         + "trials,current_time,decoding_time,simulation_time,mpi_size"
     )
-    dummy_content = "blueprint,3,primal,open,0.04,0.5,0.2,MWPM,2,10,12:34:56,10,20,2"
 
     f = tmpdir.join("sims_results.csv")
     if not empty_file:
@@ -132,28 +135,25 @@ def test_simulations_output_file(tmpdir, empty_file, sim):
 
     # simulation params
     params = {
-        "noise": "blueprint",
         "distance": 3,
         "ec": "primal",
         "boundaries": "open",
-        "delta": 0.09,
-        "p_swap": 0.25,
-        "p_err": 0.1,
         "trials": 100,
-        "decoder": "MWPM",
     }
 
     # The Monte Carlo simulations
     code = SurfaceCode
     code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
+    if noise in ["blueprint", "passive"]:
+        noise_args = {"delta": 0.09, "p_swap": 0.25}
+    else:
+        noise_args = {"error_probability": 0.1}
     noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
-    noise = noise_dict[params["noise"]]
-    noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
+    noise = noise_dict[noise]
 
-    decoder = params["decoder"]
     args = [params["trials"], code, code_args, noise, noise_args, decoder]
-    sim(*args, fname=f)
+    run_ec_simulation(*args, fname=f)
 
     file_lines = f.readlines()
     # file is created with header and result lines
