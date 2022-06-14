@@ -15,20 +15,10 @@
 
 # pylint: disable=protected-access
 
-import warnings
-
 import itertools as it
 
 import re
 import pytest
-
-try:
-    import mpi4py.rc
-
-    mpi4py.rc.threaded = False
-    from mpi4py import MPI
-except ImportError:  # pragma: no cover
-    warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
@@ -36,14 +26,6 @@ from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
 code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
 
-if "MPI" in locals():
-    world_comm = MPI.COMM_WORLD
-    mpi_size = world_comm.Get_size()
-    mpi_rank = world_comm.Get_rank()
-else:
-    world_comm = None
-    mpi_size = 1
-    mpi_rank = 0
 
 
 @pytest.fixture(scope="module", params=code_params)
@@ -80,9 +62,6 @@ class TestBlueprint:
             noise_instance,
             "MWPM",
             decoder_args,
-            world_comm=world_comm,
-            mpi_rank=mpi_rank,
-            mpi_size=mpi_size,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
@@ -107,9 +86,6 @@ class TestPassive:
             noise_instance,
             "MWPM",
             decoder_args,
-            world_comm=world_comm,
-            mpi_rank=mpi_rank,
-            mpi_size=mpi_size,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
         assert errors == 0
