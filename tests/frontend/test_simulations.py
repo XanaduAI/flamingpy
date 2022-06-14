@@ -101,7 +101,7 @@ class TestPassive:
 
         noise_instance = CVMacroLayer(code, delta=delta, p_swap=p_swap)
         decoder_args = {"weight_opts": None}
-        errors_py = ec_monte_carlo(
+        errors = ec_monte_carlo(
             trials,
             code,
             noise_instance,
@@ -112,7 +112,7 @@ class TestPassive:
             mpi_size=mpi_size,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
-        assert errors_py == 0
+        assert errors == 0
 
 
 @pytest.mark.parametrize("empty_file", sorted([True, False]))
