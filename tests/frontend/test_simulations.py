@@ -74,7 +74,7 @@ class TestBlueprint:
             "delta": noise_args.get("delta"),
         }
         noise_instance = CVLayer(code, delta=delta, p_swap=p_swap)
-        errors_py = ec_monte_carlo(
+        errors = ec_monte_carlo(
             trials,
             code,
             noise_instance,
@@ -85,7 +85,7 @@ class TestBlueprint:
             mpi_size=mpi_size,
         )
         # Check that there are no errors in all-GKP high-squeezing limit.
-        assert errors_py == 0
+        assert errors == 0
 
 
 class TestPassive:
@@ -121,13 +121,10 @@ def test_simulations_output_file(tmpdir, empty_file, sim):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
-        "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors_py,"
+        "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors,"
         + "trials,current_time,decoding_time,simulation_time,mpi_size"
     )
     dummy_content = "blueprint,3,primal,open,0.04,0.5,0.2,MWPM,2,10,12:34:56,10,20,2"
-    if "benchmark" in sim.__name__:
-        expected_header += ",cpp_to_py_speedup"
-        dummy_content += ",1"
 
     f = tmpdir.join("sims_results.csv")
     if not empty_file:
@@ -147,7 +144,7 @@ def test_simulations_output_file(tmpdir, empty_file, sim):
         "p_err": 0.1,
         "trials": 100,
         "decoder": "MWPM",
-    }  # Should we switch to using "passive": passive instead?
+    }
 
     # The Monte Carlo simulations
     code = SurfaceCode
