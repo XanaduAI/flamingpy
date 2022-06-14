@@ -274,34 +274,28 @@ class TestRHGGraph:
 
         assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
-    # @pytest.mark.parametrize("boundary_type", ["periodic_primal", "periodic_dual"])
-    # def test_toric_boundaries(self, d, boundary_type):
-    #     """Test whether periodic boundary conditions on x and y direction
-    #     produce a lattice with the expected neighbors."""
-    #     RHG_lattice = RHG_graph(d, boundary_type)
-    #     # assert len(RHG_lattice) == 6 * (d**3)
+    @pytest.mark.parametrize("boundary_type", ["periodic_primal", "periodic_dual"])
+    def test_toric_boundaries(self, d, boundary_type):
+        """Test whether periodic boundary conditions on x and y direction
+        produce a lattice with the expected neighbors."""
+        RHG_lattice = RHG_graph(d, boundary_type)
 
-    #     # test that sites on the edges of periodic boundaries have
-    #     # their corresponding relations by sticking one side to the
-    #     # other
-    #     for plane in ("x", "y"):
-    #         # define the plane displacement
-    #         dd = {"x": 0, "y": 0, "z": 0}
-    #         dd[plane] = 2 * d - 1
+        for plane in ("x", "y"):
+            lower_boundary = RHG_lattice.slice_coords(plane, 0)
 
-    #         lower_boundary = RHG_lattice.slice_coords(plane, 0)
-    #         displaced_boundary = set(
-    #             (x + dd["x"], y + dd["y"], z + dd["z"]) for x, y, z in lower_boundary
-    #         )
+            for point in lower_boundary:
+                # get neighbors tagged as periodic
+                neighbors = RHG_lattice[point]
+                periodic_neighbors = [
+                    coords for coords, props in neighbors.items() if "periodic" in props
+                ]
 
-    #         upper_boundary = set(RHG_lattice.slice_coords(plane, 2 * d - 1))
-
-    #         intersection = displaced_boundary.intersection(upper_boundary)
-
-    #         if plane in ("x", "y"):
-    #             assert len(intersection) > 0
-    #         else:
-    #             assert len(intersection) == 0
+                # check there is an edge from neighbor in low boundary to high boundary
+                # for all periodic neighbors
+                assert all(
+                    RHG_lattice.has_edge(point, periodic_point)
+                    for periodic_point in periodic_neighbors
+                )
 
     @pytest.mark.parametrize("boundaries", all_bound_combs)
     def test_polarity(self, d, boundaries):
