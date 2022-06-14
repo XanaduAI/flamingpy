@@ -203,8 +203,8 @@ def run_ec_simulation(
 
     if mpi_rank == 0:
         # Store results in the provided file-path or by default in
-        # a sims_data directory in the file simulations_results.csv.
-        file_name = fname or "./flamingpy/sims_data/sims_results.csv"
+        # a .sims_data directory in the file simulations_results.csv.
+        file_name = fname or "./flamingpy/.sims_data/sims_results.csv"
 
         # Create a CSV file if it doesn't already exist.
         try:
