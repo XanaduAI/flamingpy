@@ -13,18 +13,18 @@
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
 
-# pylint: disable=protected-access,wrong-import-order
+# pylint: disable=protected-access
 
 
 import networkx as nx
+import numpy as np
+from numpy.random import default_rng as rng
 import pytest
 import scipy.sparse as sp
 
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply
 
-from numpy.random import default_rng as rng
-import numpy as np
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
