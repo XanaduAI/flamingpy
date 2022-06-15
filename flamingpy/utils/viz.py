@@ -347,7 +347,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
                 for example: ``("state", {"GKP": "b", "p": "r"})``
                 will look at the "state" attribute of the node, and colour
                 according to the dictionary. If the attribute is not available,
-                nodes will be colored gray.
+                nodes will be colored black.
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -414,7 +414,7 @@ def _get_node_color(egraph, color_nodes, point):
 
     - if `color_nodes` is a string use the string as color,
     - using the attribute and color dict if `color_nodes` is a tuple(str,dict), if
-      the attribute is not available on the egraph then the node is colored gray;
+      the attribute is not available on the egraph then the node is colored black;
     - or based on color attribute (when available) if `color_nodes` is bool and True;
     - black otherwise.
     """
@@ -431,7 +431,7 @@ def _get_node_color(egraph, color_nodes, point):
                 "dictionary values to valid matplotlib color strings."
             )
         node_property = egraph.nodes[point].get(node_attribute)
-        color = color_dict.get(node_property, "gray")
+        color = color_dict.get(node_property, "black")
 
     elif color_nodes == True:
         color = egraph.nodes[point].get("color") or "k"
@@ -721,13 +721,13 @@ def _calculate_cube_size_and_position(code, cube):
     max_arr = np.array([xmax, ymax, zmax])
     size = np.abs(max_arr - cube_origin) - 2 * gap
 
-    # if there is any incomplete stabilizer, halve its size on
+    # if there is any incomplete stabilizer, halve its size in
     # the missing direction
-    is_incomplete_stab = len(cube_coords) != len(cube.physical)
+    is_incomplete_stab = len(cube_coords) != 6
     if is_incomplete_stab:
-        # to do so the cube is tranlated to the origin of coordinates
+        # Translate the cube to the origin
         centered_cube = cube_coords - np.tile(midpoint, (cube_coords.shape[0], 1))
-        # then stabilizers are paired (meaning 2 stabilizers) by finding the number
+        #  Pair the stabilizers by finding the number
         # of points lying over an axis. Unpaired points appear for incomplete
         # stabilizers and determine the direction in which the cube has to be
         # resized.

@@ -48,7 +48,7 @@ class Stabilizer:
         the EGraph of the code.
 
         Returns:
-            int, None: the total parity or ``None`` if bit values are not define
+            int, None: the total parity or ``None`` if bit values are not defined
         """
         bit_vals = [
             self.egraph.nodes[node]["bit_val"]
