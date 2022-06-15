@@ -55,8 +55,8 @@ class CVLayer:
         N (int): the number of qubits in the lattice.
         delta (float): the delta from the Args above.
         p_swap (float): the swap-out probability from the Args above.
+        states (dict): states along with their indices.
         _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph.
-        _states (dict): states along with their indices.
         _sampling_order (str): sampling order from above.
         _perfect_inds (list or NoneType): the indices of qubits to treat as
             ideal.
@@ -87,10 +87,10 @@ class CVLayer:
         self.delta = delta
         self.p_swap = kwargs.get("p_swap")
         self.states = kwargs.get("states") or {"p": np.empty(0, dtype=int)}
-        self.sampling_order = kwargs.get("sampling_order")
+        self._sampling_order = kwargs.get("sampling_order") or "initial"
 
     # Error correction methods
-    def apply_noise(self, sampling_order=None, rng=default_rng()):
+    def apply_noise(self, rng=default_rng()):
         """Apply cv-level noise to the graph state.
 
         Identify the nodes of the EGraph with CV states, measure the syndrome
@@ -99,10 +99,8 @@ class CVLayer:
 
         This method modifies the attributes of self.egraph.
         """
-        if sampling_order is None:
-            sampling_order = self.sampling_order
         self.populate_states(rng=rng)
-        self.measure_syndrome(sampling_order=sampling_order, rng=rng)
+        self.measure_syndrome(rng=rng)
         self.inner_decoder()
 
     def populate_states(self, rng=default_rng()):
@@ -128,11 +126,11 @@ class CVLayer:
         # Give the EGraph nodes state attributes.
         self._apply_state_labels()
 
-    def measure_syndrome(self, sampling_order="initial", rng=default_rng()):
+    def measure_syndrome(self, rng=default_rng()):
         """Measure the syndrome for memory-mode error correction of the grpah
         states."""
         return self.measure_hom(
-            quad="p", inds=self.code.all_syndrome_inds, sampling_order=sampling_order, rng=rng
+            quad="p", inds=self.code.all_syndrome_inds, rng=rng
         )
 
     def inner_decoder(self, translator=GKP_binner):
@@ -162,7 +160,6 @@ class CVLayer:
         updated_means=None,
         updated_covs=None,
         propagate=True,
-        sampling_order="initial",
         rng=default_rng(),
     ):
         """Conduct a homodyne measurement of states in the lattice.
@@ -184,20 +181,20 @@ class CVLayer:
         N_inds = len(inds)
 
         if updated_means is None:
-            means = self._means_sampler(sampling_order=sampling_order, propagate=propagate, rng=rng)
+            means = self._means_sampler(propagate=propagate, rng=rng)
         else:
             means = updated_means
         if updated_covs is None:
-            covs = self._covs_sampler(sampling_order=sampling_order, rng=rng)
+            covs = self._covs_sampler(inds=inds, rng=rng)
         else:
             covs = updated_covs
-        if sampling_order == "two-step":
+        if self._sampling_order == "two-step":
             if quad == "q":
                 means = means[:N][inds]
             elif quad == "p":
                 means = means[N:][inds]
         outcomes = rng.normal(means, covs)
-        if sampling_order == "initial":
+        if self._sampling_order == "initial":
             outcomes = SCZ_apply(self._adj, covs)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
@@ -268,22 +265,22 @@ class CVLayer:
             for ind in self.states[psi]:
                 self.egraph.nodes[self._to_points[ind]]["state"] = psi
 
-    def _covs_sampler(self, sampling_order="initial", inds=None, rng=default_rng()):
+    def _covs_sampler(self, inds=None, rng=default_rng()):
         """Return the covariances for the homodyne measurement sample."""
         delta = self.delta
         covs = np.zeros(2 * self._N, dtype=np.float32)
-        if sampling_order == "initial":
+        if self._sampling_order == "initial":
             noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
             noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
-            for state, inds in self.states.items():
+            for state, indices in self.states.items():
                 if self._perfect_inds:
-                    inds = np.array(list(set(inds).difference(self._perfect_inds)))
-                if len(inds) > 0:
-                    covs[inds] = noise_q[state]
-                    covs[inds + self._N] = noise_p[state]
+                    indices = np.array(list(set(indices).difference(self._perfect_inds)))
+                if len(indices) > 0:
+                    covs[indices] = noise_q[state]
+                    covs[indices + self._N] = noise_p[state]
             self._init_covs = covs
 
-        elif sampling_order == "two-step":
+        elif self._sampling_order == "two-step":
             if inds is None:
                 inds = range(self._N)
             N_inds = len(inds)
@@ -319,10 +316,10 @@ class CVLayer:
             inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
             self.states["p"] = inds
 
-    def _means_sampler(self, sampling_order="initial", propagate=False, rng=default_rng()):
+    def _means_sampler(self, propagate=False, rng=default_rng()):
         """Return the means for the homodyne measurement sample."""
         means = np.zeros(2 * self._N, dtype=np.float32)
-        if sampling_order == "two-step":
+        if self._sampling_order == "two-step":
 
             def q_val_for_p(n):
                 return rng.random(size=n) * (2 * np.sqrt(np.pi))
@@ -490,8 +487,8 @@ class CVMacroLayer(CVLayer):
         planets = np.delete(self.permuted_inds, np.arange(0, N, 4))
         # Update quadrature values after CZ gate application.
         # Measure stars in p, planets in q.
-        self.measure_hom(quad="p", inds=stars, updated_means=list(unpermuted_quads))
-        self.measure_hom(quad="q", inds=planets, updated_means=list(unpermuted_quads))
+        self.measure_hom(quad="p", inds=stars, updated_means=unpermuted_quads)
+        self.measure_hom(quad="q", inds=planets, updated_means=unpermuted_quads)
 
     def _neighbor_of_micro_i_macro_j(self, i, j):
         """Return the neighbor of the ith micronode, jth macronode in
