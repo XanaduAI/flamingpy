@@ -14,7 +14,7 @@
 """Class for the measurement-based surface code and related functions."""
 
 import itertools as it
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 
 import numpy as np
 
@@ -104,7 +104,7 @@ def str_to_bound(bound_name):
 
 
 def RHG_graph(
-    dims: Union[int, Tuple[int, int, int]],
+    dims: Union[int, Tuple[int, int, int], List],
     boundaries="primal",
     polarity=None,
 ):
