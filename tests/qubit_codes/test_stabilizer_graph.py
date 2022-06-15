@@ -74,7 +74,7 @@ def compute_enc_state(request):
     # Apply noise
     nx_CVRHG.apply_noise(cv_noise, rng(seed))
     # Measure syndrome
-    nx_CVRHG.measure_hom("p", nx_DVRHG.all_syndrome_inds, rng=default_rng(seed))
+    nx_CVRHG.measure_hom("p", nx_DVRHG.all_syndrome_inds, rng=rng(seed))
     assign_weights(nx_DVRHG, "MWPM", **weight_options)
     CV_decoder(nx_DVRHG, translator=GKP_binner)
 
@@ -91,9 +91,9 @@ def compute_enc_state(request):
     states = {"p": nx_CVRHG._states["p"]}
     CVRHG = CVLayer(DVRHG, states)
     # Apply noise
-    CVRHG.apply_noise(cv_noise, default_rng(seed))
+    CVRHG.apply_noise(cv_noise, rng(seed))
     # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds, rng=default_rng(seed))
+    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds, rng=rng(seed))
     assign_weights(DVRHG, "MWPM", **weight_options)
     CV_decoder(DVRHG, translator=GKP_binner)
 
