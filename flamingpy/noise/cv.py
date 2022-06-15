@@ -88,6 +88,7 @@ class CVLayer:
         self.p_swap = kwargs.get("p_swap")
         self.states = kwargs.get("states") or {"p": np.empty(0, dtype=int)}
         self._sampling_order = kwargs.get("sampling_order") or "initial"
+        self._translator = kwargs.get("translator") or GKP_binner
 
     # Error correction methods
     def apply_noise(self, rng=default_rng()):
@@ -133,7 +134,7 @@ class CVLayer:
             quad="p", inds=self.code.all_syndrome_inds, rng=rng
         )
 
-    def inner_decoder(self, translator=GKP_binner):
+    def inner_decoder(self):
         """Convert homodyne outcomes to bit values according to translator.
 
         This is the inner (CV) decoder, a.k.a. translator, a.k.a binning function.
@@ -149,7 +150,7 @@ class CVLayer:
         """
         for point in self.code.all_syndrome_coords:
             hom_val = self.code.graph.nodes[point]["hom_val_p"]
-            bit_val = translator([hom_val])[0]
+            bit_val = self._translator([hom_val])[0]
             self.code.graph.nodes[point]["bit_val"] = bit_val
 
     # Public CV manipulation methods.
