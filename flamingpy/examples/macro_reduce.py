@@ -19,21 +19,20 @@ from flamingpy.noise.cv import CVMacroLayer
 
 # Number of trials
 total = 10
-# Code parameters
+# Code parameters and definition
 d = 3
 boundaries = "open"
 ec = "primal"
-# Noise parameters
+RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
+
+# Noise parameters and layer definition
 delta = 0.1
 p_swap = 0.25
-
-# The reduced lattice.
-RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
+CV_macro = CVMacroLayer(RHG_code, delta=delta, p_swap=p_swap)
 
 successes = 0
 for trial in range(total):
     # The CV macronode noise layer and reduction
-    CV_macro = CVMacroLayer(RHG_code, delta=delta, p_swap=p_swap)
     CV_macro.apply_noise()
     decoder = {"outer": "MWPM"}
     decoder_opts = {"backend": "networkx"}

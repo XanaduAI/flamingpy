@@ -38,7 +38,7 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         # Define the CV noise parameters and insantiate the CV layer
         p_swap = 0.05  # probability of having squeezed states (the rest are GKPs)
         delta = 0.01  # GKP squeezing parameter
-        CVRHG = CVLayer(RHG_code, p_swap=p_swap, delta=delta, sampling_order="initial")
+        CVRHG = CVLayer(RHG_code, p_swap=p_swap, delta=delta)
         # Apply noise, measure syndrome, translate to bit values
         CVRHG.apply_noise()
         dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
