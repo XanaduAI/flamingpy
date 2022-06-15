@@ -261,7 +261,7 @@ class SurfaceCode:
 
             For the "open" and "toric" boundary choice, we imagine qubits
             are encoded into the x-y plane and propagated in time. The z-axis
-            is interpreted as the temporal axis which is relevant in quantum
+            is interpreted as the temporal axis, which is relevant in quantum
             memory simulations.
 
         polarity (func): a function that specifies edge weights. It
@@ -304,7 +304,7 @@ class SurfaceCode:
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
-        if {ec, boundaries} == {"primal", "dual"}:
+        if not (boundaries in ("open", "toric", "periodic") and ec in ("primal", "dual"):
             raise ValueError(
                 f"The combination `ec={ec}` and `boundaries={boundaries} is not valid.`"
             )  # TODO: fill in message
@@ -484,10 +484,10 @@ class SurfaceCode:
             setattr(self, ec + "_bound_points", ec_bound_points)
 
     def _get_ec_bounds(self, ec, bound_ind):
-        """Obtain coordinates of syndrome qubits on the boundary determined by
-        ``bound_ind`` via ``plane_dict``.
-
-        The relevant boundaries are determined by the ``ec`` string.
+        """Obtain coordinates of syndrome qubits on the relevant boundary.
+        
+        The boundary is determined by the ``ec`` string. ``bound_ind``
+        specifies the direction where the ``ec`` boundary is located. 
         """
         dims = self.dims
         plane_dict = {0: "x", 1: "y", 2: "z"}

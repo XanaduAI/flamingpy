@@ -216,7 +216,7 @@ def check_correction(code, sanity_check=False):
             planes_to_check = ["x", "y", "z"]
         elif code.bound_str in ["periodic_primal", "periodic_dual"]:  # toric code
             planes_to_check = ["x", "y"]
-        elif code.bound_str.startswith("open"):
+        elif code.bound_str.startswith("open"):  # planar code
             planes_to_check = ["x"] if ec == "primal" else ["y"]
 
         minimum = 0 if ec == "primal" else 1

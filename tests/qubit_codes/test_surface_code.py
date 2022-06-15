@@ -438,7 +438,7 @@ class TestSurfaceCode:
                     assert len(syndrome_coords) == (d - 1) ** 3 + 2 * (d - 1) * d**2
                 else:
                     assert len(syndrome_coords) == d**3 + 2 * d * (d - 1) ** 2
-            elif surface_code.bound_str == ("toric", "periodic"):
+            elif surface_code.bound_str in ("toric", "periodic"):
                 assert len(syndrome_coords) == 3 * d**3
 
     def test_boundary(self, surface_code):
