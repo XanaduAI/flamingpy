@@ -303,11 +303,7 @@ class StabilizerGraph(ABC):
 
     def odd_parity_stabilizers(self):
         """Return an iterable of all stabilizer nodes with an odd parity."""
-        stabs_parity = [stab.parity for stab in self.stabilizers]
-        if all(stabs_parity) == False:
-            return []
-
-        return filter(lambda parity: parity % 2 == 1, stabs_parity)
+        return filter(lambda stab: stab.parity % 2 == 1, self.stabilizers)
 
     def real_nodes(self):
         """Return an iterable of all nodes excluding the 'low' and 'high'
