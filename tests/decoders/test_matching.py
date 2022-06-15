@@ -53,9 +53,8 @@ def matching_graphs(request):
     MatchingGraphType, num_nodes = request.param
     graph = MatchingGraphType("primal")
     nx_graph = NxMatchingGraph("primal")
-    rng = np.random.default_rng()
     for edge in it.combinations(range(num_nodes), r=2):
-        weight = rng.integers(0, 10)
+        weight = np.random.integers(0, 10)
         graph.add_edge(edge, weight)
         nx_graph.add_edge(edge, weight)
     return graph, nx_graph

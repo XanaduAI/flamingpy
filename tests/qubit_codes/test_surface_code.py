@@ -23,7 +23,6 @@ import networkx as nx
 from networkx import fast_gnp_random_graph
 from networkx.algorithms.operators import difference
 import numpy as np
-from numpy.random import default_rng as rng
 import pytest
 
 from flamingpy.codes.graphs import EGraph
@@ -342,7 +341,7 @@ class TestRHGGraph:
 
 code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "periodic"])
 code_params_rectangular = it.product(
-    rng.integers(low=2, high=7, size=3), ["primal", "dual"], ["open", "periodic"]
+    np.random.integers(low=2, high=7, size=3), ["primal", "dual"], ["open", "periodic"]
 )
 
 
@@ -467,11 +466,11 @@ class TestStabilizer:
 
     def test_parity(self):
         """Check that parity is properly computed."""
-        n = rng().integers(10)
+        n = np.random.integers(10)
         random_graph = fast_gnp_random_graph(n, 0.5)
         bit_list = []
         for node in random_graph:
-            random_bit = rng().integers(2)
+            random_bit = np.random.integers(2)
             bit_list += [random_bit]
             random_graph.nodes[node]["bit_val"] = random_bit
         random_cube = Stabilizer(random_graph)

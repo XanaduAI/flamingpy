@@ -17,7 +17,7 @@
 import itertools as it
 
 import numpy as np
-from numpy.random import shuffle, default_rng as rng
+from numpy.random import shuffle
 import pytest
 
 from flamingpy.codes import SurfaceCode
@@ -51,8 +51,8 @@ class TestHelpers:
     def test_invert_permutation(self):
         """Check that permuting and then unpermuting a random array leaves it
         unchanged."""
-        N = rng().integers(1, 100)
-        random_array = rng().integers(0, 100, N)
+        N = np.random.integers(1, 100)
+        random_array = np.random.integers(0, 100, N)
         random_p = np.arange(N)
         shuffle(random_p)
         inverted = invert_permutation(random_p)

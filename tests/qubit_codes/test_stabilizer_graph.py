@@ -17,6 +17,7 @@ The networkx implementation is used as a reference.
 """
 import itertools as it
 
+import numpy as np
 from numpy.random import default_rng
 import pytest
 
@@ -59,7 +60,7 @@ def compute_enc_state(request):
     }
     # Noise model
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
-    seed = default_rng().integers(0, 2**32)
+    seed = np.random.integers(0, 2**32)
 
     # NX reference code
     nx_DVRHG = SurfaceCode(
