@@ -340,7 +340,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         color_nodes (bool or string or dict): Options are:
 
             True: color the nodes based on the 'color' attribute
-                attached to the node. If unavailable, color nodes gray.
+                attached to the node. If unavailable, color nodes black.
             string: color all nodes with the color specified by the string
             tuple[str, dict]: color nodes based on attribute and defined colour
                 string by providing a tuple with (attribute, color_dictionary),
