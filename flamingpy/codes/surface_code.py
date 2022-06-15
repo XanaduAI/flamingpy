@@ -304,7 +304,7 @@ class SurfaceCode:
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
-        if not (boundaries in ("open", "toric", "periodic") and ec in ("primal", "dual"):
+        if not (boundaries in ("open", "toric", "periodic") and ec in ("primal", "dual")):
             raise ValueError(
                 f"The combination `ec={ec}` and `boundaries={boundaries} is not valid."
                 "Allowed choices for boundaries are 'open', 'toric' or 'periodic'"
@@ -487,9 +487,9 @@ class SurfaceCode:
 
     def _get_ec_bounds(self, ec, bound_ind):
         """Obtain coordinates of syndrome qubits on the relevant boundary.
-        
+
         The boundary is determined by the ``ec`` string. ``bound_ind``
-        specifies the direction where the ``ec`` boundary is located. 
+        specifies the direction where the ``ec`` boundary is located.
         """
         dims = self.dims
         plane_dict = {0: "x", 1: "y", 2: "z"}
