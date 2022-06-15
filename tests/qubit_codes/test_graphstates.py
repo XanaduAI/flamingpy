@@ -161,6 +161,7 @@ class TestCVLayer:
     def test_all_GKP_init(self, random_graph):
         """Test the all-GKP initialization of EGraph."""
         G = CVLayer(random_graph[0], delta=0.1)
+        G.populate_states()
         n = len(random_graph[0])
         for node in G.egraph:
             assert G.egraph.nodes[node]["state"] == "GKP"
@@ -176,6 +177,7 @@ class TestCVLayer:
         n = len(random_graph[0])
         # Test all-p case
         G = CVLayer(random_graph[0], delta=0.1, p_swap=1)
+        G.populate_states()
         for node in G.egraph:
             assert G.egraph.nodes[node]["state"] == "p"
         assert len(G.states["GKP"]) == 0
@@ -185,6 +187,7 @@ class TestCVLayer:
         p_list = []
         for _ in range(1000):
             G = CVLayer(random_graph[0], delta=0.1, p_swap=p_swap)
+            G.populate_states()
             p_list += [len(G.states["p"]) / n]
         p_prob = sum(p_list) / 1000
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
@@ -197,6 +200,7 @@ class TestCVLayer:
         p_inds = rng().choice(n, num_ps, replace=False)
         gkp_inds = list(set(np.arange(n)) - set(p_inds))
         G = CVLayer(random_graph[0], delta=0.1, states={"p": p_inds})
+        G.populate_states()
         assert np.array_equal(G.states.get("p"), p_inds)
         assert np.array_equal(G.states.get("GKP"), gkp_inds)
         assert np.array_equal(G.p_inds, p_inds)
@@ -249,6 +253,7 @@ class TestCVLayer:
         delta = 0.0001
         n = len(random_graph[0])
         G = CVLayer(random_graph[0], delta=delta)
+        G.populate_states()
         G.measure_hom("p")
         G.measure_hom("q")
         outcomes_p = []
