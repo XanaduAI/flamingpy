@@ -29,11 +29,6 @@ import pytest
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity
 
-# Seed for random number generation.
-now = datetime.now()
-int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
-logging.info("the following seed was used for random number generation: %i", int_time)
-
 # All possible boundary combinations.
 all_bound_combs = it.product(["primal", "dual", "periodic"], repeat=3)
 all_bound_combs = [np.array(bound) for bound in all_bound_combs]
@@ -347,7 +342,7 @@ class TestRHGGraph:
 
 code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "periodic"])
 code_params_rectangular = it.product(
-    rng(int_time).integers(low=2, high=7, size=3), ["primal", "dual"], ["open", "periodic"]
+    rng.integers(low=2, high=7, size=3), ["primal", "dual"], ["open", "periodic"]
 )
 
 
