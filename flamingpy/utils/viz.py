@@ -40,7 +40,8 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from flamingpy.codes import Stabilizer, NxStabilizerGraph, NxMatchingGraph
+from flamingpy.codes import Stabilizer, NxStabilizerGraph
+from flamingpy.decoders.mwpm import NxMatchingGraph
 from flamingpy.cv import gkp
 
 plot_params = {
@@ -374,7 +375,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
         # swapping z <-> y to agree with convention
         x, z, y = point
         color = _get_node_color(egraph, color_nodes, point)
-        ax.scatter(x, y, z, c=color)
+        ax.scatter(x, y, z, c=color, s=4)
 
         if label:
             value = egraph.nodes[point].get(label) if label != "index" else indices[point]
