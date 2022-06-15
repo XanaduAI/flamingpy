@@ -28,7 +28,7 @@ num_trials = 10
 distance = 5
 boundaries = "periodic"
 
-# Noise model
+# Noise parameters
 p_swap = 0.1
 delta = 0.1
 
@@ -52,9 +52,10 @@ for backend in ["networkx", "retworkx"]:
     RHG_code = SurfaceCode(
         distance=distance, boundaries=boundaries, polarity=alternating_polarity, backend=backend
     )
+    # Instantiate the noise layer
+    CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap)
     for i in range(num_trials):
         print(f"-- {i} --")
-        CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap, sampling_order="initial")
         # Apply noise
         CVRHG.apply_noise()
         # Inner decoder
