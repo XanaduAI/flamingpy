@@ -44,7 +44,7 @@ from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
 
 noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
-reverse_dict = {b: a for a, b in noise_dict.items()}
+reverse_noise_dict = {b: a for a, b in noise_dict.items()}
 
 
 def ec_mc_trial(
@@ -235,7 +235,7 @@ def run_ec_simulation(
         current_time = datetime.now().time().strftime("%H:%M:%S")
         writer.writerow(
             [
-                reverse_dict[noise],
+                reverse_noise_dict[noise],
                 code_args["distance"],
                 code_args["ec"],
                 code_args["boundaries"],
