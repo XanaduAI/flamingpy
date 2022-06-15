@@ -83,12 +83,19 @@ class CVLayer:
         else:
             self._perfect_inds = [self.egraph.to_indices[point] for point in perfect_points]
 
+        supplied_states = kwargs.get("states")
         # Set some noise model parameters.
         self.delta = delta
         self.p_swap = kwargs.get("p_swap")
-        self.states = kwargs.get("states") or {"p": np.empty(0, dtype=int)}
+        self.states = supplied_states or {"p": np.empty(0, dtype=int)}
         self._sampling_order = kwargs.get("sampling_order") or "initial"
         self._translator = kwargs.get("translator") or GKP_binner
+
+        if self.p_swap is not None and supplied_states is not None:
+            if len(supplied_states["p"]):
+                print(
+                    "Both swap-out probability and indices of p-squeezed states supplied. Ignoring the indices."
+                )
 
     # Error correction methods
     def apply_noise(self, rng=default_rng()):
@@ -303,11 +310,6 @@ class CVLayer:
 
     def _generate_squeezed_indices(self, rng=default_rng()):
         """Generate the indices of squeezed states."""
-        if len(self.states["p"]):
-            print(
-                "Both swap-out probability and indices of p-squeezed states supplied. "
-                "Ignoring the indices."
-            )
         if self.p_swap == 1:
             self.states["p"] = np.arange(self._N)
         else:
