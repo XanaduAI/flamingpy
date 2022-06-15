@@ -54,7 +54,7 @@ else:
 print("\nNodes :", bell_state.nodes.data())
 print("Edges :", bell_state.edges.data(), "\n")
 print("p indices: ", CVbell.p_inds)
-print("GKP indices: ", CVbell.GKP_inds)
+print("GKP indices: ", CVbell.gkp_inds)
 print("\nSymplectic CZ matrix: ", CVbell.SCZ(), "\n")
 
 CVbell.draw_SCZ(show=show, title="Symplectic CZ matrix")

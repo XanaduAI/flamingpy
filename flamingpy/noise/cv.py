@@ -255,7 +255,7 @@ class CVLayer:
         return self.states.get("p")
 
     @property
-    def GKP_inds(self):
+    def gkp_inds(self):
         """array: the indices of the GKP states."""
         return self.states.get("GKP")
 

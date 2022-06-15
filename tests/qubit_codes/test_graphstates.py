@@ -168,7 +168,7 @@ class TestCVLayer:
         assert len(G.states["p"]) == 0
         assert len(G.p_inds) == 0
         assert np.array_equal(G.states["GKP"], np.arange(n))
-        assert np.array_equal(G.GKP_inds, np.arange(n))
+        assert np.array_equal(G.gkp_inds, np.arange(n))
 
     @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * rng(int_time).random() + 0.01, 1]))
     def test_hybridize(self, random_graph, p_swap):
@@ -193,7 +193,7 @@ class TestCVLayer:
         assert np.isclose(p_prob, p_swap, rtol=1e-1)
 
     def test_state_indices(self, random_graph):
-        """Test that _states, p_inds, and GKP_inds are populated with the
+        """Test that _states, p_inds, and gkp_inds are populated with the
         correct indices."""
         n = len(random_graph[0])
         num_ps = rng().integers(n)
@@ -204,7 +204,7 @@ class TestCVLayer:
         assert np.array_equal(G.states.get("p"), p_inds)
         assert np.array_equal(G.states.get("GKP"), gkp_inds)
         assert np.array_equal(G.p_inds, p_inds)
-        assert np.array_equal(G.GKP_inds, gkp_inds)
+        assert np.array_equal(G.gkp_inds, gkp_inds)
 
     @pytest.mark.parametrize("order", sorted(["initial", "two-step"]))
     def test_apply_noise(self, random_graph, order):
