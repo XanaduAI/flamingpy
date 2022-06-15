@@ -13,17 +13,18 @@
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
 
-# pylint: disable=protected-access
+# pylint: disable=protected-access,wrong-import-order
 
 
 import networkx as nx
-from numpy.random import shuffle, default_rng as rng
-import numpy as np
 import pytest
 import scipy.sparse as sp
 
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply
+
+from numpy.random import default_rng as rng
+import numpy as np
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
@@ -87,13 +88,13 @@ class TestSCZ:
         assert np.allclose(new_quads, expected_quads)
 
 
-def test_invert_permutation(self):
+def test_invert_permutation():
     """Check that permuting and then unpermuting a random array leaves it
     unchanged."""
     N = rng().integers(1, 100)
     random_array = rng().integers(0, 100, N)
     random_p = np.arange(N)
-    shuffle(random_p)
+    rng().shuffle(random_p)
     inverted = invert_permutation(random_p)
     presumed_unchanged_array = random_array[random_p][inverted]
     assert np.array_equal(random_array, presumed_unchanged_array)
