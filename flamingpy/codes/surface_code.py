@@ -253,11 +253,13 @@ class SurfaceCode:
         ec (str): the error complex ('primal' or 'dual').
         boundaries (str): the boundary conditions. The options are:
 
-            'open': ['primal', 'dual', 'dual'] for 'primal' EC,
-                    ['primal', 'dual', 'primal'] for 'dual' EC.
-            'periodic': 'periodic' in all three directions.
-            'toric':  ['periodic', 'periodic', 'dual'] for 'primal' EC,
-                      ['periodic', 'periodic', 'primal'] for 'dual' EC.
+            * 'open': ['primal', 'dual', 'dual'] for 'primal' EC,
+              ['primal', 'dual', 'primal'] for 'dual' EC.
+
+            * 'periodic': 'periodic' in all three directions.
+
+            * 'toric':  ['periodic', 'periodic', 'dual'] for 'primal' EC,
+              ['periodic', 'periodic', 'primal'] for 'dual' EC.
 
             For the "open" and "toric" boundary choice, we imagine qubits
             are encoded into the x-y plane and propagated in time. The z-axis
