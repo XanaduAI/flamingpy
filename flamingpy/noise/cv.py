@@ -94,7 +94,8 @@ class CVLayer:
         if self.p_swap is not None and supplied_states is not None:
             if len(supplied_states["p"]):
                 print(
-                    "Both swap-out probability and indices of p-squeezed states supplied. Ignoring the indices."
+                    "Both swap-out probability and indices of p-squeezed "
+                    "states supplied. Ignoring the indices."
                 )
 
     # Error correction methods
