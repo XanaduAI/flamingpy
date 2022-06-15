@@ -130,9 +130,7 @@ class CVLayer:
     def measure_syndrome(self, rng=default_rng()):
         """Measure the syndrome for memory-mode error correction of the grpah
         states."""
-        return self.measure_hom(
-            quad="p", inds=self.code.all_syndrome_inds, rng=rng
-        )
+        return self.measure_hom(quad="p", inds=self.code.all_syndrome_inds, rng=rng)
 
     def inner_decoder(self):
         """Convert homodyne outcomes to bit values according to translator.

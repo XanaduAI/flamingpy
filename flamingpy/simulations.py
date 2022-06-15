@@ -263,7 +263,7 @@ if __name__ == "__main__":
         parser.add_argument("-ec", type=str)
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
-        parser.add_argument("-p_swap", type=float)
+        parser.add_argument("-pswap", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
         parser.add_argument(

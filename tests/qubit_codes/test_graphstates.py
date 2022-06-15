@@ -242,10 +242,10 @@ class TestCVLayer:
 
     def test_grn_model_two_step(self, random_graph):
         """Compare expected noise objects (quadratures, covariance matrix) with
-        those obtained through the GRN model in CVLayer with the final
-        sampling order."""
+        those obtained through the GRN model in CVLayer with the final sampling
+        order."""
         delta = rng().random()
-    
+
         n = len(random_graph[0])
         G = CVLayer(random_graph[0], delta=delta, sampling_order="two-step")
         H = CVLayer(random_graph[0], delta=delta, p_swap=1, sampling_order="two-step")
@@ -257,7 +257,7 @@ class TestCVLayer:
         assert np.isclose(np.max(G._init_means[:n]), np.sqrt(np.pi))
         assert np.isclose(np.min(G._init_means[:n]), 0)
 
-    @pytest.mark.parametrize("order", sorted(["initial", "final"]))
+    @pytest.mark.parametrize("order", sorted(["initial"]))
     def test_measure_hom(self, random_graph, order):
         """Test closeness of average homodyne outcomes value to 0 in the all-
         GKP high-squeezing limit."""
