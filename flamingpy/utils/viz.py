@@ -40,7 +40,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from flamingpy.codes import Stabilizer
+from flamingpy.codes import Stabilizer, NxStabilizerGraph, NxMatchingGraph
 from flamingpy.cv import gkp
 
 plot_params = {
@@ -256,6 +256,7 @@ def draw_EGraph(
         ax.title.set_size(plot_params.get("axes.titlesize"))
 
     # plot graph
+    # swapping z <-> y onwards to ensure axis agree with convention
     ax = _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend)
     ax = _plot_EGraph_edges(ax, egraph, color_edges)
 
@@ -325,6 +326,7 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
         else:
             color = "grey"
 
+        # swapping z <-> y to agree with convention
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
         ax.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
@@ -369,6 +371,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
     # Plotting points. y and z are swapped in the loops so that
     # z goes into the page; however, the axes labels are correct.
     for point in egraph.nodes:
+        # swapping z <-> y to agree with convention
         x, z, y = point
         color = _get_node_color(egraph, color_nodes, point)
         ax.scatter(x, y, z, c=color)
@@ -480,7 +483,7 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
         raise ValueError("The graph must be implemented with the networkx backend.")
 
     # Remove 'low' and 'high' nodes, which are not important for visualization.
-    if graph.__class__.__name__ == "NxStabilizerGraph":
+    if isinstance(graph, (NxStabilizerGraph, NxMatchingGraph)):
         graph.graph.remove_nodes_from({"low", "high"})
 
     graph = graph.graph
@@ -639,6 +642,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         plt.xticks(range(0, 2 * shape[0] - 1))
         plt.yticks(range(0, 2 * shape[1] - 1))
         ax.set_zticks(range(0, 2 * shape[2] - 1))
+        # swapping y <-> z labels
         ax.set_xlabel("x", labelpad=20)
         ax.set_ylabel("z", labelpad=20)
         ax.set_zlabel("y", labelpad=20)
@@ -665,6 +669,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
         if drawing_opts["label_stabilizers"] and index_dict:
             if cube in index_dict:
+                # swapping y <-> z coords
                 mid_x, mid_z, mid_y = cube.midpoint()
                 ax.text(mid_x, mid_y, mid_z, index_dict[cube])
 
@@ -681,8 +686,10 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
         for point in bound_points:
-            ax.scatter(*point, s=5, c="k")
-            ax.text(*point, index_dict[point])
+            # swapping y <-> z
+            px, pz, py = point
+            ax.scatter(px, py, pz, s=5, c="k")
+            ax.text(px, py, pz, index_dict[point])
 
     # Define a legend for red/green cubes.
     legend_elements = [
@@ -818,10 +825,11 @@ def add_recovery_drawing(ax, **kwargs):
                         x, y, z = node.midpoint()
                     else:
                         x, y, z = node
-                        plt.plot(x, y, z, marker="2", markersize=15, c="k")
+                        plt.plot(x, z, y, marker="2", markersize=15, c="k")
+                    # swapping z <-> y to ensure plot agrees with axis convention
                     xlist += [x]
-                    ylist += [y]
-                    zlist += [z]
+                    ylist += [z]
+                    zlist += [y]
                 ax.plot(
                     xlist,
                     ylist,
