@@ -306,8 +306,10 @@ class SurfaceCode:
 
         if {ec, boundaries} == {"primal", "dual"}:
             raise ValueError(
-                f"The combination `ec={ec}` and `boundaries={boundaries} is not valid.`"
-            )  # TODO: fill in message
+                f"The combination `ec={ec}` and `boundaries={boundaries} is not valid."
+                "Allowed choices for boundaries are 'open', 'toric' or 'periodic'"
+                "and `ec` should be either 'primal' or 'dual'."
+            )
 
         if boundaries == "open":
             self.bound_str = "open_dual" if ec in ("primal", "both") else "open_primal"
