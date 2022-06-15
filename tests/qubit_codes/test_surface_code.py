@@ -16,6 +16,8 @@
 # pylint: disable=too-many-statements
 
 import itertools as it
+import datetime
+import logging
 
 import networkx as nx
 from networkx import fast_gnp_random_graph
@@ -27,6 +29,10 @@ import pytest
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity
 
+# Seed for random number generation.
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 # All possible boundary combinations.
 all_bound_combs = it.product(["primal", "dual", "periodic"], repeat=3)
@@ -340,11 +346,22 @@ class TestRHGGraph:
 
 
 code_params = it.product(range(2, 5), ["primal", "dual"], ["open", "periodic"])
+code_params_rectangular = it.product(
+    rng(int_time).integers(low=2, high=7, size=3), ["primal", "dual"], ["open", "periodic"]
+)
 
 
 @pytest.fixture(scope="module", params=code_params)
 def surface_code(request):
     """A handy function to define the surface code for use in this module."""
+    distance, ec, boundaries = request.param
+    return SurfaceCode(distance, ec, boundaries)
+
+
+@pytest.fixture(scope="module", params=code_params_rectangular)
+def rectangular_surface_code(request):
+    """A handy function to define a rectangular surface code for use in this
+    module."""
     distance, ec, boundaries = request.param
     return SurfaceCode(distance, ec, boundaries)
 
@@ -428,6 +445,26 @@ class TestSurfaceCode:
                     assert len(bound_points) == 2 * d**2
             elif surface_code.bound_str == "periodic":
                 assert not bound_points
+
+    def test_init_rectangular(self, surface_code):
+        """Check the proper initialization of SurfaceCode."""
+        distance = surface_code.distance
+        assert surface_code.dims == (distance[0], distance[1], distance[3])
+        assert surface_code.ec
+        assert surface_code.bound_str
+        assert list(surface_code.boundaries)
+        for ec in surface_code.ec:
+            attributes = [
+                "stabilizers",
+                "syndrome_inds",
+                "syndrome_coords",
+                "bound_points",
+                "stab_graph",
+            ]
+            for att in attributes:
+                getattr(surface_code, ec + "_" + att)
+            for att in ["all_syndrome_inds", "all_syndrome_coords"]:
+                getattr(surface_code, att)
 
 
 class TestStabilizer:
