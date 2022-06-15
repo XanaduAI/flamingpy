@@ -300,7 +300,7 @@ class SurfaceCode:
         if np.size(distance) == 1:
             self.dims = (distance, distance, distance)
         elif np.size(distance) == 3:
-            self.dims = distance
+            self.dims = tuple(distance)
 
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
