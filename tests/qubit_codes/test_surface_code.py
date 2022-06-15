@@ -16,8 +16,6 @@
 # pylint: disable=too-many-statements
 
 import itertools as it
-import datetime
-import logging
 
 import networkx as nx
 from networkx import fast_gnp_random_graph
