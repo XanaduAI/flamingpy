@@ -24,6 +24,7 @@ as well as the following Python packages for development purposes:
 * |pytest-logger| >= 0.5.1
 * |pytest-mock| >= 3.6.1
 * |pytest-xdist| >= 1.29.0
+* |pytest-randomly| == 3.11.0
 * |retworkx| >= 0.10.2
 * |setuptools| >= 62.3.2
 * |scipy| >= 1.6

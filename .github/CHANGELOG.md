@@ -2,7 +2,8 @@
 
 ### New features since the last release
 * Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
-* Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)
+* Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)'
+* Tests are run in random order and the seed for NumPy's and Python's random number generators are set by `pytest-randomly`. [(#61)](https://github.com/XanaduAI/flamingpy/pull/61)
 
 ### Bug fixes
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
