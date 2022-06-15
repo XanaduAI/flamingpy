@@ -18,6 +18,7 @@ from datetime import datetime
 
 import numpy as np
 from numpy import sqrt, pi
+from numpy.random import default_rng as rng
 import pytest
 
 from flamingpy.cv.gkp import integer_fractional, GKP_binner, Z_err, Z_err_cond
@@ -26,7 +27,7 @@ from flamingpy.cv.gkp import integer_fractional, GKP_binner, Z_err, Z_err_cond
 N = 50
 
 # Construct random numbers from an integer and fractional part.
-alpha_vals = np.append(np.random.random(5) * 5, np.sqrt(np.pi))
+alpha_vals = np.append(rng().random(5) * 5, np.sqrt(np.pi))
 
 
 class TestGKPBinning:
@@ -36,8 +37,8 @@ class TestGKPBinning:
     def test_integer_fractional(self, alpha):
         """Test that the integer and fractional part as obtained by
         integer_fractional matches that of constructed numbers."""
-        integers = np.random.integers(-N // 2, N // 2, N)
-        fractions = (np.random.random(N) - 0.5) * alpha
+        integers = rng().integers(-N // 2, N // 2, N)
+        fractions = (rng().random(N) - 0.5) * alpha
         numbers = integers * alpha + fractions
         int_part, frac_part = integer_fractional(numbers, alpha)
         assert np.all(int_part == integers)
@@ -47,8 +48,8 @@ class TestGKPBinning:
         """Tests that GKP_binner gives the integer part mod 2, and returns the
         fractional part if asked."""
         alpha = np.sqrt(np.pi)
-        integers = np.random.integers(-N // 2, N // 2, N)
-        fractions = np.random.random(N) * (alpha / 2)
+        integers = rng().integers(-N // 2, N // 2, N)
+        fractions = rng().random(N) * (alpha / 2)
         numbers = integers * alpha + fractions
 
         bits = integers % 2
@@ -65,8 +66,8 @@ middle_homs = np.array([(2 * i + 1) * sqrt(pi) / 2 for i in range(-N // 2, N // 
 lim = int(2 * N * np.sqrt(np.pi))
 
 # Random low and high delta values
-low_delta = np.random.uniform(0.0001, 0.001, N)
-high_delta = np.random.uniform(10, 15, N)
+low_delta = rng().uniform(0.0001, 0.001, N)
+high_delta = rng().uniform(10, 15, N)
 
 
 class TestPhaseProbs:

@@ -17,8 +17,7 @@ The networkx implementation is used as a reference.
 """
 import itertools as it
 
-import numpy as np
-from numpy.random import default_rng
+from numpy.random import default_rng as rng
 import pytest
 
 from flamingpy.codes import alternating_polarity, Stabilizer, SurfaceCode
@@ -60,7 +59,7 @@ def compute_enc_state(request):
     }
     # Noise model
     cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
-    seed = np.random.integers(0, 2**32)
+    seed = rng().integers(0, 2**32)
 
     # NX reference code
     nx_DVRHG = SurfaceCode(
@@ -73,7 +72,7 @@ def compute_enc_state(request):
     # CV (inner) code/state
     nx_CVRHG = CVLayer(nx_DVRHG, p_swap=p_swap)
     # Apply noise
-    nx_CVRHG.apply_noise(cv_noise, default_rng(seed))
+    nx_CVRHG.apply_noise(cv_noise, rng(seed))
     # Measure syndrome
     nx_CVRHG.measure_hom("p", nx_DVRHG.all_syndrome_inds, rng=default_rng(seed))
     assign_weights(nx_DVRHG, "MWPM", **weight_options)

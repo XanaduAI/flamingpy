@@ -22,6 +22,7 @@ from datetime import datetime
 
 import networkx as nx
 import numpy as np
+from numpy.random import default_rng as rng
 import pytest
 import scipy.sparse as sp
 
@@ -161,7 +162,7 @@ class TestCVLayer:
         assert np.array_equal(G._states["GKP"], np.arange(n))
         assert np.array_equal(G.GKP_inds, np.arange(n))
 
-    @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * np.random.random() + 0.01, 1]))
+    @pytest.mark.parametrize("p_swap", sorted([0, 0.99 * rng().random() + 0.01, 1]))
     def test_hybridize(self, random_graph, p_swap):
         """Test whether CVLayer properly populates p-squeezed states for non-
         zero p-swap."""
@@ -185,8 +186,8 @@ class TestCVLayer:
         """Test that _states, p_inds, and GKP_inds are populated with the
         correct indices."""
         n = len(random_graph[0])
-        num_ps = np.random.integers(n)
-        p_inds = np.random.choice(n, num_ps, replace=False)
+        num_ps = rng().integers(n)
+        p_inds = rng().choice(n, num_ps, replace=False)
         gkp_inds = list(set(np.arange(n)) - set(p_inds))
         G = CVLayer(random_graph[0], states={"p": p_inds})
         assert np.array_equal(G._states.get("p"), p_inds)
@@ -204,7 +205,7 @@ class TestCVLayer:
         assert G._sampling_order == "initial"
         # Check supplied noise model
         H = CVLayer(random_graph[0])
-        delta = np.random.random()
+        delta = rng().random()
         H.apply_noise(noise_model(delta=delta, order=order))
         assert H._delta == delta
         assert H._sampling_order == order
@@ -213,7 +214,7 @@ class TestCVLayer:
         """Compare expected noise objects (quadratures, covariance matrix) with
         those obtained through supplying the grn_model dictionary with
         different parameters."""
-        delta = np.random.random()
+        delta = rng().random()
         model_init = noise_model(delta, "initial")
         model_fin = noise_model(delta, "final")
         model_two_step = noise_model(delta, "two-step")
@@ -268,7 +269,7 @@ class TestCVLayer:
     #     phase error probabilities are evaluated."""
     #     pass
     #     G = CVLayer(random_graph[0])
-    #     G.apply_noise(noise_model(delta=np.random.random(), order="final"))
+    #     G.apply_noise(noise_model(delta=rng().random(), order="final"))
     #     G.measure_hom("p")
     #     G.eval_Z_probs()
     #     G.eval_Z_probs(cond=True)

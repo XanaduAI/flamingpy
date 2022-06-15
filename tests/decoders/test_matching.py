@@ -21,6 +21,7 @@ import itertools as it
 from copy import deepcopy
 
 import numpy as np
+from numpy.random import default_rng as rng
 import pytest
 import networkx as nx
 
@@ -54,7 +55,7 @@ def matching_graphs(request):
     graph = MatchingGraphType("primal")
     nx_graph = NxMatchingGraph("primal")
     for edge in it.combinations(range(num_nodes), r=2):
-        weight = np.random.integers(0, 10)
+        weight = rng().integers(0, 10)
         graph.add_edge(edge, weight)
         nx_graph.add_edge(edge, weight)
     return graph, nx_graph

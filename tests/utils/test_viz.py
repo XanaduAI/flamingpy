@@ -16,6 +16,7 @@
 import math
 
 import numpy as np
+from numpy.random import default_rng as rng
 import pytest
 import matplotlib
 import matplotlib.pyplot as plt
@@ -34,7 +35,7 @@ def test_to_pi_string():
     assert viz.to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
 
     # Test random odd integer multiples of sqrt(pi)/2, eccept 1 and -1
-    odd_int = (2 * np.random.integers(2, 25) - 1) * (-1) ** np.random.integers(2)
+    odd_int = (2 * rng().integers(2, 25) - 1) * (-1) ** rng().integers(2)
     assert viz.to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
 
     #  Test random even multiples of sqrt(pi).
@@ -42,8 +43,8 @@ def test_to_pi_string():
     assert viz.to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(even_int)
 
     # Check everything else converted into a str.
-    rand_numb = np.random.random()
-    rand_d = np.random.integers(2, 25)
+    rand_numb = rng().random()
+    rand_d = rng().integers(2, 25)
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
         assert viz.to_pi_string(rand_numb, d=rand_d) == "{:.{}f}".format(rand_numb, rand_d)
 
