@@ -35,7 +35,7 @@ from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
+    [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
 )
 
 
@@ -181,11 +181,15 @@ class TestRecovery:
         boundaries = enc_state[0].bound_str
         failure_events = []
         for i, ec in enumerate(enc_state[0].ec):
-            surface_dict = surface_dicts[i]
+
             if boundaries == "periodic":
                 planes = ["x", "y", "z"]
-            elif boundaries.startswith("open"):
+            elif boundaries in ["periodic_primal", "periodic_dual"]:  # toric code
+                planes = ["x", "y"]
+            elif boundaries.startswith("open"):  # planar code
                 planes = ["x"] if ec == "primal" else ["y"]
+
+            surface_dict = surface_dicts[i]
             for pl in planes:
                 plane_parities = np.array(surface_dict[pl], dtype=bool)
                 if len(plane_parities):
