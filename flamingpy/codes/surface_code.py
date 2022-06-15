@@ -142,6 +142,15 @@ def RHG_graph(
     Returns:
         EGraph: the RHG lattice.
     """
+    # Checking input
+    if not isinstance(dims, (int, tuple, list, np.ndarray)):
+        raise TypeError("dims must be int or 3-tuple.")
+    if isinstance(dims, (tuple, list, np.ndarray)):
+        if np.size(dims) == 1:
+            dims = dims[0]
+        elif np.size(dims) != 3:
+            raise ValueError("dims must be an integer or a list-type containing 3 integers.")
+
     # Create an EGraph with the graph attribute 'dims' (used for
     # plotting purposes.
     if np.size(dims) == 1:
