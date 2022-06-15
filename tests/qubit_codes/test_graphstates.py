@@ -223,6 +223,7 @@ class TestCVLayer:
         n = len(random_graph[0])
         G = CVLayer(random_graph[0], delta=delta)
         H = CVLayer(random_graph[0], delta=delta, p_swap=1)
+        G.populate_states(), H.populate_states()
         H._covs_sampler(sampling_order="initial")
         G._covs_sampler(sampling_order="initial")
         init_noise_all_GKP = np.full(2 * n, (delta / 2) ** 0.5, dtype=np.float32)
