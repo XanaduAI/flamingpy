@@ -204,6 +204,12 @@ class EGraph(nx.Graph):
 
         _, ax = draw_EGraph(self, **kwargs)
         return ax
+    
+    def draw_3DScatterPlot(self,**kwargs):
+        from flamingpy.utils.viz import draw_EGraph_3DScatterPlot
+        fig = draw_EGraph_3DScatterPlot(self,**kwargs)
+        return fig
+        
 
     def draw_adj(self, **kwargs):
         """Draw the adjacency matrix with matplotlib.
