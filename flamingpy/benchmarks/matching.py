@@ -58,7 +58,6 @@ for alg in ["networkx", "lemon", "retworkx"]:
         CVRHG.apply_noise()
         # Manually decode so as to benchmark just the matching portion
         dec.assign_weights(RHG_code, "MWPM", **weight_options)
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         G_match = build_match_graph(RHG_code, "primal", alg)
         before = time.time()
         matching = G_match.min_weight_perfect_matching()

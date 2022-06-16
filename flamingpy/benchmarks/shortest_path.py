@@ -59,9 +59,6 @@ for backend in ["networkx", "retworkx"]:
         # Apply noise
         CVRHG.apply_noise()
         dec.assign_weights(RHG_code, "MWPM", **weight_options)
-        # Inner decoder
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
-
         before = time.time()
         matching_graph = build_match_graph(RHG_code, "primal", backend)
         after = time.time()

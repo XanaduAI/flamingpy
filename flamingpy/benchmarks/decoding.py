@@ -33,7 +33,7 @@ p_swap = 0.1
 delta = 0.1
 
 # Decoding options
-decoder = {"inner": "basic", "outer": "MWPM"}
+decoder = "MWPM"
 weight_options = {
     "method": "blueprint",
     "integer": True,
@@ -60,7 +60,6 @@ for backend in ["networkx", "retworkx"]:
         CVRHG.apply_noise()
         # Inner decoder
         before = time.time()
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         dec.correct(
             RHG_code,
             decoder,

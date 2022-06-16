@@ -101,7 +101,6 @@ def ec_monte_carlo(
             This parameter is returned only if return_decoding_time is set to True
     """
     weight_opts = decoder_args["weight_opts"]
-    decoder = {"outer": decoder}
 
     successes = np.zeros(1)
     local_successes = np.zeros(1)

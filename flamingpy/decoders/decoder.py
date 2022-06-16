@@ -18,7 +18,7 @@
 import sys
 import numpy as np
 
-from flamingpy.cv.gkp import GKP_binner, Z_err_cond
+from flamingpy.cv.gkp import Z_err_cond
 
 from flamingpy.decoders.mwpm import mwpm_decoder
 from flamingpy.decoders.unionfind import uf_decoder
@@ -115,26 +115,6 @@ def assign_weights(code, decoder, **kwargs):
     # Also assign the weights to the stabilizer graph edges.
     for ec in code.ec:
         getattr(code, f"{ec}_stab_graph").assign_weights(code)
-
-
-def CV_decoder(code, translator=GKP_binner):
-    """Convert homodyne outcomes to bit values according to translator.
-
-    The inner (CV) decoder, a.k.a. translator, a.k.a binning function. Set
-    converted values to the bit_val attribute for nodes in G.
-
-    Args:
-        code (SurfaceCode): the qubit QEC code
-        translator (func): the choice of binning function; by default, the
-            standard GKP binning function that snaps to the closest
-            integer multiple of sqrt(pi).
-    Returns:
-        None
-    """
-    for point in code.all_syndrome_coords:
-        hom_val = code.graph.nodes[point]["hom_val_p"]
-        bit_val = translator([hom_val])[0]
-        code.graph.nodes[point]["bit_val"] = bit_val
 
 
 def recovery(qubits_to_flip, code, ec, sanity_check=False):
@@ -242,36 +222,26 @@ def check_correction(code, sanity_check=False):
 
 def correct(
     code,
-    decoder=None,
+    decoder="MWPM",
     weight_options=None,
     sanity_check=False,
     decoder_opts=None,
     draw=False,
     drawing_opts=None,
 ):
-    """Run through all the error-correction steps.
+    """Run through the qubit-level error-correction steps.
 
-    Combines weight assignment, inner decoding and outer decoding. The last
-    of these includes matching graph creation, minimum-weight-perfect matching
-    or union find decoding, recovery, and correctness check.
+    Combines weight assignment and outer (qubit) decoding. The latter of these
+    includes the creation of decoding objects, the decoding algorithm, the
+    recovery, and the correctness check.
 
     Args:
         code (code): the code class to decode and correct
-        decoder (dict, optional): a dictionary of the form
-
-            {"inner": f, "outer": s},
-
-            where f is the string indicating inner/CV decoder and s is the
-            string indicating the outer/DV decoder to use.
-
-            Currently available inner decoders are:
-
-                "basic": standard GKP binning function
-
-            and outer decoders:
+        decoder (str, optional): the qubit-level (outer) decoder. Options are:
 
                 "MWPM": minimum-weight perfect matching (the default)
                 "UF": Union-Find.
+
         weight_options (dict, optional): how to assign weights for the outer
             decoder; options are
 
@@ -293,30 +263,20 @@ def correct(
     Returns:
         result (bool): True if error correction succeded, False if not.
     """
-    if decoder is None:
-        decoder = {}
-
-    default_decoder = {"inner": None, "outer": "MWPM"}
-    updated_decoder = {**default_decoder, **decoder}
-    outer_dict = {"MWPM": mwpm_decoder, "UF": uf_decoder}
-
-    if updated_decoder["inner"] == "basic":
-        CV_decoder(code, translator=GKP_binner)
-
     if weight_options is None:
         weight_options = {}
 
-    outer_decoder_str = updated_decoder["outer"]
-    assign_weights(code, outer_decoder_str, **weight_options)
+    assign_weights(code, decoder, **weight_options)
 
     if decoder_opts is None:
         decoder_opts = {}
     default_decoder_opts = {"backend": "retworkx", "draw": draw, "drawing_opts": drawing_opts}
     updated_decoder_opts = {**default_decoder_opts, **decoder_opts}
-    outer_decoder = outer_dict[outer_decoder_str]
+    decoder_dict = {"MWPM": mwpm_decoder, "UF": uf_decoder}
+    decoder_func = decoder_dict[decoder]
 
     for ec in code.ec:
-        recovery_set = outer_decoder(code, ec, **updated_decoder_opts)
+        recovery_set = decoder_func(code, ec, **updated_decoder_opts)
         recovery(recovery_set, code, ec, sanity_check=sanity_check)
     result = check_correction(code, sanity_check=sanity_check)
     if sanity_check:

@@ -55,7 +55,7 @@ def test_decoding():
     code = SurfaceCode(3)
     noise = IidNoise(code, 0.1)
     noise.apply_noise()
-    assert correct(code, {"outer": "MWPM"}) in [True, False]
+    assert correct(code, "MWPM") in [True, False]
 
 
 @pytest.mark.parametrize("prob", sorted([-0.1, 1.1]))

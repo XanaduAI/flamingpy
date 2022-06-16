@@ -21,7 +21,7 @@ from numpy.random import default_rng
 import pytest
 
 from flamingpy.codes import alternating_polarity, Stabilizer, SurfaceCode
-from flamingpy.decoders.decoder import assign_weights, CV_decoder, GKP_binner
+from flamingpy.decoders.decoder import assign_weights
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 from flamingpy.noise import CVLayer
 
@@ -72,7 +72,6 @@ def compute_enc_state(request):
     # Apply noise
     nx_CVRHG.apply_noise(rng=default_rng(seed))
     assign_weights(nx_DVRHG, "MWPM", **weight_options)
-    CV_decoder(nx_DVRHG, translator=GKP_binner)
 
     print(f"rx + {ec}")
     # Comparison code
@@ -89,7 +88,6 @@ def compute_enc_state(request):
     # Apply noise
     CVRHG.apply_noise(default_rng(seed))
     assign_weights(DVRHG, "MWPM", **weight_options)
-    CV_decoder(DVRHG, translator=GKP_binner)
 
     return nx_DVRHG, nx_CVRHG, DVRHG, CVRHG
 

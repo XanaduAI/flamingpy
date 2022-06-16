@@ -24,7 +24,7 @@ import pytest
 import retworkx as rx
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.decoders.decoder import assign_weights, CV_decoder
+from flamingpy.decoders.decoder import assign_weights
 from flamingpy.decoders.unionfind.uf_classes import Node, Root, Support, Boundary
 from flamingpy.codes.graphs.stabilizer_graph import RxStabilizerGraph
 from flamingpy.codes.stabilizer import Stabilizer
@@ -125,7 +125,6 @@ class TestUnionFindStructures:
     def test_support(self, enc_state_swap_list):
         """Test the support table."""
 
-        CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
 
         for ec in enc_state_swap_list[0].ec:
@@ -160,7 +159,6 @@ class TestUnionFindStructures:
 
     def test_support_value(self, enc_state_swap_list):
         """Test Support function assignments."""
-        CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
 
         for ec in enc_state_swap_list[0].ec:
@@ -176,7 +174,6 @@ class TestUnionFindStructures:
 
     def test_boundary(self, enc_state):
         """Test the initialization of the Boundary class."""
-        CV_decoder(enc_state[0])
         assign_weights(enc_state[0], "UF")
         for ec in enc_state[0].ec:
             if ec == "primal":
@@ -274,7 +271,6 @@ class TestUnionFindFunctions:
 
     def test_initialize_cluster_trees(self, enc_state):
         """Testing cluster initialization."""
-        CV_decoder(enc_state[0])
         assign_weights(enc_state[0], "UF")
         for ec in enc_state[0].ec:
             if ec == "primal":
@@ -420,7 +416,6 @@ class UnionFindDecoder:
     def test_uf_erasure(self, enc_state_swap_list):
         """Test if weights for the erased edges are set to -1."""
 
-        CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
         erased_qubits = set()
         for node in enc_state_swap_list[0].graph.nodes():

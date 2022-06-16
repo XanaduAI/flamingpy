@@ -34,9 +34,9 @@ successes = 0
 for trial in range(total):
     # The CV macronode noise layer and reduction
     CV_macro.apply_noise()
-    decoder = {"outer": "MWPM"}
+    decoder = "MWPM"
     decoder_opts = {"backend": "networkx"}
-    if decoder["outer"] == "MWPM":
+    if decoder == "MWPM":
         weight_options = {
             "method": "blueprint",
             "prob_precomputed": True,

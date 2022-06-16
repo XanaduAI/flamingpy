@@ -41,7 +41,6 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
         CVRHG = CVLayer(RHG_code, p_swap=p_swap, delta=delta)
         # Apply noise, measure syndrome, translate to bit values
         CVRHG.apply_noise()
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         # Decoding options
         if decoder == "MWPM":
             weight_options = {
@@ -52,14 +51,12 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
             }
         else:
             weight_options = None
-        decoder = {"inner": "basic", "outer": decoder}
 
     if noise == "dv":
         # i.i.d Pauli Z errors with probability p_Z
         p_Z = 0.02
         IidNoise(RHG_code, p_Z).apply_noise()
         weight_options = {"method": "uniform"}
-        decoder = {"outer": decoder}
 
     # Drawing options
     node_colors = ("state", {"GKP": "gold", "p": "blue"}) if noise == "cv" else True

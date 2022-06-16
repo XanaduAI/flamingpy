@@ -24,7 +24,6 @@ import pytest
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.decoders.decoder import (
     assign_weights,
-    CV_decoder,
     recovery,
     check_correction,
 )
@@ -90,7 +89,6 @@ class TestDecoder:
 
     def test_CV_decoder(self, enc_state):
         """Test CV_decoder function."""
-        CV_decoder(enc_state[0])
         bits = enc_state[1].bit_values()
         # Check that bit values have been computed, and that they are
         # either 0 or 1.
