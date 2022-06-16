@@ -274,28 +274,24 @@ class TestRHGGraph:
 
         assert not set(RHG_lattice.edges) - set(RHG_graph(d, "periodic").edges)
 
-    @pytest.mark.parametrize("boundary_type", ["periodic_primal", "periodic_dual"])
-    def test_toric_boundaries(self, d, boundary_type):
-        """Test whether periodic boundary conditions on x and y direction
-        produce a lattice with the expected neighbors."""
+    @pytest.mark.parametrize("boundary_type", ["periodic", "periodic_primal", "periodic_dual"])
+    def test_periodic_edges(self, d, boundary_type):
+        """Test whether periodic boundary conditions produce the expected
+        number of edges between the lower and higher boundary."""
         RHG_lattice = RHG_graph(d, boundary_type)
 
-        for plane in ("x", "y"):
-            lower_boundary = RHG_lattice.slice_coords(plane, 0)
+        periodic_edges = []
+        for plane in ("x", "y", "z"):
+            low_boundary = RHG_lattice.slice_coords(plane, 0)
+            high_boundary = RHG_lattice.slice_coords(plane, 2 * d - 1)
+            periodic_edges += [
+                (u, v) for u in low_boundary for v in high_boundary if RHG_lattice.has_edge(u, v)
+            ]
 
-            for point in lower_boundary:
-                # get neighbors tagged as periodic
-                neighbors = RHG_lattice[point]
-                periodic_neighbors = [
-                    coords for coords, props in neighbors.items() if "periodic" in props
-                ]
-
-                # check there is an edge from neighbor in low boundary to high boundary
-                # for all periodic neighbors
-                assert all(
-                    RHG_lattice.has_edge(point, periodic_point)
-                    for periodic_point in periodic_neighbors
-                )
+        if boundary_type == "periodic":
+            assert len(periodic_edges) == 3 * (2 * d**2)
+        else:  # toric
+            assert len(periodic_edges) == 2 * (2 * d**2 - d)
 
     @pytest.mark.parametrize("boundaries", all_bound_combs)
     def test_polarity(self, d, boundaries):
