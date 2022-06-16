@@ -26,10 +26,10 @@
  * Lengthy functions have been broken up into more specialized methods.
  * The class is initialized with all the noise model parameters, simplifying the signatures of the methods.
  * An `apply_noise` method has been added to combine the procedures for noise sampling. 
- * The state label;ing functions have been rewritten to be faster and more compact.
+ * The state labeling functions have been rewritten to be faster and more compact.
  * Docstrings were modified, and the public/private status of certain attributes was changed.
  * The `final` sampling order has been removed, as it is equivalent to `initial` but slower.
-* The `simulations.py` module  has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
   * Functions within this module accept `code, noise, decoder` objects, as well as arguments (`code_args, noise_args, decoder_args`) separately.
 * Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
 
@@ -39,7 +39,7 @@
 * Typo fix and minor changes for README file. [#80](https://github.com/XanaduAI/flamingpy/pull/80)
 * non-Xanadu links now open in a new tab, while HTML references are listed scientific-style at the end of a file. [#82](https://github.com/XanaduAI/flamingpy/pull/82)
 * Changed the math rendering Sphinx to MathJax (before equations were rendered as png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
-* .rst files have been changed in light of the removal of `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
 
 ### Contributors
 
