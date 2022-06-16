@@ -493,12 +493,14 @@ class TestRectangularSurfaceCode:
                         len(cubes) == (dx - 1) * (dy - 1) * dz
                     ), "Wrong number of cubes for open both or dual"
                 else:
+                    # I don't know what dimension is requires the -1
                     assert (
                         len(cubes) == dx * (dy - 1) * dz
-                    ), "1 Wrong number of cubes for open primal"  # I don't know what dimension is requires the -1
+                    ), "1 Wrong number of cubes for open primal"
+                    # I don't know what dimension is requires the -1
                     assert (
                         len(cubes) == (dx - 1) * dy * dz
-                    ), "2 Wrong number of cubes for open primal"  # I don't know what dimension is requires the -1
+                    ), "2 Wrong number of cubes for open primal"
             elif rect_sc.bound_str == "periodic":
                 assert len(cubes) == dx * dy * dz, "Wrong number of cubes for periodic"
             # Check that each stabilizer has 6 corresponing physical
