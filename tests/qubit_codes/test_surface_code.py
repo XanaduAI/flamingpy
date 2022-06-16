@@ -250,9 +250,9 @@ class TestRHGGraph:
         for boundaries in ["primal", "dual", "periodic", "open_primal", "open_dual"]:
             RHG_lattice = RHG_graph(d, boundaries)
             assert len(RHG_lattice)
-        # The following test requires a modification to RHG_graph_old,
-        # since the new method creates a lattice with a different shape.
-        # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
+            # The following test requires a modification to RHG_graph_old,
+            # since the new method creates a lattice with a different shape.
+            # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
     def test_periodic_boundaries(self, d):
         """Test whether periodic boundary conditions produce a lattice with the
@@ -434,25 +434,22 @@ code_params_rectangular = it.product(
 )
 
 
-@pytest.fixture(scope="module", params=code_params_rectangular)
-def rectangular_surface_code(request):
-    """A handy function to define a rectangular surface code for use in this
-    module."""
-    distance, ec, boundaries = request.param
-    return SurfaceCode(distance, ec, boundaries)
-
-
 class TestRectangularSurfaceCode:
     """Test the SurfaceCode class for non-cubic lattices."""
 
-    def test_init_rectangular(self, rectangular_surface_code):
+    @pytest.fixture(scope="module", params=code_params_rectangular)
+    def test_init_rectangular(self, request):
         """Check the proper initialization of SurfaceCode."""
-        distance = rectangular_surface_code.distance
-        assert rectangular_surface_code.dims == (distance[0], distance[1], distance[3])
-        assert rectangular_surface_code.ec
-        assert rectangular_surface_code.bound_str
-        assert list(rectangular_surface_code.boundaries)
-        for ec in rectangular_surface_code.ec:
+        # initialize a rectangular surface code
+        dx, dy, dz, ec, boundaries = request.param
+        rect_sc = SurfaceCode((dx, dy, dz), ec, boundaries)
+
+        # assert that the surface code is initialized correctly
+        assert rect_sc.dims == (rsc.dx, rsc.dy, rsc.dz)
+        assert rect_sc.ec
+        assert rect_sc.bound_str
+        assert list(rect_sc.boundaries)
+        for ec in rect_sc.ec:
             attributes = [
                 "stabilizers",
                 "syndrome_inds",
@@ -461,9 +458,9 @@ class TestRectangularSurfaceCode:
                 "stab_graph",
             ]
             for att in attributes:
-                getattr(rectangular_surface_code, ec + "_" + att)
+                getattr(rect_sc, ec + "_" + att)
             for att in ["all_syndrome_inds", "all_syndrome_coords"]:
-                getattr(rectangular_surface_code, att)
+                getattr(rect_sc, att)
 
 
 class TestStabilizer:
