@@ -43,7 +43,7 @@ code_params = it.product(
 def enc_state(request):
     """A SurfaceCode object and an encoded CVLayer for use in this module."""
     distance, ec, boundaries, delta, p_swap = request.param
-    DVRHG = SurfaceCode(distance, ec, boundaries, polarity=alternating_polarity)
+    DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity)
     # CV (inner) code/state
     CVRHG = CVLayer(DVRHG, p_swap=p_swap)
     # Noise model

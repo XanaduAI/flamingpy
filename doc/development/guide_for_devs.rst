@@ -213,7 +213,3 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 .. |Anaconda| raw:: html
 
    <a href="https://www.anaconda.com/download/" target="_blank">Anaconda for Python 3</a>
-
-.. |pytest-randomly| raw:: html
-
-   <a href="https://pypi.org/project/pytest-randomly/" target="_blank">pytest-randomly</a>
