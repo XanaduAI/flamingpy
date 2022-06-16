@@ -430,7 +430,7 @@ class TestSurfaceCode:
 
 
 rectanguloid_code_params = it.product(
-    rng().integers(low=2, high=7, size=(1, 3)), ["primal", "dual"], ["open", "periodic"]
+    rng().integers(low=2, high=7, size=(2, 3)), ["primal", "dual"], ["open", "periodic"]
 )
 
 
