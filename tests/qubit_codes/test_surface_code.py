@@ -429,23 +429,39 @@ class TestSurfaceCode:
                 assert not bound_points
 
 
-code_params_rectangular = it.product(
-    rng().integers(low=2, high=7, size=3), ["primal", "dual"], ["open", "periodic"]
+rectanguloid_code_params = it.product(
+    rng().integers(low=2, high=7, size=(1, 3)), ["primal", "dual"], ["open", "periodic"]
 )
+
+
+@pytest.fixture(scope="module", params=rectanguloid_code_params)
+def rectanguloid_surface_code(request):
+    """A function to define a rectangular surface code for use in this
+    module."""
+    distance, ec, boundaries = request.param
+    return SurfaceCode(distance, ec, boundaries), request.param
 
 
 class TestRectangularSurfaceCode:
     """Test the SurfaceCode class for non-cubic lattices."""
 
-    @pytest.fixture(scope="module", params=code_params_rectangular)
-    def test_init_rectangular(self, request):
+    def test_init_rectangular(self, rectanguloid_surface_code):
         """Check the proper initialization of SurfaceCode."""
-        # initialize a rectangular surface code
-        dx, dy, dz, ec, boundaries = request.param
-        rect_sc = SurfaceCode((dx, dy, dz), ec, boundaries)
+        # obtaining a rectangular surface code
+        rect_sc, param = rectanguloid_surface_code
+        distance, ec, boundaries = param
 
         # assert that the surface code is initialized correctly
-        assert rect_sc.dims == (dx, dy, dz)
+        assert len(rect_sc.dims) == 3, "Dimensionality of the surface code is not 3 but {}".format(
+            len(rect_sc.dims)
+        )
+        for i, x in enumerate(rect_sc.dims):
+            assert isinstance(
+                x, (int, np.integer)
+            ), "Entry {} of distance {} is not an integer but {}".format(i, rect_sc.dims, type(x))
+            assert x == distance[i], "Entry {} of distance {} is not intended distance {}".format(
+                i, rect_sc.dims, distance[i]
+            )
         assert rect_sc.ec
         assert rect_sc.bound_str
         assert list(rect_sc.boundaries)
