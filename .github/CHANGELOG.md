@@ -2,6 +2,7 @@
 
 ### New features since the last release
 * Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
+* A new boundary option has been introduced for the `SurfaceCode`: the choice `"periodic"` refers to a code with boundaries periodic in all (x, y and z) directions, whereas codes with `"toric"` have periodic boundaries in the _x_ and _y_ axis but not the _z_ axis. [#62](https://github.com/XanaduAI/flamingpy/pull/62). (backward compatible)
 * Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)'
 
 ### Bug fixes

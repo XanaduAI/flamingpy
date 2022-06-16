@@ -36,7 +36,7 @@ from flamingpy.cv.macro_reduce import BS_network
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
 
-code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
+code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"])
 
 if "MPI" in locals():
     world_comm = MPI.COMM_WORLD

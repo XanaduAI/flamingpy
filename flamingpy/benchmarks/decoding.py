@@ -26,6 +26,8 @@ num_trials = 10
 
 # DV (outer) code parameters
 distance = 5
+
+# Boundaries ("open", "toric" or "periodic")
 boundaries = "periodic"
 
 # Noise model

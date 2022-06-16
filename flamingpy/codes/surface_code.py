@@ -87,20 +87,29 @@ def str_to_bound(bound_name):
 
     The options are:
 
-        'open_primal': [primal, dual, dual]
-        'open_dual': [primal, dual, primal]
+        'open_primal': [primal, dual, primal]
+        'open_dual': [primal, dual, dual]
+        'primal': [primal, primal, primal]
+        'dual': [dual, dual, dual]
+        'periodic': [periodic, periodic, periodic]
+        'periodic_primal': [periodic, periodic, primal]
+        'periodic_dual': [periodic, periodic, dual]
         '{b}': [b, b, b], where b can be 'primal', 'dual', or 'periodic'.
     """
-    if bound_name == "open_primal":
-        boundaries = ["primal", "dual", "dual"]
-    elif bound_name == "open_dual":
-        boundaries = ["primal", "dual", "primal"]
-    elif bound_name in ("primal", "dual", "periodic"):
-        boundaries = [bound_name] * 3
-    elif not isinstance(bound_name, str):
-        print("Boundary type must be string.")
-        raise Exception
-    return np.array(boundaries)
+    if not isinstance(bound_name, str):
+        raise TypeError("Boundary type must be string.")
+
+    boundary_mapping_dict = {
+        "open_primal": ["primal", "dual", "primal"],
+        "open_dual": ["primal", "dual", "dual"],
+        "primal": ["primal", "primal", "primal"],
+        "dual": ["dual", "dual", "dual"],
+        "periodic": ["periodic", "periodic", "periodic"],
+        "periodic_primal": ["periodic", "periodic", "primal"],
+        "periodic_dual": ["periodic", "periodic", "dual"],
+    }
+
+    return np.array(boundary_mapping_dict.get(bound_name))
 
 
 def RHG_graph(
@@ -126,8 +135,13 @@ def RHG_graph(
             dual = rough, to align with surface code terminology.
             Available choices in the order x, y, z are:
 
-                'open_primal': primal, dual, dual
-                'open_dual':,  primal, dual, primal
+                'open_primal': [primal, dual, primal]
+                'open_dual': [primal, dual, dual]
+                'primal': [primal, primal, primal]
+                'dual': [dual, dual, dual]
+                'periodic': [periodic, periodic, periodic]
+                'periodic_primal': [periodic, periodic, primal]
+                'periodic_dual': [periodic, periodic, dual]
                 '{b}': b, b, b,
                 ['{b1}', '{b2}', '{b3}']: b1, b2, b3,
 
@@ -254,9 +268,18 @@ class SurfaceCode:
         ec (str): the error complex ('primal' or 'dual').
         boundaries (str): the boundary conditions. The options are:
 
-            'open': ['primal', 'dual', 'dual'] for 'primal' EC
-                    ['primal', 'dual', 'primal'] for 'dual' EC
-            'periodic': 'periodic' in all three directions.
+            * 'open': ['primal', 'dual', 'dual'] for 'primal' EC,
+              ['primal', 'dual', 'primal'] for 'dual' EC.
+
+            * 'periodic': 'periodic' in all three directions.
+
+            * 'toric':  ['periodic', 'periodic', 'dual'] for 'primal' EC,
+              ['periodic', 'periodic', 'primal'] for 'dual' EC.
+
+            For the "open" and "toric" boundary choice, we imagine qubits
+            are encoded into the x-y plane and propagated in time. The z-axis
+            is interpreted as the temporal axis, which is relevant in quantum
+            memory simulations.
 
             Note that in the z-axis is considered as the temporal dimension
             in quantum memory simulations.
@@ -305,8 +328,17 @@ class SurfaceCode:
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
+        if not (boundaries in ("open", "toric", "periodic") and ec in ("primal", "dual")):
+            raise ValueError(
+                f"The combination `ec={ec}` and `boundaries={boundaries} is not valid."
+                "Allowed choices for boundaries are 'open', 'toric' or 'periodic'"
+                "and `ec` should be either 'primal' or 'dual'."
+            )
+
         if boundaries == "open":
-            self.bound_str = "open_primal" if ec in ("primal", "both") else "open_dual"
+            self.bound_str = "open_dual" if ec in ("primal", "both") else "open_primal"
+        elif boundaries == "toric":
+            self.bound_str = "periodic_dual" if ec in ("primal", "both") else "periodic_primal"
         else:
             self.bound_str = boundaries
         self.boundaries = str_to_bound(self.bound_str)
@@ -466,24 +498,37 @@ class SurfaceCode:
         end, the attributes {b}_bound_points are set, where b can be
         'primal' or 'dual'.
         """
+
         for ec in self.ec:
-            if self.bound_str == "periodic":
-                setattr(self, ec + "_bound_points", [])
+
+            if "periodic" in self.bound_str:
+                ec_bound_points = []
             else:
-                dims = self.dims
-                syndrome_coords = getattr(self, ec + "_syndrome_coords")
                 bound_ind = np.where(self.boundaries == ec)[0][0]
-                plane_dict = {0: "x", 1: "y", 2: "z"}
+                ec_bound_points = self._get_ec_bounds(ec, bound_ind)
 
-                low_index = 0 if ec == "primal" else 1
-                low_bound_points = self.graph.slice_coords(plane_dict[bound_ind], low_index)
-                final_low_set = set(low_bound_points).intersection(syndrome_coords)
+            setattr(self, ec + "_bound_points", ec_bound_points)
 
-                high_index = 2 * dims[bound_ind] - 2 if ec == "primal" else 2 * dims[bound_ind] - 1
-                high_bound_points = self.graph.slice_coords(plane_dict[bound_ind], high_index)
-                final_high_set = set(high_bound_points).intersection(syndrome_coords)
+    def _get_ec_bounds(self, ec, bound_ind):
+        """Obtain coordinates of syndrome qubits on the relevant boundary.
 
-                setattr(self, ec + "_bound_points", list(final_low_set) + list(final_high_set))
+        The boundary is determined by the ``ec`` string. ``bound_ind``
+        specifies the direction where the ``ec`` boundary is located.
+        """
+        dims = self.dims
+        plane_dict = {0: "x", 1: "y", 2: "z"}
+        syndrome_coords = getattr(self, ec + "_syndrome_coords")
+
+        low_index = 0 if ec == "primal" else 1
+        high_index = 2 * dims[bound_ind] - 2 if ec == "primal" else 2 * dims[bound_ind] - 1
+
+        low_bound_points = self.graph.slice_coords(plane_dict[bound_ind], low_index)
+        final_low_set = set(low_bound_points).intersection(syndrome_coords)
+
+        high_bound_points = self.graph.slice_coords(plane_dict[bound_ind], high_index)
+        final_high_set = set(high_bound_points).intersection(syndrome_coords)
+
+        return list(final_low_set) + list(final_high_set)
 
     def draw(self, **kwargs):
         """Draw the cluster state with matplotlib.
