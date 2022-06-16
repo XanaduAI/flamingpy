@@ -435,7 +435,7 @@ rectanguloid_code_params = it.product(
 
 
 @pytest.fixture(scope="module", params=rectanguloid_code_params)
-def rectanguloid_surface_code(request):
+def rectangular_surface_code(request):
     """A function to define a rectangular surface code for use in this
     module."""
     distance, ec, boundaries = request.param
@@ -445,10 +445,10 @@ def rectanguloid_surface_code(request):
 class TestRectangularSurfaceCode:
     """Test the SurfaceCode class for non-cubic lattices."""
 
-    def test_init_rectangular(self, rectanguloid_surface_code):
+    def test_init_rectangular(self, rectangular_surface_code):
         """Check the proper initialization of SurfaceCode."""
         # obtaining a rectangular surface code
-        rect_sc, param = rectanguloid_surface_code
+        rect_sc, param = rectangular_surface_code
         distance, ec, boundaries = param
 
         # assert that the surface code is initialized correctly
@@ -477,6 +477,29 @@ class TestRectangularSurfaceCode:
                 getattr(rect_sc, ec + "_" + att)
             for att in ["all_syndrome_inds", "all_syndrome_coords"]:
                 getattr(rect_sc, att)
+
+    def test_rectangular_stabilizers(self, surface_code):
+        """Check whether all stabilizers were generated as expected."""
+        for ec in surface_code.ec:
+            dx, dy, dz = surface_code.dims
+            cubes = getattr(surface_code, ec + "_stabilizers")
+            # Check that there are a correct number of stabilizer elements
+            # depending on the boundary conditions.
+            if surface_code.bound_str.startswith("open"):
+                if len(surface_code.ec) == 2 and ec == "dual":
+                    assert len(cubes) == (dx - 1) * (dy - 1) * dz
+                else:
+                    assert len(cubes) == dx * dy * (dz - 1)
+            elif surface_code.bound_str == "periodic":
+                assert len(cubes) == dz * dy * dz
+            # Check that each stabilizer has 6 corresponing physical
+            # vertices, even if it's an n-body stabilizer with n < 6.
+            for cube in cubes:
+                assert len(cube.physical) == 6
+                # For periodic boundaries, check that there are
+                # only 6-body stabilizers.
+                if surface_code.bound_str == "periodic":
+                    assert len(cube.egraph) == 6
 
 
 class TestStabilizer:
