@@ -288,6 +288,11 @@ class TestRHGGraph:
                 (u, v) for u in low_boundary for v in high_boundary if RHG_lattice.has_edge(u, v)
             ]
 
+        # Check that periodic edges contain the "periodic" attribute and
+        # that it is set to True.
+        for edge in periodic_edges:
+            assert RHG_lattice.edges[edge]["periodic"] == True
+
         if boundary_type == "periodic":
             assert len(periodic_edges) == 3 * (2 * d**2)
         else:  # toric
