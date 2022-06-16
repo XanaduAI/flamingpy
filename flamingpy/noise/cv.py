@@ -24,7 +24,7 @@ from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
 # pylint: disable=too-many-instance-attributes
 class CVLayer:
-    """A class for applying to a code (or an graph state) a physical layer of
+    """A class for applying to a code (or a graph state) a physical layer of
     continuous-variable noise.
 
     Associates the nodes of an EGraph with continuous-variable quantum states,
@@ -44,26 +44,30 @@ class CVLayer:
         p_swap (float, optional): if supplied, the probability of a node being
             a p-squeezed state. Overrides the indices given in state.
         sampling_order (str, optional): the scheme for conducting sampling
-            for the homodyne measurements. Options are "initial" and "two-step".
+            for the homodyne measurements. Options are "initial" and "two-step"
+        translator (func): the choice of binning function for converting
+            homodyne outcomes to bit values; by default, the standard GKP binner
+            that snaps to the closest integer multiple of sqrt(pi).
         rng (numpy.random.Generator, optional): a random number generator
             following the NumPy API. It can be seeded for reproducibility.
             By default, numpy.random.default_rng is used without a fixed seed.
 
     Attributes:
         egraph (EGraph): the underlying graph representation.
-        to_points (dict): the index-to-coordinate dictionary, taken from egraph.
-        N (int): the number of qubits in the lattice.
         delta (float): the delta from the Args above.
         p_swap (float): the swap-out probability from the Args above.
         states (dict): states along with their indices.
-        _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph.
+        _N (int): the number of qubits in the lattice.
+        _to_points (dict): the index-to-coordinate dictionary, taken from egraph.
+        _adj (sp.sparse.csr_matrix): the adjacency matrix of egraph
         _sampling_order (str): sampling order from above.
+        _translator (func): the translator from above.
         _perfect_inds (list or NoneType): the indices of qubits to treat as
             ideal.
     """
 
     def __init__(self, code, *, delta, **kwargs):
-        # Point to the EGraph, if supplied directly, or to code.egraph if not.
+        # Point to the EGraph (if supplied directly) or to code.egraph (if not).
         if isinstance(code, EGraph):
             self.egraph = code
         else:
@@ -93,10 +97,11 @@ class CVLayer:
 
         if self.p_swap is not None and supplied_states is not None:
             if len(supplied_states["p"]):
-                print(
-                    "Both swap-out probability and indices of p-squeezed "
-                    "states supplied. Ignoring the indices."
+                message = (
+                    "Both the swap-out probability and indices of p-squeezed states "
+                    "have been supplied. Please only specify one of those."
                 )
+                raise Exception(message)
 
     # Error correction methods
     def apply_noise(self, rng=default_rng()):
@@ -119,8 +124,6 @@ class CVLayer:
         and GKP+ states. A non-zero self.p_swap overrides indices specified in
         self.states and uses a binomial distribution to identify some indices
         as p-squeezed states.
-
-        Raise an exception if both p_swap and p indices are supplied.
 
         This method modifies self.egraph.
         """
@@ -146,13 +149,7 @@ class CVLayer:
         This is the inner (CV) decoder, a.k.a. translator, a.k.a binning function.
         Set converted values to the bit_val attribute for nodes in self.egraph.
 
-        Args:
-            code (SurfaceCode): the qubit QEC code
-            translator (func): the choice of binning function; by default, the
-                standard GKP binning function that snaps to the closest
-                integer multiple of sqrt(pi).
-        Returns:
-            None
+        This method modifies self.egraph.
         """
         for point in self.code.all_syndrome_coords:
             hom_val = self.code.graph.nodes[point]["hom_val_p"]
@@ -172,10 +169,10 @@ class CVLayer:
         """Conduct a homodyne measurement of states in the lattice.
 
         Simulate a homodyne measurement of quadrature quad of states at indices
-        inds according to sampling order specified by self.sampling_order. Use
-        the Numpy random sampling method method. If updated_quads is supplied,
-        use those instead of applying an SCZ matrix to the initial quads in
-        the two-step sampling.
+        inds according to sampling order specified by self._sampling_order. If
+        updated_means or updated_covs is supplied, use those instead of the
+        outputs of self._means_sampler and self._covs_sampler, respectively.
+        The 'propagate' option is fed into _means_sampler, if desired.
 
         Args:
             rng (numpy.random.Generator, optional): a random number generator following
@@ -186,36 +183,40 @@ class CVLayer:
         if inds is None:
             inds = range(N)
         N_inds = len(inds)
-
+        # Determine which means and covs to use for the probability distribution
         if updated_means is None:
             means = self._means_sampler(propagate=propagate, rng=rng)
         else:
-            means = updated_means
+            if quad == "q":
+                means = updated_means[:N][inds]
+            if quad == "p":
+                means = updated_means[N:][inds]
+
         if updated_covs is None:
             covs = self._covs_sampler(inds=inds, rng=rng)
         else:
-            covs = updated_covs
-        if self._sampling_order == "two-step":
             if quad == "q":
-                means = means[:N][inds]
+                covs = updated_covs[:N][inds]
             elif quad == "p":
-                means = means[N:][inds]
+                covs = updated_covs[N:][inds]
+
+        # Conduct the sample
         outcomes = rng.normal(means, covs)
+
+        # For the initial sampling order, entangle the samples
         if self._sampling_order == "initial":
             outcomes = SCZ_apply(self._adj, covs)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
                 outcomes = outcomes[N:][inds]
+
+        # Add the hom_val_{quad} attribute to the relevant nodes of the EGraph.
         for i in range(N_inds):
             self.egraph.nodes[self._to_points[inds[i]]]["hom_val_" + quad] = outcomes[i]
 
-    def SCZ(self, sparse=False):
-        """Return the symplectic matrix associated with CZ application.
-
-        Returns:
-            array: the symplectic matrix.
-        """
+    def SCZ(self, sparse=True):
+        """Return the symplectic matrix associated with CZ application."""
         adj = self._adj
         return SCZ_mat(adj, sparse)
 
@@ -223,9 +224,10 @@ class CVLayer:
     def draw(self, **kwargs):
         """Draw the CV graph state with matplotlib.
 
-        See flamingpy.utils.viz.draw_EGraph for more details. Use the default
-        colours: gold for GKP states and blue for p-squeezed
+        Use the default colours: gold for GKP states and blue for p-squeezed
         states.
+
+        See flamingpy.utils.viz.draw_EGraph for more details.
         """
         cv_opts = {"color_nodes": ("state", {"GKP": "gold", "p": "blue"})}
         updated_opts = {**cv_opts, **kwargs}
@@ -297,7 +299,7 @@ class CVLayer:
                 ind_arr = np.empty(len(inds_to_0), dtype=np.int64)
                 for i, perfect_ind in enumerate(inds_to_0):
                     ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
-                covs[ind_arr] = (self.delta / 2) ** 0.5
+                covs[ind_arr] = 0
 
         return covs
 
@@ -319,7 +321,11 @@ class CVLayer:
             self.states["p"] = inds
 
     def _means_sampler(self, propagate=False, rng=default_rng()):
-        """Return the means for the homodyne measurement sample."""
+        """Return the means for the homodyne measurement sample.
+
+        Setting propagate to True applies a symplectic CZ matrix to the
+        means.
+        """
         means = np.zeros(2 * self._N, dtype=np.float32)
         if self._sampling_order == "two-step":
 
@@ -353,7 +359,6 @@ class CVMacroLayer(CVLayer):
     In addition to CVLayer args, the following:
 
     Args:
-        reduced_graph (EGraph): the canonical (reduced) code graph.
         bs_network (np.array, optional): the sympletic matrix corresponding to
             the beamsplitter network entangling the macronode. By default,
             the standard four-splitter.
@@ -365,12 +370,10 @@ class CVMacroLayer(CVLayer):
         # are not all-periodic.
         pad_bool = code.bound_str != "periodic"
         macro_graph = code.graph.macronize(pad_bool)
-        macro_graph.adj_generator(sparse=True)
 
         # Instantiate the CVLayer parent class with the right noise model.
         super().__init__(macro_graph, delta=delta, sampling_order="two-step", **kwargs)
         self.reduced_graph = code.graph
-        code.graph.index_generator()
         if bs_network is None:
             self.bs_network = splitter_symp()
 
@@ -378,9 +381,9 @@ class CVMacroLayer(CVLayer):
         """Reduce the macronode code lattice to the canonical code lattice.
 
         Follow the procedure in arXiv:2104.03241. Take the macronode lattice
-        macro_graph, apply noise based on noise_layer and noise_model, designate
-        micronodes as planets and stars, conduct homodyne measurements, process
-        these measurements, and compute conditional phase error probabilities.
+        macro_graph, apply noise, designate micronodes as planets and stars,
+        conduct homodyne measurements, process these measurements, and compute
+        conditional phase error probabilities.
 
         This method modifies the node attributes of self.reduced_graph to include
         effective bit values and phase error probabilities.
@@ -430,10 +433,10 @@ class CVMacroLayer(CVLayer):
         quadratures and self.quad_permutation to the corresponding permutation
         vector.
         """
+        N = self._N
         quads = self._means_sampler(propagate=True)
         # Permute the quadrature values to align with the permuted
         # indices in order to apply the beamsplitter network.
-        N = self._N
         quad_permutation = np.concatenate([self.permuted_inds, N + self.permuted_inds])
         permuted_quads = quads[quad_permutation]
         # The beamsplitter network
@@ -519,8 +522,8 @@ class CVMacroLayer(CVLayer):
         For each macronode, permute indices so that the first
         encountered GKP state comes first, designating it as the 'star'
         ('central') mode. The first index in the resulting list and
-        every four indices thereafter correspond to star modes. The
-        restare 'planets' ('satellite' modes).
+        every four indices thereafter correspond to star modes. The rest
+        are 'planets' ('satellite' modes).
         """
         inds = np.reshape(np.arange(self._N), (self._N // 4, 4))
         self.permuted_inds = np.apply_along_axis(
