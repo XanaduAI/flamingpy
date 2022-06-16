@@ -445,7 +445,7 @@ class TestRectangularSurfaceCode:
         rect_sc = SurfaceCode((dx, dy, dz), ec, boundaries)
 
         # assert that the surface code is initialized correctly
-        assert rect_sc.dims == (rsc.dx, rsc.dy, rsc.dz)
+        assert rect_sc.dims == (dx, dy, dz)
         assert rect_sc.ec
         assert rect_sc.bound_str
         assert list(rect_sc.boundaries)
