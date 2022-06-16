@@ -104,7 +104,7 @@ def str_to_bound(bound_name):
 
 
 def RHG_graph(
-    dims,  #: Union[int, Tuple[int, int, int], List, np.ndarray],
+    dims: Union[int, Tuple[int, int, int], List, np.ndarray],
     boundaries="primal",
     polarity=None,
 ):
@@ -143,13 +143,13 @@ def RHG_graph(
         EGraph: the RHG lattice.
     """
     # Checking input
-    # if not isinstance(dims, (int, tuple, list, np.ndarray)):
-    #     raise TypeError("dims must be int or 3-tuple.")
-    # if isinstance(dims, (tuple, list, np.ndarray)):
-    #     if np.size(dims) == 1:
-    #         dims = dims[0]
-    #     elif np.size(dims) != 3:
-    #         raise ValueError("dims must be an integer or a list-type containing 3 integers.")
+    if not isinstance(dims, (int, tuple, list, np.ndarray)):
+        raise TypeError("dims must be int or 3-tuple.")
+    if isinstance(dims, (tuple, list, np.ndarray)):
+        if np.size(dims) == 1:
+            dims = dims[0]
+        elif np.size(dims) != 3:
+            raise ValueError("dims must be an integer or a list-type containing 3 integers.")
 
     # Create an EGraph with the graph attribute 'dims' (used for
     # plotting purposes.
@@ -290,7 +290,7 @@ class SurfaceCode:
 
     def __init__(
         self,
-        distance,  #: Union[int, Tuple[int, int, int]],
+        distance: Union[int, Tuple[int, int, int]],
         ec="primal",
         boundaries="open",
         polarity=None,
