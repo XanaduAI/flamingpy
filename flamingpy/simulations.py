@@ -89,7 +89,8 @@ def ec_monte_carlo(
     Args:
         trials (int): the number of trials.
         code_instance (code object): the initialized qubit code
-        noise_instance (noise object): the initialized noise layer (CVLayer, CVMacroLayer, or IidNoise)
+        noise_instance (noise object): the initialized noise layer
+            (CVLayer, CVMacroLayer, or IidNoise)
         decoder (str): the decoding algorithm ("MWPM" or "UF")
         deocder_args (dict): arguments for the decoder (such as weight options)
         return_decoding_time (bool, optional): when True, returns the total decoding time
