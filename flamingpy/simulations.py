@@ -87,18 +87,19 @@ def ec_monte_carlo(
     procedure.
 
     Args:
-        code (instance code object): the initialized qubit code
-        noise (noise object): the noise layer (CVLayer, CVMacroLayer, or IidNoise)
-        noise_args (dict): the arguments to the noise layer
-        decoder (str): the decoding algorithm ("MWPM" or "UF")
         trials (int): the number of trials.
-        return_decoding_time (bool, optional): total decoding time is returned when set to True
+        code_instance (code object): the initialized qubit code
+        noise_instance (noise object): the initialized noise layer (CVLayer, CVMacroLayer, or IidNoise)
+        decoder (str): the decoding algorithm ("MWPM" or "UF")
+        deocder_args (dict): arguments for the decoder (such as weight options)
+        return_decoding_time (bool, optional): when True, returns the total decoding time
+        world_comm, mpi_rank, mpi_size: arguments for the MPI library.
 
     Returns:
         tuple:
             errors (integer): the number of errors.
             prep_time_total (float): the total time in seconds taken by the state prep steps.
-            This parameter is returned only if return_decoding_time is set to True
+                (This parameter is returned only if return_decoding_time is set to True.)
     """
     weight_opts = decoder_args["weight_opts"]
 
@@ -276,7 +277,7 @@ if __name__ == "__main__":
             "ec": args.ec,
             "boundaries": args.boundaries,
             "delta": args.delta,
-            "p_swap": args.p_swap,
+            "p_swap": args.pswap,
             "trials": args.trials,
             "decoder": args.decoder,
         }
