@@ -22,8 +22,8 @@ jobs:
 
       - name: Get the latest pip and pylint
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pylint==2.14.0
+          python -m pip install --upgrade pip
+          python -m pip install pylint==2.14.0
 
       - uses: actions/checkout@v2
 
@@ -39,4 +39,4 @@ jobs:
           python setup.py build_cmake --inplace
 
       - name: Run pylint
-        run: python3 -m pylint --disable=R,W flamingpy/**/*.py tests/**/*.py
+        run: python -m pylint --reports=y --disable=R,W flamingpy tests/**/*.py

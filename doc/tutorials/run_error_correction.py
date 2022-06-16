@@ -35,7 +35,7 @@ from flamingpy.noise import IidNoise
 
 # QEC code parameters
 distance = 3
-# Boundaries ("open" or "periodic")
+# Boundaries ("open", "toric" or "periodic")
 boundaries = "open"
 # Error complex ("primal" or "dual")
 ec = "primal"
@@ -93,7 +93,7 @@ IidNoise(RHG_code, p_Z).apply_noise()
 # select it:
 #
 
-decoder = {"outer": "MWPM"}
+decoder = "MWPM"
 
 
 ######################################################################

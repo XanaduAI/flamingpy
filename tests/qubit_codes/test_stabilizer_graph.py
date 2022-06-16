@@ -21,10 +21,9 @@ from numpy.random import default_rng
 import pytest
 
 from flamingpy.codes import alternating_polarity, Stabilizer, SurfaceCode
-from flamingpy.cv.ops import CVLayer
-from flamingpy.decoders.decoder import assign_weights, CV_decoder, GKP_binner
+from flamingpy.decoders.decoder import assign_weights
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
-
+from flamingpy.noise import CVLayer
 
 # Test parameters
 
@@ -32,7 +31,7 @@ stab_graph_backend = ["retworkx"]
 
 code_params = it.product(
     [2, 3, 4],
-    ["open", "periodic"],
+    ["open", "toric", "periodic"],
     ["primal", "dual"],
     [1, 0.1, 0.01],
     [0, 0.5, 1],
@@ -58,7 +57,6 @@ def compute_enc_state(request):
         "delta": delta,
     }
     # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
     seed = default_rng().integers(0, 2**32)
 
     # NX reference code
@@ -70,13 +68,10 @@ def compute_enc_state(request):
         backend="networkx",
     )
     # CV (inner) code/state
-    nx_CVRHG = CVLayer(nx_DVRHG, p_swap=p_swap)
+    nx_CVRHG = CVLayer(nx_DVRHG, delta=delta, p_swap=p_swap)
     # Apply noise
-    nx_CVRHG.apply_noise(cv_noise, default_rng(seed))
-    # Measure syndrome
-    nx_CVRHG.measure_hom("p", nx_DVRHG.all_syndrome_inds, rng=default_rng(seed))
+    nx_CVRHG.apply_noise(rng=default_rng(seed))
     assign_weights(nx_DVRHG, "MWPM", **weight_options)
-    CV_decoder(nx_DVRHG, translator=GKP_binner)
 
     print(f"rx + {ec}")
     # Comparison code
@@ -88,14 +83,11 @@ def compute_enc_state(request):
         backend=backend,
     )
     # CV (inner) code/state
-    states = {"p": nx_CVRHG._states["p"]}
-    CVRHG = CVLayer(DVRHG, states)
+    states = {"p": nx_CVRHG.states["p"]}
+    CVRHG = CVLayer(DVRHG, delta=delta, states=states)
     # Apply noise
-    CVRHG.apply_noise(cv_noise, default_rng(seed))
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds, rng=default_rng(seed))
+    CVRHG.apply_noise(default_rng(seed))
     assign_weights(DVRHG, "MWPM", **weight_options)
-    CV_decoder(DVRHG, translator=GKP_binner)
 
     return nx_DVRHG, nx_CVRHG, DVRHG, CVRHG
 
@@ -149,7 +141,12 @@ def test_shortest_paths_have_same_weight(enc_state):
 
 
 code_params2 = it.product(
-    [3, 4], ["open", "periodic"], ["primal", "dual"], [1, 0.9], [0, 0.5, 1], stab_graph_backend
+    [3, 4],
+    ["open", "toric", "periodic"],
+    ["primal", "dual"],
+    [1, 0.9],
+    [0, 0.5, 1],
+    stab_graph_backend,
 )
 # An RHGCode object as well as an encoded CVLayer for use in this module.
 @pytest.fixture(scope="module", params=code_params2)
