@@ -291,7 +291,7 @@ class TestRHGGraph:
         # Check that periodic edges contain the "periodic" attribute and
         # that it is set to True.
         for edge in periodic_edges:
-            assert RHG_lattice.edges[edge]["periodic"] == True
+            assert RHG_lattice.edges[edge]["periodic"]
 
         if boundary_type == "periodic":
             assert len(periodic_edges) == 3 * (2 * d**2)
