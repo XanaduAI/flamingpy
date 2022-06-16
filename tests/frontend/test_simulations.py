@@ -48,7 +48,6 @@ def code(request):
     """A SurfaceCode object for use in this module."""
     distance, ec, boundaries = request.param
     surface_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
-    surface_code.graph.index_generator()
     return surface_code
 
 
@@ -77,7 +76,7 @@ class TestBlueprint:
             trials,
             code,
             noise_instance,
-            "UF",
+            "MWPM",
             decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,

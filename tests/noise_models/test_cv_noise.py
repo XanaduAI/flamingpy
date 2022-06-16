@@ -65,9 +65,9 @@ class TestCVLayer:
 
     def test_empty_init(self, random_graph):
         """Test the instantiation of CVLayer from codes and EGraphs."""
-        G = CVLayer(random_graph[0], delta=0.1, states=None)
+        G = CVLayer(random_graph[0], delta=0.1)
         G_array = nx.to_numpy_array(G.egraph)
-        H = CVLayer(EGraph(random_graph[0]), delta=0.1, states=None)
+        H = CVLayer(EGraph(random_graph[0]), delta=0.1)
         H_array = nx.to_numpy_array(H.egraph)
         # Check that the _N attribute is populated with the number
         # of nodes in the random graph.

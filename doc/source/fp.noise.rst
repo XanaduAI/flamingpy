@@ -9,8 +9,8 @@ Available modules
 .. autosummary::
     :toctree: api
 
-    ~iid
     ~cv
+    ~iid
 
 Module members
 --------------

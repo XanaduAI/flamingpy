@@ -42,7 +42,7 @@ def enc_state(request):
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity)
     # CV (inner) code/state
-    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap, sampling_order="initial")
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap)
     # Apply noise
     CVRHG.apply_noise()
     return DVRHG, CVRHG
