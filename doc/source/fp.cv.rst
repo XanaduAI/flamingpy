@@ -10,7 +10,6 @@ Available modules
     :toctree: api
 
     ~gkp
-    ~macro_reduce
     ~ops
 
 Module members

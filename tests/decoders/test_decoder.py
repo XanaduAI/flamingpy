@@ -22,17 +22,14 @@ import numpy as np
 import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders.decoder import (
     assign_weights,
-    CV_decoder,
     recovery,
     check_correction,
 )
-
 from flamingpy.decoders.mwpm import mwpm_decoder
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
-
+from flamingpy.noise import CVLayer
 
 code_params = it.product(
     [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
@@ -45,13 +42,9 @@ def enc_state(request):
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity)
     # CV (inner) code/state
-    CVRHG = CVLayer(DVRHG, p_swap=p_swap)
-    # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap)
     # Apply noise
-    CVRHG.apply_noise(cv_noise)
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds)
+    CVRHG.apply_noise()
     return DVRHG, CVRHG
 
 
@@ -80,7 +73,7 @@ class TestAssignWeights:
             "method": "blueprint",
             "integer": True,
             "multiplier": 100,
-            "delta": enc_state[1]._delta,
+            "delta": enc_state[1].delta,
         }
         assign_weights(enc_state[0], "MWPM", **weight_options)
         for point in enc_state[0].all_syndrome_coords:
@@ -96,7 +89,6 @@ class TestDecoder:
 
     def test_CV_decoder(self, enc_state):
         """Test CV_decoder function."""
-        CV_decoder(enc_state[0])
         bits = enc_state[1].bit_values()
         # Check that bit values have been computed, and that they are
         # either 0 or 1.

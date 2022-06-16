@@ -14,43 +14,29 @@
 """Example of simulating Xanadu's passive and static architecture."""
 
 from flamingpy.codes import SurfaceCode
-from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import BS_network, reduce_macro_and_simulate
 from flamingpy.decoders.decoder import correct
+from flamingpy.noise.cv import CVMacroLayer
 
 # Number of trials
-total = 1
-# Code parameters
+total = 10
+# Code parameters and definition
 d = 3
 boundaries = "open"
 ec = "primal"
-# Noise parameters
+RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
+
+# Noise parameters and layer definition
 delta = 0.1
 p_swap = 0.25
-
-# The reduced lattice.
-RHG_code = SurfaceCode(d, ec=ec, boundaries=boundaries)
-RHG_reduced = RHG_code.graph
-RHG_reduced.index_generator()
-# The lattice with macronodes
-pad_bool = boundaries != "periodic"
-RHG_macro = RHG_code.graph.macronize(pad_boundary=pad_bool)
-RHG_macro.index_generator()
-RHG_macro.adj_generator(sparse=True)
-
-# The empty CV layer, uninitiated with any error model.
-CVRHG_reduced = CVLayer(RHG_code)
-# Define the 4X4 beamsplitter network for a given macronode.
-# star at index 0, planets at indices 1-3.
-bs_network = BS_network(4)
+CV_macro = CVMacroLayer(RHG_code, delta=delta, p_swap=p_swap)
 
 successes = 0
 for trial in range(total):
-    # The empty CV state, uninitiated with any error model.
-    reduce_macro_and_simulate(RHG_macro, RHG_reduced, CVRHG_reduced, bs_network, p_swap, delta)
-    decoder = {"outer": "MWPM"}
+    # The CV macronode noise layer and reduction
+    CV_macro.apply_noise()
+    decoder = "MWPM"
     decoder_opts = {"backend": "networkx"}
-    if decoder["outer"] == "MWPM":
+    if decoder == "MWPM":
         weight_options = {
             "method": "blueprint",
             "prob_precomputed": True,

@@ -26,9 +26,11 @@ class IidNoise:
     """
 
     def __init__(self, code, error_probability):
+        self.egraph = code.graph
+
         if error_probability < 0.0 or error_probability > 1.0:
             raise ValueError("Probability is not between 0 and 1.")
-        self.graph = code.graph
+
         self.error_probability = error_probability
 
     def apply_noise(self, rng=default_rng()):
@@ -41,5 +43,5 @@ class IidNoise:
                 following the NumPy API. It can be seeded for reproducibility.
                 By default, numpy.random.default_rng is used without a fixed seed.
         """
-        for _, node_data in self.graph.nodes.data():
+        for _, node_data in self.egraph.nodes.data():
             node_data["bit_val"] = int(rng.random() < self.error_probability)
