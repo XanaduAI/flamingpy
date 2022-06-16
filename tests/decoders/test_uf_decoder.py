@@ -39,7 +39,7 @@ from flamingpy.noise import CVLayer
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
+    [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
 )  # distance, ec, boundaries, delta, p_swap
 
 
@@ -56,7 +56,7 @@ def enc_state(request):
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01]
+    [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01]
 )  # distance, ec, boundaries, delta, p_swap
 
 
