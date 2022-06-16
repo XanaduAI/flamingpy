@@ -45,9 +45,10 @@ def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, 
     _, RHG_ax = RHG_code.draw()
 
     # Check edges between boundaries for periodic boundary conditions.
-    if boundaries == "periodic":
+    if boundaries in ("toric", "periodic"):
         all_boundaries = []
-        for plane in ("x", "y", "z"):
+        planes = ("x", "y", "z") if "periodic" else ("x", "y")
+        for plane in planes:
             for i in (0, 2 * d - 1):
                 all_boundaries += RHG_lattice.slice_coords(plane, i)
         RHG_subgraph = RHG_lattice.subgraph(all_boundaries)
@@ -80,7 +81,7 @@ if __name__ == "__main__":
     params = {
         # Code distance (an integer)
         "d": 2,
-        # Boundaries ("open" or "periodic")
+        # Boundaries ("open", "toric" or "periodic")
         "boundaries": "open",
         # Error complex ("primal" or "dual")
         "err": "primal",
