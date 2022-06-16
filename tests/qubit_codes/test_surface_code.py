@@ -478,7 +478,7 @@ class TestRectangularSurfaceCode:
             for att in ["all_syndrome_inds", "all_syndrome_coords"]:
                 getattr(rect_sc, att)
 
-    def test_rectangular_stabilizers(self, rect_sc):
+    def test_rectangular_stabilizers(self, rectangular_surface_code):
         """Check whether all stabilizers were generated as expected."""
         rect_sc, param = rectangular_surface_code
 
@@ -489,11 +489,18 @@ class TestRectangularSurfaceCode:
             # depending on the boundary conditions.
             if rect_sc.bound_str.startswith("open"):
                 if len(rect_sc.ec) == 2 and ec == "dual":
-                    assert len(cubes) == (dx - 1) * (dy - 1) * dz
+                    assert (
+                        len(cubes) == (dx - 1) * (dy - 1) * dz
+                    ), "Wrong number of cubes for open both or dual"
                 else:
-                    assert len(cubes) == dx * dy * (dz - 1)
+                    assert (
+                        len(cubes) == dx * (dy - 1) * dz
+                    ), "1 Wrong number of cubes for open primal"  # I don't know what dimension is requires the -1
+                    assert (
+                        len(cubes) == (dx - 1) * dy * dz
+                    ), "2 Wrong number of cubes for open primal"  # I don't know what dimension is requires the -1
             elif rect_sc.bound_str == "periodic":
-                assert len(cubes) == dz * dy * dz
+                assert len(cubes) == dx * dy * dz, "Wrong number of cubes for periodic"
             # Check that each stabilizer has 6 corresponing physical
             # vertices, even if it's an n-body stabilizer with n < 6.
             for cube in cubes:
