@@ -478,19 +478,21 @@ class TestRectangularSurfaceCode:
             for att in ["all_syndrome_inds", "all_syndrome_coords"]:
                 getattr(rect_sc, att)
 
-    def test_rectangular_stabilizers(self, surface_code):
+    def test_rectangular_stabilizers(self, rect_sc):
         """Check whether all stabilizers were generated as expected."""
-        for ec in surface_code.ec:
-            dx, dy, dz = surface_code.dims
-            cubes = getattr(surface_code, ec + "_stabilizers")
+        rect_sc, param = rectangular_surface_code
+
+        for ec in rect_sc.ec:
+            dx, dy, dz = rect_sc.dims
+            cubes = getattr(rect_sc, ec + "_stabilizers")
             # Check that there are a correct number of stabilizer elements
             # depending on the boundary conditions.
-            if surface_code.bound_str.startswith("open"):
-                if len(surface_code.ec) == 2 and ec == "dual":
+            if rect_sc.bound_str.startswith("open"):
+                if len(rect_sc.ec) == 2 and ec == "dual":
                     assert len(cubes) == (dx - 1) * (dy - 1) * dz
                 else:
                     assert len(cubes) == dx * dy * (dz - 1)
-            elif surface_code.bound_str == "periodic":
+            elif rect_sc.bound_str == "periodic":
                 assert len(cubes) == dz * dy * dz
             # Check that each stabilizer has 6 corresponing physical
             # vertices, even if it's an n-body stabilizer with n < 6.
@@ -498,7 +500,7 @@ class TestRectangularSurfaceCode:
                 assert len(cube.physical) == 6
                 # For periodic boundaries, check that there are
                 # only 6-body stabilizers.
-                if surface_code.bound_str == "periodic":
+                if rect_sc.bound_str == "periodic":
                     assert len(cube.egraph) == 6
 
 
