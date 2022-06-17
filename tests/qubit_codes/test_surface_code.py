@@ -516,7 +516,7 @@ class TestRectangularSurfaceCode:
             if rect_sc.bound_str.startswith("open"):
                 if ec == "dual" and len(rect_sc.ec) == 2 and ec == "dual":
                     assert (
-                        len(cubes) == (dx - 1) * (dy - 1) * dz
+                        len(cubes) == dx * (dy - 1) * dz
                     ), "Wrong number of dual stabilizers when boundaries open (ec 'both')"
                 elif ec == "dual":
                     assert (
@@ -524,7 +524,7 @@ class TestRectangularSurfaceCode:
                     ), "Wrong number of dual stabilizers when boundaries open (ec 'dual')"
                 elif ec == "primal" and len(rect_sc.ec) == 2:
                     assert (
-                        len(cubes) == dx * dy * dz
+                        len(cubes) == (dx - 1) * dy * dz
                     ), "Wrong number of primal stabilizers when boundaries open (ec 'both')"
                 elif ec == "primal":
                     assert (
