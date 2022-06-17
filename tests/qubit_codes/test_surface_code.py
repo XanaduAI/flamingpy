@@ -456,7 +456,7 @@ class TestSurfaceCode:
 
 
 rectanguloid_code_params = it.product(
-    rng().integers(low=2, high=7, size=(2, 3)), ["primal", "dual"], ["open", "periodic"]
+    rng().integers(low=2, high=9, size=(8, 3)), ["primal", "dual"], ["open", "periodic"]
 )
 
 
@@ -514,14 +514,24 @@ class TestRectangularSurfaceCode:
             # Check that there are a correct number of stabilizer elements
             # depending on the boundary conditions.
             if rect_sc.bound_str.startswith("open"):
-                if len(rect_sc.ec) == 2 and ec == "dual":
+                if ec == "dual" and len(rect_sc.ec) == 2 and ec == "dual":
                     assert (
                         len(cubes) == (dx - 1) * (dy - 1) * dz
-                    ), "Wrong number of cubes for both or dual ec and open boundaries"
-                else:
+                    ), "Wrong number of dual stabilizers when boundaries open (ec 'both')"
+                elif ec == "dual":
                     assert (
                         len(cubes) == dx * (dy - 1) * dz
-                    ), "Wrong number of cubes for primal ec and open boundaries"
+                    ), "Wrong number of dual stabilizers when boundaries open (ec 'dual')"
+                elif ec == "primal" and len(rect_sc.ec) == 2:
+                    assert (
+                        len(cubes) == dx * dy * dz
+                    ), "Wrong number of primal stabilizers when boundaries open (ec 'both')"
+                elif ec == "primal":
+                    assert (
+                        len(cubes) == (dx - 1) * dy * dz
+                    ), "Wrong number of primal stabilizers when boundaries open (ec 'primal')"
+                else:
+                    raise ValueError("Unknown ec {}".format(ec))
             elif rect_sc.bound_str == "periodic":
                 assert len(cubes) == dx * dy * dz, "Wrong number of cubes for periodic"
             # Check that each stabilizer has 6 corresponing physical
