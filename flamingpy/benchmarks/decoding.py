@@ -18,23 +18,24 @@ import time
 import matplotlib.pyplot as plt
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
 from flamingpy.decoders import decoder as dec
+from flamingpy.noise import CVLayer
 
 # How many simulations to do for each algorithm
 num_trials = 10
 
 # DV (outer) code parameters
 distance = 5
+
+# Boundaries ("open", "toric" or "periodic")
 boundaries = "periodic"
 
-# Noise model
+# Noise parameters
 p_swap = 0.1
 delta = 0.1
-cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
 
 # Decoding options
-decoder = {"inner": "basic", "outer": "MWPM"}
+decoder = "MWPM"
 weight_options = {
     "method": "blueprint",
     "integer": True,
@@ -53,16 +54,14 @@ for backend in ["networkx", "retworkx"]:
     RHG_code = SurfaceCode(
         distance=distance, boundaries=boundaries, polarity=alternating_polarity, backend=backend
     )
+    # Instantiate the noise layer
+    CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap)
     for i in range(num_trials):
         print(f"-- {i} --")
-        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
         # Apply noise
-        CVRHG.apply_noise(cv_noise)
-        # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.all_syndrome_inds)
+        CVRHG.apply_noise()
         # Inner decoder
         before = time.time()
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         dec.correct(
             RHG_code,
             decoder,

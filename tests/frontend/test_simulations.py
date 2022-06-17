@@ -23,20 +23,16 @@ import re
 import pytest
 
 try:
-    import mpi4py.rc
-
-    mpi4py.rc.threaded = False
     from mpi4py import MPI
 except ImportError:  # pragma: no cover
     warnings.warn("Failed to import mpi4py libraries.", ImportWarning)
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
-from flamingpy.cv.macro_reduce import BS_network
+from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
 
-code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "periodic"])
+code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"])
 
 if "MPI" in locals():
     world_comm = MPI.COMM_WORLD
@@ -53,7 +49,6 @@ def code(request):
     """A SurfaceCode object for use in this module."""
     distance, ec, boundaries = request.param
     surface_code = SurfaceCode(distance, ec, boundaries, alternating_polarity)
-    surface_code.graph.index_generator()
     return surface_code
 
 
@@ -67,18 +62,29 @@ class TestBlueprint:
         p_swap = 0
         delta = 0.001
         trials = 10
-        errors_py = ec_monte_carlo(
-            code,
+        noise_args = {"delta": delta, "p_swap": p_swap}
+        decoder_args = {}
+        decoder_args["weight_opts"] = {
+            "method": "blueprint",
+            "integer": False,
+            "multiplier": 1,
+            "delta": noise_args.get("delta"),
+        }
+
+        noise_instance = CVLayer(code, delta=delta, p_swap=p_swap)
+
+        errors = ec_monte_carlo(
             trials,
-            delta,
-            p_swap,
-            passive_objects=None,
+            code,
+            noise_instance,
+            "MWPM",
+            decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,
             mpi_size=mpi_size,
         )
-        # Check that there are no errors in all-GKP high-squeezing limit.
-        assert errors_py == 0
+        # Check that there are no errors in all-GKP high-squeezing limit for selected decoder:
+        assert errors == 0
 
 
 class TestPassive:
@@ -92,46 +98,33 @@ class TestPassive:
         delta = 0.001
         trials = 10
 
-        pad_bool = code.bound_str != "periodic"
-        # The lattice with macronodes.
-        RHG_macro = code.graph.macronize(pad_boundary=pad_bool)
-        RHG_macro.index_generator()
-        RHG_macro.adj_generator(sparse=True)
+        noise_instance = CVMacroLayer(code, delta=delta, p_swap=p_swap)
+        decoder_args = {"weight_opts": None}
 
-        # The empty CV state, uninitiated with any error model.
-        CVRHG_reduced = CVLayer(code)
-
-        # Define the 4X4 beamsplitter network for a given macronode.
-        # star at index 0, planets at indices 1-3.
-        bs_network = BS_network(4)
-        passive_objects = [RHG_macro, code.graph, CVRHG_reduced, bs_network]
-        errors_py = ec_monte_carlo(
-            code,
+        errors = ec_monte_carlo(
             trials,
-            delta,
-            p_swap,
-            passive_objects=passive_objects,
+            code,
+            noise_instance,
+            "UF",
+            decoder_args,
             world_comm=world_comm,
             mpi_rank=mpi_rank,
             mpi_size=mpi_size,
         )
-        # Check that there are no errors in all-GKP high-squeezing limit.
-        assert errors_py == 0
+        # Check that there are no errors in all-GKP high-squeezing limit for selected decoder:
+        assert errors == 0
 
 
 @pytest.mark.parametrize("empty_file", sorted([True, False]))
-@pytest.mark.parametrize("sim", [run_ec_simulation])
-def test_simulations_output_file(tmpdir, empty_file, sim):
+@pytest.mark.parametrize("noise", sorted(["blueprint", "passive", "iid"]))
+@pytest.mark.parametrize("decoder", sorted(["MWPM", "UF"]))
+def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
-        "distance,passive,ec,boundaries,delta,p_swap,decoder,errors_py,"
+        "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors,"
         + "trials,current_time,decoding_time,simulation_time,mpi_size"
     )
-    dummy_content = "2,True,primal,open,0.04,0.5,2,10,12:34:56,10,20"
-    if "benchmark" in sim.__name__:
-        expected_header += ",cpp_to_py_speedup"
-        dummy_content += ",1"
 
     f = tmpdir.join("sims_results.csv")
     if not empty_file:
@@ -142,17 +135,25 @@ def test_simulations_output_file(tmpdir, empty_file, sim):
 
     # simulation params
     params = {
-        "distance": 2,
+        "distance": 3,
         "ec": "primal",
         "boundaries": "open",
-        "delta": 0.04,
-        "p_swap": 0.5,
         "trials": 100,
-        "passive": True,
-        "decoder": "MWPM",
-    }  # Should we switch to using "passive": passive instead?
+    }
 
-    sim(**params, fname=f)
+    # The Monte Carlo simulations
+    code = SurfaceCode
+    code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
+
+    if noise in ["blueprint", "passive"]:
+        noise_args = {"delta": 0.09, "p_swap": 0.25}
+    else:
+        noise_args = {"error_probability": 0.1}
+    noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
+    noise = noise_dict[noise]
+
+    args = [params["trials"], code, code_args, noise, noise_args, decoder]
+    run_ec_simulation(*args, fname=f)
 
     file_lines = f.readlines()
     # file is created with header and result lines

@@ -25,10 +25,9 @@ import pytest
 import networkx as nx
 
 from flamingpy.codes.surface_code import SurfaceCode
-from flamingpy.cv.ops import CVLayer
-from flamingpy.decoders.decoder import CV_decoder, GKP_binner, assign_weights
+from flamingpy.decoders.decoder import assign_weights
 from flamingpy.decoders.mwpm.matching import LemonMatchingGraph, NxMatchingGraph, RxMatchingGraph
-
+from flamingpy.noise import CVLayer
 
 try:
     import flamingpy.cpp.lemonpy as lp
@@ -94,11 +93,8 @@ def code_matching_graphs(request):
 
     code = SurfaceCode(distance=distance, boundaries="open")
 
-    noise = CVLayer(code.graph, p_swap=0.05)
-    cv_noise = {"noise": "grn", "delta": 0.1, "sampling_order": "initial"}
-    noise.apply_noise(cv_noise)
-    noise.measure_hom("p", code.all_syndrome_inds)
-    CV_decoder(code, translator=GKP_binner)
+    noise = CVLayer(code, delta=0.1, p_swap=0.05)
+    noise.apply_noise()
 
     weight_options = {
         "method": "blueprint",

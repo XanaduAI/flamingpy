@@ -17,10 +17,10 @@ import time
 
 import matplotlib.pyplot as plt
 
-from flamingpy.cv.ops import CVLayer
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.decoders import decoder as dec
 from flamingpy.decoders.mwpm.algos import build_match_graph
+from flamingpy.noise import CVLayer
 
 # How many simulations to do for each algorithm
 num_trials = 10
@@ -30,10 +30,10 @@ distance = 3
 boundaries = "periodic"
 RHG_code = SurfaceCode(distance=distance, boundaries=boundaries, polarity=alternating_polarity)
 
-# Noise model parameters
+# Instantiate the noise layer
 p_swap = 0.2
 delta = 0.1
-cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+CVRHG = CVLayer(RHG_code, delta=delta, p_swap=p_swap)
 
 # Decoding options
 decoder = {"inner": "basic", "outer": "MWPM"}
@@ -54,16 +54,10 @@ for alg in ["networkx", "lemon", "retworkx"]:
     print(f"\n* {alg}")
     for i in range(num_trials):
         print(f"-- {i} --")
-        # Instantiate the CV layer
-        CVRHG = CVLayer(RHG_code, p_swap=p_swap)
         # Apply noise
-        CVRHG.apply_noise(cv_noise)
-        # Measure syndrome
-        CVRHG.measure_hom("p", RHG_code.primal_syndrome_inds)
-
+        CVRHG.apply_noise()
         # Manually decode so as to benchmark just the matching portion
         dec.assign_weights(RHG_code, "MWPM", **weight_options)
-        dec.CV_decoder(RHG_code, translator=dec.GKP_binner)
         G_match = build_match_graph(RHG_code, "primal", alg)
         before = time.time()
         matching = G_match.min_weight_perfect_matching()

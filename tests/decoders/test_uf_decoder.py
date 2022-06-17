@@ -24,9 +24,7 @@ import pytest
 import retworkx as rx
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
-from flamingpy.cv.ops import CVLayer
-from flamingpy.decoders.decoder import assign_weights, CV_decoder
-
+from flamingpy.decoders.decoder import assign_weights
 from flamingpy.decoders.unionfind.uf_classes import Node, Root, Support, Boundary
 from flamingpy.codes.graphs.stabilizer_graph import RxStabilizerGraph
 from flamingpy.codes.stabilizer import Stabilizer
@@ -37,10 +35,11 @@ from flamingpy.decoders.unionfind.algos import (
     peeling,
     union,
 )
+from flamingpy.noise import CVLayer
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
+    [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
 )  # distance, ec, boundaries, delta, p_swap
 
 
@@ -49,20 +48,15 @@ def enc_state(request):
     """An RHGCode object and an encoded CVLayer for use in this module."""
     distance, ec, boundaries, delta, p_swap = request.param
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="retworkx")
-    RHG_lattice = DVRHG.graph
     # CV (inner) code/state
-    CVRHG = CVLayer(RHG_lattice, p_swap=p_swap)
-    # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap, sampling_order="initial")
     # Apply noise
-    CVRHG.apply_noise(cv_noise)
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds)
+    CVRHG.apply_noise()
     return DVRHG, CVRHG
 
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "periodic"], [1, 0.1, 0.01]
+    [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01]
 )  # distance, ec, boundaries, delta, p_swap
 
 
@@ -84,19 +78,14 @@ def enc_state_swap_list(request):
     states = {"p": np.array(psqueezed)}
 
     DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="retworkx")
-    RHG_lattice = DVRHG.graph
     # CV (inner) code/state
-    CVRHG = CVLayer(RHG_lattice, states=states)
-    # Noise model
-    cv_noise = {"noise": "grn", "delta": delta, "sampling_order": "initial"}
+    CVRHG = CVLayer(DVRHG, delta=delta, states=states)
     # Apply noise
-    CVRHG.apply_noise(cv_noise)
-    # Measure syndrome
-    CVRHG.measure_hom("p", DVRHG.all_syndrome_inds)
+    CVRHG.apply_noise()
 
     num_psqueezed_neighbor = {}
     for p in psqueezed:
-        for key in dict(DVRHG.graph[CVRHG.to_points[p]]).keys():
+        for key in dict(DVRHG.graph[CVRHG._to_points[p]]).keys():
             if key in set(DVRHG.all_syndrome_coords):
                 num_psqueezed_neighbor[key] = (
                     num_psqueezed_neighbor[key] + 1 if key in num_psqueezed_neighbor else 1
@@ -136,7 +125,6 @@ class TestUnionFindStructures:
     def test_support(self, enc_state_swap_list):
         """Test the support table."""
 
-        CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
 
         for ec in enc_state_swap_list[0].ec:
@@ -171,7 +159,6 @@ class TestUnionFindStructures:
 
     def test_support_value(self, enc_state_swap_list):
         """Test Support function assignments."""
-        CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
 
         for ec in enc_state_swap_list[0].ec:
@@ -187,7 +174,6 @@ class TestUnionFindStructures:
 
     def test_boundary(self, enc_state):
         """Test the initialization of the Boundary class."""
-        CV_decoder(enc_state[0])
         assign_weights(enc_state[0], "UF")
         for ec in enc_state[0].ec:
             if ec == "primal":
@@ -285,7 +271,6 @@ class TestUnionFindFunctions:
 
     def test_initialize_cluster_trees(self, enc_state):
         """Testing cluster initialization."""
-        CV_decoder(enc_state[0])
         assign_weights(enc_state[0], "UF")
         for ec in enc_state[0].ec:
             if ec == "primal":
@@ -431,7 +416,6 @@ class UnionFindDecoder:
     def test_uf_erasure(self, enc_state_swap_list):
         """Test if weights for the erased edges are set to -1."""
 
-        CV_decoder(enc_state_swap_list[0])
         assign_weights(enc_state_swap_list[0], "UF")
         erased_qubits = set()
         for node in enc_state_swap_list[0].graph.nodes():
