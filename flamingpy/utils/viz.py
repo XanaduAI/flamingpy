@@ -296,6 +296,60 @@ def draw_EGraph_3DScatterPlot(
     show_axes=True,
     dimensions=None,
 ):
+"""Draw the graph state represented by the EGraph.
+
+    Args:
+        color_nodes (bool or string or dict): Options are:
+            True: color the nodes based on the 'color' attribute
+            attached to the node. If unavailable, color nodes black.
+
+            string: color all nodes with the color specified by the string
+
+            tuple[str, dict]: color nodes based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
+
+                ``["state", {"GKP": "b", "p": "r"}]``
+
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
+
+        color_edges (bool or string or dict):
+            True: color the edges based on the 'color' attribute
+            attached to the node. If unavailable, color nodes grey.
+
+            string: color all edges with the color specified by the stirng
+
+            tuple: color edges based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
+
+        label (NoneType or string): plot values next to each node
+            associated with the node attribute label. For example,
+            to plot bit values, set label to "bit_val". If set to 'index',
+            it will plot the integer indices of the nodes. If the attribute
+            for some or all of the nodes, a message will print indicating
+            for how many nodes the attribute has not been set.
+        title (bool): if True, display the title, depending on the label.
+            For default labels, the titles are converted from attribute
+            name to plane English and capitalized.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
+        show_axes (bool): if False, turn off the axes.
+        dimensions (tuple): Dimensions of the region that should be plotted.
+            Should be of the form:
+
+                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
+
+            If None, sets the dimensions to the smallest rectangular space
+            containing all the nodes.
+
+    Returns:
+        figure: Plotly Express figure.
+    """
     egraph_3D = nx.spring_layout(egraph,dim=3, seed=18)
     Num_nodes = egraph.number_of_nodes()
     node_list = list(egraph)
