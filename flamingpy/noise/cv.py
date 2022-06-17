@@ -205,7 +205,7 @@ class CVLayer:
 
         # For the initial sampling order, entangle the samples
         if self._sampling_order == "initial":
-            outcomes = SCZ_apply(self._adj, covs)
+            outcomes = SCZ_apply(self._adj, outcomes)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
