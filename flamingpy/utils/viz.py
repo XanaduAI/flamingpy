@@ -33,6 +33,7 @@ import math
 
 import numpy as np
 import networkx as nx
+import plotly.graph_objects as go
 import matplotlib as mpl
 from matplotlib.patches import Patch
 from matplotlib.ticker import Formatter
@@ -284,6 +285,150 @@ def draw_EGraph(
     return fig, ax
 
 
+@mpl.rc_context(plot_params)
+def draw_EGraph_3DScatterPlot(
+    egraph,
+    color_nodes=False,
+    color_edges=False,
+    label=None,
+    title=False,
+    legend=False,
+    show_axes=True,
+    dimensions=None,
+):
+    """Draw the graph state represented by the EGraph.
+
+    Args:
+        color_nodes (bool or string or dict): Options are:
+            True: color the nodes based on the 'color' attribute
+            attached to the node. If unavailable, color nodes black.
+
+            string: color all nodes with the color specified by the string
+
+            tuple[str, dict]: color nodes based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
+
+                ``["state", {"GKP": "b", "p": "r"}]``
+
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
+
+        color_edges (bool or string or dict):
+            True: color the edges based on the 'color' attribute
+            attached to the node. If unavailable, color nodes grey.
+
+            string: color all edges with the color specified by the stirng
+
+            tuple: color edges based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
+
+        label (NoneType or string): plot values next to each node
+            associated with the node attribute label. For example,
+            to plot bit values, set label to "bit_val". If set to 'index',
+            it will plot the integer indices of the nodes. If the attribute
+            for some or all of the nodes, a message will print indicating
+            for how many nodes the attribute has not been set.
+        title (bool): if True, display the title, depending on the label.
+            For default labels, the titles are converted from attribute
+            name to plane English and capitalized.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
+        show_axes (bool): if False, turn off the axes.
+        dimensions (tuple): Dimensions of the region that should be plotted.
+            Should be of the form:
+
+                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
+
+            If None, sets the dimensions to the smallest rectangular space
+            containing all the nodes.
+
+    Returns:
+        figure: Plotly Express figure.
+    """
+    egraph_3D = nx.spring_layout(egraph, dim=3, seed=18)
+    Num_nodes = egraph.number_of_nodes()
+    node_list = list(egraph)
+    x_nodes = [egraph_3D[node_list[i]][0] for i in range(Num_nodes)]  # x-coordinates of nodes
+    y_nodes = [egraph_3D[node_list[i]][1] for i in range(Num_nodes)]  # y-coordinates
+    z_nodes = [egraph_3D[node_list[i]][0] for i in range(Num_nodes)]  # z-coordinates
+    edge_list = list(egraph.edges())
+
+    x_edges = []
+    y_edges = []
+    z_edges = []
+
+    for edge in edge_list:
+        # format: [beginning,ending,None]
+        x_coords = [egraph_3D[edge[0]][0], egraph_3D[edge[1]][0], None]
+        x_edges += x_coords
+
+        y_coords = [egraph_3D[edge[0]][1], egraph_3D[edge[1]][1], None]
+        y_edges += y_coords
+
+        z_coords = [egraph_3D[edge[0]][2], egraph_3D[edge[1]][2], None]
+        z_edges += z_coords
+    nodeColors = []
+    for point in egraph.nodes:
+        x, y, z = point
+        color = _get_node_color(egraph, color_nodes, point)
+        nodeColors.append(color)
+    trace_edges = go.Scatter3d(
+        x=x_edges,
+        y=y_edges,
+        z=z_edges,
+        mode="lines",
+        line=dict(color="black", width=2),
+        hoverinfo="none",
+    )
+    # create a trace for the nodes
+    trace_nodes = go.Scatter3d(
+        x=x_nodes,
+        y=y_nodes,
+        z=z_nodes,
+        mode="markers",
+        marker=dict(
+            symbol="circle",
+            size=5,
+            color=nodeColors,
+            colorscale=["lightgreen", "magenta"],  # either green or mageneta
+            line=dict(color="black", width=0.5),
+        ),
+        hoverinfo="none",
+    )
+    axis = dict(
+        showbackground=True,
+        showline=True,
+        zeroline=False,
+        showgrid=True,
+        showticklabels=False,
+        title="",
+    )
+    layout = go.Layout(
+        title="",
+        width=650,
+        height=625,
+        showlegend=legend,
+        scene=dict(
+            xaxis=dict(axis),
+            yaxis=dict(axis),
+            zaxis=dict(axis),
+            xaxis_title="X",
+            yaxis_title="Y",
+            zaxis_title="Z",
+        ),
+        margin=dict(t=100),
+        hovermode="closest",
+    )
+    data = [trace_edges, trace_nodes]
+    fig = go.Figure(data=data, layout=layout)
+    return fig
+
+
 def _plot_EGraph_edges(ax, egraph, color_edges):
     """Draw the edges of the graph state represented by the EGraph.
 
@@ -432,9 +577,9 @@ def _get_node_color(egraph, color_nodes, point):
         color = color_dict.get(node_property)
 
     elif color_nodes == True:
-        color = egraph.nodes[point].get("color") or "k"
+        color = egraph.nodes[point].get("color") or "black"
     else:
-        color = "k"
+        color = "black"
     return color
 
 

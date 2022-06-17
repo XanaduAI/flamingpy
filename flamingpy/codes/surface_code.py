@@ -526,6 +526,25 @@ class SurfaceCode:
         updated_opts = {**default_opts, **kwargs}
         return self.graph.draw(**updated_opts)
 
+    def draw_3D(self, **kwargs):
+        """Draw the cluster with Plotly Express.
+
+        See ``flamingpy.utils.viz.draw_EGraph_3DScatterPlot`` for more
+        details. Use the default colour options: black for primal nodes,
+        grey for dual nodes; blue for weight +1 edges, red for weight -1
+        edges.
+        """
+        edge_colors = "grey"
+        if self.polarity is not None:
+            if self.polarity.__name__ == "alternating_polarity":
+                edge_colors = ("weight", {1: "b", -1: "r"})
+        default_opts = {
+            "color_nodes": ("type", {"primal": "black", "dual": "grey"}),
+            "color_edges": edge_colors,
+        }
+        updated_opts = {**default_opts, **kwargs}
+        return self.graph.draw_3D(**updated_opts)
+
     def draw_stabilizer_graph(self, ec, **kwargs):
         """Draw the stabilizer graph with matplotlib.
 

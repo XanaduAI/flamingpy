@@ -205,6 +205,17 @@ class EGraph(nx.Graph):
         fig, ax = draw_EGraph(self, **kwargs)
         return fig, ax
 
+    def draw_3D(self, **kwargs):
+        """Draw the graph state with Plotly Express.
+
+        See flamingpy.utils.viz.draw_EGraph_3DScatterPlot for more
+        details.
+        """
+        from flamingpy.utils.viz import draw_EGraph_3DScatterPlot
+
+        fig = draw_EGraph_3DScatterPlot(self, **kwargs)
+        return fig
+
     def draw_adj(self, **kwargs):
         """Draw the adjacency matrix with matplotlib.
 
