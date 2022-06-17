@@ -297,9 +297,7 @@ def draw_EGraph_3DScatterPlot(
     dimensions=None,
 ):
     egraph_3D = nx.spring_layout(egraph,dim=3, seed=18)
-    print(egraph_3D)
-    Num_nodes = egraph.number_of_nodes();
-    #print(Num_nodes)
+    Num_nodes = egraph.number_of_nodes()
     node_list = list(egraph)
     x_nodes = [egraph_3D[node_list[i]][0] for i in range(Num_nodes)]# x-coordinates of nodes
     y_nodes = [egraph_3D[node_list[i]][1] for i in range(Num_nodes)]# y-coordinates
@@ -341,21 +339,23 @@ def draw_EGraph_3DScatterPlot(
                                     color = nodeColors,
                                     colorscale=['lightgreen','magenta'], #either green or mageneta
                                     line=dict(color='black', width=0.5)),
-                        text=["abc","cde","def"],
-                        hoverinfo='text')
+                        hoverinfo='none')
     axis = dict(showbackground=True,
             showline=True,
             zeroline=False,
             showgrid=True,
             showticklabels=False,
             title='')
-    layout = go.Layout(title="XXX",
+    layout = go.Layout(title='',
                 width=650,
                 height=625,
-                showlegend=True,
+                showlegend=legend,
                 scene=dict(xaxis=dict(axis),
                         yaxis=dict(axis),
                         zaxis=dict(axis),
+                        xaxis_title='X',
+                        yaxis_title='Y',
+                        zaxis_title='Z',
                         ),
                 margin=dict(t=100),
                 hovermode='closest')
@@ -512,9 +512,9 @@ def _get_node_color(egraph, color_nodes, point):
         color = color_dict.get(node_property)
 
     elif color_nodes == True:
-        color = egraph.nodes[point].get("color") or "k"
+        color = egraph.nodes[point].get("color") or "black"
     else:
-        color = "k"
+        color = "black"
     return color
 
 

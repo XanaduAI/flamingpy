@@ -205,8 +205,13 @@ class EGraph(nx.Graph):
         _, ax = draw_EGraph(self, **kwargs)
         return ax
     
-    def draw_3DScatterPlot(self,**kwargs):
+    def draw_3D(self,**kwargs):
+        """Draw the graph state with Plotly Express.
+
+        See flamingpy.utils.viz.draw_EGraph_3DScatterPlot for more details.
+        """
         from flamingpy.utils.viz import draw_EGraph_3DScatterPlot
+        
         fig = draw_EGraph_3DScatterPlot(self,**kwargs)
         return fig
         
