@@ -93,7 +93,7 @@ IidNoise(RHG_code, p_Z).apply_noise()
 # select it:
 #
 
-decoder = {"outer": "MWPM"}
+decoder = "MWPM"
 
 
 ######################################################################

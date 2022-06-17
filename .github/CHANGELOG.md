@@ -3,7 +3,9 @@
 ### New features since the last release
 * Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
 * A new boundary option has been introduced for the `SurfaceCode`: the choice `"periodic"` refers to a code with boundaries periodic in all (x, y and z) directions, whereas codes with `"toric"` have periodic boundaries in the _x_ and _y_ axis but not the _z_ axis. [#62](https://github.com/XanaduAI/flamingpy/pull/62). (backward compatible)
-* Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)'
+* A new noise model class, `CVMacroLayer`, is introduced as a replacement to `reduce_macro_and_simulate` in `macro_reduce.py`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) (backward incompatible)
+ * The process for running macronode-related simulations is considerably improved: the user need only instantiate `CVMacroLayer` with the noise parameters of `CVLayer`.
+ * Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)'
 
 ### Bug fixes
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
@@ -22,6 +24,16 @@
 * Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 * Added automatically generated `.svg` files to gitignore. [#84](https://github.com/XanaduAI/flamingpy/pull/84)
 * Tests that required cpp libraries are skipped if they are not installed, hence avoiding failing tests from unmet dependencies. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
+* `CVLayer` has been rewritten and refactored. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+ * Lengthy functions have been broken up into more specialized methods.
+ * The class is initialized with all the noise model parameters, simplifying the signatures of the methods.
+ * An `apply_noise` method has been added to combine the procedures for noise sampling. 
+ * The state labeling functions have been rewritten to be faster and more compact.
+ * Docstrings were modified, and the public/private status of certain attributes was changed.
+ * The `final` sampling order has been removed, as it is equivalent to `initial` but slower.
+* The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+  * Functions within this module accept `code, noise, decoder` objects, as well as arguments (`code_args, noise_args, decoder_args`) separately.
+* Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
 
 ### Documentation changes
 
@@ -29,7 +41,7 @@
 * Typo fix and minor changes for README file. [#80](https://github.com/XanaduAI/flamingpy/pull/80)
 * non-Xanadu links now open in a new tab, while HTML references are listed scientific-style at the end of a file. [#82](https://github.com/XanaduAI/flamingpy/pull/82)
 * Changed the math rendering Sphinx to MathJax (before equations were rendered as png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
-
+* A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
 
 ### Contributors
 
