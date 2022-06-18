@@ -83,8 +83,7 @@ def compute_enc_state(request):
         backend=backend,
     )
     # CV (inner) code/state
-    states = {"p": nx_CVRHG.states["p"]}
-    CVRHG = CVLayer(DVRHG, delta=delta, states=states)
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap)
     # Apply noise
     CVRHG.apply_noise(default_rng(seed))
     assign_weights(DVRHG, "MWPM", **weight_options)
