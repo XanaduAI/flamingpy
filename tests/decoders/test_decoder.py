@@ -33,7 +33,7 @@ from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 from flamingpy.noise import CVLayer
 
 code_params = it.product(
-    [2, 3, 4, [2, 3, 4], rng().integers(low=2, high=5, size=(1, 3))],
+    [2, 3, 4, [2, 3, 4], [3, 4, 2]],
     ["primal", "dual"],
     ["open", "toric", "periodic"],
     [1, 0.1, 0.01],
