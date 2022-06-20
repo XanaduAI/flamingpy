@@ -19,6 +19,7 @@ import itertools as it
 
 import networkx as nx
 import numpy as np
+from numpy.random import default_rng as rng
 import pytest
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
@@ -32,7 +33,11 @@ from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 from flamingpy.noise import CVLayer
 
 code_params = it.product(
-    [2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"], [1, 0.1, 0.01], [0, 0.5, 1]
+    [2, 3, 4, [2, 3, 4], rng().integers(low=2, high=5, size=(1, 3))],
+    ["primal", "dual"],
+    ["open", "toric", "periodic"],
+    [1, 0.1, 0.01],
+    [0, 0.5, 1],
 )
 
 
