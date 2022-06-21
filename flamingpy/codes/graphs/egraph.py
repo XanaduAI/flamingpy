@@ -344,7 +344,7 @@ class EGraph(nx.Graph):
                         sols.pop()
                         break
                 # if solution found, set equivalent to True
-                if sat == True:
+                if sat:
                     # equivalence is satisfied
                     equivalent = sat
                     break
@@ -355,22 +355,21 @@ class EGraph(nx.Graph):
         if not equivalent:
             return equivalent, None
         # if solution found, return (True, clifford_output)
-        else:
-            # get clifford solution in vector form
-            sol_vec = np.array(sols[0]).astype(int)
-            # convert clifford to desired output form
-            if clifford_form == "tensor":
-                # convert solution to list of single qubit cliffords given by 2x2 numpy arrays
-                # initialize empty list
-                local_clifford_list = []
-                for i in range(n):
-                    single_qubit_clifford = np.array(
-                        [[sol_vec[i], sol_vec[i + n]], [sol_vec[i + 2 * n], sol_vec[i + 3 * n]]]
-                    )
-                    local_clifford_list.append(single_qubit_clifford)
-                clifford_output = local_clifford_list
-            if clifford_form == "global":
-                # convert solution to single global clifford given by 2nx2n numpy array
-                blocks = [np.diag([sol_vec[i + k * n] for i in range(n)]) for k in range(4)]
-                clifford_output = np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
-            return equivalent, clifford_output
+        # get clifford solution in vector form
+        sol_vec = np.array(sols[0]).astype(int)
+        # convert clifford to desired output form
+        if clifford_form == "tensor":
+            # convert solution to list of single qubit cliffords given by 2x2 numpy arrays
+            # initialize empty list
+            local_clifford_list = []
+            for i in range(n):
+                single_qubit_clifford = np.array(
+                    [[sol_vec[i], sol_vec[i + n]], [sol_vec[i + 2 * n], sol_vec[i + 3 * n]]]
+                )
+                local_clifford_list.append(single_qubit_clifford)
+            clifford_output = local_clifford_list
+        if clifford_form == "global":
+            # convert solution to single global clifford given by 2nx2n numpy array
+            blocks = [np.diag([sol_vec[i + k * n] for i in range(n)]) for k in range(4)]
+            clifford_output = np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
+        return equivalent, clifford_output
