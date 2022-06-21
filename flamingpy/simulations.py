@@ -263,7 +263,7 @@ if __name__ == "__main__":
         }
 
     else:
-        # User-specified values, if not using command line.
+        # User can specify values here, if not using command line.
         params = {
             "noise": "passive",
             "distance": 2,
