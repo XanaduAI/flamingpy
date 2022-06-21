@@ -5,10 +5,12 @@
 * A new boundary option has been introduced for the `SurfaceCode`: the choice `"periodic"` refers to a code with boundaries periodic in all (x, y and z) directions, whereas codes with `"toric"` have periodic boundaries in the _x_ and _y_ axis but not the _z_ axis. [#62](https://github.com/XanaduAI/flamingpy/pull/62). (backward compatible)
 * A new noise model class, `CVMacroLayer`, is introduced as a replacement to `reduce_macro_and_simulate` in `macro_reduce.py`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) (backward incompatible)
  * The process for running macronode-related simulations is considerably improved: the user need only instantiate `CVMacroLayer` with the noise parameters of `CVLayer`.
+ * Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)'
 
 ### Bug fixes
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 * Tutorial files are appropriately ignored in the pylint configuration file. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
+* Running `simulations.py` from with command-line args was not working because the "p_err" arg was not set. This is now fixed and one can for example successfully run: `python flamingpy/simulations.py -noise "blueprint" -distance 2 -ec "primal" -boundaries "periodic" -delta 0.1 -pswap 0 -perr 0 -trials 1000 -decoder "MWPM"`. [#93](https://github.com/XanaduAI/flamingpy/pull/93) 
 
 ### Improvements
 
@@ -32,7 +34,10 @@
  * The `final` sampling order has been removed, as it is equivalent to `initial` but slower.
 * The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
   * Functions within this module accept `code, noise, decoder` objects, as well as arguments (`code_args, noise_args, decoder_args`) separately.
-* Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
+* Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* In `simulations.py`: [#93](https://github.com/XanaduAI/flamingpy/pull/93)
+  * Directory argument `-d` was removed as it was unused. A working version can be added in the future.
+  * We have removed reporting "decoding_total_time" as a more sophisticated time profiler feature systematically timing all the script subroutines will be added soon.
 
 ### Documentation changes
 
