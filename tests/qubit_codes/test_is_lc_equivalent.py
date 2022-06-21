@@ -16,6 +16,7 @@ def get_adj_mat(graph):
     graph.adj_generator(sparse=False)
     return graph.adj_mat
 
+
 def clifford_global_to_blocks(clifford_global):
     """A convenience function to get a dictionary of A, B, C, D blocks of clifford in global form:
     [A | B]
@@ -25,28 +26,30 @@ def clifford_global_to_blocks(clifford_global):
     Returns:
         dict("A" : A, "B" : B, "C" : C, "D", D)
     """
-    n = int(np.shape(clifford_global)[0]/2)
+    n = int(np.shape(clifford_global)[0] / 2)
     A = clifford_global[0:n, 0:n]
-    B = clifford_global[0:n, n:2*n]
-    C = clifford_global[n:2*n, 0:n]
-    D = clifford_global[n:2*n, n:2*n]
-    return {"A" : A, "B" : B, "C" : C, "D" : D}
+    B = clifford_global[0:n, n : 2 * n]
+    C = clifford_global[n : 2 * n, 0:n]
+    D = clifford_global[n : 2 * n, n : 2 * n]
+    return {"A": A, "B": B, "C": C, "D": D}
+
 
 def clifford_tensors_to_blocks(clifford_tensors):
     """A convenience function to get a dictionary of A, B, C, D blocks from clifford tensor factors:
     [A | B]
-    [C | D] 
+    [C | D]
     Args:
         clifford_tensors: a list of 2x2 numpy arrays
     Returns:
         dict("A" : A, "B" : B, "C" : C, "D", D)
     """
     n = int(len(clifford_tensors))
-    A = np.diag([clifford_tensors[i][0,0] for i in range(n)])
-    B = np.diag([clifford_tensors[i][0,1] for i in range(n)])
-    C = np.diag([clifford_tensors[i][1,0] for i in range(n)])
-    D = np.diag([clifford_tensors[i][1,1] for i in range(n)])
-    return {"A" : A, "B" : B, "C" : C, "D" : D}
+    A = np.diag([clifford_tensors[i][0, 0] for i in range(n)])
+    B = np.diag([clifford_tensors[i][0, 1] for i in range(n)])
+    C = np.diag([clifford_tensors[i][1, 0] for i in range(n)])
+    D = np.diag([clifford_tensors[i][1, 1] for i in range(n)])
+    return {"A": A, "B": B, "C": C, "D": D}
+
 
 def mod2(M):
     """A convenience function that converts array elements to 0, 1 (modulo 2)
@@ -55,7 +58,8 @@ def mod2(M):
     Returns:
         numpy array with elements in 0, 1
     """
-    return np.vectorize(lambda x: x%2)(M)
+    return np.vectorize(lambda x: x % 2)(M)
+
 
 # computes matrix product and sum (modulo 2): X*Y+Z
 def XYplusZ(X, Y, Z):
@@ -67,10 +71,11 @@ def XYplusZ(X, Y, Z):
     Returns:
         X*Y+Z: numpy array
     """
-    return mod2(np.add(np.dot(X,Y), Z))
+    return mod2(np.add(np.dot(X, Y), Z))
+
 
 def distinct_tuples(min, max):
-    """"A convenience function that generates distinct tuples of integers in specified range.
+    """ "A convenience function that generates distinct tuples of integers in specified range.
     For example, can include (1,2) and (2,1) but not (2,2).
     Args:
         min (int): minimum of range
@@ -78,10 +83,11 @@ def distinct_tuples(min, max):
     Returns:
         (list): list of (int, int) tuples
     """
-    return [(a,b) for a in range(min,max) for b in range(min,max) if a != b ]
+    return [(a, b) for a in range(min, max) for b in range(min, max) if a != b]
+
 
 def tuples_of_nodes_and_modes(node_range, mode_array):
-    """"A convenience function that generates tuples of integer and string pairs.
+    """ "A convenience function that generates tuples of integer and string pairs.
     For example, can include (1, 'mystring1'),  (1, 'mystring2'), (2, 'mystring1'), (2, 'mystring2')
     Args:
         node_range ([int, int]): array of interval range
@@ -89,11 +95,11 @@ def tuples_of_nodes_and_modes(node_range, mode_array):
     Returns:
         (list): list of (int, string) tuples
     """
-    return [(nodes, modes) for nodes in range(node_range[0], node_range[1]) for modes in mode_array ]
+    return [(nodes, modes) for nodes in range(node_range[0], node_range[1]) for modes in mode_array]
 
 
 def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
-    """" A convenience function that generates triples of distinct integer pairs and a string.
+    """ " A convenience function that generates triples of distinct integer pairs and a string.
     For example, can include (1,2,'mystring1') and (1,2,'mystring2') but not (1,1, 'mystring1')
     Args:
         node_range ([int, int]): array of interval range
@@ -101,7 +107,11 @@ def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
     Returns:
         (list): list of (int, int, string) tuples
     """
-    return [nodepair + (modes,) for nodepair in distinct_tuples(node_range[0], node_range[1]) for modes in mode_array ]
+    return [
+        nodepair + (modes,)
+        for nodepair in distinct_tuples(node_range[0], node_range[1])
+        for modes in mode_array
+    ]
 
 
 # The following tests are for the method 'is_lc_equivalent()' of the EGraph class.
@@ -126,8 +136,8 @@ def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
 # TESTING METHODOLOGY:
 # When two graphs are equivalent, in order to verify the returned local clifford we perform the following algebraic check:
 # Let G1 and G2 be the adjacency matrices of the two LC equivalent graphs, and let the local clifford operation be given in block form as:
-#[A | B]
-#[C | D]
+# [A | B]
+# [C | D]
 # Then the following matrix block equation must hold True:
 # G2*(C*G1+D) == (A*G1+B)
 class TestLCEquivalent:
@@ -135,8 +145,10 @@ class TestLCEquivalent:
 
     # SKIPPED TEST
     # Runs 2 tests
-    @pytest.mark.skip(reason="Current implementation assumes that equivalence with empty graph is False instead of raising a ValueError, so this test is irrelevant.")
-    @pytest.mark.parametrize("mode", ['global', 'tensor'])
+    @pytest.mark.skip(
+        reason="Current implementation assumes that equivalence with empty graph is False instead of raising a ValueError, so this test is irrelevant."
+    )
+    @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_emptygraph_with_emptygraph_assume_valueerror(self, mode):
         """Test if emptygraph equivalence raises a ValueError"""
         # Assert:
@@ -149,7 +161,7 @@ class TestLCEquivalent:
 
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 2 tests
-    @pytest.mark.parametrize("mode", ['global', 'tensor'])
+    @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_emptygraph_with_emptygraph_assume_notequivalent(self, mode):
         """Test if emptygraph equivalence returns (False, None)"""
         # ARRANGE:
@@ -163,7 +175,7 @@ class TestLCEquivalent:
 
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 2 tests
-    @pytest.mark.parametrize("mode", ['global', 'tensor'])
+    @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_pathgraph3_with_completegraph3_equivalent(self, mode):
         """Test True equivalence between path graph --> complete graph defined on 3 nodes."""
         # ARRANGE:
@@ -185,12 +197,12 @@ class TestLCEquivalent:
         equiv, clifford = pathgraph3.is_lc_equivalent(completegraph3, clifford_form=mode)
         # ASSERT:
         # get blocks of clifford depending on the form of output clifford
-        if mode == 'global':
+        if mode == "global":
             blocks = clifford_global_to_blocks(clifford)
-        if mode == 'tensor':
+        if mode == "tensor":
             blocks = clifford_tensors_to_blocks(clifford)
         # compute right-hand-side: (A*adj1 + B)
-        rhs = XYplusZ(blocks["A"], adj1, blocks["B"] )
+        rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
         assert equiv == True
@@ -198,7 +210,7 @@ class TestLCEquivalent:
 
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 2 tests
-    @pytest.mark.parametrize("mode", ['global', 'tensor'])
+    @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_completegraph3_with_pathgraph3_equivalent(self, mode):
         """Test True equivalence between complete graph --> path graph defined on 3 nodes."""
         # ARRANGE:
@@ -220,12 +232,12 @@ class TestLCEquivalent:
         equiv, clifford = completegraph3.is_lc_equivalent(pathgraph3, clifford_form=mode)
         # ASSERT:
         # get blocks of clifford depending on the form of output clifford
-        if mode == 'global':
+        if mode == "global":
             blocks = clifford_global_to_blocks(clifford)
-        if mode == 'tensor':
+        if mode == "tensor":
             blocks = clifford_tensors_to_blocks(clifford)
         # compute right-hand-side: (A*adj1 + B)
-        rhs = XYplusZ(blocks["A"], adj1, blocks["B"] )
+        rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
         assert equiv == True
@@ -234,7 +246,7 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1,5], ['global', 'tensor']))
+    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_completegraph_with_stargraph_equivalent(self, nodes, mode):
         """Test True equivalence between complete graph --> star graph defined on same number of nodes."""
         # ARRANGE:
@@ -250,25 +262,25 @@ class TestLCEquivalent:
         equiv, clifford = graph1.is_lc_equivalent(graph2, clifford_form=mode)
         # ASSERT:
         # get blocks of clifford depending on the form of output clifford
-        if mode == 'global':
+        if mode == "global":
             blocks = clifford_global_to_blocks(clifford)
-        if mode == 'tensor':
+        if mode == "tensor":
             blocks = clifford_tensors_to_blocks(clifford)
         # compute right-hand-side: (A*adj1 + B)
-        rhs = XYplusZ(blocks["A"], adj1, blocks["B"] )
+        rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
         assert equiv == True
-        assert np.array_equal(lhs,rhs)
+        assert np.array_equal(lhs, rhs)
 
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1,5], ['global', 'tensor']))
+    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_stargraph_with_completegraph_equivalent(self, nodes, mode):
         """Test True equivalence between star graph --> complete graph defined on same number of nodes."""
         # ARRANGE:
-        #interchange graph1 and graph2 compared to dual test
+        # interchange graph1 and graph2 compared to dual test
         # define complete graph
         graph2 = graph_states.complete_graph(nodes)
         # define star graph
@@ -281,21 +293,23 @@ class TestLCEquivalent:
         equiv, clifford = graph1.is_lc_equivalent(graph2, clifford_form=mode)
         # ASSERT:
         # get blocks of clifford depending on the form of output clifford
-        if mode == 'global':
+        if mode == "global":
             blocks = clifford_global_to_blocks(clifford)
-        if mode == 'tensor':
+        if mode == "tensor":
             blocks = clifford_tensors_to_blocks(clifford)
         # compute right-hand-side: (A*adj1 + B)
-        rhs = XYplusZ(blocks["A"], adj1, blocks["B"] )
+        rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
         assert equiv == True
-        assert np.array_equal(lhs,rhs)
+        assert np.array_equal(lhs, rhs)
 
     # Tests graphs on different number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 24 tests
-    @pytest.mark.parametrize("nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1,5], ['global', 'tensor']))
+    @pytest.mark.parametrize(
+        "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
+    )
     def test_completeraph_with_stargraph_notequivalent(self, nodes1, nodes2, mode):
         """Test False equivalence between complete graph --> star graph defined on different number of nodes."""
         # ARRANGE:
@@ -313,11 +327,13 @@ class TestLCEquivalent:
     # Tests graphs on different number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 24 tests
-    @pytest.mark.parametrize("nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1,5], ['global', 'tensor']))
+    @pytest.mark.parametrize(
+        "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
+    )
     def test_stargraph_with_completegraph_notequivalent(self, nodes1, nodes2, mode):
         """Test False equivalence between star graph --> complete graph defined on different number of nodes."""
         # ARRANGE:
-        #interchange graph1 and graph2 compared to dual test
+        # interchange graph1 and graph2 compared to dual test
         # define complete graph
         graph2 = graph_states.complete_graph(nodes1)
         # define star graph
@@ -328,5 +344,3 @@ class TestLCEquivalent:
         # ASSERT:
         assert equiv == False
         assert clifford == None
-
-    
