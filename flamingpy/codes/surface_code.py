@@ -159,9 +159,9 @@ def RHG_graph(
     # Checking input
     if not isinstance(dims, (int, tuple, list, np.ndarray)):
         raise TypeError("dims must be an integer or a sequence of three integers.")
-    elif isinstance(dims, (tuple, list, np.ndarray)) and np.size(dims) != 3:
+    if isinstance(dims, (tuple, list, np.ndarray)) and np.size(dims) != 3:
         raise ValueError("dims must be an integer or a sequence of three integers.")
-    elif np.issubdtype(type(dims), np.integer):
+    if np.issubdtype(type(dims), np.integer):
         dims = (dims,) * 3
 
     # Dealing with boundaries.

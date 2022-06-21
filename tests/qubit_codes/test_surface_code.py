@@ -481,7 +481,7 @@ class TestRectangularSurfaceCode:
         """Check the proper initialization of SurfaceCode."""
         # obtaining a rectangular surface code
         rect_sc, param = rectangular_surface_code
-        distance, ec, boundaries = param
+        distance, ec, _ = param
 
         # assert that the surface code is initialized correctly
         assert len(rect_sc.dims) == 3, "Dimensionality of the surface code is not 3 but {}".format(
@@ -512,7 +512,7 @@ class TestRectangularSurfaceCode:
 
     def test_rectangular_stabilizers(self, rectangular_surface_code):
         """Check whether all stabilizers were generated as expected."""
-        rect_sc, param = rectangular_surface_code
+        rect_sc, _ = rectangular_surface_code
 
         for ec in rect_sc.ec:
             dx, dy, dz = rect_sc.dims

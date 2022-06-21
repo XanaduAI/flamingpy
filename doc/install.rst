@@ -38,11 +38,11 @@ Installation
             <p class="lead grey-text w-responsive mx-auto mb-6">
                 If you currently do not have Python 3 installed, we recommend
                 <a href="https://www.anaconda.com/download/">Anaconda for Python 3</a>,
-                a distributed version of Python packaged for scientific computation. 
+                a distributed version of Python packaged for scientific computation.
             </p>
             <p class="lead grey-text w-responsive mx-auto mb-6">
                 Upon activating a Python environment, run one of the following
-                in your choice of CLI: 
+                in your choice of CLI:
             </p>
         </div>
 
@@ -57,7 +57,7 @@ Installation
 
         <!-- Tab panels -->
         <div class="tab-content pt-0" id="tab-version">
-            
+
             <div class="tab-pane in show active" id="stable" role="tabpanel">
                 <pre>
                     <code class="bash">
@@ -73,7 +73,7 @@ Installation
     # Download and install the latest source code from GitHub for developers.
     git clone https://github.com/XanaduAI/flamingpy.git
     cd flamingpy
-    python -m pip install -r dev-requirements.txt
+    python -m pip install -r dev_requirements.txt
     # Choose one or some of the following:
     python setup.py develop # Only install Python libraries.
     python setup.py build_cython --inplace # Compile Cython-based backends.

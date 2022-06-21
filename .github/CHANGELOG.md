@@ -25,14 +25,14 @@
 * Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 * Added automatically generated `.svg` files to gitignore. [#84](https://github.com/XanaduAI/flamingpy/pull/84)
 * Tests that required cpp libraries are skipped if they are not installed, hence avoiding failing tests from unmet dependencies. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
-* `CVLayer` has been rewritten and refactored. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* `CVLayer` has been rewritten and refactored. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
  * Lengthy functions have been broken up into more specialized methods.
  * The class is initialized with all the noise model parameters, simplifying the signatures of the methods.
- * An `apply_noise` method has been added to combine the procedures for noise sampling. 
+ * An `apply_noise` method has been added to combine the procedures for noise sampling.
  * The state labeling functions have been rewritten to be faster and more compact.
  * Docstrings were modified, and the public/private status of certain attributes was changed.
  * The `final` sampling order has been removed, as it is equivalent to `initial` but slower.
-* The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
   * Functions within this module accept `code, noise, decoder` objects, as well as arguments (`code_args, noise_args, decoder_args`) separately.
 * Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
 * In `simulations.py`: [#93](https://github.com/XanaduAI/flamingpy/pull/93)
@@ -45,7 +45,8 @@
 * Typo fix and minor changes for README file. [#80](https://github.com/XanaduAI/flamingpy/pull/80)
 * non-Xanadu links now open in a new tab, while HTML references are listed scientific-style at the end of a file. [#82](https://github.com/XanaduAI/flamingpy/pull/82)
 * Changed the math rendering Sphinx to MathJax (before equations were rendered as png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
-* A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
+* A typo in the installation section has been fixed. [#94](https://github.com/XanaduAI/flamingpy/pull/94)
 
 ### Contributors
 
