@@ -15,7 +15,9 @@
 
 # pylint: disable=too-many-statements
 
+from datetime import datetime
 import itertools as it
+import logging
 
 import networkx as nx
 from networkx import fast_gnp_random_graph
@@ -27,6 +29,9 @@ import pytest
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity
 
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 # All possible boundary combinations.
 all_bound_combs = it.product(["primal", "dual", "periodic"], repeat=3)
@@ -253,9 +258,9 @@ class TestRHGGraph:
         for boundaries in ["primal", "dual", "periodic", "open_primal", "open_dual"]:
             RHG_lattice = RHG_graph(d, boundaries)
             assert len(RHG_lattice)
-        # The following test requires a modification to RHG_graph_old,
-        # since the new method creates a lattice with a different shape.
-        # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
+            # The following test requires a modification to RHG_graph_old,
+            # since the new method creates a lattice with a different shape.
+            # assert not set(RHG_lattice_finite.edges) - set(RHG_graph_old(d, "finite").edges)
 
     def test_periodic_boundaries(self, d):
         """Test whether periodic boundary conditions on every direction produce
@@ -406,9 +411,7 @@ class TestSurfaceCode:
             # Check that there are a correct number of stabilizer elements
             # depending on the boundary conditions.
             if surface_code.bound_str.startswith("open"):
-                if len(surface_code.ec) == 2 and ec == "dual":
-                    assert len(cubes) == (d - 1) ** 2 * d
-                else:
+                if ec in ("primal", "dual"):
                     assert len(cubes) == d**2 * (d - 1)
             elif surface_code.bound_str == "periodic":
                 assert len(cubes) == d**3
@@ -454,6 +457,87 @@ class TestSurfaceCode:
                     assert len(bound_points) == 2 * d**2
             elif surface_code.bound_str in ("toric", "periodic"):
                 assert not bound_points
+
+
+rectanguloid_code_params = it.product(
+    rng(int_time).integers(low=2, high=9, size=(8, 3)),
+    ["primal", "dual"],
+    ["open", "toric", "periodic"],
+)
+
+
+@pytest.fixture(scope="module", params=rectanguloid_code_params)
+def rectangular_surface_code(request):
+    """A function to define a rectangular surface code for use in this
+    module."""
+    distance, ec, boundaries = request.param
+    return SurfaceCode(distance, ec, boundaries), request.param
+
+
+class TestRectangularSurfaceCode:
+    """Test the SurfaceCode class for non-cubic lattices."""
+
+    def test_init_rectangular(self, rectangular_surface_code):
+        """Check the proper initialization of SurfaceCode."""
+        # obtaining a rectangular surface code
+        rect_sc, param = rectangular_surface_code
+        distance, ec, boundaries = param
+
+        # assert that the surface code is initialized correctly
+        assert len(rect_sc.dims) == 3, "Dimensionality of the surface code is not 3 but {}".format(
+            len(rect_sc.dims)
+        )
+        for i, x in enumerate(rect_sc.dims):
+            assert isinstance(
+                x, (int, np.integer)
+            ), "Entry {} of distance {} is not an integer but {}".format(i, rect_sc.dims, type(x))
+            assert x == distance[i], "Entry {} of distance {} is not intended distance {}".format(
+                i, rect_sc.dims, distance[i]
+            )
+        assert rect_sc.ec
+        assert rect_sc.bound_str
+        assert list(rect_sc.boundaries)
+        for ec in rect_sc.ec:
+            attributes = [
+                "stabilizers",
+                "syndrome_inds",
+                "syndrome_coords",
+                "bound_points",
+                "stab_graph",
+            ]
+            for att in attributes:
+                getattr(rect_sc, ec + "_" + att)
+            for att in ["all_syndrome_inds", "all_syndrome_coords"]:
+                getattr(rect_sc, att)
+
+    def test_rectangular_stabilizers(self, rectangular_surface_code):
+        """Check whether all stabilizers were generated as expected."""
+        rect_sc, param = rectangular_surface_code
+
+        for ec in rect_sc.ec:
+            dx, dy, dz = rect_sc.dims
+            cubes = getattr(rect_sc, ec + "_stabilizers")
+            # Check that there are a correct number of stabilizer elements
+            # depending on the boundary conditions.
+            if rect_sc.bound_str.startswith("open"):
+                if ec == "dual":
+                    assert (
+                        len(cubes) == dx * (dy - 1) * dz
+                    ), "Wrong number of dual stabilizers when boundaries open (ec 'dual')"
+                elif ec == "primal":
+                    assert (
+                        len(cubes) == (dx - 1) * dy * dz
+                    ), "Wrong number of primal stabilizers when boundaries open (ec 'primal')"
+            elif rect_sc.bound_str == "periodic":
+                assert len(cubes) == dx * dy * dz, "Wrong number of cubes for periodic boundaries."
+            # Check that each stabilizer has 6 corresponing physical
+            # vertices, even if it's an n-body stabilizer with n < 6.
+            for cube in cubes:
+                assert len(cube.physical) == 6
+                # For periodic boundaries, check that there are
+                # only 6-body stabilizers.
+                if rect_sc.bound_str == "periodic":
+                    assert len(cube.egraph) == 6
 
 
 class TestStabilizer:
