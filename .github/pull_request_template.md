@@ -5,10 +5,10 @@
 - **New features**:
     * <  text goes here >
     * <  text goes here >
-- **Bug fixes**: 
+- **Bug fixes**:
     * <  text goes here >
     * <  text goes here >
-- **Improvements**: 
+- **Improvements**:
     * <  text goes here >
     * <  text goes here >
 - **Documentation changes**:
@@ -50,7 +50,7 @@
 
 ## Checklist and integration statements
 
-- [ ] My Python and C++ codes follow this project's coding and commenting styles as indicated by existing files. Precisely, the changes conform to given `black`, `docformatter` and `pylint` configurations. 
+- [ ] My Python and C++ codes follow this project's coding and commenting styles as indicated by existing files. Precisely, the changes conform to given `black`, `docformatter` and `pylint` configurations.
 - [ ] I have performed a self-review of these changes, checked my code (including for [codefactor](https://www.codefactor.io/repository/github/xanaduai/flamingpy/branches) compliance), and corrected misspellings to the best of my capacity. I have synced this branch with others as required.
 - [ ] I have added context for corresponding changes in documentation and [`README.md`](README.md) as needed.
 - [ ] I have added new workflow CI tests for corresponding changes, ensuring codecoverage is 95% or better, and these pass locally for me.

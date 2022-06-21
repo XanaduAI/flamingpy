@@ -19,7 +19,6 @@ import string
 
 import networkx as nx
 import numpy as np
-import numpy.random as rand
 import pytest
 
 from flamingpy.codes.graphs import EGraph
@@ -57,7 +56,7 @@ class TestEGraph:
     def test_index(self, random_graph):
         """Tests a graph with nodes from a shuffled alphabet."""
         alph = list(string.ascii_lowercase)
-        rand.shuffle(alph)
+        np.random.shuffle(alph)
         reduced_alph = alph[:N]
         label_dict = dict(zip(range(N), reduced_alph))
         H = nx.relabel_nodes(random_graph[0], label_dict)
