@@ -124,9 +124,9 @@ def RHG_graph(
     the surface code, with specified dimensions and boundary types.
 
     Args:
-        dims (int or 3-tuple): the dimensions of the lattice. If int,
+        dims (int or Sequence[int]): the dimensions of the lattice. If int,
             generates a cube corresponding to a code of distance dims.
-            If a three-tuple (dx, dy, dz), assumes distances
+            If a sequence (dx, dy, dz), assumes distances
             dx, dy, dz in x, y, z directions, respectively. For
             axes with open boundaries, the corresponding distance
             should be greater than 1.
@@ -158,18 +158,11 @@ def RHG_graph(
     """
     # Checking input
     if not isinstance(dims, (int, tuple, list, np.ndarray)):
-        raise TypeError("dims must be int or 3-tuple.")
-    if isinstance(dims, (tuple, list, np.ndarray)):
-        if np.size(dims) == 1:
-            dims = dims[0]
-        elif np.size(dims) != 3:
-            raise ValueError("dims must be an integer or a list-type containing 3 integers.")
-
-    # Create an EGraph with the graph attribute 'dims' (used for
-    # plotting purposes.
-    if np.size(dims) == 1:
-        dims = (dims, dims, dims)
-    G = EGraph()
+        raise TypeError("dims must be an integer or a sequence of three integers.")
+    elif isinstance(dims, (tuple, list, np.ndarray)) and np.size(dims) != 3:
+        raise ValueError("dims must be an integer or a sequence of three integers.")
+    elif np.issubdtype(type(dims), np.integer):
+        dims = (dims,) * 3
 
     # Dealing with boundaries.
     if isinstance(boundaries, str):
@@ -198,6 +191,8 @@ def RHG_graph(
     # Tuple indices corresponding to dual and periodic boundaries.
     dual_inds = set((boundaries == "dual").nonzero()[0])
     periodic_inds = set((boundaries == "periodic").nonzero()[0])
+
+    G = EGraph()
     for vertex in denested_six_bodies:
         where_vertex_0, where_vertex_max = set(), set()
         # Ensure no vertices are included if they extend beyond
@@ -260,9 +255,9 @@ class SurfaceCode:
     vertices.
 
     Attributes:
-        distance (int or 3-tuple): the code distance of the lattice. If int,
-            generates a cube corresponding to a code of distance dims. If a
-            three-tuple (dx, dy, dz), assumes distances dx, dy, dz in x, y,
+        distance (int or Sequence[int]): the code distance of the lattice. If
+            int, generates a cube corresponding to a code of distance dims. If a
+            sequence (dx, dy, dz), assumes distances dx, dy, dz in x, y,
             z directions, respectively.
         dims (tup): a tuple of the spatial extent in x, y, z.
         ec (str): the error complex ('primal' or 'dual').
@@ -320,8 +315,8 @@ class SurfaceCode:
         backend="retworkx",
     ):
         self.distance = distance
-        if np.size(distance) == 1:
-            self.dims = (distance, distance, distance)
+        if np.issubdtype(type(distance), np.integer):
+            self.dims = (distance,) * 3
         elif np.size(distance) == 3:
             self.dims = tuple(distance)
 
