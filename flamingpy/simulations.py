@@ -58,14 +58,9 @@ def ec_mc_trial(
     the given code."""
     noise_instance.apply_noise(rng)
 
-    decoding_start_time = perf_counter()
-
     result = correct(code=code_instance, decoder=decoder, weight_options=weight_options)
 
-    decoding_stop_time = perf_counter()
-    decoding_time = decoding_stop_time - decoding_start_time
-
-    return result, decoding_time
+    return result
 
 
 def ec_monte_carlo(
@@ -93,14 +88,10 @@ def ec_monte_carlo(
             (CVLayer, CVMacroLayer, or IidNoise)
         decoder (str): the decoding algorithm ("MWPM" or "UF")
         deocder_args (dict): arguments for the decoder (such as weight options)
-        return_decoding_time (bool, optional): when True, returns the total decoding time
         world_comm, mpi_rank, mpi_size: arguments for the MPI library.
 
     Returns:
-        tuple:
-            errors (integer): the number of errors.
-            prep_time_total (float): the total time in seconds taken by the state prep steps.
-                (This parameter is returned only if return_decoding_time is set to True.)
+        errors (integer): the number of errors.
     """
     weight_opts = decoder_args["weight_opts"]
 
@@ -109,20 +100,15 @@ def ec_monte_carlo(
 
     rng = np.random.default_rng(mpi_rank + int_time)
 
-    if return_decoding_time:
-        decoding_time_total = 0
-
     for i in range(trials):
         if i % mpi_size == mpi_rank:
-            result, decoding_time = ec_mc_trial(
+            result = ec_mc_trial(
                 code_instance,
                 noise_instance,
                 decoder,
                 weight_opts,
                 rng,
             )
-            if return_decoding_time:
-                decoding_time_total += decoding_time
             local_successes[0] += result
 
     if "MPI" in globals():
@@ -131,9 +117,6 @@ def ec_monte_carlo(
         successes[0] = local_successes[0]
 
     errors = int(trials - successes[0])
-
-    if return_decoding_time:
-        return errors, decoding_time_total
 
     return errors
 
@@ -189,13 +172,12 @@ def run_ec_simulation(
 
     # Perform and time the simulation
     simulation_start_time = perf_counter()
-    errors, decoding_time_total = ec_monte_carlo(
+    errors = ec_monte_carlo(
         trials,
         code_instance,
         noise_instance,
         decoder,
         decoder_args,
-        True,
         world_comm,
         mpi_rank,
         mpi_size,
@@ -224,7 +206,6 @@ def run_ec_simulation(
                     "errors",
                     "trials",
                     "current_time",
-                    "decoding_time",
                     "simulation_time",
                     "mpi_size",
                 ]
@@ -247,7 +228,6 @@ def run_ec_simulation(
                 errors,
                 trials,
                 current_time,
-                decoding_time_total,
                 (simulation_stop_time - simulation_start_time),
                 mpi_size,
             ]
@@ -265,11 +245,9 @@ if __name__ == "__main__":
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
         parser.add_argument("-pswap", type=float)
+        parser.add_argument("-perr", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
-        parser.add_argument(
-            "-dir", type=str, help="The directory where the result file should be stored"
-        )
 
         args = parser.parse_args()
         params = {
@@ -279,6 +257,7 @@ if __name__ == "__main__":
             "boundaries": args.boundaries,
             "delta": args.delta,
             "p_swap": args.pswap,
+            "p_err": args.perr,
             "trials": args.trials,
             "decoder": args.decoder,
         }
@@ -292,7 +271,7 @@ if __name__ == "__main__":
             "boundaries": "open",
             "delta": 0.09,
             "p_swap": 0.25,
-            "p_err": 0.1,
+            "p_err": 0,
             "trials": 100,
             "decoder": "MWPM",
         }
