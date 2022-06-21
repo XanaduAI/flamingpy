@@ -58,18 +58,3 @@ def test_surface_code_example(boundaries):
     err = "primal"
     polarity = None
     illustrate_surface_code(d, boundaries, err, polarity, show=False)
-
-
-def test_lemon_benchmark():
-    """Simple test for the lemon module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import lemon
-
-
-def test_matching_benchmark():
-    """Simple test for the matching module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import matching
-
-
-def test_shortest_path_benchmark():
-    """Simple test for the shortest_path module in flamingpy.benchmarks."""
-    from flamingpy.benchmarks import shortest_path

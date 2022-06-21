@@ -15,7 +15,7 @@
 import matplotlib.pyplot as plt
 
 from flamingpy.codes.graphs import EGraph
-from flamingpy.cv.ops import CVLayer
+from flamingpy.noise import CVLayer
 
 show = __name__ == "__main__"
 
@@ -34,10 +34,9 @@ else:
 bell_state.adj_generator(sparse=False)
 print("Adjacency matrix: \n", bell_state.adj_mat, "\n")
 
-CVbell = CVLayer(bell_state, p_swap=0.5)
+CVbell = CVLayer(bell_state, delta=1, p_swap=0.5)
 # Noise model for CVLayer
-model = {"noise": "grn", "delta": 1, "sampling_order": "initial"}
-CVbell.apply_noise(model)
+CVbell.populate_states()
 CVbell.measure_hom("p", [0])
 CVbell.measure_hom("q", [1])
 
@@ -55,7 +54,7 @@ else:
 print("\nNodes :", bell_state.nodes.data())
 print("Edges :", bell_state.edges.data(), "\n")
 print("p indices: ", CVbell.p_inds)
-print("GKP indices: ", CVbell.GKP_inds)
+print("GKP indices: ", CVbell.gkp_inds)
 print("\nSymplectic CZ matrix: ", CVbell.SCZ(), "\n")
 
 CVbell.draw_SCZ(show=show, title="Symplectic CZ matrix")
