@@ -170,8 +170,8 @@ class TestLCEquivalent:
         # ACT:
         equiv, clifford = emptygraph.is_lc_equivalent(emptygraph, clifford_form=mode)
         # ASSERT:
-        assert equiv == False
-        assert clifford == None
+        assert equiv is False
+        assert clifford is None
 
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 2 tests
@@ -205,7 +205,7 @@ class TestLCEquivalent:
         rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
-        assert equiv == True
+        assert equiv is True
         assert np.array_equal(lhs, rhs)
 
     # Tests both output clifford_form modes: 'global' and 'tensor'
@@ -240,7 +240,7 @@ class TestLCEquivalent:
         rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
-        assert equiv == True
+        assert equiv is True
         assert np.array_equal(lhs, rhs)
 
     # Tests graphs on same number of nodes in range(1,5)
@@ -270,7 +270,7 @@ class TestLCEquivalent:
         rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
-        assert equiv == True
+        assert equiv is True
         assert np.array_equal(lhs, rhs)
 
     # Tests graphs on same number of nodes in range(1,5)
@@ -301,7 +301,7 @@ class TestLCEquivalent:
         rhs = XYplusZ(blocks["A"], adj1, blocks["B"])
         # compute left-hand-side: adj2*(C*adj1 + D)
         lhs = mod2(np.dot(adj2, XYplusZ(blocks["C"], adj1, blocks["D"])))
-        assert equiv == True
+        assert equiv is True
         assert np.array_equal(lhs, rhs)
 
     # Tests graphs on different number of nodes in range(1,5)
@@ -321,8 +321,8 @@ class TestLCEquivalent:
         # check equivalence complete graph --> star graph
         equiv, clifford = graph1.is_lc_equivalent(graph2, clifford_form=mode)
         # ASSERT:
-        assert equiv == False
-        assert clifford == None
+        assert equiv is False
+        assert clifford is None
 
     # Tests graphs on different number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
@@ -342,5 +342,5 @@ class TestLCEquivalent:
         # check equivalence star graph --> complete graph
         equiv, clifford = graph1.is_lc_equivalent(graph2, clifford_form=mode)
         # ASSERT:
-        assert equiv == False
-        assert clifford == None
+        assert equiv is False
+        assert clifford is None
