@@ -20,10 +20,10 @@ import logging
 import warnings
 
 import itertools as it
+import re
 
 from numpy.random import default_rng as rng
 import pytest
-import re
 
 try:
     from mpi4py import MPI
