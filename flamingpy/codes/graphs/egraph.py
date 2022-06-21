@@ -215,8 +215,8 @@ class EGraph(nx.Graph):
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
 
-    def is_lc_equivalent(self, graph2, clifford_form = 'tensor'):
-        """ Checks if two EGraph objects are LC equivalent by finding a local clifford operation on n qubits, where n is the number of nodes of the graphs.
+    def is_lc_equivalent(self, graph2, clifford_form="tensor"):
+        """Checks if two EGraph objects are LC equivalent by finding a local clifford operation on n qubits, where n is the number of nodes of the graphs.
         Args:
             graph2: An EGraph object to test equivalence with
             clifford_form: A string describing the output form of Local Clifford operation when it exists. Default string is 'tensor' which returns a list of length n of 2x2 numpy arrays corresponding to single qubit tensor factors. 'global' returns a single 2nx2n numpy array corresponding to the global operator acting on all n qubits.
@@ -233,20 +233,22 @@ class EGraph(nx.Graph):
         #
         # adjacency matrices of input graphs must have type 'np.ndarray'
         if not isinstance(G, np.ndarray) or not isinstance(H, np.ndarray):
-            raise ValueError("Input EGraphs must have their 'adj_mat' property as type 'numpy.ndarray'.")
+            raise ValueError(
+                "Input EGraphs must have their 'adj_mat' property as type 'numpy.ndarray'."
+            )
         # demand input graphs must have nonzero number of nodes.
         # check adjacency matrices for same non-empty square shape
-        if np.shape(G) == (0,0) or np.shape(H) == (0,0):
-            #raise ValueError('Input Graphs must be non-empty')
+        if np.shape(G) == (0, 0) or np.shape(H) == (0, 0):
+            # raise ValueError('Input Graphs must be non-empty')
             # Mark this case as not equivalent
             return False, None
         if np.shape(G) != np.shape(H):
-            #raise ValueError('Input Graphs must have same number of nodes.')
+            # raise ValueError('Input Graphs must have same number of nodes.')
             # Mark this case as not equivalent
             return False, None
         # adjacency matrices must be square
         if np.shape(G)[0] != np.shape(G)[1]:
-            raise ValueError('Input matrices must be square.')
+            raise ValueError("Input matrices must be square.")
 
         # Construct a binary system of equations that two graph adjacency matrices G and H must satisfy.
         # G and H are nxn adjacency matrices defined for n qubit graph states with n nodes.
@@ -260,43 +262,43 @@ class EGraph(nx.Graph):
             # A block
             A = np.diag(G[j])
             # B block
-            B = np.zeros((n,n))
-            B[j,j] = 1
+            B = np.zeros((n, n))
+            B[j, j] = 1
             # C block
-            C = np.array([ [G[i,j]*H[i,k] for i in range(n)] for k in range(n)], dtype=int)
+            C = np.array([[G[i, j] * H[i, k] for i in range(n)] for k in range(n)], dtype=int)
             # D block
-            D = np.zeros((n,n), dtype=int)
+            D = np.zeros((n, n), dtype=int)
             for k in range(n):
-                D[k,j] = H[j,k]
+                D[k, j] = H[j, k]
             # add row block to M
             M.append([A, B, C, D])
         # define numpy block matrix for system of constraints
-        system_constraints =  np.block(M).astype(int)
+        system_constraints = np.block(M).astype(int)
 
         # Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of columns given by max_cols.
         def RREform_mod2(M, max_cols=None):
             # number of columns to apply row reduction
-            max_cols = M.shape[1] if max_cols is None else max_cols    
+            max_cols = M.shape[1] if max_cols is None else max_cols
             # row reduced matrix
-            R = M.copy() 
+            R = M.copy()
             # pivot index
-            p = 0  
-            #perform row reduction
+            p = 0
+            # perform row reduction
             for j in range(max_cols):
                 # look for pivot column `j` at or below row `p`
-                index = np.nonzero(R[p:,j])[0]
+                index = np.nonzero(R[p:, j])[0]
                 if index.size == 0:
                     continue
                 # pivot row
-                i = p + index[0]  
+                i = p + index[0]
                 # interchange `p` and `i`
-                R[[p,i],:] = R[[i,p],:]
+                R[[p, i], :] = R[[i, p], :]
                 # set pivot to 1
-                R[p,:] = R[p,:]/R[p,j]
+                R[p, :] = R[p, :] / R[p, j]
                 # add zeros above and below the pivot
-                index = np.nonzero(R[:,j])[0].tolist()
+                index = np.nonzero(R[:, j])[0].tolist()
                 index.remove(p)
-                R[index,:] = (R[index,:] - np.multiply.outer(R[index,j], R[p,:]))%2
+                R[index, :] = (R[index, :] - np.multiply.outer(R[index, j], R[p, :])) % 2
                 # increment pivot index until final row is reached
                 p += 1
                 if p == R.shape[0]:
@@ -312,7 +314,7 @@ class EGraph(nx.Graph):
         A = np.concatenate((system_constraints_transposed, np.eye(m_rows, dtype=int)), axis=-1)
         # row reduce left M block of augmented matrix
         R, p = RREform_mod2(A, max_cols=n_cols)
-        N = R[p:,n_cols:]
+        N = R[p:, n_cols:]
         nullspace_basis, _ = RREform_mod2(N)
 
         # search through sums of pairs of basis vectors of the null space, and check if any satisfy the determinant constraints
@@ -329,12 +331,12 @@ class EGraph(nx.Graph):
                 # boolean for checking solution constraints
                 sat = True
                 # potential solution as sum (modulo 2) of basis pair
-                sol = np.vectorize(lambda x: x%2)(np.add(nullspace_basis[i] , nullspace_basis[j]))
+                sol = np.vectorize(lambda x: x % 2)(np.add(nullspace_basis[i], nullspace_basis[j]))
                 # store potential solution
                 sols.append(sol)
                 for k in range(n):
                     # check the determinants (modulo 2)
-                    det = (sol[k]*sol[k+3*n] + sol[k+n]*sol[k+2*n])%2
+                    det = (sol[k] * sol[k + 3 * n] + sol[k + n] * sol[k + 2 * n]) % 2
                     if det != 1:
                         # constraints not satisfied
                         sat = False
@@ -356,17 +358,19 @@ class EGraph(nx.Graph):
         else:
             # get clifford solution in vector form
             sol_vec = np.array(sols[0]).astype(int)
-            #convert clifford to desired output form
-            if clifford_form == 'tensor':
+            # convert clifford to desired output form
+            if clifford_form == "tensor":
                 # convert solution to list of single qubit cliffords given by 2x2 numpy arrays
                 # initialize empty list
                 local_clifford_list = []
                 for i in range(n):
-                    single_qubit_clifford = np.array([[sol_vec[i], sol_vec[i + n]], [sol_vec[i+2*n], sol_vec[i + 3*n]]])
+                    single_qubit_clifford = np.array(
+                        [[sol_vec[i], sol_vec[i + n]], [sol_vec[i + 2 * n], sol_vec[i + 3 * n]]]
+                    )
                     local_clifford_list.append(single_qubit_clifford)
-                clifford_output = local_clifford_list 
-            if clifford_form == 'global':
+                clifford_output = local_clifford_list
+            if clifford_form == "global":
                 # convert solution to single global clifford given by 2nx2n numpy array
-                blocks = [ np.diag([ sol_vec[i+k*n] for i in range(n) ]) for k in range(4)]
+                blocks = [np.diag([sol_vec[i + k * n] for i in range(n)]) for k in range(4)]
                 clifford_output = np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
             return equivalent, clifford_output
