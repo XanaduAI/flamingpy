@@ -413,9 +413,6 @@ class TestSurfaceCode:
             if surface_code.bound_str.startswith("open"):
                 if ec in ("primal", "dual"):
                     assert len(cubes) == d**2 * (d - 1)
-                else:
-                    raise ValueError("Unknown ec {}".format(ec))
-
             elif surface_code.bound_str == "periodic":
                 assert len(cubes) == d**3
             # Check that each stabilizer has 6 corresponing physical
@@ -531,10 +528,8 @@ class TestRectangularSurfaceCode:
                     assert (
                         len(cubes) == (dx - 1) * dy * dz
                     ), "Wrong number of primal stabilizers when boundaries open (ec 'primal')"
-                else:
-                    raise ValueError("Unknown ec {}".format(ec))
             elif rect_sc.bound_str == "periodic":
-                assert len(cubes) == dx * dy * dz, "Wrong number of cubes for periodic"
+                assert len(cubes) == dx * dy * dz, "Wrong number of cubes for periodic boundaries."
             # Check that each stabilizer has 6 corresponing physical
             # vertices, even if it's an n-body stabilizer with n < 6.
             for cube in cubes:
