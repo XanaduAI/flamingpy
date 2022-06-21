@@ -15,7 +15,9 @@
 
 # pylint: disable=no-member,protected-access
 
+from datetime import datetime
 import itertools as it
+import logging
 
 import networkx as nx
 import numpy as np
@@ -32,8 +34,12 @@ from flamingpy.decoders.mwpm import mwpm_decoder
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 from flamingpy.noise import CVLayer
 
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
+
 code_params = it.product(
-    [2, 3, 4, [2, 3, 4], [3, 4, 2]],
+    [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
     ["primal", "dual"],
     ["open", "toric", "periodic"],
     [1, 0.1, 0.01],
