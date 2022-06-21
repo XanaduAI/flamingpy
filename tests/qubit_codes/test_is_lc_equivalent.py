@@ -74,16 +74,16 @@ def XYplusZ(X, Y, Z):
     return mod2(np.add(np.dot(X, Y), Z))
 
 
-def distinct_tuples(min, max):
+def distinct_tuples(min_range, max_range):
     """ "A convenience function that generates distinct tuples of integers in specified range.
     For example, can include (1,2) and (2,1) but not (2,2).
     Args:
-        min (int): minimum of range
-        max (int): maximum of range
+        min_range (int): minimum of range
+        max_range (int): maximum of range
     Returns:
         (list): list of (int, int) tuples
     """
-    return [(a, b) for a in range(min, max) for b in range(min, max) if a != b]
+    return [(a, b) for a in range(min_range, max_range) for b in range(min_range, max_range) if a != b]
 
 
 def tuples_of_nodes_and_modes(node_range, mode_array):
