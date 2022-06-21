@@ -60,7 +60,7 @@ def matching_graphs(request):
     graph = MatchingGraphType("primal")
     nx_graph = NxMatchingGraph("primal")
     for edge in it.combinations(range(num_nodes), r=2):
-        weight = rng().integers(0, 10)
+        weight = rng(int_time).integers(0, 10)
         graph.add_edge(edge, weight)
         nx_graph.add_edge(edge, weight)
     return graph, nx_graph
