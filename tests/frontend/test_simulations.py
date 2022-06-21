@@ -133,7 +133,7 @@ def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
 
     expected_header = (
         "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors,"
-        + "trials,current_time,decoding_time,simulation_time,mpi_size"
+        + "trials,current_time,simulation_time,mpi_size"
     )
 
     f = tmpdir.join("sims_results.csv")
