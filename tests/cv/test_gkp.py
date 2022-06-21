@@ -13,8 +13,9 @@
 # limitations under the License.
 """"Unit tests for GKP-specific functions in the GKP module."""
 
-import logging
 from datetime import datetime
+import logging
+
 
 import numpy as np
 from numpy import sqrt, pi
@@ -51,8 +52,8 @@ class TestGKPBinning:
         """Tests that GKP_binner gives the integer part mod 2, and returns the
         fractional part if asked."""
         alpha = np.sqrt(np.pi)
-        integers = rng().integers(-N // 2, N // 2, N)
-        fractions = rng().random(N) * (alpha / 2)
+        integers = rng(int_time).integers(-N // 2, N // 2, N)
+        fractions = rng(int_time).random(N) * (alpha / 2)
         numbers = integers * alpha + fractions
 
         bits = integers % 2
@@ -69,8 +70,8 @@ middle_homs = np.array([(2 * i + 1) * sqrt(pi) / 2 for i in range(-N // 2, N // 
 lim = int(2 * N * np.sqrt(np.pi))
 
 # Random low and high delta values
-low_delta = rng().uniform(0.0001, 0.001, N)
-high_delta = rng().uniform(10, 15, N)
+low_delta = rng(int_time).uniform(0.0001, 0.001, N)
+high_delta = rng(int_time).uniform(10, 15, N)
 
 
 class TestPhaseProbs:

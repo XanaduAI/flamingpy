@@ -15,7 +15,9 @@
 
 # pylint: disable=too-many-statements
 
+from datetime import datetime
 import itertools as it
+import logging
 
 import networkx as nx
 from networkx import fast_gnp_random_graph
@@ -26,6 +28,10 @@ import pytest
 
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import RHG_graph, Stabilizer, SurfaceCode, alternating_polarity
+
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 # All possible boundary combinations.
 all_bound_combs = it.product(["primal", "dual", "periodic"], repeat=3)
@@ -457,7 +463,9 @@ class TestSurfaceCode:
 
 
 rectanguloid_code_params = it.product(
-    rng().integers(low=2, high=9, size=(8, 3)), ["primal", "dual"], ["open", "periodic"]
+    rng(int_time).integers(low=2, high=9, size=(8, 3)),
+    ["primal", "dual"],
+    ["open", "toric", "periodic"],
 )
 
 
