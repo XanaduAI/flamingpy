@@ -216,12 +216,18 @@ class EGraph(nx.Graph):
         return plot_mat_heat_map(adj, **kwargs)
 
     def is_lc_equivalent(self, graph2, clifford_form="tensor"):
-        """Checks if two EGraph objects are LC equivalent by finding a local clifford operation on n qubits, where n is the number of nodes of the graphs.
+        """Checks if two EGraph objects are LC equivalent by finding a local clifford operation on
+        n qubits, where n is the number of nodes of the graphs.
         Args:
             graph2: An EGraph object to test equivalence with
-            clifford_form: A string describing the output form of Local Clifford operation when it exists. Default string is 'tensor' which returns a list of length n of 2x2 numpy arrays corresponding to single qubit tensor factors. 'global' returns a single 2nx2n numpy array corresponding to the global operator acting on all n qubits.
+            clifford_form: A string describing the output form of Local Clifford operation when it
+            exists. Default string is 'tensor' which returns a list of length n of 2x2 numpy arrays
+            corresponding to single qubit tensor factors. 'global' returns a single 2nx2n numpy
+            array corresponding to the global operator acting on all n qubits.
         Returns:
-            (equivalent, clifford): A tuple where 'equivalent' is a boolean. If equivalent is True, 'clifford' is the local clifford output according to 'clifford_form' specification.
+            (equivalent, clifford): A tuple where 'equivalent' is a boolean.
+            If equivalent is True, 'clifford' is the local clifford output according to
+            'clifford_form' specification.
         """
         # get adjacency matrices of input graphs
         self.adj_generator(sparse=False)
@@ -250,7 +256,8 @@ class EGraph(nx.Graph):
         if np.shape(G)[0] != np.shape(G)[1]:
             raise ValueError("Input matrices must be square.")
 
-        # Construct a binary system of equations that two graph adjacency matrices G and H must satisfy.
+        # Construct a binary system of equations that two graph adjacency matrices G and H must
+        # satisfy.
         # G and H are nxn adjacency matrices defined for n qubit graph states with n nodes.
         # The system is given as a numpy array of shape n^2 x 4n with n^2 equations in 4n unknowns
         #
@@ -275,7 +282,8 @@ class EGraph(nx.Graph):
         # define numpy block matrix for system of constraints
         system_constraints = np.block(M).astype(int)
 
-        # Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of columns given by max_cols.
+        # Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of
+        # columns given by max_cols.
         def RREform_mod2(M, max_cols=None):
             # number of columns to apply row reduction
             max_cols = M.shape[1] if max_cols is None else max_cols
@@ -317,7 +325,8 @@ class EGraph(nx.Graph):
         N = R[p:, n_cols:]
         nullspace_basis, _ = RREform_mod2(N)
 
-        # search through sums of pairs of basis vectors of the null space, and check if any satisfy the determinant constraints
+        # search through sums of pairs of basis vectors of the null space, and check if any satisfy
+        # the determinant constraints
         #
         # number of basis vectors of null space
         d = nullspace_basis.shape[0]
