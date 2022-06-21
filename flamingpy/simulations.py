@@ -69,7 +69,6 @@ def ec_monte_carlo(
     noise_instance,
     decoder,
     decoder_args,
-    return_decoding_time=False,
     world_comm=None,
     mpi_rank=0,
     mpi_size=1,
