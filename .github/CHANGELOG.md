@@ -36,7 +36,7 @@
 * Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
 * In `simulations.py`: [#93](https://github.com/XanaduAI/flamingpy/pull/93)
   * Directory argument `-d` was removed as it was unused. A working version can be added in the future.
-  * We have removed reporting "decoding_total_time" as a more sophisticated time profiler feature systematically timing all the script subroutines will be added soon. To follow the progress of this new feature see [FTSTACK#91](https://github.com/XanaduAI/ft-stack/pull/91). 
+  * We have removed reporting "decoding_total_time" as a more sophisticated time profiler feature systematically timing all the script subroutines will be added soon.
 
 ### Documentation changes
 
