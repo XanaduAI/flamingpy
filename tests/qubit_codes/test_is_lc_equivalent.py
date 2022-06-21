@@ -83,7 +83,8 @@ def distinct_tuples(min_range, max_range):
     Returns:
         (list): list of (int, int) tuples
     """
-    return [(a, b) for a in range(min_range, max_range) for b in range(min_range, max_range) if a != b]
+    return [(a, b) for a in range(min_range, max_range)
+            for b in range(min_range, max_range) if a != b]
 
 
 def tuples_of_nodes_and_modes(node_range, mode_array):
@@ -120,7 +121,8 @@ def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
 # The call signature of this method is:
 # graph1.is_lc_equivalent(graph2, clifford_form) --> (equiv, clifford)
 # Here graph1 and graph2 are EGraph objects,
-# clifford_form is a string (either 'global' or 'tensor') which specifies the output form of the clifford if the equivalence is True.
+# clifford_form is a string (either 'global' or 'tensor') which specifies the output form of the
+# clifford if the equivalence is True.
 #
 # The method returns a tuple of the form (equiv, clifford).
 # If the graphs are equivalent, 'equiv' is True and 'clifford' is the corresponding local clifford.
@@ -134,8 +136,10 @@ def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
 # Therefore, below we define test functions for both comparisons in order to test both cases.
 #
 # TESTING METHODOLOGY:
-# When two graphs are equivalent, in order to verify the returned local clifford we perform the following algebraic check:
-# Let G1 and G2 be the adjacency matrices of the two LC equivalent graphs, and let the local clifford operation be given in block form as:
+# When two graphs are equivalent, in order to verify the returned local clifford we perform the
+# following algebraic check:
+# Let G1 and G2 be the adjacency matrices of the two LC equivalent graphs, and let the local
+# clifford operation be given in block form as:
 # [A | B]
 # [C | D]
 # Then the following matrix block equation must hold True:
@@ -146,7 +150,8 @@ class TestLCEquivalent:
     # SKIPPED TEST
     # Runs 2 tests
     @pytest.mark.skip(
-        reason="Current implementation assumes that equivalence with empty graph is False instead of raising a ValueError, so this test is irrelevant."
+        reason = "Current implementation assumes that equivalence with empty graph is False"\
+                 "instead of raising a ValueError, so this test is irrelevant."
     )
     @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_emptygraph_with_emptygraph_assume_valueerror(self, mode):
@@ -246,9 +251,11 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
+    @pytest.mark.parametrize("nodes, mode",
+                            tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_completegraph_with_stargraph_equivalent(self, nodes, mode):
-        """Test True equivalence between complete graph --> star graph defined on same number of nodes."""
+        """Test True equivalence between complete graph --> star graph defined on same number of
+        nodes."""
         # ARRANGE:
         # define complete graph
         graph1 = graph_states.complete_graph(nodes)
@@ -276,9 +283,11 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
+    @pytest.mark.parametrize("nodes, mode",
+                            tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_stargraph_with_completegraph_equivalent(self, nodes, mode):
-        """Test True equivalence between star graph --> complete graph defined on same number of nodes."""
+        """Test True equivalence between star graph --> complete graph defined on same number of
+        nodes."""
         # ARRANGE:
         # interchange graph1 and graph2 compared to dual test
         # define complete graph
@@ -307,11 +316,11 @@ class TestLCEquivalent:
     # Tests graphs on different number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 24 tests
-    @pytest.mark.parametrize(
-        "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
-    )
+    @pytest.mark.parametrize("nodes1, nodes2, mode",
+                            triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"]))
     def test_completeraph_with_stargraph_notequivalent(self, nodes1, nodes2, mode):
-        """Test False equivalence between complete graph --> star graph defined on different number of nodes."""
+        """Test False equivalence between complete graph --> star graph defined on different number
+        of nodes."""
         # ARRANGE:
         # define complete graph
         graph1 = graph_states.complete_graph(nodes1)
@@ -328,10 +337,11 @@ class TestLCEquivalent:
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 24 tests
     @pytest.mark.parametrize(
-        "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
-    )
+        "nodes1, nodes2, mode",
+        triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"]))
     def test_stargraph_with_completegraph_notequivalent(self, nodes1, nodes2, mode):
-        """Test False equivalence between star graph --> complete graph defined on different number of nodes."""
+        """Test False equivalence between star graph --> complete graph defined on different number
+        of nodes."""
         # ARRANGE:
         # interchange graph1 and graph2 compared to dual test
         # define complete graph
