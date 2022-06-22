@@ -917,10 +917,11 @@ def _stabilizer_midpoint(node):
         for idx, _ in enumerate(midpoint):
             num_stabs = centered_cube[centered_cube[:, idx] != 0].shape[0]
             # check if incomplete stab and displace if needed
+            # NOTE: this assumes incomplete stabilizer can only happen on boundaries
             if num_stabs < 2:
-                if midpoint[idx] == 0:
+                if midpoint[idx] in [0, 1]:  # low boundary: 0 for dual, 1 for primal
                     midpoint[idx] = midpoint[idx] + 1 / 2
-                else:
+                else:  # high boundary
                     midpoint[idx] = midpoint[idx] - 1 / 2
 
     return midpoint
