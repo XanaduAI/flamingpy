@@ -15,12 +15,15 @@
 
 The networkx implementation is used as a reference.
 """
+
 # pylint: disable=unused-import
 
+from datetime import datetime
 import itertools as it
+import logging
 from copy import deepcopy
 
-import numpy as np
+from numpy.random import default_rng as rng
 import pytest
 import networkx as nx
 
@@ -37,6 +40,10 @@ try:
 except ImportError:  # pragma: no cover
     cpp_libraries_available = False
 
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
+
 # Test parameters
 matching_graph_types = [LemonMatchingGraph, RxMatchingGraph]
 num_nodes = range(4, 24, 4)
@@ -52,9 +59,8 @@ def matching_graphs(request):
     MatchingGraphType, num_nodes = request.param
     graph = MatchingGraphType("primal")
     nx_graph = NxMatchingGraph("primal")
-    rng = np.random.default_rng()
     for edge in it.combinations(range(num_nodes), r=2):
-        weight = rng.integers(0, 10)
+        weight = rng(int_time).integers(0, 10)
         graph.add_edge(edge, weight)
         nx_graph.add_edge(edge, weight)
     return graph, nx_graph
@@ -79,7 +85,7 @@ def test_matching_has_same_weight(matching_graphs):
 
 # Test parameters
 matching_graph_types = [LemonMatchingGraph]
-distances = [3, 5]
+distances = [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)]
 
 
 @pytest.fixture(scope="module", params=it.product(matching_graph_types, distances))

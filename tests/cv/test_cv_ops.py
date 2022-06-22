@@ -15,6 +15,8 @@
 
 # pylint: disable=protected-access
 
+from datetime import datetime
+import logging
 
 import networkx as nx
 import numpy as np
@@ -24,6 +26,10 @@ import scipy.sparse as sp
 
 from flamingpy.codes.graphs import EGraph
 from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply
+
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
 
 # A NetworkX random graph of size N for use in this module.
@@ -91,10 +97,10 @@ class TestSCZ:
 def test_invert_permutation():
     """Check that permuting and then unpermuting a random array leaves it
     unchanged."""
-    N = rng().integers(1, 100)
-    random_array = rng().integers(0, 100, N)
+    N = rng(int_time).integers(1, 100)
+    random_array = rng(int_time).integers(0, 100, N)
     random_p = np.arange(N)
-    rng().shuffle(random_p)
+    rng(int_time).shuffle(random_p)
     inverted = invert_permutation(random_p)
     presumed_unchanged_array = random_array[random_p][inverted]
     assert np.array_equal(random_array, presumed_unchanged_array)
