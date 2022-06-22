@@ -129,12 +129,9 @@ See our contributions policy and list of contributors to FlamingPy [here](https:
 
 ## Support
 
-If you are having issues, please let us know by posting the issue on our GitHub issue tracker.
+You can start a general discussion and connect with our community members on our [Discussion Forum](https://discuss.pennylane.ai/c/flamingpy). Additionally, you can join the **#flamingpy channel** on the [Xanadu Slack](https://xanadu-quantum.slack.com/).
 
-- **Source Code:** https://github.com/XanaduAI/flamingpy
-- **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
-
-You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions).
+If you are having issues, please let us know by posting the issue on our [GitHub issue tracker](https://github.com/XanaduAI/flamingpy/issues).
 
 
 ## Attribution for authors
