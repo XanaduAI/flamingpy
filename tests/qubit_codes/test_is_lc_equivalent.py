@@ -1,9 +1,10 @@
+"""Unit tests for is_lc_equivalent() method of EGraph class"""
+
 import pytest
 import numpy as np
 from flamingpy.codes.graphs import EGraph
 from flamingpy.utils import graph_states
 
-"""Unit tests for is_lc_equivalent() method of EGraph class"""
 
 
 def get_adj_mat(graph):
