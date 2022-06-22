@@ -71,6 +71,11 @@ Features
 * Provides a host of visualization tools for ease of verifying correctness.
 
 
+Community
+---------
+
+You can start discussions and connect with our community members on our `Discussions Forum <https://discuss.pennylane.ai/c/flamingpy>`__.
+
 Attribution for authors
 -----------------------
 
