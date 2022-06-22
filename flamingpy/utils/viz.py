@@ -724,7 +724,7 @@ def _calculate_cube_size_and_position(code, cube):
     cube_coords[:, [1, 2]] = cube_coords[:, [2, 1]]
 
     # Find the size of the cube
-    gap = 0.15  # gap defines the distance between adjacent cubes
+    gap = 0.1  # gap defines the distance between adjacent cubes
     cube_origin = np.array([xmin, ymin, zmin]) + gap
     max_arr = np.array([xmax, ymax, zmax])
     size = np.abs(max_arr - cube_origin) - 2 * gap
@@ -744,8 +744,8 @@ def _calculate_cube_size_and_position(code, cube):
             if num_stabs < 2:
                 size[idx] = size[idx] / 2 - gap
 
-            # cubes lying on a lower boundary should be relocated
-            # to lie inside the graph
+        # cubes lying on a lower boundary should be relocated
+        # to lie inside the graph
         bound_ind = np.array(code.boundaries == "dual", dtype=int)
         bound_ind[[1, 2]] = bound_ind[[2, 1]]
         in_low_index = midpoint == bound_ind
@@ -807,40 +807,123 @@ def _cuboid_data(origin, size=(1, 1, 1)):
 @mpl.rc_context(plot_params)
 def add_recovery_drawing(ax, **kwargs):
     """Plot the recovery."""
+
+    # modify incoming ax title
     if kwargs.get("show_title"):
         ax.set_title("Syndrome and recovery")
     recovery_set = kwargs.get("recovery_set")
+
+    # draw recovery set
     if recovery_set:
         for point in recovery_set:
             ax.plot(*point, "o", c="k", markersize=6)
-    matching = kwargs.get("matching")
+
+    # draw matching
     G_match = kwargs.get("matching_graph")
+    matching = kwargs.get("matching")
     if matching:
-        virtual_points = G_match.virtual_points
-        for pair in matching:
-            if pair not in product(virtual_points, virtual_points):
-                xlist, ylist, zlist = [], [], []
-                path = G_match.edge_path(pair)
-                for node in path:
-                    if isinstance(node, Stabilizer):
-                        x, y, z = node.midpoint()
-                    else:
-                        x, y, z = node
-                        plt.plot(x, z, y, marker="2", markersize=15, c="k")
-                    # swapping z <-> y to ensure plot agrees with axis convention
-                    xlist += [x]
-                    ylist += [z]
-                    zlist += [y]
-                ax.plot(
-                    xlist,
-                    ylist,
-                    zlist,
-                    "o-",
-                    c=np.random.rand(3),
-                    linewidth=plot_params.get("lines.linewidth", None) * 0.9,
-                )
+        ax = _draw_matching(ax, G_match, matching)
 
     return ax
+
+
+def _draw_matching(ax, G_match, matching):
+    """Draw matching on top of graph.
+
+    This function loops over pairs ``(i, i+1)`` of points in the path
+    and calculates the correct positioning of the points.
+
+    Lines are drawn as follows:
+
+        * If the pair of points belong to stabilizers, draw a line
+          between the center of the stabilizers. The center of each
+          stabilizer is calculated using the `_stabilizer_midpoint`
+          funtion.
+        * If the current point belongs to a stabilizer and the next
+          point is a node in the graph (this is the case for errors
+          on the boundaries) then a line is drawn going from the
+          midpoint of the stabilizer to the midpoint of the face on
+          that boundary (and marked with an X on the plot), and another
+          dotted line is drawn going from the midpoint of the face
+          to the qubit where the error occurred.
+
+    Args:
+        ax (matplotlib.axes.Axes): the axes to draw the lines in
+        G_match (MatchingGraph): matching graph
+        mathching (List[Edge]): list of matching graph edges
+
+    Returns:
+        matplotlib.axes.Axes: updated axes with the mathching graph on top
+    """
+
+    virtual_points = G_match.virtual_points
+    virtual_points_prod = product(virtual_points, repeat=2)
+
+    for pair in matching:
+        if pair in virtual_points_prod:
+            continue
+
+        # set path props
+        path_color = np.random.rand(3)
+        linewidth = plot_params.get("lines.linewidth", None) * 0.9
+
+        path = G_match.edge_path(pair)
+
+        # loop over pair of points in the path
+        for idx in range(len(path) - 1):
+            point = path[idx]
+            next_point = path[idx + 1]
+
+            if isinstance(point, Stabilizer) and isinstance(next_point, Stabilizer):
+                # stabilizer to stabilizer
+
+                x1, y1, z1 = _stabilizer_midpoint(point)
+                x2, y2, z2 = _stabilizer_midpoint(next_point)
+
+                # swapping z <-> y to ensure plot agrees with axis convention
+                path = [x1, x2], [z1, z2], [y1, y2]
+                ax.plot(*path, "o-", c=path_color, linewidth=linewidth)
+
+            elif isinstance(point, tuple) and isinstance(next_point, Stabilizer):
+                # node to stabilizer
+
+                x1, y1, z1 = point
+                xm, ym, zm = next_point.midpoint()
+                x2, y2, z2 = _stabilizer_midpoint(next_point)
+
+                # swapping z <-> y to ensure plot agrees with axis convention
+                path1 = [x2, xm], [z2, zm], [y2, ym]
+                ax.plot(*path1, "o-", c=path_color, linewidth=linewidth)
+                path2 = [xm, x1], [zm, z1], [ym, y1]
+                ax.plot(*path2, "o--", c=path_color, linewidth=linewidth * 0.5)
+
+                # add X marker to point on the face of the boundary
+                ax.plot(xm, zm, ym, marker="2", markersize=15, c="k")
+
+    return ax
+
+
+def _stabilizer_midpoint(node):
+    """Return the center point of an stabilier voxel.
+
+    Midpoint for incomplete stabilizers is relocated accordingly.
+    """
+    midpoint = np.array(node.midpoint())
+    cube_coords = np.array(node.coords())
+
+    # relocate incomplete stabilizer midpoint
+    if len(cube_coords) != 6:
+        centered_cube = cube_coords - np.tile(node.midpoint(), (cube_coords.shape[0], 1))
+        for idx, _ in enumerate(midpoint):
+            num_stabs = centered_cube[centered_cube[:, idx] != 0].shape[0]
+            # check if incomplete stab and displace if needed
+            if num_stabs < 2:
+                if midpoint[idx] == 0:
+                    midpoint[idx] = midpoint[idx] + 1 / 2
+                else:
+                    midpoint[idx] = midpoint[idx] - 1 / 2
+
+    return midpoint
 
 
 def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
