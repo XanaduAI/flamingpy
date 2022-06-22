@@ -223,7 +223,7 @@ html_theme_options = {
         },
         {
             "name": "Support",
-            "href": "https://github.com/XanaduAI/flamingpy/issues",
+            "href": "https://discuss.pennylane.ai/c/flamingpy",
             "icon": "fab fa-discourse",
         },
         {
