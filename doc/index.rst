@@ -127,7 +127,6 @@ FlamingPy is **free** and **open source**, and released under the |Apache2|.
 
    faq
    help/support
-   help/frequently_encountered_errors
 
 .. toctree::
    :maxdepth: 2
