@@ -14,6 +14,7 @@
 """Class for the measurement-based surface code and related functions."""
 
 import itertools as it
+from typing import Tuple, Union, List
 
 import numpy as np
 
@@ -112,7 +113,7 @@ def str_to_bound(bound_name):
 
 
 def RHG_graph(
-    dims,
+    dims: Union[int, Tuple[int, int, int], List, np.ndarray],
     boundaries="primal",
     polarity=None,
 ):
@@ -123,10 +124,12 @@ def RHG_graph(
     the surface code, with specified dimensions and boundary types.
 
     Args:
-        dims (int or list-type): the dimensions of the lattice. If int,
+        dims (int or Sequence[int]): the dimensions of the lattice. If int,
             generates a cube corresponding to a code of distance dims.
-            If a three-element list [dx, dy, dz], assumes distances
-            dx, dy, dz in x, y, z directions, respectively.
+            If a sequence (dx, dy, dz), assumes distances
+            dx, dy, dz in x, y, z directions, respectively. For
+            axes with open boundaries, the corresponding distance
+            should be greater than 1.
         boundaries (str or list-type, optional): the boundary types
             in x, y, z. We use the identification primal = smooth and
             dual = rough, to align with surface code terminology.
@@ -153,11 +156,13 @@ def RHG_graph(
     Returns:
         EGraph: the RHG lattice.
     """
-    # Create an EGraph with the graph attribute 'dims' (used for
-    # plotting purposes.
-    if np.size(dims) == 1:
-        dims = (dims, dims, dims)
-    G = EGraph()
+    # Checking input
+    if not isinstance(dims, (int, tuple, list, np.ndarray)):
+        raise TypeError("dims must be an integer or a sequence of three integers.")
+    if isinstance(dims, (tuple, list, np.ndarray)) and np.size(dims) != 3:
+        raise ValueError("dims must be an integer or a sequence of three integers.")
+    if np.issubdtype(type(dims), np.integer):
+        dims = (dims,) * 3
 
     # Dealing with boundaries.
     if isinstance(boundaries, str):
@@ -186,6 +191,8 @@ def RHG_graph(
     # Tuple indices corresponding to dual and periodic boundaries.
     dual_inds = set((boundaries == "dual").nonzero()[0])
     periodic_inds = set((boundaries == "periodic").nonzero()[0])
+
+    G = EGraph()
     for vertex in denested_six_bodies:
         where_vertex_0, where_vertex_max = set(), set()
         # Ensure no vertices are included if they extend beyond
@@ -248,7 +255,10 @@ class SurfaceCode:
     vertices.
 
     Attributes:
-        distance (int): the code distance.
+        distance (int or Sequence[int]): the code distance of the lattice. If
+            int, generates a cube corresponding to a code of distance dims. If a
+            sequence (dx, dy, dz), assumes distances dx, dy, dz in x, y,
+            z directions, respectively.
         dims (tup): a tuple of the spatial extent in x, y, z.
         ec (str): the error complex ('primal' or 'dual').
         boundaries (str): the boundary conditions. The options are:
@@ -265,6 +275,9 @@ class SurfaceCode:
             are encoded into the x-y plane and propagated in time. The z-axis
             is interpreted as the temporal axis, which is relevant in quantum
             memory simulations.
+
+            Note that in the z-axis is considered as the temporal dimension
+            in quantum memory simulations.
 
         polarity (func): a function that specifies edge weights. It
             must be of the following form:
@@ -295,14 +308,18 @@ class SurfaceCode:
 
     def __init__(
         self,
-        distance,
+        distance: Union[int, Tuple[int, int, int]],
         ec="primal",
         boundaries="open",
         polarity=None,
         backend="retworkx",
     ):
         self.distance = distance
-        self.dims = (distance, distance, distance)
+        if np.issubdtype(type(distance), np.integer):
+            self.dims = (distance,) * 3
+        elif np.size(distance) == 3:
+            self.dims = tuple(distance)
+
         self.ec = [ec]
         # self.ec = ["primal", "dual"] if ec == "both" else [ec]
 
