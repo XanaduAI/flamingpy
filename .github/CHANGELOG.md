@@ -29,6 +29,10 @@
   cluster state, voxels are colored in gray. Similarly, grey edges are used on the stabilizer graph
   when no bit values are defined. Now, if using the attribute and color dict if `color_nodes` is a
   `tuple(str,dict)`, if the attribute is not available on the egraph then the node is colored black.
+  The way the matching is drawn has changed, now errors on boundaries are represented by a line going
+  from the midpoint of the stabilizer to the midpoint of the face on that boundary (and marked with
+  an X on the plot), and another dotted line is drawn going from the midpoint of the face to the qubit
+  where the error occurred.
   [#35](https://github.com/XanaduAI/flamingpy/pull/35)
 * `CVLayer` has been rewritten and refactored. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
  * Lengthy functions have been broken up into more specialized methods.
