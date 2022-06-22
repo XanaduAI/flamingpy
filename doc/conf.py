@@ -202,17 +202,17 @@ html_theme_options = {
     "navbar_logo_colour": "#f57c00",
     "navbar_left_links": [
         {
-            "name": "Quantum Error Correction",
-            "href": "quantum_error_correction.html",
+            "name": "Documentation",
+            "href": "index.html",
+            "active": True,
         },
         {
             "name": "Install",
             "href": "install.html",
         },
         {
-            "name": "Documentation",
-            "href": "index.html",
-            "active": True,
+            "name": "Quantum Error Correction",
+            "href": "quantum_error_correction.html",
         },
     ],
     "navbar_right_links": [
