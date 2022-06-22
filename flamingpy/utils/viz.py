@@ -869,9 +869,8 @@ def _draw_matching(ax, G_match, matching):
 
         path = G_match.edge_path(pair)
 
-        # loop over pair of points in the path
-        for idx in range(len(path) - 1):
-            point = path[idx]
+        # loop over pair of points in the path skipping last element
+        for idx, point in enumerate(path[:-1]):
             next_point = path[idx + 1]
 
             if isinstance(point, Stabilizer) and isinstance(next_point, Stabilizer):
@@ -881,8 +880,8 @@ def _draw_matching(ax, G_match, matching):
                 x2, y2, z2 = _stabilizer_midpoint(next_point)
 
                 # swapping z <-> y to ensure plot agrees with axis convention
-                path = [x1, x2], [z1, z2], [y1, y2]
-                ax.plot(*path, "o-", c=path_color, linewidth=linewidth)
+                line = [x1, x2], [z1, z2], [y1, y2]
+                ax.plot(*line, "o-", c=path_color, linewidth=linewidth)
 
             elif isinstance(point, tuple) and isinstance(next_point, Stabilizer):
                 # node to stabilizer
@@ -892,10 +891,10 @@ def _draw_matching(ax, G_match, matching):
                 x2, y2, z2 = _stabilizer_midpoint(next_point)
 
                 # swapping z <-> y to ensure plot agrees with axis convention
-                path1 = [x2, xm], [z2, zm], [y2, ym]
-                ax.plot(*path1, "o-", c=path_color, linewidth=linewidth)
-                path2 = [xm, x1], [zm, z1], [ym, y1]
-                ax.plot(*path2, "o--", c=path_color, linewidth=linewidth * 0.5)
+                line1 = [x2, xm], [z2, zm], [y2, ym]
+                ax.plot(*line1, "o-", c=path_color, linewidth=linewidth)
+                line2 = [xm, x1], [zm, z1], [ym, y1]
+                ax.plot(*line2, "o--", c=path_color, linewidth=linewidth * 0.5)
 
                 # add X marker to point on the face of the boundary
                 ax.plot(xm, zm, ym, marker="2", markersize=15, c="k")
