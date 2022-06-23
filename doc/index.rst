@@ -74,7 +74,7 @@ Features
 Community
 ---------
 
-You can start discussions and connect with our community members on our `Discussions Forum <https://discuss.pennylane.ai/c/flamingpy>`__.
+You can start discussions and connect with our community members on our `Discussions Forum <https://discuss.pennylane.ai/c/flamingpy>`_.
 
 Attribution for authors
 -----------------------
