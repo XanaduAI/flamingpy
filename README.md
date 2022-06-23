@@ -76,8 +76,7 @@ Note you will need to remove the comments manually if you use Windows prompt. Th
 - The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
 - The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
-If you encountered **CMake** errors, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git` for **git**-related errors. For more detailed instructions and recommendations, including how to configure your environments, compilers and resolve errors, see our [Frequently Encountered Errors](https://flamingpy.readthedocs.io/en/latest/help/frequently_encountered_errors.html) page in the documentation.
-
+If you encountered **CMake** errors, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git` for **git**-related errors. 
 
 ## Getting started and basic usage
 
@@ -129,12 +128,14 @@ See our contributions policy and list of contributors to FlamingPy [here](https:
 
 ## Support
 
-If you are having issues, please let us know by posting the issue on our GitHub issue tracker.
-
 - **Source Code:** https://github.com/XanaduAI/flamingpy
 - **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
+- **FlamingPy Documentation:** https://flamingpy.readthedocs.io/
+- **FlamingPy Discussion Forum:** https://discuss.pennylane.ai/c/flamingpy
 
-You can also start a general discussion and connect with our community members in our [Discussions Page](https://github.com/XanaduAI/flamingpy/discussions).
+If you are having issues, please let us know by posting the issue on our [GitHub Issue Tracker](https://github.com/XanaduAI/flamingpy/issues).
+
+We also have a **#flamingpy** channel on the [Xanadu Slack](https://join.slack.com/t/xanadu-quantum/shared_invite/zt-1bmpli2c0-Qjb_PvCi2ewH6xfbM6mLmw), [GitHub Discussion Pages](https://github.com/XanaduAI/flamingpy/discussions), and a [Discussion Forum](https://discuss.pennylane.ai/c/flamingpy), all great places to start a general discussion and connect with our community members.
 
 
 ## Attribution for authors

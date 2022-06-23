@@ -193,7 +193,7 @@ class CVLayer:
                 means = updated_means[N:][inds]
 
         if updated_covs is None:
-            covs = self._covs_sampler(inds=inds, rng=rng)
+            covs = self._covs_sampler(inds=inds)
         else:
             if quad == "q":
                 covs = updated_covs[:N][inds]
@@ -274,7 +274,7 @@ class CVLayer:
             for ind in self.states[psi]:
                 self.egraph.nodes[self._to_points[ind]]["state"] = psi
 
-    def _covs_sampler(self, inds=None, rng=default_rng()):
+    def _covs_sampler(self, inds=None):
         """Return the covariances for the homodyne measurement sample."""
         delta = self.delta
         covs = np.zeros(2 * self._N, dtype=np.float32)
@@ -399,7 +399,7 @@ class CVMacroLayer(CVLayer):
         # beamsplitter networks.
         self._entangle_states()
         # Measure the syndrome, corresponding to memory-mode operaiton.
-        self._measure_syndrome(rng=rng)
+        self._measure_syndrome()
         # Process homodyne outcomes to calculate effective bit values
         # and phase error probabilities for the reduced nodes.
         for j in range(0, self._N - 3, 4):
@@ -475,7 +475,7 @@ class CVMacroLayer(CVLayer):
                 meas[index] = macro_graph.nodes[micro]["hom_val_q"]
         return meas
 
-    def _measure_syndrome(self, rng=default_rng()):
+    def _measure_syndrome(self):
         """Measure the syndrome of self.egraph.
 
         Conduct p-homodyne measurements on the stars (central modes) of
