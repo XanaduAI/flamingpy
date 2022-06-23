@@ -187,7 +187,7 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 
    <a href="https://pypi.org/project/pytest-mock/" target="_blank">pytest-mock</a>
 
-.. |pytext-xdist| raw:: html
+.. |pytest-xdist| raw:: html
 
    <a href="https://pypi.org/project/pytest-xdist/" target="_blank">pytest-xdist</a>
 
