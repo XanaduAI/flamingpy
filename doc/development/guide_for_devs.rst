@@ -1,4 +1,4 @@
-Guide for developers
+Guide for Developers
 ====================
 
 Dependencies
