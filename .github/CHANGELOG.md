@@ -47,7 +47,7 @@
 * Changed the math rendering Sphinx to MathJax (before equations were rendered as png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
 * A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
 * A typo in the installation section has been fixed. [#94](https://github.com/XanaduAI/flamingpy/pull/94)
-* Added links to forum and `README.md` on website [#96](https://github.com/XanaduAI/flamingpy/pull/96)
+* Added our new forum links to `README.md` and documentation site. [#96](https://github.com/XanaduAI/flamingpy/pull/96)
 
 ### Contributors
 
