@@ -1,4 +1,4 @@
-Guide for developers
+Guide for Developers
 ====================
 
 Dependencies
@@ -95,9 +95,7 @@ The purpose of the commands is as follows:
 
 If you encountered a CMake error, you may need to (re-)install it through
 ``conda install cmake`` or other means before re-attempting the above. Furthermore,
-you may wish to try ``conda install git``. For more detailed instructions and
-recommendations, including how to configure your environments, compilers and
-resolve errors, see our Frequently Encountered Errors page.
+you may wish to try ``conda install git``. 
 
 Software tests
 --------------
@@ -189,8 +187,8 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 
    <a href="https://pypi.org/project/pytest-mock/" target="_blank">pytest-mock</a>
 
-.. |pytext-xdist| raw:: html
-   
+.. |pytest-xdist| raw:: html
+
    <a href="https://pypi.org/project/pytest-xdist/" target="_blank">pytest-xdist</a>
 
 .. |retworkx| raw:: html
