@@ -26,9 +26,9 @@ To modify the plot parameters use, for example,
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements,singleton-comparison
+# pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 
-import itertools as it
+from itertools import product
 import math
 
 import numpy as np
@@ -40,7 +40,8 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from flamingpy.codes import Stabilizer
+from flamingpy.codes import Stabilizer, NxStabilizerGraph
+from flamingpy.decoders.mwpm import NxMatchingGraph
 from flamingpy.cv import gkp
 
 plot_params = {
@@ -256,6 +257,7 @@ def draw_EGraph(
         ax.title.set_size(plot_params.get("axes.titlesize"))
 
     # plot graph
+    # swapping z <-> y onwards to ensure axis agree with convention
     ax = _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend)
     ax = _plot_EGraph_edges(ax, egraph, color_edges)
 
@@ -325,6 +327,7 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
         else:
             color = "grey"
 
+        # swapping z <-> y to agree with convention
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
         ax.plot([x1, x2], [y1, y2], [z1, z2], color=color, linewidth=0.5)
@@ -346,7 +349,8 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
                 string by providing a tuple with (attribute, color_dictionary),
                 for example: ``("state", {"GKP": "b", "p": "r"})``
                 will look at the "state" attribute of the node, and colour
-                according to the dictionary.
+                according to the dictionary. If the attribute is not available,
+                nodes will be colored black.
 
         label (NoneType or string): plot values next to each node
             associated with the node attribute label. For example,
@@ -368,9 +372,10 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
     # Plotting points. y and z are swapped in the loops so that
     # z goes into the page; however, the axes labels are correct.
     for point in egraph.nodes:
+        # swapping z <-> y to agree with convention
         x, z, y = point
         color = _get_node_color(egraph, color_nodes, point)
-        ax.scatter(x, y, z, c=color)
+        ax.scatter(x, y, z, c=color, s=4)
 
         if label:
             value = egraph.nodes[point].get(label) if label != "index" else indices[point]
@@ -412,7 +417,8 @@ def _get_node_color(egraph, color_nodes, point):
     """Color nodes based on ``color_nodes`` arg:
 
     - if `color_nodes` is a string use the string as color,
-    - using the attribute and color dict if `color_nodes` is a tuple(str,dict),
+    - using the attribute and color dict if `color_nodes` is a tuple(str,dict), if
+      the attribute is not available on the egraph then the node is colored black;
     - or based on color attribute (when available) if `color_nodes` is bool and True;
     - black otherwise.
     """
@@ -429,7 +435,7 @@ def _get_node_color(egraph, color_nodes, point):
                 "dictionary values to valid matplotlib color strings."
             )
         node_property = egraph.nodes[point].get(node_attribute)
-        color = color_dict.get(node_property)
+        color = color_dict.get(node_property, "black")
 
     elif color_nodes == True:
         color = egraph.nodes[point].get("color") or "k"
@@ -478,7 +484,7 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
         raise ValueError("The graph must be implemented with the networkx backend.")
 
     # Remove 'low' and 'high' nodes, which are not important for visualization.
-    if graph.__class__.__name__ == "NxStabilizerGraph":
+    if isinstance(graph, (NxStabilizerGraph, NxMatchingGraph)):
         graph.graph.remove_nodes_from({"low", "high"})
 
     graph = graph.graph
@@ -514,14 +520,17 @@ def draw_dec_graph(graph, label_edges=False, node_labels=None, title=""):
             bbox={"alpha": 0},
         )
 
-    cax, kw = mpl.colorbar.make_axes(ax, location="right", fraction=0.15)
-    cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, **kw)
-    cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
-    cbar.set_label(
-        "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
-    )
+    axs = [ax]
 
-    axs = [ax, cax]
+    if (cmap is not None) and (norm is not None):
+        cax, kw = mpl.colorbar.make_axes(ax, location="right", fraction=0.15)
+        cbar = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, **kw)
+        cbar.ax.tick_params(labelsize=plot_params.get("axes.labelsize", 10), rotation=270)
+        cbar.set_label(
+            "weight", rotation=270, fontsize=plot_params.get("axes.labelsize", 10), labelpad=20
+        )
+        axs = [ax, cax]
+
     return fig, axs
 
 
@@ -538,15 +547,21 @@ def draw_curved_edges(graph, layout, ax, rad=0.5):
     """
 
     edges = graph.edges
-    edge_weights = [edges[edge]["weight"] for edge in edges]
+    edge_weights = [edges[edge]["weight"] for edge in edges if edges[edge]["weight"] is not None]
+    has_edge_weights = len(edge_weights) > 0
 
-    cmap = mpl.cm.get_cmap("Spectral")
-    norm = mpl.colors.Normalize(vmin=np.min(edge_weights), vmax=np.max(edge_weights))
+    if has_edge_weights:
+        cmap = mpl.cm.get_cmap("Spectral")
+        norm = mpl.colors.Normalize(vmin=np.min(edge_weights), vmax=np.max(edge_weights))
+    else:
+        cmap, norm = None, None
+
     for edge in graph.edges():
         source, target = edge
+        edge_color = cmap(norm(edges[edge]["weight"])) if has_edge_weights else "#82828215"
         arrowprops = dict(
             arrowstyle="-",
-            color=cmap(norm(edges[edge]["weight"])),
+            color=edge_color,
             connectionstyle=f"arc3,rad={rad}",
             linestyle="-",
             linewidth=plot_params.get("lines.linewidth", 1) / 2,
@@ -572,8 +587,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
 
     Stabilizers are shown as transparent voxels, green for even parity and
     red for odd. For now, stabilizers on periodic boundaries are not
-    drawn in a special way, stabilizers on dual boundaries are unshifted
-    from the primal stabilizer location, and incomplete stabilizers
+    drawn in a special way and incomplete stabilizers for periodic boundaries
     are still represented as complete cubes.
 
     Args:
@@ -590,8 +604,8 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     cubes = getattr(code, ec + "_stabilizers")
     # Default drawing options.
     draw_dict = {
-        "show_nodes": False,
-        "color_nodes": ("state", {"p": None, "GKP": None}),
+        "show_nodes": True,
+        "color_nodes": ("state", {"p": "gold", "GKP": "b"}),
         "color_edges": "k",
         "label": None,
         "legend": True,
@@ -629,39 +643,36 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         plt.xticks(range(0, 2 * shape[0] - 1))
         plt.yticks(range(0, 2 * shape[1] - 1))
         ax.set_zticks(range(0, 2 * shape[2] - 1))
+        # swapping y <-> z labels
         ax.set_xlabel("x", labelpad=20)
         ax.set_ylabel("z", labelpad=20)
         ax.set_zlabel("y", labelpad=20)
         leg = None
+
     # Illustrate stabilizers with voxels colored green for even
     # parity and red for odd pariy.
     positions, colors, sizes = [], [], []
     for cube in cubes:
 
-        # Obtain smallest, largest, and middle coordinates for each
-        # cube.
-        xmin, xmax = np.array(cube.xlims())
-        ymin, ymax = np.array(cube.ylims())
-        zmin, zmax = np.array(cube.zlims())
-        xmid, ymid, zmid = np.array(cube.midpoint())
-        # Fill in the color arrays depending on parity.
-        if cube.parity:
-            color = "#FF000015"
-        else:
-            color = "#00FF0015"
+        cube_origin, size = _calculate_cube_size_and_position(code, cube)
+        sizes.append(size)
+        positions.append(cube_origin)
 
-        # gap defines the distance between adjacent cubes
-        gap = 0.15
-        min_arr = np.array([xmin, ymin, zmin])
-        max_arr = np.array([xmax, ymax, zmax])
-        positions.append(min_arr + gap)
-        sizes.append(np.abs(max_arr - min_arr) - 2 * gap)
+        # Fill in the color arrays depending on parity.
+        if cube.parity == 1:
+            color = "#FF000015"
+        elif cube.parity == 0:
+            color = "#00FF0015"
+        else:
+            color = "#82828215"
+
         colors.append(color)
 
         if drawing_opts["label_stabilizers"] and index_dict:
-
             if cube in index_dict:
-                ax.text(xmid, ymid, zmid, index_dict[cube])
+                # swapping y <-> z coords
+                mid_x, mid_z, mid_y = cube.midpoint()
+                ax.text(mid_x, mid_y, mid_z, index_dict[cube])
 
     # draw cubes
     pc = _plot_cubes_at(positions, colors=colors, sizes=sizes)
@@ -676,8 +687,10 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     if drawing_opts["label_boundary"] and index_dict:
         bound_points = getattr(code, ec + "_bound_points")
         for point in bound_points:
-            ax.scatter(*point, s=5, c="k")
-            ax.text(*point, index_dict[point])
+            # swapping y <-> z
+            px, pz, py = point
+            ax.scatter(px, py, pz, s=5, c="k")
+            ax.text(px, py, pz, index_dict[point])
 
     # Define a legend for red/green cubes.
     legend_elements = [
@@ -694,6 +707,51 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         ax.set_title(ec.capitalize() + " syndrome")
 
     return fig, ax
+
+
+def _calculate_cube_size_and_position(code, cube):
+    # Obtain cube coords
+    # NOTE: coords y and z are swapped by convention!
+    xmin, xmax = np.array(cube.xlims())
+    ymin, ymax = np.array(cube.zlims())
+    zmin, zmax = np.array(cube.ylims())
+
+    midx, midz, midy = cube.midpoint()
+    midpoint = np.array([midx, midy, midz])
+
+    # coordinates of the stabilizers
+    cube_coords = np.array(cube.coords())
+    cube_coords[:, [1, 2]] = cube_coords[:, [2, 1]]
+
+    # Find the size of the cube
+    gap = 0.1  # gap defines the distance between adjacent cubes
+    cube_origin = np.array([xmin, ymin, zmin]) + gap
+    max_arr = np.array([xmax, ymax, zmax])
+    size = np.abs(max_arr - cube_origin) - 2 * gap
+
+    # if there is any incomplete stabilizer, halve its size in
+    # the missing direction
+    is_incomplete_stab = len(cube_coords) != 6
+    if is_incomplete_stab:
+        # Translate the cube to the origin
+        centered_cube = cube_coords - np.tile(midpoint, (cube_coords.shape[0], 1))
+        #  Pair the stabilizers by finding the number
+        # of points lying over an axis. Unpaired points appear for incomplete
+        # stabilizers and determine the direction in which the cube has to be
+        # resized.
+        for idx, _ in enumerate(size):
+            num_stabs = centered_cube[centered_cube[:, idx] != 0].shape[0]
+            if num_stabs < 2:
+                size[idx] = size[idx] / 2 - gap
+
+        # cubes lying on a lower boundary should be relocated
+        # to lie inside the graph
+        bound_ind = np.array(code.boundaries == "dual", dtype=int)
+        bound_ind[[1, 2]] = bound_ind[[2, 1]]
+        in_low_index = midpoint == bound_ind
+        cube_origin[in_low_index] += 1
+
+    return cube_origin, size
 
 
 def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
@@ -749,39 +807,123 @@ def _cuboid_data(origin, size=(1, 1, 1)):
 @mpl.rc_context(plot_params)
 def add_recovery_drawing(ax, **kwargs):
     """Plot the recovery."""
+
+    # modify incoming ax title
     if kwargs.get("show_title"):
         ax.set_title("Syndrome and recovery")
     recovery_set = kwargs.get("recovery_set")
+
+    # draw recovery set
     if recovery_set:
         for point in recovery_set:
             ax.plot(*point, "o", c="k", markersize=6)
-    matching = kwargs.get("matching")
+
+    # draw matching
     G_match = kwargs.get("matching_graph")
+    matching = kwargs.get("matching")
     if matching:
-        virtual_points = G_match.virtual_points
-        for pair in matching:
-            if pair not in it.product(virtual_points, virtual_points):
-                xlist, ylist, zlist = [], [], []
-                path = G_match.edge_path(pair)
-                for node in path:
-                    if isinstance(node, Stabilizer):
-                        x, y, z = node.midpoint()
-                    else:
-                        x, y, z = node
-                        plt.plot(x, y, z, marker="2", markersize=15, c="k")
-                    xlist += [x]
-                    ylist += [y]
-                    zlist += [z]
-                ax.plot(
-                    xlist,
-                    ylist,
-                    zlist,
-                    "o-",
-                    c=np.random.rand(3),
-                    linewidth=plot_params.get("lines.linewidth", None) * 0.9,
-                )
+        ax = _draw_matching(ax, G_match, matching)
 
     return ax
+
+
+def _draw_matching(ax, G_match, matching):
+    """Draw matching on top of graph.
+
+    This function loops over pairs ``(i, i+1)`` of points in the path
+    and calculates the correct positioning of the points.
+
+    Lines are drawn as follows:
+
+        * If the pair of points belong to stabilizers, draw a line
+          between the center of the stabilizers. The center of each
+          stabilizer is calculated using the `_stabilizer_midpoint`
+          funtion.
+        * If the current point belongs to a stabilizer and the next
+          point is a node in the graph (this is the case for errors
+          on the boundaries) then a line is drawn going from the
+          midpoint of the stabilizer to the midpoint of the face on
+          that boundary (and marked with an X on the plot), and another
+          dotted line is drawn going from the midpoint of the face
+          to the qubit where the error occurred.
+
+    Args:
+        ax (matplotlib.axes.Axes): the axes to draw the lines in
+        G_match (MatchingGraph): matching graph
+        mathching (List[Edge]): list of matching graph edges
+
+    Returns:
+        matplotlib.axes.Axes: updated axes with the mathching graph on top
+    """
+
+    virtual_points = G_match.virtual_points
+    virtual_points_prod = product(virtual_points, repeat=2)
+
+    for pair in matching:
+        if pair in virtual_points_prod:
+            continue
+
+        # set path props
+        path_color = np.random.rand(3)
+        linewidth = plot_params.get("lines.linewidth", None) * 0.9
+
+        path = G_match.edge_path(pair)
+
+        # loop over pair of points in the path skipping last element
+        for idx, point in enumerate(path[:-1]):
+            next_point = path[idx + 1]
+
+            if isinstance(point, Stabilizer) and isinstance(next_point, Stabilizer):
+                # stabilizer to stabilizer
+
+                x1, y1, z1 = _stabilizer_midpoint(point)
+                x2, y2, z2 = _stabilizer_midpoint(next_point)
+
+                # swapping z <-> y to ensure plot agrees with axis convention
+                line = [x1, x2], [z1, z2], [y1, y2]
+                ax.plot(*line, "o-", c=path_color, linewidth=linewidth)
+
+            elif isinstance(point, tuple) and isinstance(next_point, Stabilizer):
+                # node to stabilizer
+
+                x1, y1, z1 = point
+                xm, ym, zm = next_point.midpoint()
+                x2, y2, z2 = _stabilizer_midpoint(next_point)
+
+                # swapping z <-> y to ensure plot agrees with axis convention
+                line1 = [x2, xm], [z2, zm], [y2, ym]
+                ax.plot(*line1, "o-", c=path_color, linewidth=linewidth)
+                line2 = [xm, x1], [zm, z1], [ym, y1]
+                ax.plot(*line2, "o--", c=path_color, linewidth=linewidth * 0.5)
+
+                # add X marker to point on the face of the boundary
+                ax.plot(xm, zm, ym, marker="2", markersize=15, c="k")
+
+    return ax
+
+
+def _stabilizer_midpoint(node):
+    """Return the center point of an stabilier voxel.
+
+    Midpoint for incomplete stabilizers is relocated accordingly.
+    """
+    midpoint = np.array(node.midpoint())
+    cube_coords = np.array(node.coords())
+
+    # relocate incomplete stabilizer midpoint
+    if len(cube_coords) != 6:
+        centered_cube = cube_coords - np.tile(node.midpoint(), (cube_coords.shape[0], 1))
+        for idx, _ in enumerate(midpoint):
+            num_stabs = centered_cube[centered_cube[:, idx] != 0].shape[0]
+            # check if incomplete stab and displace if needed
+            # NOTE: this assumes incomplete stabilizer can only happen on boundaries
+            if num_stabs < 2:
+                if midpoint[idx] in [0, 1]:  # low boundary: 0 for dual, 1 for primal
+                    midpoint[idx] = midpoint[idx] + 1 / 2
+                else:  # high boundary
+                    midpoint[idx] = midpoint[idx] - 1 / 2
+
+    return midpoint
 
 
 def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
@@ -791,7 +933,7 @@ def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
 
     # Drawing the stabilizer graph
     G_stabilizer = getattr(code, ec + "_stab_graph")
-    G_match = dec_objects.get("matching_graph")
+    G_match = dec_objects.get("matching_graph") if dec_objects else None
     # An integer label for each node in the stabilizer and matching
     # graphs. This is useful to identify the nodes in the plots.
     if drawing_opts.get("label_stabilizers") or drawing_opts.get("label_boundary"):

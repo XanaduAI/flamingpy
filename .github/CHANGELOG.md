@@ -10,7 +10,7 @@
 ### Bug fixes
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
 * Tutorial files are appropriately ignored in the pylint configuration file. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
-* Running `simulations.py` from with command-line args was not working because the "p_err" arg was not set. This is now fixed and one can for example successfully run: `python flamingpy/simulations.py -noise "blueprint" -distance 2 -ec "primal" -boundaries "periodic" -delta 0.1 -pswap 0 -perr 0 -trials 1000 -decoder "MWPM"`. [#93](https://github.com/XanaduAI/flamingpy/pull/93) 
+* Running `simulations.py` from with command-line args was not working because the "p_err" arg was not set. This is now fixed and one can for example successfully run: `python flamingpy/simulations.py -noise "blueprint" -distance 2 -ec "primal" -boundaries "periodic" -delta 0.1 -pswap 0 -perr 0 -trials 1000 -decoder "MWPM"`. [#93](https://github.com/XanaduAI/flamingpy/pull/93)
 
 ### Improvements
 
@@ -25,6 +25,15 @@
 * Increased the scope of `black` formatter to include documentation files. [#79](https://github.com/XanaduAI/flamingpy/pull/79)
 * Added automatically generated `.svg` files to gitignore. [#84](https://github.com/XanaduAI/flamingpy/pull/84)
 * Tests that required cpp libraries are skipped if they are not installed, hence avoiding failing tests from unmet dependencies. [#65](https://github.com/XanaduAI/flamingpy/pull/65)
+* Incomplete stabilizers are drawn as rectangular prisms. When no bit values are defined in the
+  cluster state, voxels are colored in gray. Similarly, grey edges are used on the stabilizer graph
+  when no bit values are defined. Now, if using the attribute and color dict if `color_nodes` is a
+  `tuple(str,dict)`, if the attribute is not available on the egraph then the node is colored black.
+  The way the matching is drawn has changed, now errors on boundaries are represented by a line going
+  from the midpoint of the stabilizer to the midpoint of the face on that boundary (and marked with
+  an X on the plot), and another dotted line is drawn going from the midpoint of the face to the qubit
+  where the error occurred.
+  [#35](https://github.com/XanaduAI/flamingpy/pull/35)
 * `CVLayer` has been rewritten and refactored. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
  * Lengthy functions have been broken up into more specialized methods.
  * The class is initialized with all the noise model parameters, simplifying the signatures of the methods.
@@ -34,7 +43,7 @@
  * The `final` sampling order has been removed, as it is equivalent to `initial` but slower.
 * The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
   * Functions within this module accept `code, noise, decoder` objects, as well as arguments (`code_args, noise_args, decoder_args`) separately.
-* Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) 
+* Examples, benchmarks, and tests have been modified to take advantage of the simpler approach to noise application and the new `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
 * In `simulations.py`: [#93](https://github.com/XanaduAI/flamingpy/pull/93)
   * Directory argument `-d` was removed as it was unused. A working version can be added in the future.
   * We have removed reporting "decoding_total_time" as a more sophisticated time profiler feature systematically timing all the script subroutines will be added soon.
