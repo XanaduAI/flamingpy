@@ -200,6 +200,7 @@ def run_ec_simulation(
                     "boundaries",
                     "delta",
                     "p_swap",
+                    "err_prob",
                     "decoder",
                     "errors",
                     "trials",
@@ -221,6 +222,7 @@ def run_ec_simulation(
                 code_args["boundaries"],
                 noise_args.get("delta"),
                 noise_args.get("p_swap"),
+                noise_args.get("err_prob"),
                 decoder,
                 errors,
                 trials,
@@ -242,6 +244,7 @@ if __name__ == "__main__":
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
         parser.add_argument("-pswap", type=float)
+        parser.add_argument("-errprob", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
 
@@ -253,6 +256,7 @@ if __name__ == "__main__":
             "boundaries": args.boundaries,
             "delta": args.delta,
             "p_swap": args.pswap,
+            "err_prob": args.pswap,
             "trials": args.trials,
             "decoder": args.decoder,
         }
@@ -266,6 +270,7 @@ if __name__ == "__main__":
             "boundaries": "open",
             "delta": 0.09,
             "p_swap": 0.25,
+            "err_prob": 0.1,
             "trials": 100,
             "decoder": "MWPM",
         }
