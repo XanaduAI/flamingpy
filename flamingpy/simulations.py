@@ -295,7 +295,7 @@ if __name__ == "__main__":
 
         # set to None unused args and update noise_args
         params["delta"], params["p_swap"] = None, None
-        noise_args = {"err_prob": params.get("err_prob")}
+        noise_args = {"error_probability": params.get("err_prob")}
 
     decoder = params["decoder"]
     args = {
