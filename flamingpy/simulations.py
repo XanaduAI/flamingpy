@@ -291,7 +291,7 @@ if __name__ == "__main__":
     # check that arg err_prob is provided for iid noise
     if params.get("noise") == "iid":
         if params.get("err_prob") is None:
-            raise ValueError(f"No argument `err_prob` found for iid noise.")
+            raise ValueError("No argument `err_prob` found for iid noise.")
 
         # set to None unused args and update noise_args
         params["delta"], params["p_swap"] = None, None
