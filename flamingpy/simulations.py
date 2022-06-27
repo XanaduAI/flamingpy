@@ -298,5 +298,12 @@ if __name__ == "__main__":
         noise_args = {"err_prob": params.get("err_prob")}
 
     decoder = params["decoder"]
-    args = [params["trials"], code, code_args, noise, noise_args, decoder]
-    run_ec_simulation(*args)
+    args = {
+        "trials": params["trials"],
+        "code": code,
+        "code_args": code_args,
+        "noise": noise,
+        "noise_args": noise_args,
+        "decoder": decoder,
+    }
+    run_ec_simulation(**args)
