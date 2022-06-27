@@ -222,7 +222,7 @@ def run_ec_simulation(
                 code_args["boundaries"],
                 noise_args.get("delta"),
                 noise_args.get("p_swap"),
-                noise_args.get("err_prob"),
+                noise_args.get("error_probability"),
                 decoder,
                 errors,
                 trials,
