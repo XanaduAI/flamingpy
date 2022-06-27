@@ -243,8 +243,8 @@ if __name__ == "__main__":
         parser.add_argument("-ec", type=str)
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
-        parser.add_argument("-pswap", type=float)
-        parser.add_argument("-errprob", type=float)
+        parser.add_argument("-p_swap", type=float)
+        parser.add_argument("-err_prob", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
 
@@ -255,8 +255,8 @@ if __name__ == "__main__":
             "ec": args.ec,
             "boundaries": args.boundaries,
             "delta": args.delta,
-            "p_swap": args.pswap,
-            "err_prob": args.pswap,
+            "p_swap": args.p_swap,
+            "err_prob": args.err_prob,
             "trials": args.trials,
             "decoder": args.decoder,
         }
