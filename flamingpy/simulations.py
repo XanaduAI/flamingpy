@@ -288,6 +288,14 @@ if __name__ == "__main__":
 
     noise = noise_dict[params["noise"]]
     noise_args = {key: params[key] for key in ["delta", "p_swap"]}
+    # check that arg err_prob is provided for iid noise
+    if params.get("noise") == "iid":
+        if params.get("err_prob") is None:
+            raise ValueError(f"No argument `err_prob` found for iid noise.")
+
+        # set to None unused args and update noise_args
+        params["delta"], params["p_swap"] = None, None
+        noise_args = {"err_prob": params.get("err_prob")}
 
     decoder = params["decoder"]
     args = [params["trials"], code, code_args, noise, noise_args, decoder]
