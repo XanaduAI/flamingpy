@@ -132,7 +132,7 @@ def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
-        "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors,"
+        "noise,distance,ec,boundaries,delta,p_swap,err_prob,decoder,errors,"
         + "trials,current_time,simulation_time,mpi_size"
     )
 
