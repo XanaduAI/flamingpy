@@ -265,13 +265,13 @@ if __name__ == "__main__":
         # User can specify values here, if not using command line.
         params = {
             "noise": "passive",
-            "distance": 2,
+            "distance": 3,
             "ec": "primal",
             "boundaries": "open",
             "delta": 0.09,
             "p_swap": 0.25,
             "err_prob": 0.1,
-            "trials": 100,
+            "trials": 200,
             "decoder": "MWPM",
         }
     # Checking that a valid decoder choice is provided
