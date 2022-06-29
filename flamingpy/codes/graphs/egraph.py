@@ -214,3 +214,71 @@ class EGraph(nx.Graph):
 
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
+
+    def add_qubit(self, qubit = None, index = None, neighbors = None) -> None:
+        """Add qubit to EGraph at position with neigbours in existing_neighbours.
+        
+        Args:
+            qubit (3D tuple, or None): qubit to add. If it is a 3D tuple, 
+            the qubit is added in that position. If qubit is None, the qubit is 
+            positioned one unit further than the maximum position in the z 
+            direction in position (0,0,z_max + 1).
+
+            index (int or None): index of qubit. If int, the qubit is 
+            positioned at that index. If None, the index of the qubit is the 
+            last one.
+
+            neighbours (list[int] or list[tuple]): neighbors of qubit specified
+            with indices or positions, respectively.
+        """
+        if isinstance(qubit, tuple):
+            if len(qubit)!=3:
+                raise Exception(f"The position should be a 3D tuple, but it was given a {len(qubit)}D tuple")
+        elif qubit is None:
+            z_max = max(map(lambda x: x[2], self.to_points.values()))
+            qubit = (0,0, z_max + 1)
+        else:
+            raise Exception(f"Qubit type not supported. Excepted 3D tuple or None, but was given {type(qubit)}")
+        self.add_node(qubit)
+
+        if neighbors is not None:
+            if isinstance(neighbors[0],int):
+                neighbors = [self.to_points[ind] for ind in neighbors]
+            self.add_edges_from(neighbors)
+        
+        if isinstance(index, int):
+            self.to_points = {k+1 if k>= index else k : v for k, v in self.to_points.items()}
+            self.to_indices = {v: k for k, v in self.to_points.items()}
+            new_index = index
+        elif index is None:
+            new_index = max(self.to_points.keys())+1
+        else:
+            raise Exception(f"Index type not supported. Expected int or None, but was given {type(index)}")
+        self.to_points[new_index] = qubit
+        self.to_indices[qubit] = new_index
+
+    
+    def remove_qubit(self, qubit = None) -> None:
+        """Remove qubit from EGraph
+        
+        Args:
+            qubit (3D tuple, int, or None) : If 3D tuple, remove qubit at that 
+            position. If int, remove the qubit at that index. If None, remove 
+            the last qubit. 
+        """
+        if isinstance(qubit, tuple):
+            index_to_remove = self.to_indices[qubit]
+            self.remove_node(qubit)
+        elif isinstance(qubit, int):
+            index_to_remove = qubit
+            self.remove_node(self.to_points[index_to_remove])
+        elif qubit is None:
+            index_to_remove = max(self.to_points.keys())
+            self.remove_node(self.to_points[index_to_remove])
+        else:
+            raise Exception(f"Qubit type not supported. Excepted 3D tuple, int, or None, but was given {type(qubit)}")
+        
+        position = self.to_points.pop(index_to_remove)
+        self.to_indices.pop(position)
+        self.to_points = {k-1 if k> index_to_remove else k : v for k, v in self.to_points.items()}
+        self.to_indices = {v: k for k, v in self.to_points.items()}
