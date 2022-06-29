@@ -28,6 +28,7 @@ from flamingpy.codes.graphs import EGraph
 N = 20
 N3D = 10
 
+
 @pytest.fixture(scope="module", params=[N])
 def random_graph(request):
     """A convenience function to initialize random EGraphs for use in this
@@ -38,16 +39,19 @@ def random_graph(request):
     G_adj_sparse = nx.to_scipy_sparse_array(G)
     return EGraph(G), G_adj, G_adj_sparse
 
+
 @pytest.fixture(scope="module", params=[N3D])
 def random_graph_3D(request):
     """A convenience function to initialize random EGraphs for use in this
     module."""
     n = request.param
     G = nx.Graph()
-    random_nodes = [(random.randint(0, 100), random.randint(0, 100), random.randint(0, 100)) for _ in range(n)]
+    random_nodes = [
+        (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100)) for _ in range(n)
+    ]
     G.add_nodes_from(random_nodes)
-    
-    random_edges = [ed for ed in nx.non_edges(G) if random.randint(0,10)>=7]
+
+    random_edges = [ed for ed in nx.non_edges(G) if random.randint(0, 10) >= 7]
     G.add_edges_from(random_edges)
     return G
 
@@ -100,11 +104,11 @@ class TestEGraph:
 
         E = EGraph(random_graph_3D)
         E.index_generator()
-        E.add_qubit(qubit=(100,101,-400), index=0)
-        assert E.to_points[0] == (100,101,-400)
-        
+        E.add_qubit(qubit=(100, 101, -400), index=0)
+        assert E.to_points[0] == (100, 101, -400)
+
         with pytest.raises(Exception) as e:
-            E.add_qubit(qubit=(1,1,1,1))
+            E.add_qubit(qubit=(1, 1, 1, 1))
         assert e.type == Exception
 
         with pytest.raises(Exception) as e:
@@ -118,14 +122,14 @@ class TestEGraph:
         E = EGraph(random_graph_3D)
         n_edges_old = E.number_of_edges()
         E.index_generator()
-        E.add_qubit(neighbors=[0,1])
-        assert n_edges_old+2 == E.number_of_edges()
+        E.add_qubit(neighbors=[0, 1])
+        assert n_edges_old + 2 == E.number_of_edges()
 
         E = EGraph(random_graph_3D)
         n_edges_old = E.number_of_edges()
-        new_neighs = [neigh for neigh in E.nodes() if random.randint(0,10)>7]
+        new_neighs = [neigh for neigh in E.nodes() if random.randint(0, 10) > 7]
         E.add_qubit(neighbors=new_neighs)
-        assert n_edges_old+len(new_neighs) == E.number_of_edges()
+        assert n_edges_old + len(new_neighs) == E.number_of_edges()
 
     def test_remove_qubit(self, random_graph_3D):
         """Test the remove_qubit function on a random EGraph."""

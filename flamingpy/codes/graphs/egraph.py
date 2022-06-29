@@ -249,10 +249,10 @@ class EGraph(nx.Graph):
 
         if neighbors is not None:
             if isinstance(neighbors[0], int):
-                neighbors = [(self.to_points[ind],qubit) for ind in neighbors.copy()]
+                neighbors = [(self.to_points[ind], qubit) for ind in neighbors.copy()]
             elif isinstance(neighbors[0], tuple):
                 neighbors = [(neigh, qubit) for neigh in neighbors.copy()]
-                
+
             self.add_edges_from(neighbors)
 
         if (self.to_points is not None) and (self.to_indices is not None):
@@ -271,7 +271,7 @@ class EGraph(nx.Graph):
             self.to_indices[qubit] = new_index
 
         self.adj_mat = None
-        
+
     def remove_qubit(self, qubit=None) -> None:
         """Remove qubit from EGraph
 
@@ -286,7 +286,7 @@ class EGraph(nx.Graph):
                 self.remove_node(qubit)
             else:
                 self.index_generator()
-    
+
         if (self.to_points is not None) and (self.to_indices is not None):
             if isinstance(qubit, tuple):
                 index_to_remove = self.to_indices[qubit]
@@ -305,7 +305,9 @@ class EGraph(nx.Graph):
 
             position = self.to_points.pop(index_to_remove)
             self.to_indices.pop(position)
-            self.to_points = {k - 1 if k > index_to_remove else k: v for k, v in self.to_points.items()}
+            self.to_points = {
+                k - 1 if k > index_to_remove else k: v for k, v in self.to_points.items()
+            }
             self.to_indices = {v: k for k, v in self.to_points.items()}
 
         self.adj_mat = None
