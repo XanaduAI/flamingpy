@@ -17,8 +17,8 @@
 
 import string
 
-import networkx as nx
 import random
+import networkx as nx
 import numpy as np
 import pytest
 
