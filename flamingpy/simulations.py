@@ -271,7 +271,7 @@ if __name__ == "__main__":
             "delta": 0.09,
             "p_swap": 0.25,
             "err_prob": 0.1,
-            "trials": 200,
+            "trials": 100,
             "decoder": "MWPM",
         }
     # Checking that a valid decoder choice is provided
