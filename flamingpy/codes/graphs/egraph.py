@@ -216,7 +216,8 @@ class EGraph(nx.Graph):
         return plot_mat_heat_map(adj, **kwargs)
 
     def add_qubit(self, qubit=None, index=None, neighbors=None) -> None:
-        """Add qubit to EGraph at position with neigbours in existing_neighbours.
+        """Add qubit to EGraph at position with neigbours in
+        existing_neighbours.
 
         Args:
             qubit (3D tuple, or None): qubit to add. If it is a 3D tuple,
@@ -273,7 +274,7 @@ class EGraph(nx.Graph):
         self.adj_mat = None
 
     def remove_qubit(self, qubit=None) -> None:
-        """Remove qubit from EGraph
+        """Remove qubit from EGraph.
 
         Args:
             qubit (3D tuple, int, or None) : If 3D tuple, remove qubit at that
