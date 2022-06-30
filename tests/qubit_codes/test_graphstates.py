@@ -61,87 +61,107 @@ def noise_model(delta, order):
     return {"noise": "grn", "delta": delta, "sampling_order": order}
 
 
-class TestEGraph:
-    """Tests for EGraphs."""
+######################
+# Tests for EGraphs: #
+######################
 
-    def test_init(self, random_graph):
-        """Check that the adjacency matrix of the random graph matches the
-        adjancency matrix of the EGraph."""
-        E = EGraph(random_graph[0])
-        E_array = nx.to_numpy_array(E)
-        assert np.all(random_graph[1] == E_array)
+def test_init(random_graph):
+    """Check that the adjacency matrix of the random graph matches the
+    adjancency matrix of the EGraph."""
+    E = EGraph(random_graph[0])
+    E_array = nx.to_numpy_array(E)
+    assert np.all(random_graph[1] == E_array)
 
-    def test_index(self, random_graph):
-        """Tests a graph with nodes from a shuffled alphabet."""
-        alph = list(string.ascii_lowercase)
-        np.random.shuffle(alph)
-        reduced_alph = alph[:N]
-        label_dict = dict(zip(range(N), reduced_alph))
-        H = nx.relabel_nodes(random_graph[0], label_dict)
-        E = EGraph(H)
-        E.index_generator()
-        # assert list(E.to_indices.keys()) == sorted(reduced_alph)
-        # Adjacency matrix of H with rows/columns arranged according
-        # to the sorted alphabet should equal to the adjacency matrix
-        # of E.
-        H_adj = nx.to_numpy_array(H, nodelist=sorted(reduced_alph))
-        E.adj_generator(sparse=False)
-        E_adj = E.adj_mat
-        assert np.array_equal(H_adj, E_adj)
+def test_index(random_graph):
+    """Tests a graph with nodes from a shuffled alphabet."""
+    alph = list(string.ascii_lowercase)
+    np.random.shuffle(alph)
+    reduced_alph = alph[:N]
+    label_dict = dict(zip(range(N), reduced_alph))
+    H = nx.relabel_nodes(random_graph[0], label_dict)
+    E = EGraph(H)
+    E.index_generator()
+    # assert list(E.to_indices.keys()) == sorted(reduced_alph)
+    # Adjacency matrix of H with rows/columns arranged according
+    # to the sorted alphabet should equal to the adjacency matrix
+    # of E.
+    H_adj = nx.to_numpy_array(H, nodelist=sorted(reduced_alph))
+    E.adj_generator(sparse=False)
+    E_adj = E.adj_mat
+    assert np.array_equal(H_adj, E_adj)
 
-    def test_add_qubit(self, random_graph_3D):
-        """Test the add_qubit function on a random EGraph."""
+def test_add_qubit(random_graph_3D):
+    """Test the add_qubit function on a random EGraph."""
 
-        E = EGraph(random_graph_3D)
-        E.adj_generator()
-        max_ind_old = max(E.to_points.keys())
-        n_old = E.number_of_nodes()
-        E.add_qubit()
-        E.add_qubit()
-        assert n_old + 2 == E.number_of_nodes()
-        assert max(E.to_points.keys()) == max_ind_old + 2
-        assert E.adj_mat is None
+    E = EGraph(random_graph_3D)
+    E.adj_generator()
+    max_ind_old = max(E.to_points.keys())
+    n_old = E.number_of_nodes()
+    E.add_qubit()
+    E.add_qubit()
+    assert n_old + 2 == E.number_of_nodes()
+    assert max(E.to_points.keys()) == max_ind_old + 2
+    assert E.adj_mat is None
 
-        E = EGraph(random_graph_3D)
-        E.index_generator()
-        E.add_qubit(qubit=(100, 101, -400), index=0)
-        assert E.to_points[0] == (100, 101, -400)
+    E = EGraph(random_graph_3D)
+    E.index_generator()
+    E.add_qubit(qubit=(100, 101, -400), index=0)
+    assert E.to_points[0] == (100, 101, -400)
 
-        with pytest.raises(Exception) as e:
-            E.add_qubit(qubit=(1, 1, 1, 1))
-        assert e.type == Exception
+    with pytest.raises(Exception) as e:
+        E.add_qubit(qubit=(1, 1, 1, 1))
+    assert e.type == Exception
 
-        with pytest.raises(Exception) as e:
-            E.add_qubit(qubit=0)
-        assert e.type == Exception
+    with pytest.raises(Exception) as e:
+        E.add_qubit(qubit=0)
+    assert e.type == Exception
 
-        with pytest.raises(Exception) as e:
-            E.add_qubit(index="1")
-        assert e.type == Exception
+    with pytest.raises(Exception) as e:
+        E.add_qubit(index="1")
+    assert e.type == Exception
 
-        E = EGraph(random_graph_3D)
-        n_edges_old = E.number_of_edges()
-        E.index_generator()
-        E.add_qubit(neighbors=[0, 1])
-        assert n_edges_old + 2 == E.number_of_edges()
+    E = EGraph(random_graph_3D)
+    n_edges_old = E.number_of_edges()
+    E.index_generator()
+    E.add_qubit(neighbors=[0, 1])
+    assert n_edges_old + 2 == E.number_of_edges()
 
-        E = EGraph(random_graph_3D)
-        n_edges_old = E.number_of_edges()
-        new_neighs = [neigh for neigh in E.nodes() if random.randint(0, 10) > 7]
-        E.add_qubit(neighbors=new_neighs)
-        assert n_edges_old + len(new_neighs) == E.number_of_edges()
+    E = EGraph(random_graph_3D)
+    n_edges_old = E.number_of_edges()
+    new_neighs = [neigh for neigh in E.nodes() if random.randint(0, 10) > 7]
+    E.add_qubit(neighbors=new_neighs)
+    assert n_edges_old + len(new_neighs) == E.number_of_edges()
 
-    def test_remove_qubit(self, random_graph_3D):
-        """Test the remove_qubit function on a random EGraph."""
+def test_remove_qubit(random_graph_3D):
+    """Test the remove_qubit function on a random EGraph."""
 
-        E = EGraph(random_graph_3D)
-        E.adj_generator()
-        n_old = E.number_of_nodes()
-        E.remove_qubit()
-        assert n_old == E.number_of_nodes() + 1
-        assert E.adj_mat is None
+    E = EGraph(random_graph_3D)
+    n_old = E.number_of_nodes()
+    E.remove_qubit()
+    assert n_old == E.number_of_nodes() + 1
+    assert E.adj_mat is None
 
-        E = EGraph(random_graph_3D)
+    E = EGraph(random_graph_3D)
+    E.index_generator()
+    to_points_old = E.to_points.copy()
+    n_old = E.number_of_nodes()
+    E.remove_qubit(1)
+    assert n_old == E.number_of_nodes() + 1
+    assert E.adj_mat is None
+    assert to_points_old[2] == E.to_points[1]
+
+    E = EGraph(random_graph_3D)
+    n_old = E.number_of_nodes()
+    nodes = list(E.nodes())
+    E.remove_qubit(nodes[0])
+    E.remove_qubit(nodes[1])
+    assert n_old == E.number_of_nodes() + 2
+    assert E.adj_mat is None
+
+    E = EGraph(random_graph_3D)
+    with pytest.raises(Exception) as e:
+        E.remove_qubit("s")
+    assert e.type == Exception
 
     # def test_macronode(self):
     # pass

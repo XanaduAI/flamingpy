@@ -232,6 +232,7 @@ class EGraph(nx.Graph):
             neighbours (list[int] or list[tuple]): neighbors of qubit specified
             with indices or positions, respectively.
         """
+        # Add qubit
         if isinstance(qubit, tuple):
             if len(qubit) != 3:
                 raise Exception(
@@ -248,6 +249,7 @@ class EGraph(nx.Graph):
             )
         self.add_node(qubit)
 
+        # Update Neighbors
         if neighbors is not None:
             if isinstance(neighbors[0], int):
                 neighbors = [(self.to_points[ind], qubit) for ind in neighbors.copy()]
@@ -256,22 +258,28 @@ class EGraph(nx.Graph):
 
             self.add_edges_from(neighbors)
 
+        # Update dictionaries
         if (self.to_points is not None) and (self.to_indices is not None):
-            if isinstance(index, int):
-                self.to_points = {k + 1 if k >= index else k: v for k, v in self.to_points.items()}
-                self.to_indices = {v: k for k, v in self.to_points.items()}
-                new_index = index
-            elif index is None:
-                new_index = max(self.to_points.keys()) + 1
-            else:
-                raise Exception(
-                    "Index type not supported. Expected int or None, but was given"
-                    + f" {type(index)}"
-                )
-            self.to_points[new_index] = qubit
-            self.to_indices[qubit] = new_index
+            self._update_dicts_add_qubit(qubit, index)
 
         self.adj_mat = None
+
+    def _update_dicts_add_qubit(self, qubit, index):
+        """Update dictionaries of class when adding a qubit."""
+
+        if isinstance(index, int):
+            self.to_points = {k + 1 if k >= index else k: v for k, v in self.to_points.items()}
+            self.to_indices = {v: k for k, v in self.to_points.items()}
+            new_index = index
+        elif index is None:
+            new_index = max(self.to_points.keys()) + 1
+        else:
+            raise Exception(
+                "Index type not supported. Expected int or None, but was given"
+                + f" {type(index)}"
+            )
+        self.to_points[new_index] = qubit
+        self.to_indices[qubit] = new_index
 
     def remove_qubit(self, qubit=None) -> None:
         """Remove qubit from EGraph.
@@ -282,12 +290,14 @@ class EGraph(nx.Graph):
             If int, remove the qubit at that index. If None, remove
             the last qubit.
         """
+        # Remove qubit if dictionaries are not initialized
         if (self.to_points is None) and (self.to_indices is None):
             if isinstance(qubit, tuple):
                 self.remove_node(qubit)
             else:
                 self.index_generator()
 
+        # Remove qubit if dictionaries are initialized
         if (self.to_points is not None) and (self.to_indices is not None):
             if isinstance(qubit, tuple):
                 index_to_remove = self.to_indices[qubit]
