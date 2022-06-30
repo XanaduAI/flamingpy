@@ -6,6 +6,8 @@
 * A new noise model class, `CVMacroLayer`, is introduced as a replacement to `reduce_macro_and_simulate` in `macro_reduce.py`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) (backward incompatible)
  * The process for running macronode-related simulations is considerably improved: the user need only instantiate `CVMacroLayer` with the noise parameters of `CVLayer`.
  * Added option for rectangular cuboid surface codes (i.e. lattices with different aspect ratios) [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)'
+ * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing
+ nodes of the EGraph while updating internal attributes of the class.
 
 ### Bug fixes
 * Small fix in `viz.draw_EGraph` that raised an error whenever a graph state with non-integer coordinates was plotted. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
