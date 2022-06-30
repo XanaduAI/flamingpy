@@ -1,4 +1,4 @@
-## Release 0.8.2a5 (development release)
+## Release 0.9.0b0 (development release)
 
 ### New features since the last release
 * Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in a new module, `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
@@ -61,7 +61,19 @@ See full commit details ...
 
 ---
 
-## Release 0.8.2a5 (current release)
+## Release 0.9.0b0 (current release)
+
+### New features since the last release
+* A new noise model class, `CVMacroLayer`, is introduced as a replacement to `reduce_macro_and_simulate` in `macro_reduce.py`. [#57](https://github.com/XanaduAI/flamingpy/pull/57) (backward incompatible)
+ * The process for running macronode-related simulations is considerably improved: the user need only instantiate `CVMacroLayer` with the noise parameters of `CVLayer`.
+* Added option for rectangular cuboid surface codes, i.e. lattices with different aspect ratios. [#61](https://github.com/XanaduAI/flamingpy/pull/61) (backward compatible)
+* A new boundary option has been introduced for the `SurfaceCode`: the choice `"periodic"` refers to a code with boundaries periodic in all (x, y and z) directions, whereas codes with `"toric"` have periodic boundaries in the _x_ and _y_ axis but not the _z_ axis. [#62](https://github.com/XanaduAI/flamingpy/pull/62). (backward compatible)
+* Add functions to create different graph states (star and complete graphs, ring graphs, linear clusters, and Bell pairs) in the new module `utils.graph_states`. [#68](https://github.com/XanaduAI/flamingpy/pull/68). (backward compatible)
+
+
+---
+
+## Release 0.8.2a5
 
 ### New features since the last release
 
