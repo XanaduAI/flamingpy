@@ -8,21 +8,12 @@
 
 ### Documentation changes
 
-* Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
-* Typo fix and minor changes for README file. [#80](https://github.com/XanaduAI/flamingpy/pull/80)
-* non-Xanadu links now open in a new tab, while HTML references are listed scientific-style at the end of a file. [#82](https://github.com/XanaduAI/flamingpy/pull/82)
-* Changed the math rendering Sphinx to MathJax (before equations were rendered as png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
-* A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
-* A typo in the installation section has been fixed. [#94](https://github.com/XanaduAI/flamingpy/pull/94)
-* Added our new forum links to `README.md` and documentation site. [#96](https://github.com/XanaduAI/flamingpy/pull/96)
-
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz), [WingCode](https://github.com/WingCode)
-
 See full commit details ...
+
 
 ---
 
@@ -68,6 +59,24 @@ See full commit details ...
   * Directory argument `-d` was removed as it was unused. A working version can be added in the future.
   * We have removed reporting "decoding_total_time" as a more sophisticated time profiler, featuring systematic timing of all the script subroutines, is in work and will be added soon (follow its progress [here](https://github.com/XanaduAI/ft-stack/pull/91)).
 * Added the `err_prob` argument to the `simulations.py` script in order to be able to execute the simulations with `iid` noise. An error is raised when `iid` noise is selected but err_prob is not passed as an argument.  [#99](https://github.com/XanaduAI/flamingpy/pull/99)
+
+### Documentation changes
+
+* A couple of .rst files have been changed in light of the removing `macro_reduce.py`, shifting `CVLayer` to cv.ops, and adding `CVMacroLayer`. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
+* Mention the new graph state functions from `flamingpy.utils.graph_states` in the `run_graph_states.py` tutorial. [#68](https://github.com/XanaduAI/flamingpy/pull/68)
+* A typo fix and minor changes for README file. [#80](https://github.com/XanaduAI/flamingpy/pull/80)
+* Non-Xanadu links now open in a new tab, while HTML references are listed scientific-style at the end of a file. [#82](https://github.com/XanaduAI/flamingpy/pull/82)
+* Changed the math rendering Sphinx to MathJax (before equations were rendered as .png). [#84](https://github.com/XanaduAI/flamingpy/pull/84)
+* A typo in the installation section has been fixed. [#94](https://github.com/XanaduAI/flamingpy/pull/94)
+* Added our new forum links to `README.md` and documentation site. [#96](https://github.com/XanaduAI/flamingpy/pull/96)
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+[Joost Bus](https://github.com/soosub), [Sebastián Duque Mesa](https://github.com/sduquemesa), [Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz), [WingCode](https://github.com/WingCode)
+
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.8.2a5...v0.9.0b0).
 
 
 ## Release 0.8.2a5
