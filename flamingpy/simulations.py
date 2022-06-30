@@ -158,6 +158,7 @@ def run_ec_simulation(
     # For iid Z errors
     elif noise == IidNoise:
         weight_opts = {"method": "uniform"}
+
     decoder_args.update({"weight_opts": weight_opts})
 
     if "MPI" in globals():
@@ -200,7 +201,7 @@ def run_ec_simulation(
                     "boundaries",
                     "delta",
                     "p_swap",
-                    "err_prob",
+                    "error_probability",
                     "decoder",
                     "errors",
                     "trials",
@@ -214,6 +215,9 @@ def run_ec_simulation(
             file = open(file_name, "a", newline="", encoding="utf8")
             writer = csv.writer(file)
         current_time = datetime.now().time().strftime("%H:%M:%S")
+        for key in ["delta", "p_swap", "error_probability"]:
+            if key not in noise_args:
+                noise_args.update({key: "None"})
         writer.writerow(
             [
                 reverse_noise_dict[noise],
@@ -256,7 +260,7 @@ if __name__ == "__main__":
             "boundaries": args.boundaries,
             "delta": args.delta,
             "p_swap": args.p_swap,
-            "err_prob": args.err_prob,
+            "error_probability": args.err_prob,
             "trials": args.trials,
             "decoder": args.decoder,
         }
@@ -270,14 +274,14 @@ if __name__ == "__main__":
             "boundaries": "open",
             "delta": 0.09,
             "p_swap": 0.25,
-            "err_prob": 0.1,
+            "error_probability": 0.1,
             "trials": 100,
             "decoder": "MWPM",
         }
     # Checking that a valid decoder choice is provided
     if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
         params["decoder"] = "UF"
-    elif params["decoder"].lower() in ["mwpm"]:
+    elif params["decoder"].lower() in ["mwpm", "minimum weight perfect matching"]:
         params["decoder"] = "MWPM"
     else:
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
@@ -287,15 +291,10 @@ if __name__ == "__main__":
     code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
     noise = noise_dict[params["noise"]]
-    noise_args = {key: params[key] for key in ["delta", "p_swap"]}
-    # check that arg err_prob is provided for iid noise
     if params.get("noise") == "iid":
-        if params.get("err_prob") is None:
-            raise ValueError("No argument `err_prob` found for iid noise.")
-
-        # set to None unused args and update noise_args
-        params["delta"], params["p_swap"] = None, None
-        noise_args = {"error_probability": params.get("err_prob")}
+        noise_args = {"error_probability": params.get("error_probability")}
+    else:
+        noise_args = {key: params[key] for key in ["delta", "p_swap"]}
 
     decoder = params["decoder"]
     args = {
