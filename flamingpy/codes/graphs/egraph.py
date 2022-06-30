@@ -275,8 +275,7 @@ class EGraph(nx.Graph):
             new_index = max(self.to_points.keys()) + 1
         else:
             raise Exception(
-                "Index type not supported. Expected int or None, but was given"
-                + f" {type(index)}"
+                "Index type not supported. Expected int or None, but was given" + f" {type(index)}"
             )
         self.to_points[new_index] = qubit
         self.to_indices[qubit] = new_index
