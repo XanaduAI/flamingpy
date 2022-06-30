@@ -58,7 +58,7 @@ See full commit details ...
 * In `simulations.py`: [#93](https://github.com/XanaduAI/flamingpy/pull/93)
   * Directory argument `-d` was removed as it was unused. A working version can be added in the future.
   * We have removed reporting "decoding_total_time" as a more sophisticated time profiler, featuring systematic timing of all the script subroutines, is in work and will be added soon (follow its progress [here](https://github.com/XanaduAI/ft-stack/pull/91)).
-* Added the `err_prob` argument to the `simulations.py` script in order to be able to execute the simulations with `iid` noise. An error is raised when `iid` noise is selected but err_prob is not passed as an argument.  [#99](https://github.com/XanaduAI/flamingpy/pull/99)
+* Added the `error_probability` argument to the `simulations.py` script in order to be able to execute the simulations with `iid` noise. [#99](https://github.com/XanaduAI/flamingpy/pull/99)
 
 ### Documentation changes
 
