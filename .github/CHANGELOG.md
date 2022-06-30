@@ -39,7 +39,6 @@ See full commit details ...
   * Lengthy functions have been broken up into more specialized methods.
   * The class is initialized with all the noise model parameters, simplifying the signatures of the methods.
   * An `apply_noise` method has been added to combine the procedures for noise sampling.
-  * The state labeling functions have been rewritten to be faster and more compact.
   * Docstrings were modified, and the public/private status of certain attributes was changed.
   * The `final` sampling order has been removed, as it is equivalent to `initial` but slower.
 * The `simulations.py` module has been made simpler and more general. [#57](https://github.com/XanaduAI/flamingpy/pull/57)
