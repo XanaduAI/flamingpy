@@ -1,9 +1,10 @@
-# STATS stuff:
+# STATS stuff
 *.stats
 
-# For the figures
+# For the figures and plotting tools
 *.pdf
 *.png
+.local_plt/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -63,17 +64,17 @@ cover/
 *.mo
 *.pot
 
-# Django stuff:
+# Django stuff
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-# Flask stuff:
+# Flask stuff
 instance/
 .webassets-cache
 
-# Scrapy stuff:
+# Scrapy stuff
 .scrapy
 
 # Sphinx documentation
@@ -150,9 +151,9 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Cython stuff:
+# Cython stuff
 cython_debug/
 flamingpy/cpp/cpp_mc_loop.cpp
 
-# VS Code stuff:
+# VSCode stuff
 .vscode/
