@@ -292,9 +292,10 @@ if __name__ == "__main__":
 
     noise = noise_dict[params["noise"]]
     if params.get("noise") == "iid":
-        noise_args = {"error_probability": params.get("error_probability")}
-        if params.get("err_prob") is None:
+        if params.get("error_probability") is None:
             raise ValueError("No argument `err_prob` found for `iid` noise.")
+        else:
+            noise_args = {"error_probability": params.get("error_probability")}
     else:
         noise_args = {key: params[key] for key in ["delta", "p_swap"]}
 
