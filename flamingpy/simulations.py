@@ -158,6 +158,7 @@ def run_ec_simulation(
     # For iid Z errors
     elif noise == IidNoise:
         weight_opts = {"method": "uniform"}
+
     decoder_args.update({"weight_opts": weight_opts})
 
     if "MPI" in globals():
@@ -200,7 +201,7 @@ def run_ec_simulation(
                     "boundaries",
                     "delta",
                     "p_swap",
-                    "p_err",
+                    "error_probability",
                     "decoder",
                     "errors",
                     "trials",
@@ -214,6 +215,9 @@ def run_ec_simulation(
             file = open(file_name, "a", newline="", encoding="utf8")
             writer = csv.writer(file)
         current_time = datetime.now().time().strftime("%H:%M:%S")
+        for key in ["delta", "p_swap", "error_probability"]:
+            if key not in noise_args:
+                noise_args.update({key: "None"})
         writer.writerow(
             [
                 reverse_noise_dict[noise],
@@ -222,7 +226,7 @@ def run_ec_simulation(
                 code_args["boundaries"],
                 noise_args.get("delta"),
                 noise_args.get("p_swap"),
-                noise_args.get("p_err"),
+                noise_args.get("error_probability"),
                 decoder,
                 errors,
                 trials,
@@ -244,7 +248,7 @@ if __name__ == "__main__":
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
         parser.add_argument("-pswap", type=float)
-        parser.add_argument("-perr", type=float)
+        parser.add_argument("-errprob", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
 
@@ -256,7 +260,7 @@ if __name__ == "__main__":
             "boundaries": args.boundaries,
             "delta": args.delta,
             "p_swap": args.pswap,
-            "p_err": args.perr,
+            "error_probability": args.errprob,
             "trials": args.trials,
             "decoder": args.decoder,
         }
@@ -265,19 +269,19 @@ if __name__ == "__main__":
         # User can specify values here, if not using command line.
         params = {
             "noise": "passive",
-            "distance": 2,
+            "distance": 3,
             "ec": "primal",
             "boundaries": "open",
             "delta": 0.09,
             "p_swap": 0.25,
-            "p_err": 0,
+            "error_probability": 0.1,
             "trials": 100,
             "decoder": "MWPM",
         }
     # Checking that a valid decoder choice is provided
     if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
         params["decoder"] = "UF"
-    elif params["decoder"].lower() in ["mwpm"]:
+    elif params["decoder"].lower() in ["mwpm", "minimum weight perfect matching"]:
         params["decoder"] = "MWPM"
     else:
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
@@ -287,8 +291,20 @@ if __name__ == "__main__":
     code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
     noise = noise_dict[params["noise"]]
-    noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
+    if params.get("noise") == "iid":
+        if params.get("error_probability") is None:
+            raise ValueError("No argument `err_prob` found for `iid` noise.")
+        noise_args = {"error_probability": params.get("error_probability")}
+    else:
+        noise_args = {key: params[key] for key in ["delta", "p_swap"]}
 
     decoder = params["decoder"]
-    args = [params["trials"], code, code_args, noise, noise_args, decoder]
-    run_ec_simulation(*args)
+    args = {
+        "trials": params["trials"],
+        "code": code,
+        "code_args": code_args,
+        "noise": noise,
+        "noise_args": noise_args,
+        "decoder": decoder,
+    }
+    run_ec_simulation(**args)
