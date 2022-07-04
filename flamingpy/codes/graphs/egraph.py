@@ -251,7 +251,7 @@ class EGraph(nx.Graph):
 
         # Update Neighbors
         if neighbors is not None:
-            if len(neighbors)!=0:
+            if len(neighbors) != 0:
                 if isinstance(neighbors[0], int):
                     neighbors = [(self.to_points[ind], qubit) for ind in neighbors.copy()]
                 elif isinstance(neighbors[0], tuple):
