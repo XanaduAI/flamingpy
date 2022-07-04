@@ -74,7 +74,7 @@ def SCZ_mat(adj, sparse=True):
     Give the 2N by 2N symplectic matrix for CZ gate application based on the
     adjacency matrix adj. Assumes quadrature-like convention:
 
-        (q1, ..., qN, p_1, ..., p_N).
+        (q_1, ..., q_N, p_1, ..., p_N).
 
     Args:
         adj (array): N by N binary symmetric matrix. If modes i and j are
@@ -99,7 +99,7 @@ def SCZ_mat(adj, sparse=True):
     # Construct symplectic
     symplectic = block_func([[identity, zeros], [adj, identity]])
 
-    if not sparse and isinstance(symplectic, sp.coo_matrix):
+    if not sparse and isinstance(symplectic, sp.spmatrix):
         return symplectic.toarray()
 
     return symplectic
