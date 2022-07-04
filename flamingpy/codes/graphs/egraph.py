@@ -251,12 +251,13 @@ class EGraph(nx.Graph):
 
         # Update Neighbors
         if neighbors is not None:
-            if isinstance(neighbors[0], int):
-                neighbors = [(self.to_points[ind], qubit) for ind in neighbors.copy()]
-            elif isinstance(neighbors[0], tuple):
-                neighbors = [(neigh, qubit) for neigh in neighbors.copy()]
+            if len(neighbors)!=0:
+                if isinstance(neighbors[0], int):
+                    neighbors = [(self.to_points[ind], qubit) for ind in neighbors.copy()]
+                elif isinstance(neighbors[0], tuple):
+                    neighbors = [(neigh, qubit) for neigh in neighbors.copy()]
 
-            self.add_edges_from(neighbors)
+                self.add_edges_from(neighbors)
 
         # Update dictionaries
         if (self.to_points is not None) and (self.to_indices is not None):
