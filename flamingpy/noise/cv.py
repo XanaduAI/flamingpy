@@ -19,7 +19,7 @@ import numpy as np
 from numpy.random import default_rng
 
 from flamingpy.codes import EGraph
-from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply, splitter_symp
+from flamingpy.cv.ops import dumbbell_mat, invert_permutation, SCZ_mat, splitter_symp
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
 # pylint: disable=too-many-instance-attributes
@@ -94,6 +94,7 @@ class CVLayer:
         self.states = supplied_states or {"p": np.empty(0, dtype=int)}
         self._sampling_order = kwargs.get("sampling_order") or "initial"
         self._translator = kwargs.get("translator") or GKP_binner
+        self._entangler = SCZ_mat(self._adj, sparse=True)
 
         if self.p_swap is not None and supplied_states is not None:
             if len(supplied_states["p"]):
@@ -205,7 +206,7 @@ class CVLayer:
 
         # For the initial sampling order, entangle the samples
         if self._sampling_order == "initial":
-            outcomes = SCZ_apply(self._adj, outcomes)
+            outcomes = self._entangler.dot(outcomes)
             if quad == "q":
                 outcomes = outcomes[:N][inds]
             elif quad == "p":
@@ -217,8 +218,7 @@ class CVLayer:
 
     def SCZ(self, sparse=True):
         """Return the symplectic matrix associated with CZ application."""
-        adj = self._adj
-        return SCZ_mat(adj, sparse)
+        return SCZ_mat(self._adj, sparse)
 
     # Visualization functions
     def draw(self, **kwargs):
@@ -344,7 +344,7 @@ class CVLayer:
             self._init_means = means
 
             if propagate:
-                means = SCZ_apply(self._adj, means)
+                means = self._entangler.dot(means)
 
         return means
 
@@ -376,6 +376,8 @@ class CVMacroLayer(CVLayer):
         self.reduced_graph = code.graph
         if bs_network is None:
             self.bs_network = splitter_symp()
+
+        self._entangler = dumbbell_mat(self._adj)
 
     def apply_noise(self, rng=default_rng()):
         """Reduce the macronode code lattice to the canonical code lattice.
