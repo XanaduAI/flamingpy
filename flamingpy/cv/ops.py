@@ -15,10 +15,50 @@
 
 # pylint: disable=import-outside-toplevel,too-many-instance-attributes
 
+import itertools as it
+
 import numpy as np
 from scipy.linalg import block_diag
 import scipy.sparse as sp
-from thewalrus.symplectic import expand, beam_splitter
+from thewalrus.symplectic import beam_splitter, expand, rotation
+
+
+def dumbbell_mat(adj, sparse=True):
+    """Return a symplectic matrix for entangling sensor states.
+
+    Give the 2N by 2N symplectic matrix for phase shifts and beamsplitter
+    application that would entangle GKP sensor states. Assume that such
+    an entangling link is applied between every two modes connected by an edgem
+    according to the adjacency matrix adj. Assumes quadrature-like convention:
+
+        (q_1, ..., q_N, p_1, ..., p_N).
+
+    Args:
+        adj (array): N by N binary symmetric matrix. If modes i and j are
+            linked by an edge, then entry ij and ji is equal to the weight of the
+            edge (1 by default); otherwise 0.
+        sparse (bool): whether to return a sparse or dense array when adj
+            input is a sparse array.
+    Returns:
+        np.array or sp.sparse.csr_matrix: 2N by 2N symplectic matrix.
+            sparse if the adjacency matrix is sparse.
+    """
+    # Number of modes
+    N = adj.shape[0]
+    # 50/50 beamsplitter in the 'all q's first' convention.
+    first_rot, second_rot = expand(rotation(np.pi / 4), 0, 2), expand(rotation(-np.pi / 4), 0, 2)
+    entangling_circuit = first_rot @ beam_splitter(-np.pi / 4, 0) @ second_rot
+    expanded_circuit = sp.identity(2 * N, format="dia")
+    for (i, j) in it.combinations(range(N), 2):
+        if adj[i, j]:
+            expanded_circuit = sp.dia_array(expand(entangling_circuit, [i, j], N)).dot(
+                expanded_circuit
+            )
+
+    if not sparse and isinstance(expanded_circuit, sp.spmatrix):
+        return expanded_circuit.toarray()
+
+    return expanded_circuit
 
 
 def invert_permutation(p):
