@@ -164,7 +164,8 @@ class CVLayer:
         inds=None,
         updated_means=None,
         updated_covs=None,
-        propagate=True,
+        entangle_means=False,
+        entangle_covs=False,
         rng=default_rng(),
     ):
         """Conduct a homodyne measurement of states in the lattice.
@@ -173,7 +174,8 @@ class CVLayer:
         inds according to sampling order specified by self._sampling_order. If
         updated_means or updated_covs is supplied, use those instead of the
         outputs of self._means_sampler and self._covs_sampler, respectively.
-        The 'propagate' option is fed into _means_sampler, if desired.
+        The 'entangle_means' and 'entangle_covs' options are fed into 
+        _means_sampler, and _covs_sampler, if desired.
 
         Args:
             rng (numpy.random.Generator, optional): a random number generator following
@@ -186,7 +188,7 @@ class CVLayer:
         N_inds = len(inds)
         # Determine which means and covs to use for the probability distribution
         if updated_means is None:
-            means = self._means_sampler(propagate=propagate, rng=rng)
+            means = self._means_sampler(entangle=entangle_means, rng=rng)
         else:
             if quad == "q":
                 means = updated_means[:N][inds]
@@ -194,7 +196,7 @@ class CVLayer:
                 means = updated_means[N:][inds]
 
         if updated_covs is None:
-            covs = self._covs_sampler(inds=inds)
+            covs = self._covs_sampler(entangle=entangle_covs, inds=inds)
         else:
             if quad == "q":
                 covs = updated_covs[:N][inds]
@@ -274,8 +276,10 @@ class CVLayer:
             for ind in self.states[psi]:
                 self.egraph.nodes[self._to_points[ind]]["state"] = psi
 
-    def _covs_sampler(self, inds=None):
-        """Return the covariances for the homodyne measurement sample."""
+    def _covs_sampler(self, entangle=False, inds=None):
+        """Return the covariances for the homodyne measurement sample.
+        
+        Setting entangle to True applies self._entangler to the covs."""
         delta = self.delta
         covs = np.zeros(2 * self._N, dtype=np.float32)
         if self._sampling_order == "initial":
@@ -300,7 +304,10 @@ class CVLayer:
                 for i, perfect_ind in enumerate(inds_to_0):
                     ind_arr[i] = (inds == perfect_ind).nonzero()[0][0]
                 covs[ind_arr] = 0
-
+            
+            if entangle:
+                covs = self._entangler.dot(covs)
+                
         return covs
 
     def _generate_gkp_indices(self):
@@ -320,11 +327,10 @@ class CVLayer:
             inds = rng.choice(range(self._N), size=int(np.floor(num_p)), replace=False)
             self.states["p"] = inds
 
-    def _means_sampler(self, propagate=False, rng=default_rng()):
+    def _means_sampler(self, entangle=False, rng=default_rng()):
         """Return the means for the homodyne measurement sample.
 
-        Setting propagate to True applies a symplectic CZ matrix to the
-        means.
+        Setting entangle to True applies self._entangler to the means.
         """
         means = np.zeros(2 * self._N, dtype=np.float32)
         if self._sampling_order == "two-step":
@@ -343,7 +349,7 @@ class CVLayer:
                     means[indices] = val_funcs[state](n_inds)
             self._init_means = means
 
-            if propagate:
+            if entangle:
                 means = self._entangler.dot(means)
 
         return means
@@ -436,7 +442,7 @@ class CVMacroLayer(CVLayer):
         vector.
         """
         N = self._N
-        quads = self._means_sampler(propagate=True)
+        quads = self._means_sampler(entangle=True)
         # Permute the quadrature values to align with the permuted
         # indices in order to apply the beamsplitter network.
         quad_permutation = np.concatenate([self.permuted_inds, N + self.permuted_inds])
