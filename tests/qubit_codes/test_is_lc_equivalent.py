@@ -109,8 +109,8 @@ def tuples_of_nodes_and_modes(node_range, mode_array):
 
 
 def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
-    """A convenience function that generates triples of distinct integer
-    pairs and a string.
+    """A convenience function that generates triples of distinct integer pairs
+    and a string.
 
     For example, can include (1,2,'mystring1') and (1,2,'mystring2') but not (1,1, 'mystring1')
     Args:
