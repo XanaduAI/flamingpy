@@ -6,7 +6,6 @@ from flamingpy.codes.graphs import EGraph
 from flamingpy.utils import graph_states
 
 
-
 def get_adj_mat(graph):
     """A convenience function to get the adjacency matrix of an EGraph object
     Args:
@@ -84,8 +83,9 @@ def distinct_tuples(min_range, max_range):
     Returns:
         (list): list of (int, int) tuples
     """
-    return [(a, b) for a in range(min_range, max_range)
-            for b in range(min_range, max_range) if a != b]
+    return [
+        (a, b) for a in range(min_range, max_range) for b in range(min_range, max_range) if a != b
+    ]
 
 
 def tuples_of_nodes_and_modes(node_range, mode_array):
@@ -151,8 +151,8 @@ class TestLCEquivalent:
     # SKIPPED TEST
     # Runs 2 tests
     @pytest.mark.skip(
-        reason = "Current implementation assumes that equivalence with empty graph is False"\
-                 "instead of raising a ValueError, so this test is irrelevant."
+        reason="Current implementation assumes that equivalence with empty graph is False"
+        "instead of raising a ValueError, so this test is irrelevant."
     )
     @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_emptygraph_with_emptygraph_assume_valueerror(self, mode):
@@ -252,8 +252,7 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes, mode",
-                            tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
+    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_completegraph_with_stargraph_equivalent(self, nodes, mode):
         """Test True equivalence between complete graph --> star graph defined on same number of
         nodes."""
@@ -284,8 +283,7 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes, mode",
-                            tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
+    @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_stargraph_with_completegraph_equivalent(self, nodes, mode):
         """Test True equivalence between star graph --> complete graph defined on same number of
         nodes."""
@@ -317,8 +315,9 @@ class TestLCEquivalent:
     # Tests graphs on different number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 24 tests
-    @pytest.mark.parametrize("nodes1, nodes2, mode",
-                            triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"]))
+    @pytest.mark.parametrize(
+        "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
+    )
     def test_completeraph_with_stargraph_notequivalent(self, nodes1, nodes2, mode):
         """Test False equivalence between complete graph --> star graph defined on different number
         of nodes."""
@@ -338,8 +337,8 @@ class TestLCEquivalent:
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 24 tests
     @pytest.mark.parametrize(
-        "nodes1, nodes2, mode",
-        triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"]))
+        "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
+    )
     def test_stargraph_with_completegraph_notequivalent(self, nodes1, nodes2, mode):
         """Test False equivalence between star graph --> complete graph defined on different number
         of nodes."""
