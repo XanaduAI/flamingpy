@@ -1,4 +1,4 @@
-"""Unit tests for is_lc_equivalent() method of EGraph class"""
+"""Unit tests for is_lc_equivalent() method of EGraph class."""
 
 import pytest
 import numpy as np
@@ -18,7 +18,9 @@ def get_adj_mat(graph):
 
 
 def clifford_global_to_blocks(clifford_global):
-    """A convenience function to get a dictionary of A, B, C, D blocks of clifford in global form:
+    """A convenience function to get a dictionary of A, B, C, D blocks of
+    clifford in global form:
+
     [A | B]
     [C | D]
     Args:
@@ -35,7 +37,9 @@ def clifford_global_to_blocks(clifford_global):
 
 
 def clifford_tensors_to_blocks(clifford_tensors):
-    """A convenience function to get a dictionary of A, B, C, D blocks from clifford tensor factors:
+    """A convenience function to get a dictionary of A, B, C, D blocks from
+    clifford tensor factors:
+
     [A | B]
     [C | D]
     Args:
@@ -75,7 +79,9 @@ def XYplusZ(X, Y, Z):
 
 
 def distinct_tuples(min_range, max_range):
-    """ "A convenience function that generates distinct tuples of integers in specified range.
+    """A convenience function that generates distinct tuples of integers in
+    specified range.
+
     For example, can include (1,2) and (2,1) but not (2,2).
     Args:
         min_range (int): minimum of range
@@ -89,7 +95,9 @@ def distinct_tuples(min_range, max_range):
 
 
 def tuples_of_nodes_and_modes(node_range, mode_array):
-    """ "A convenience function that generates tuples of integer and string pairs.
+    """A convenience function that generates tuples of integer and string
+    pairs.
+
     For example, can include (1, 'mystring1'),  (1, 'mystring2'), (2, 'mystring1'), (2, 'mystring2')
     Args:
         node_range ([int, int]): array of interval range
@@ -101,7 +109,9 @@ def tuples_of_nodes_and_modes(node_range, mode_array):
 
 
 def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
-    """ " A convenience function that generates triples of distinct integer pairs and a string.
+    """A convenience function that generates triples of distinct integer
+    pairs and a string.
+
     For example, can include (1,2,'mystring1') and (1,2,'mystring2') but not (1,1, 'mystring1')
     Args:
         node_range ([int, int]): array of interval range
@@ -146,7 +156,7 @@ def triples_of_distinct_nodepair_and_modes(node_range, mode_array):
 # Then the following matrix block equation must hold True:
 # G2*(C*G1+D) == (A*G1+B)
 class TestLCEquivalent:
-    """Test class for is_lc_equivalent() method of EGraph class"""
+    """Test class for is_lc_equivalent() method of EGraph class."""
 
     # SKIPPED TEST
     # Runs 2 tests
@@ -156,7 +166,7 @@ class TestLCEquivalent:
     )
     @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_emptygraph_with_emptygraph_assume_valueerror(self, mode):
-        """Test if emptygraph equivalence raises a ValueError"""
+        """Test if emptygraph equivalence raises a ValueError."""
         # Assert:
         with pytest.raises(ValueError):
             # ARRANGE:
@@ -183,7 +193,8 @@ class TestLCEquivalent:
     # Runs 2 tests
     @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_pathgraph3_with_completegraph3_equivalent(self, mode):
-        """Test True equivalence between path graph --> complete graph defined on 3 nodes."""
+        """Test True equivalence between path graph --> complete graph defined
+        on 3 nodes."""
         # ARRANGE:
         # define all possible edges
         edge_1 = {(1, 0, 0), (0, 1, 0)}
@@ -218,7 +229,8 @@ class TestLCEquivalent:
     # Runs 2 tests
     @pytest.mark.parametrize("mode", ["global", "tensor"])
     def test_completegraph3_with_pathgraph3_equivalent(self, mode):
-        """Test True equivalence between complete graph --> path graph defined on 3 nodes."""
+        """Test True equivalence between complete graph --> path graph defined
+        on 3 nodes."""
         # ARRANGE:
         # define all possible edges
         edge_1 = {(1, 0, 0), (0, 1, 0)}
@@ -254,8 +266,8 @@ class TestLCEquivalent:
     # Runs 8 tests
     @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_completegraph_with_stargraph_equivalent(self, nodes, mode):
-        """Test True equivalence between complete graph --> star graph defined on same number of
-        nodes."""
+        """Test True equivalence between complete graph --> star graph defined
+        on same number of nodes."""
         # ARRANGE:
         # define complete graph
         graph1 = graph_states.complete_graph(nodes)
@@ -285,8 +297,8 @@ class TestLCEquivalent:
     # Runs 8 tests
     @pytest.mark.parametrize("nodes, mode", tuples_of_nodes_and_modes([1, 5], ["global", "tensor"]))
     def test_stargraph_with_completegraph_equivalent(self, nodes, mode):
-        """Test True equivalence between star graph --> complete graph defined on same number of
-        nodes."""
+        """Test True equivalence between star graph --> complete graph defined
+        on same number of nodes."""
         # ARRANGE:
         # interchange graph1 and graph2 compared to dual test
         # define complete graph
@@ -319,8 +331,8 @@ class TestLCEquivalent:
         "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
     )
     def test_completeraph_with_stargraph_notequivalent(self, nodes1, nodes2, mode):
-        """Test False equivalence between complete graph --> star graph defined on different number
-        of nodes."""
+        """Test False equivalence between complete graph --> star graph defined
+        on different number of nodes."""
         # ARRANGE:
         # define complete graph
         graph1 = graph_states.complete_graph(nodes1)
@@ -340,8 +352,8 @@ class TestLCEquivalent:
         "nodes1, nodes2, mode", triples_of_distinct_nodepair_and_modes([1, 5], ["global", "tensor"])
     )
     def test_stargraph_with_completegraph_notequivalent(self, nodes1, nodes2, mode):
-        """Test False equivalence between star graph --> complete graph defined on different number
-        of nodes."""
+        """Test False equivalence between star graph --> complete graph defined
+        on different number of nodes."""
         # ARRANGE:
         # interchange graph1 and graph2 compared to dual test
         # define complete graph
