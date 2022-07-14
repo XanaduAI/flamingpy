@@ -376,15 +376,9 @@ def draw_EGraph_plotly(
     for edge in egraph.edges:
         x0, y0, z0 = edge[0]
         x1, y1, z1 = edge[1]
-        x_edges.append(x0)
-        x_edges.append(x1)
-        x_edges.append(None)
-        y_edges.append(y0)
-        y_edges.append(y1)
-        y_edges.append(None)
-        z_edges.append(z0)
-        z_edges.append(z1)
-        z_edges.append(None)
+        x_edges.extend([x0, x1, None])
+        y_edges.extend([y0, y1, None])
+        z_edges.extend([z0, z1, None])
 
     nodeColors = []
     for point in egraph.nodes:
@@ -430,7 +424,7 @@ def draw_EGraph_plotly(
     layout = go.Layout(
         title="",
         width=650,
-        height=625,
+        height=650,
         showlegend=legend,
         scene=dict(
             xaxis=dict(axis),
@@ -442,6 +436,12 @@ def draw_EGraph_plotly(
         ),
         margin=dict(t=100),
         hovermode="closest",
+        xaxis=dict(
+            title="x",
+            tickmode="linear",
+            tick0=0,
+            dtick=1,
+        ),
     )
 
     return go.Figure(data=[edge_trace, node_trace], layout=layout)
