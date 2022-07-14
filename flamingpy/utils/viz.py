@@ -163,8 +163,28 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     return fig, ax
 
 
-@mpl.rc_context(plot_params)
 def draw_EGraph(
+    egraph,
+    backend="matplotlib",
+    **kwargs,
+):
+    """Draw an EGraph using the specified backend.
+
+    Args:
+        egraph (EGraph): The EGraph to draw.
+        backend (str): The backend to use. One of "matplotlib" or "plotly".
+        **kwargs: Additional arguments to pass to the backend.
+    """
+    if backend == "matplotlib":
+        return draw_EGraph_matplotlib(egraph, **kwargs)
+    elif backend == "plotly":
+        return draw_EGraph_plotly(egraph, **kwargs)
+    else:
+        raise ValueError(f"Unknown backend: {backend}")
+
+
+@mpl.rc_context(plot_params)
+def draw_EGraph_matplotlib(
     egraph,
     color_nodes=False,
     color_edges=False,
@@ -285,8 +305,7 @@ def draw_EGraph(
     return fig, ax
 
 
-@mpl.rc_context(plot_params)
-def draw_EGraph_3DScatterPlot(
+def draw_EGraph_plotly(
     egraph,
     color_nodes=False,
     color_edges=False,
@@ -764,7 +783,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             "show_axes",
         ]
         egraph_opts = {k: drawing_opts[k] for k in egraph_args}
-        fig, ax = draw_EGraph(code.graph, **egraph_opts)
+        fig, ax = draw_EGraph_matplotlib(code.graph, **egraph_opts)
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.
