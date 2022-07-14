@@ -311,15 +311,14 @@ def draw_EGraph_plotly(
     legend=False,
     **kwargs,
 ):
-    """Draw the graph state represented by the EGraph.
+    """Draw the graph state represented by the EGraph with plotly. #TODO: doc
+    out-of-date.
 
     Args:
         color_nodes (bool or string or dict): Options are:
             True: color the nodes based on the 'color' attribute
             attached to the node. If unavailable, color nodes black.
-
             string: color all nodes with the color specified by the string
-
             tuple[str, dict]: color nodes based on attribute and defined colour
             string by providing a tuple with [attribute, color_dictionary],
             for example:
@@ -396,7 +395,6 @@ def draw_EGraph_plotly(
             symbol="circle",
             size=5,
             color=nodeColors,
-            colorscale=["lightgreen", "magenta"],  # either green or magenta
             line=dict(color="black", width=0.5),
         ),
         hoverinfo="none",
@@ -426,8 +424,8 @@ def draw_EGraph_plotly(
     )
 
     layout = go.Layout(
-        width=650,
-        height=650,
+        width=750,
+        height=750,
         showlegend=legend,
         hovermode="closest",
         scene=dict(
