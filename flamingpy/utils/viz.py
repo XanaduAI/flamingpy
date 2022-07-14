@@ -387,6 +387,7 @@ def draw_EGraph_plotly(
 
     # nodes
     node_trace = go.Scatter3d(
+        name="nodes",
         x=x_nodes,
         y=y_nodes,
         z=z_nodes,
@@ -403,6 +404,7 @@ def draw_EGraph_plotly(
 
     # edges
     edge_trace = go.Scatter3d(
+        name="edges",
         x=x_edges,
         y=y_edges,
         z=z_edges,
@@ -417,34 +419,25 @@ def draw_EGraph_plotly(
         showline=True,
         zeroline=False,
         showgrid=True,
-        showticklabels=False,
-        title="",
+        showticklabels=True,
+        tickmode="linear",
+        tick0=0,
+        dtick=1,
     )
 
     layout = go.Layout(
-        title="",
         width=650,
         height=650,
         showlegend=legend,
-        scene=dict(
-            xaxis=dict(axis),
-            yaxis=dict(axis),
-            zaxis=dict(axis),
-            xaxis_title="x",
-            yaxis_title="y",
-            zaxis_title="z",
-        ),
-        margin=dict(t=100),
         hovermode="closest",
-        xaxis=dict(
-            title="x",
-            tickmode="linear",
-            tick0=0,
-            dtick=1,
+        scene=dict(
+            xaxis={**dict(title="x"), **axis},
+            yaxis={**dict(title="y"), **axis},
+            zaxis={**dict(title="z"), **axis},
         ),
     )
 
-    return go.Figure(data=[edge_trace, node_trace], layout=layout)
+    return go.Figure(data=[node_trace, edge_trace], layout=layout)
 
 
 def _plot_EGraph_edges(ax, egraph, color_edges):
