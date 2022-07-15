@@ -4,6 +4,8 @@
 
 ### Bug fixes
 
+* `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
+
 ### Improvements
 
 ### Documentation changes

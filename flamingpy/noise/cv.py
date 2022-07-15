@@ -389,7 +389,7 @@ class CVMacroLayer(CVLayer):
         effective bit values and phase error probabilities.
         """
         # Sample for the initial state types
-        self.populate_states(rng=rng)
+        self.populate_states(rng)
         # Obtain permuted indices, with stars (central nodes at the front)
         self._permute_star_inds()
         # Apply body indices to the macronode graph and effective state labels
@@ -397,9 +397,9 @@ class CVMacroLayer(CVLayer):
         self._apply_macro_and_reduced_labels()
         # Apply symplectic matrices corresponding to CZ gates and the
         # beamsplitter networks.
-        self._entangle_states()
+        self._entangle_states(rng)
         # Measure the syndrome, corresponding to memory-mode operaiton.
-        self._measure_syndrome()
+        self._measure_syndrome(rng)
         # Process homodyne outcomes to calculate effective bit values
         # and phase error probabilities for the reduced nodes.
         for j in range(0, self._N - 3, 4):
@@ -422,7 +422,7 @@ class CVMacroLayer(CVLayer):
             centre_point = tuple(round(i) for i in point)
             self.reduced_graph.nodes[centre_point]["state"] = self.egraph.nodes[point]["state"]
 
-    def _entangle_states(self):
+    def _entangle_states(self, rng=default_rng()):
         """Entangle the states in the macro_graph.
 
         Apply CZ gates to (i.e. a symplectic CZ matrix to the quadratures of)
@@ -434,7 +434,7 @@ class CVMacroLayer(CVLayer):
         vector.
         """
         N = self._N
-        quads = self._means_sampler(propagate=True)
+        quads = self._means_sampler(propagate=True, rng=rng)
         # Permute the quadrature values to align with the permuted
         # indices in order to apply the beamsplitter network.
         quad_permutation = np.concatenate([self.permuted_inds, N + self.permuted_inds])
@@ -475,7 +475,7 @@ class CVMacroLayer(CVLayer):
                 meas[index] = macro_graph.nodes[micro]["hom_val_q"]
         return meas
 
-    def _measure_syndrome(self):
+    def _measure_syndrome(self, rng=default_rng()):
         """Measure the syndrome of self.egraph.
 
         Conduct p-homodyne measurements on the stars (central modes) of
@@ -492,8 +492,8 @@ class CVMacroLayer(CVLayer):
         planets = np.delete(self.permuted_inds, np.arange(0, N, 4))
         # Update quadrature values after CZ gate application.
         # Measure stars in p, planets in q.
-        self.measure_hom(quad="p", inds=stars, updated_means=unpermuted_quads)
-        self.measure_hom(quad="q", inds=planets, updated_means=unpermuted_quads)
+        self.measure_hom(quad="p", inds=stars, updated_means=unpermuted_quads, rng=rng)
+        self.measure_hom(quad="q", inds=planets, updated_means=unpermuted_quads, rng=rng)
 
     def _neighbor_of_micro_i_macro_j(self, i, j):
         """Return the neighbor of the ith micronode, jth macronode in
