@@ -1,11 +1,7 @@
-r""".. _mbqc:
+r""".. _ft_mbqc:
 
-Measurement-based quantum computation
+Fault-tolerant measurement-based quantum computation
 =============================
-
-.. meta::
-    :property="og:description": Learn about measurement-based quantum computation
-    :property="og:image": https://pennylane.ai/qml/_images/mbqc.png
 
 *Author: Joost Bus. Posted: Day Month 2022. Last updated: Day Month 2022.*
 
@@ -51,7 +47,7 @@ RHG = SurfaceCode(code_distance)
 ##############################################################################
 #
 # .. raw:: html
-#    :file: ../demonstrations/mbqc/rhg-graph.html
+#    :file: ../tutorials/ft_mbqc/rhg-graph.html
 #
 
 ##############################################################################
@@ -62,7 +58,7 @@ RHG = SurfaceCode(code_distance)
 # lattice encodes the result of the computation which can be read out by yet another measurement!
 #
 #
-# .. figure:: ../demonstrations/mbqc/gif_measuring.gif
+# .. figure:: ../tutorials/ft_mbqc/gif_measuring.gif
 #    :align: center
 #    :width: 75%
 #
@@ -83,7 +79,7 @@ RHG = SurfaceCode(code_distance)
 # blog post <https://medium.com/xanaduai/from-a-state-of-light-to-state-of-the-art-the-photonic-path-to-millions-of-qubits-c0e08ca1cb21>`_
 # or `this video <https://www.youtube.com/watch?v=SD6TH7GZ1rM>`_.
 #
-# .. figure:: ../demonstrations/mbqc/mbqc_blueprint_full.png
+# .. figure:: ../tutorials/ft_mbqc/mbqc_blueprint_full.png
 #    :align: center
 #    :width: 75%
 #
