@@ -25,6 +25,11 @@ Tutorials
 :html:`<div class="gallery-grid row">`
 
 .. gallery-item::
+    :tooltip: How to get started with FlamingPy!
+    :figure: _static/graph_states_thumbnail.png
+    :description: :doc:`../tutorials/_out/run_getting_started`
+
+.. gallery-item::
     :tooltip: In this tutorial we will tell you a bit about graph states, and show you how to define and visualize them using FlamingPy.
     :figure: _static/graph_states_thumbnail.png
     :description: :doc:`../tutorials/_out/run_graph_states`
