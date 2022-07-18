@@ -1,4 +1,4 @@
-""".. _graph-states-tutorial:
+""".. _getting-started-tutorial:
 
 Getting Started and Basic Usage
 ===============================
