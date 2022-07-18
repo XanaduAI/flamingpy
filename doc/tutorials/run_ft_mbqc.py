@@ -1,7 +1,7 @@
-r""".. _ft_mbqc:
+r""".. _ft_mbqc-tutorial:
 
 Fault-tolerant measurement-based quantum computation
-=============================
+=======================================================
 
 *Author: Joost Bus. Posted: Day Month 2022. Last updated: Day Month 2022.*
 
@@ -9,7 +9,7 @@ Fault-tolerant measurement-based quantum computation
 
 ##############################################################################
 # Quantum error correction and fault tolerance
-# ----------------
+# --------------------------------------------
 #
 # To mitigate the physical errors that can (and will) happen during a quantum computation we
 # require some kind of error correction. Error correction is a technique of detecting errors and
@@ -70,7 +70,7 @@ RHG = SurfaceCode(code_distance)
 
 ##############################################################################
 # Xanadu's approach
-# ----------------
+# --------------------------------
 # Xanadu's path towards a fault-tolerant quantum computer is via a measurement-based scheme with a
 # 3-dimensional cluster state using photonics. The main ideas of the architecture are presented in
 # [#XanaduBlueprint]_ and the corresponding cluster state is shown in the figure below. One
