@@ -6,6 +6,9 @@
 *.png
 .local_plt/
 
+# ... but keep track the pngs for the tuturials
+!doc/tutorials/**/*.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
