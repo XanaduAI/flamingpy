@@ -22,36 +22,17 @@ The integer denotes the code distance. By default, the boundaries are set to "op
 
 .. code-block:: python3
 
-   CVRHG = CVLayer(RHG, p_swap=0.5)
+   CVRHG = CVLayer(RHG, delta=0.1, p_swap=0.5)
+   CVRHG.apply_noise()
 
 
-Now, half the lattice (on average) will be labelled a GKP state, and the other half a p-squeezed state. Next, we can apply a noise model to the states:
+This had the effect of labelling half the lattice (on average) with GKP states and the other half with p-squeezed states. Then, a Gaussian random noise model was applied with a squeezing parameter of 0.1 to the states in the lattice. Finally, a syndrome measurement (sequence of homodyne measurements) was conducted on the lattice, with the outcomes translated to bit values.
+
+At this point, we are ready to perform error correction on the code and print a message identifying success or failure:
 
 .. code-block:: python3
    
-   grn_model = {"noise": "grn", "delta": 0.1}
-   CVRHG.apply_noise(grn_model)
-
-
-This results in Gaussian random noise model with a squeezing parameter of 0.1 to the GKP states in the lattice. We can now conduct a homodyne measurement on the lattice to measure the syndrome:
-
-.. code-block:: python3
-
-   CVRHG.measure_hom("p", RHG.all_syndrome_inds)
-
-
-At this point, we are ready to perform error correction on the lattice. First, we can specify some options for the decoder:
-
-.. code-block:: python3
-
-   decoder = {"inner": "basic", "outer": "MWPM"}
-
-
-This corresponds to a basic GKP binning function for the inner decoder, and minimum-weight perfect matching (MWPM) for the outer decoder. Lastly, we can detect and correct for errors, and print a message identifying success or failure:
-
-.. code-block:: python3
-
-   c = correct(code=RHG, decoder=decoder)
+   c = correct(RHG)
    outcome = "succeeded." * bool(c) + "failed." * (1 - bool(c))
    message = "Error correction {}".format(outcome)
    print(message)
