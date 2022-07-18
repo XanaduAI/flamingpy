@@ -28,7 +28,7 @@ RHG = SurfaceCode(3)
 # associate the nodes in the RHG lattice with CV states:
 #
 
-CVRHG = CVLayer(RHG, delta=0.1, p_swap=0.5)
+CVRHG = CVLayer(RHG, delta=0.08, p_swap=0.25)
 CVRHG.apply_noise()
 
 ##############################################################################
