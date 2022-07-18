@@ -34,4 +34,9 @@ Tutorials
     :figure: _static/ec_thumbnail.png
     :description: :doc:`../tutorials/_out/run_error_correction`
 
+.. gallery-item::
+    :tooltip: Fault-tolerant measurement-based quantum computation with continuous-variable cluster states
+    :figure: tutorials/mbqc_blueprint.png
+    :description: :doc:`../tutorials/_out/run_ft_mbqc`
+
 :html:`</div></div><div style='clear:both'>`
