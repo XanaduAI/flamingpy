@@ -9,7 +9,7 @@ Getting Started
 # a self-contained description, see
 # `Xanadu's blueprint <https://quantum-journal.org/papers/q-2021-02-04-392/>`_ for a fault-tolerant
 # photonic quantum computer. To see a sample of what FlamingPy can do, let us first import a few
-# important objects:
+# important objects.
 #
 
 from flamingpy.codes import SurfaceCode
@@ -17,7 +17,7 @@ from flamingpy.decoders import correct
 from flamingpy.noise import CVLayer
 
 ##############################################################################
-# Next, let us instantiate an RHG lattice -- the measurement-based version of the surface code:
+# Next, let us instantiate an RHG lattice -- the measurement-based version of the surface code.
 #
 
 RHG = SurfaceCode(3)
@@ -25,7 +25,12 @@ RHG = SurfaceCode(3)
 ##############################################################################
 #
 # The integer denotes the code distance. By default, the boundaries are set to "open". Next, let us
-# associate the nodes in the RHG lattice with CV states:
+# associate the nodes in the RHG lattice with CV states and assume a noise model. We will choose a
+# Gaussian random noise model in this example. To do so, we will have to specify two
+# parameters: the finite-energy parameter :math:`\delta` and the swap-out probability
+# :math:`p_{swap}` that designates the probability of having a p-squeezed state instead of a GKP
+# qubit. Finally, we simulate a syndrome measurement (sequence of homodyne measurements) on the
+# lattice, with the outcomes translated to bit values.
 #
 
 CVRHG = CVLayer(RHG, delta=0.08, p_swap=0.25)
@@ -33,14 +38,9 @@ CVRHG.apply_noise()
 
 ##############################################################################
 #
-# This had the effect of labelling half the lattice (on average) with GKP states and the other half
-# with p-squeezed states. Then, a Gaussian random noise model was applied with a squeezing parameter
-# of 0.1 to the states in the lattice. Finally, a syndrome measurement (sequence of homodyne
-# measurements) was be conducted on the lattice, with the outcomes translated to bit values.
-#
 # At this point, we are ready to perform error correction on the code. We can choose the decoder,
-# but also if (and how) we want to visualize it. Let's do so to get a better understanding of what
-# is going on.
+# but also if (and how) we want to visualize the process. Let's do so to get a better understanding
+# of what is going on.
 #
 
 # Drawing options
