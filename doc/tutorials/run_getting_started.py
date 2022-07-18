@@ -36,12 +36,36 @@ CVRHG.apply_noise()
 # This had the effect of labelling half the lattice (on average) with GKP states and the other half
 # with p-squeezed states. Then, a Gaussian random noise model was applied with a squeezing parameter
 # of 0.1 to the states in the lattice. Finally, a syndrome measurement (sequence of homodyne
-# measurements) was conducted on the lattice, with the outcomes translated to bit values.
-# At this point, we are ready to perform error correction on the code and print a message
-# identifying success or failure:
+# measurements) was be conducted on the lattice, with the outcomes translated to bit values.
+#
+# At this point, we are ready to perform error correction on the code. We can choose the decoder,
+# but also if (and how) we want to visualize it. Let's do so to get a better understanding of what
+# is going on.
 #
 
-c = correct(RHG)
+# Drawing options
+node_colors = ("state", {"GKP": "gold", "p": "blue"})
+
+dw = {
+    "show_nodes": True,
+    "color_nodes": node_colors,
+    "show_recovery": True,
+    "label_stabilizers": False,
+    "label_boundary": False,
+    "label_edges": False,
+    "label": None,
+    "legend": True,
+    "show_title": True,
+    "show_axes": True,
+}
+
+c = correct(RHG, decoder="MWPM", draw=True, drawing_opts=dw)
+
+##############################################################################
+#
+# Finally, let's print a message identifying success or failure.
+#
+
 outcome = "succeeded." * bool(c) + "failed." * (1 - bool(c))
 message = "Error correction {}".format(outcome)
 print(message)
