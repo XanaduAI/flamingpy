@@ -1,6 +1,6 @@
 """.. _getting-started-tutorial:
 
-Getting Started and Basic Usage
+Getting Started
 ===============================
 """
 

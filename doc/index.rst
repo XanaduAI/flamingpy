@@ -121,7 +121,7 @@ FlamingPy is **free** and **open source**, and released under the |Apache2|.
    :caption: Using FlamingPy
    :hidden:
 
-   usage/getting_started
+   usage/tutorials/_out/run_getting_started`
    usage/tutorials
 
 .. toctree::
