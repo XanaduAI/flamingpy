@@ -47,7 +47,7 @@ RHG = SurfaceCode(code_distance)
 ##############################################################################
 #
 # .. raw:: html
-#    :file: ../tutorials/ft_mbqc/rhg-graph.html
+#    :file: ../ft_mbqc/rhg-graph.html
 #
 
 ##############################################################################
@@ -58,7 +58,7 @@ RHG = SurfaceCode(code_distance)
 # lattice encodes the result of the computation which can be read out by yet another measurement!
 #
 #
-# .. figure:: ../tutorials/ft_mbqc/gif_measuring.gif
+# .. figure:: ../ft_mbqc/gif_measuring.gif
 #    :align: center
 #    :width: 75%
 #
@@ -79,7 +79,7 @@ RHG = SurfaceCode(code_distance)
 # blog post <https://medium.com/xanaduai/from-a-state-of-light-to-state-of-the-art-the-photonic-path-to-millions-of-qubits-c0e08ca1cb21>`_
 # or `this video <https://www.youtube.com/watch?v=SD6TH7GZ1rM>`_.
 #
-# .. figure:: ../tutorials/ft_mbqc/mbqc_blueprint_full.png
+# .. figure:: ../ft_mbqc/mbqc_blueprint_full.png
 #    :align: center
 #    :width: 75%
 #
