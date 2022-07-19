@@ -269,11 +269,13 @@ class EGraph(nx.Graph):
         if solution_vector is None:
             equivalent = False
             clifford_output = None
-        # if graphs are equivalent and clifford_form == "tensor", convert clifford_output to tensor factors
+        # if graphs are equivalent and clifford_form == "tensor", convert clifford_output to
+        # tensor factors
         elif clifford_form == "tensor":
             equivalent = True
             clifford_output = self.__clifford_vec_to_tensors(solution_vector)
-        # if graphs are equivalent and clifford_form == "global", convert clifford_output to global form
+        # if graphs are equivalent and clifford_form == "global", convert clifford_output to
+        # global form
         elif clifford_form == "global":
             equivalent = True
             clifford_output = self.__clifford_vec_to_global(solution_vector)
