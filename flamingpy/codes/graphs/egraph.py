@@ -275,7 +275,7 @@ class EGraph(nx.Graph):
             clifford_output = self.__clifford_vec_to_tensors(solution_vector)
         # if graphs are equivalent and clifford_form == "global", convert clifford_output to global form
         elif clifford_form == "global":
-            equivalent = True    
+            equivalent = True
             clifford_output = self.__clifford_vec_to_global(solution_vector)
         # return equivalence and clifford_output
         return equivalent, clifford_output
@@ -313,7 +313,7 @@ class EGraph(nx.Graph):
     def __RREform_mod2(self, M, max_cols=None):
         """Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of
         columns given by max_cols.
-        Args: 
+        Args:
             M (numpy.array): A numpy array
             max_cols (int): Specifies the maximum number of columns of the input array to reduce
         Returns:
@@ -371,7 +371,7 @@ class EGraph(nx.Graph):
         satisfy the determinant constraints.
         Args:
             basis (numpy.array): A numpy array whose rows are basis vectors of the nullspace
-        Returns: 
+        Returns:
             clifford_output: If solution is found, clifford_output is a numpy vector specifying
             the local clifford. If no solution is found, clifford_output is None.
         """
@@ -414,7 +414,7 @@ class EGraph(nx.Graph):
         # get clifford solution in vector form
         solution_vector = np.array(sols[0]).astype(int)
         return solution_vector
-        
+
     def __clifford_vec_to_tensors(self, vec):
         """Converts a local clifford on n qubits in vector form to a list of n single qubit
         cliffords given by 2x2 numpy arrays.
@@ -424,7 +424,7 @@ class EGraph(nx.Graph):
             clifford_output (list): A list of length n of 2x2 numpy arrays representing single
             qubit local cliffords
         """
-        n = int(len(vec)/4)
+        n = int(len(vec) / 4)
         # initialize empty list
         local_clifford_list = []
         for i in range(n):
@@ -443,7 +443,6 @@ class EGraph(nx.Graph):
             clifford_output (numpy.array): A single 2n x 2n numpy array representing a local
             clifford
         """
-        n = int(len(vec)/4)
+        n = int(len(vec) / 4)
         blocks = [np.diag([vec[i + k * n] for i in range(n)]) for k in range(4)]
-        return np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])        
-
+        return np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
