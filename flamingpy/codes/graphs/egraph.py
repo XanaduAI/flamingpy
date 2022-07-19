@@ -256,11 +256,39 @@ class EGraph(nx.Graph):
         if np.shape(G)[0] != np.shape(G)[1]:
             raise ValueError("Input matrices must be square.")
 
-        # Construct a binary system of equations that two graph adjacency matrices G and H must
-        # satisfy.
-        # G and H are nxn adjacency matrices defined for n qubit graph states with n nodes.
-        # The system is given as a numpy array of shape n^2 x 4n with n^2 equations in 4n unknowns
-        #
+        # construct system of constraints for two adjacency matrices G and H
+        system_constraints = self.__system_constraints(G, H)
+
+        # construct nullspace basis of system of constraints
+        nullspace_basis = self.__nullspace_basis(system_constraints)
+
+        # search nullspace for solution vectors
+        solution_vector = self.__search_nullspace(nullspace_basis, np.shape(G)[0])
+
+        # if graphs are not equivalent set clifford_output to None
+        if solution_vector is None:
+            equivalent = False
+            clifford_output = None
+        # if graphs are equivalent and clifford_form == "tensor", convert clifford_output to tensor factors
+        elif clifford_form == "tensor":
+            equivalent = True
+            clifford_output = self.__clifford_vec_to_tensors(solution_vector)
+        # if graphs are equivalent and clifford_form == "global", convert clifford_output to global form
+        elif clifford_form == "global":
+            equivalent = True    
+            clifford_output = self.__clifford_vec_to_global(solution_vector)
+        # return equivalence and clifford_output
+        return equivalent, clifford_output
+
+    def __system_constraints(self, G, H):
+        """Constructs a binary system of equations that two graph adjacency matrices G and H must
+        satisfy for lc equivalence.
+        Args:
+            G and H are n x n adjacency matrices defined for n qubit graph states with n nodes.
+        Returns:
+            (numpy.array): A system given as a numpy array of shape n^2 x 4n with n^2 equations in
+            4n unknowns
+        """
         # set the number of qubits
         n = np.shape(G)[0]
         # define empty block matrix
@@ -280,56 +308,75 @@ class EGraph(nx.Graph):
             # add row block to M
             M.append([A, B, C, D])
         # define numpy block matrix for system of constraints
-        system_constraints = np.block(M).astype(int)
+        return np.block(M).astype(int)
 
-        # Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of
-        # columns given by max_cols.
-        def RREform_mod2(M, max_cols=None):
-            # number of columns to apply row reduction
-            max_cols = M.shape[1] if max_cols is None else max_cols
-            # row reduced matrix
-            R = M.copy()
-            # pivot index
-            p = 0
-            # perform row reduction
-            for j in range(max_cols):
-                # look for pivot column `j` at or below row `p`
-                index = np.nonzero(R[p:, j])[0]
-                if index.size == 0:
-                    continue
-                # pivot row
-                i = p + index[0]
-                # interchange `p` and `i`
-                R[[p, i], :] = R[[i, p], :]
-                # set pivot to 1
-                R[p, :] = R[p, :] / R[p, j]
-                # add zeros above and below the pivot
-                index = np.nonzero(R[:, j])[0].tolist()
-                index.remove(p)
-                R[index, :] = (R[index, :] - np.multiply.outer(R[index, j], R[p, :])) % 2
-                # increment pivot index until final row is reached
-                p += 1
-                if p == R.shape[0]:
-                    break
-            return R, p
+    def __RREform_mod2(self, M, max_cols=None):
+        """Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of
+        columns given by max_cols.
+        Args: 
+            M (numpy.array): A numpy array
+            max_cols (int): Specifies the maximum number of columns of the input array to reduce
+        Returns:
+            (numpy.array): A numpy array of the Row Reduced Echelon form modulo 2
+        """
+        # number of columns to apply row reduction
+        max_cols = M.shape[1] if max_cols is None else max_cols
+        # row reduced matrix
+        R = M.copy()
+        # pivot index
+        p = 0
+        # perform row reduction
+        for j in range(max_cols):
+            # look for pivot column `j` at or below row `p`
+            index = np.nonzero(R[p:, j])[0]
+            if index.size == 0:
+                continue
+            # pivot row
+            i = p + index[0]
+            # interchange `p` and `i`
+            R[[p, i], :] = R[[i, p], :]
+            # set pivot to 1
+            R[p, :] = R[p, :] / R[p, j]
+            # add zeros above and below the pivot
+            index = np.nonzero(R[:, j])[0].tolist()
+            index.remove(p)
+            R[index, :] = (R[index, :] - np.multiply.outer(R[index, j], R[p, :])) % 2
+            # increment pivot index until final row is reached
+            p += 1
+            if p == R.shape[0]:
+                break
+        return R, p
 
-        # Construct an array whose rows are basis vectors of the Null space of system_constraints M
-        #
-        # find left Null space of transposed system, which is equal to right Null space
-        system_constraints_transposed = system_constraints.T
-        m_rows, n_cols = system_constraints_transposed.shape
+    def __nullspace_basis(self, M):
+        """Constructs an array whose rows are binary basis vectors of the right null space of
+        input matrix array.
+        Args:
+            M (numpy.array): A binary matrix
+        Returns:
+            (numpy.array): A numpy array whose rows are basis vectors of the right null space
+        """
+        # find left Null space of transposed system, which is equal to right null space
+        M_transposed = M.T
+        m_rows, n_cols = M_transposed.shape
         # construct augmented block matrix A = [M | I]
-        A = np.concatenate((system_constraints_transposed, np.eye(m_rows, dtype=int)), axis=-1)
+        A = np.concatenate((M_transposed, np.eye(m_rows, dtype=int)), axis=-1)
         # row reduce left M block of augmented matrix
-        R, p = RREform_mod2(A, max_cols=n_cols)
+        R, p = self.__RREform_mod2(A, max_cols=n_cols)
         N = R[p:, n_cols:]
-        nullspace_basis, _ = RREform_mod2(N)
+        nullspace_basis, _ = self.__RREform_mod2(N)
+        return nullspace_basis
 
-        # search through sums of pairs of basis vectors of the null space, and check if any satisfy
-        # the determinant constraints
-        #
+    def __search_nullspace(self, basis, n):
+        """Search through sums of pairs of basis vectors of the null space, and check if any
+        satisfy the determinant constraints.
+        Args:
+            basis (numpy.array): A numpy array whose rows are basis vectors of the nullspace
+        Returns: 
+            clifford_output: If solution is found, clifford_output is a numpy vector specifying
+            the local clifford. If no solution is found, clifford_output is None.
+        """
         # number of basis vectors of null space
-        d = nullspace_basis.shape[0]
+        d = basis.shape[0]
         # boolean for LC equivalence
         equivalent = False
         # array to store potential solutions
@@ -340,7 +387,7 @@ class EGraph(nx.Graph):
                 # boolean for checking solution constraints
                 sat = True
                 # potential solution as sum (modulo 2) of basis pair
-                sol = np.vectorize(lambda x: x % 2)(np.add(nullspace_basis[i], nullspace_basis[j]))
+                sol = np.vectorize(lambda x: x % 2)(np.add(basis[i], basis[j]))
                 # store potential solution
                 sols.append(sol)
                 for k in range(n):
@@ -362,23 +409,41 @@ class EGraph(nx.Graph):
                 break
         # if no solution found, return (False, None)
         if not equivalent:
-            return equivalent, None
+            return None
         # if solution found, return (True, clifford_output)
         # get clifford solution in vector form
-        sol_vec = np.array(sols[0]).astype(int)
-        # convert clifford to desired output form
-        if clifford_form == "tensor":
-            # convert solution to list of single qubit cliffords given by 2x2 numpy arrays
-            # initialize empty list
-            local_clifford_list = []
-            for i in range(n):
-                single_qubit_clifford = np.array(
-                    [[sol_vec[i], sol_vec[i + n]], [sol_vec[i + 2 * n], sol_vec[i + 3 * n]]]
-                )
-                local_clifford_list.append(single_qubit_clifford)
-            clifford_output = local_clifford_list
-        if clifford_form == "global":
-            # convert solution to single global clifford given by 2nx2n numpy array
-            blocks = [np.diag([sol_vec[i + k * n] for i in range(n)]) for k in range(4)]
-            clifford_output = np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
-        return equivalent, clifford_output
+        solution_vector = np.array(sols[0]).astype(int)
+        return solution_vector
+        
+    def __clifford_vec_to_tensors(self, vec):
+        """Converts a local clifford on n qubits in vector form to a list of n single qubit
+        cliffords given by 2x2 numpy arrays.
+        Args:
+            vec (numpy.array): A vector of size 4n specifying a local clifford on n qubits
+        Returns:
+            clifford_output (list): A list of length n of 2x2 numpy arrays representing single
+            qubit local cliffords
+        """
+        n = int(len(vec)/4)
+        # initialize empty list
+        local_clifford_list = []
+        for i in range(n):
+            single_qubit_clifford = np.array(
+                [[vec[i], vec[i + n]], [vec[i + 2 * n], vec[i + 3 * n]]]
+            )
+            local_clifford_list.append(single_qubit_clifford)
+        return local_clifford_list
+
+    # convert solution to single global clifford given by 2nx2n numpy array
+    def __clifford_vec_to_global(self, vec):
+        """Converts local clifford on n qubits in vector form to a local clifford on all n qubits.
+        Args:
+            vec (numpy.array): A vector specifying a local clifford
+        Returns:
+            clifford_output (numpy.array): A single 2n x 2n numpy array representing a local
+            clifford
+        """
+        n = int(len(vec)/4)
+        blocks = [np.diag([vec[i + k * n] for i in range(n)]) for k in range(4)]
+        return np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])        
+
