@@ -4,10 +4,14 @@
 
 ### Bug fixes
 
+* `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
+
 ### Improvements
 - Added plotly backend for `draw` method of `EGraph` and `SurfaceCode` for additional interactivity. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
 
 ### Documentation changes
+
+* Getting started page is now automatically run, preventing future out-of-date issues [#105](https://github.com/XanaduAI/flamingpy/pull/105)
 
 ### Contributors
 
