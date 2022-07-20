@@ -262,7 +262,7 @@ class EGraph(nx.Graph):
         # construct nullspace basis of system of constraints
         nullspace_basis = self.__nullspace_basis(system_constraints)
 
-        # search nullspace for solution vectors
+        # search nullspace for solution vector
         solution_vector = self.__search_nullspace(nullspace_basis, np.shape(G)[0])
 
         # if graphs are not equivalent set clifford_output to None
@@ -409,11 +409,10 @@ class EGraph(nx.Graph):
             # end search loop
             if equivalent:
                 break
-        # if no solution found, return (False, None)
+        # if no solution found, return None
         if not equivalent:
             return None
-        # if solution found, return (True, clifford_output)
-        # get clifford solution in vector form
+        # if solution found, return clifford in vector form
         solution_vector = np.array(sols[0]).astype(int)
         return solution_vector
 
@@ -426,6 +425,7 @@ class EGraph(nx.Graph):
             clifford_output (list): A list of length n of 2x2 numpy arrays representing single
             qubit local cliffords
         """
+        # number of nodes/qubits
         n = int(len(vec) / 4)
         # initialize empty list
         local_clifford_list = []
@@ -436,7 +436,6 @@ class EGraph(nx.Graph):
             local_clifford_list.append(single_qubit_clifford)
         return local_clifford_list
 
-    # convert solution to single global clifford given by 2nx2n numpy array
     def __clifford_vec_to_global(self, vec):
         """Converts local clifford on n qubits in vector form to a local clifford on all n qubits.
         Args:
@@ -445,6 +444,7 @@ class EGraph(nx.Graph):
             clifford_output (numpy.array): A single 2n x 2n numpy array representing a local
             clifford
         """
+        # number of nodes/qubits
         n = int(len(vec) / 4)
         blocks = [np.diag([vec[i + k * n] for i in range(n)]) for k in range(4)]
         return np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
