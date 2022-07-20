@@ -435,7 +435,7 @@ def draw_EGraph_plotly(
         ),
     )
 
-    return go.Figure(data=[node_trace, edge_trace], layout=layout, title=label * title)
+    return go.Figure(data=[node_trace, edge_trace], layout=layout)
 
 
 def _plot_EGraph_edges(ax, egraph, color_edges):
