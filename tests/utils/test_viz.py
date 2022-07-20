@@ -20,6 +20,7 @@ from numpy.random import default_rng as rng
 import pytest
 import matplotlib
 import matplotlib.pyplot as plt
+import plotly
 
 from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
@@ -108,12 +109,14 @@ class TestDrawEGraphPlotly:
 
         # Test for drawing the EGraph
         try:
-            fig = viz.draw_EGraph_plotly(RHG)
-        except:
+            fig1 = viz.draw_EGraph_plotly(RHG)
+        except Exception:
             pytest.fail(f"Failed to draw EGraph of distance-{d} RHG lattice with Plotly.")
+        assert type(fig1) is plotly.graph_objs._figure.Figure
 
         # Test for drawing the SurfaceCode
         try:
-            fig = SC.draw(backend="plotly")
-        except:
+            fig2 = SC.draw(backend="plotly")
+        except Exception:
             pytest.fail(f"Failed to draw distance-{d} SurfaceCode object with Plotly.")
+        assert type(fig2) is plotly.graph_objs._figure.Figure
