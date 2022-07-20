@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Unit tests for is_lc_equivalent() method of EGraph class."""
-# pylint: disable=protected-access
+
+# pylint: disable=no-self-use
 
 import pytest
 import numpy as np
