@@ -177,10 +177,9 @@ def draw_EGraph(
     """
     if backend == "matplotlib":
         return draw_EGraph_matplotlib(egraph, **kwargs)
-    elif backend == "plotly":
+    if backend == "plotly":
         return draw_EGraph_plotly(egraph, **kwargs)
-    else:
-        raise ValueError(f"Unknown backend: {backend}")
+    raise ValueError(f"Unknown backend: {backend}")
 
 
 @mpl.rc_context(plot_params)
@@ -309,7 +308,6 @@ def draw_EGraph_plotly(
     egraph,
     color_nodes=False,
     legend=False,
-    **kwargs,
 ):
     """Draw the graph state represented by the EGraph with plotly. #TODO: doc
     out-of-date.
