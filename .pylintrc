@@ -27,4 +27,4 @@ ignored-classes=numpy,scipy,networkx,flamingpy.codes
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=invalid-name,consider-using-f-string,too-many-branches,no-member,redefined-outer-name,too-many-arguments,too-many-locals,too-few-public-methods
+disable=invalid-name,consider-using-f-string,too-many-branches,no-member,redefined-outer-name,too-many-arguments,too-many-locals,too-few-public-methods,no-self-use
