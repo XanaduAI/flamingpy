@@ -307,7 +307,11 @@ def draw_EGraph_matplotlib(
 def draw_EGraph_plotly(
     egraph,
     color_nodes=False,
+    color_edges=False,
+    label=None,
+    title=False,
     legend=False,
+    show_axes=True,
 ):
     """Draw the graph state represented by the EGraph with plotly. #TODO: doc
     out-of-date.
@@ -377,10 +381,8 @@ def draw_EGraph_plotly(
         y_edges.extend([y0, y1, None])
         z_edges.extend([z0, z1, None])
 
-    nodeColors = []
-    for point in egraph.nodes:
-        color = _get_node_color(egraph, color_nodes, point)
-        nodeColors.append(color)
+    nodeColors = [_get_node_color(egraph, color_nodes, node) for node in egraph.nodes]
+    edgeColors = [_get_node_color(egraph, color_edges, edge) for edge in egraph.edges]
 
     # nodes
     node_trace = go.Scatter3d(
@@ -406,7 +408,7 @@ def draw_EGraph_plotly(
         z=z_edges,
         line=dict(color="black", width=1),
         mode="lines",
-        marker=dict(color="black"),
+        marker=dict(color=edgeColors),
         hoverinfo="none",
     )
 
@@ -415,7 +417,7 @@ def draw_EGraph_plotly(
         showline=True,
         zeroline=False,
         showgrid=True,
-        showticklabels=True,
+        showticklabels=show_axes,
         tickmode="linear",
         tick0=0,
         dtick=1,
@@ -433,7 +435,7 @@ def draw_EGraph_plotly(
         ),
     )
 
-    return go.Figure(data=[node_trace, edge_trace], layout=layout)
+    return go.Figure(data=[node_trace, edge_trace], layout=layout, title=label * title)
 
 
 def _plot_EGraph_edges(ax, egraph, color_edges):
