@@ -135,7 +135,6 @@ class TestLCEquivalent:
         reason="Current implementation assumes that equivalence with empty graph is False"
         "instead of raising a ValueError, so this test is irrelevant."
     )
-    
     def test_emptygraph_with_emptygraph_assume_valueerror(self, mode):
         """Test if emptygraph equivalence raises a ValueError."""
         # Assert:
@@ -232,7 +231,7 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes", range(1,5))
+    @pytest.mark.parametrize("nodes", range(1, 5))
     def test_completegraph_with_stargraph_equivalent(self, nodes, mode):
         """Test True equivalence between complete graph --> star graph defined
         on same number of nodes."""
@@ -263,7 +262,7 @@ class TestLCEquivalent:
     # Tests graphs on same number of nodes in range(1,5)
     # Tests both output clifford_form modes: 'global' and 'tensor'
     # Runs 8 tests
-    @pytest.mark.parametrize("nodes", range(1,5))
+    @pytest.mark.parametrize("nodes", range(1, 5))
     def test_stargraph_with_completegraph_equivalent(self, nodes, mode):
         """Test True equivalence between star graph --> complete graph defined
         on same number of nodes."""

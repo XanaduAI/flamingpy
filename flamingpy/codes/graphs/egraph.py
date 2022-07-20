@@ -97,6 +97,7 @@ def macronize(can_graph, pad_boundary=False, disp=0.1):
         macro_graph.graph["perfect_points"] = [a for b in new_perfect_qubits for a in b]
     return macro_graph
 
+
 def RREform_mod2(M, max_cols=None):
     """Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a
     maximum number of columns given by max_cols.
@@ -136,6 +137,7 @@ def RREform_mod2(M, max_cols=None):
             break
     return R, p
 
+
 def system_constraints(G, H):
     """Constructs a binary system of equations that two graph adjacency
     matrices G and H must satisfy for lc equivalence.
@@ -167,6 +169,7 @@ def system_constraints(G, H):
     # define numpy block matrix for system of constraints
     return np.block(M).astype(int)
 
+
 def nullspace_basis(M):
     """Constructs an array whose rows are binary basis vectors of the right
     null space of input matrix array.
@@ -186,6 +189,7 @@ def nullspace_basis(M):
     N = R[p:, n_cols:]
     basis, _ = RREform_mod2(N)
     return basis
+
 
 def search_nullspace(basis):
     """Search through sums of pairs of basis vectors of the null space, and
@@ -240,6 +244,7 @@ def search_nullspace(basis):
     solution_vector = np.array(sols[0]).astype(int)
     return solution_vector
 
+
 def clifford_vec_to_tensors(vec):
     """Converts a local clifford on n qubits in vector form to a list of n single qubit
     cliffords given by 2x2 numpy arrays.
@@ -258,11 +263,10 @@ def clifford_vec_to_tensors(vec):
     # initialize empty list
     local_clifford_list = []
     for i in range(n):
-        single_qubit_clifford = np.array(
-            [[vec[i], vec[i + n]], [vec[i + 2 * n], vec[i + 3 * n]]]
-        )
+        single_qubit_clifford = np.array([[vec[i], vec[i + n]], [vec[i + 2 * n], vec[i + 3 * n]]])
         local_clifford_list.append(single_qubit_clifford)
     return local_clifford_list
+
 
 def clifford_vec_to_global(vec):
     """Converts local clifford on n qubits in vector form to a local clifford on all n qubits.
@@ -284,6 +288,7 @@ def clifford_vec_to_global(vec):
     n = int(len(vec) / 4)
     blocks = [np.diag([vec[i + k * n] for i in range(n)]) for k in range(4)]
     return np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
+
 
 class EGraph(nx.Graph):
     """An enhanced graph for representing quantum graph states.
