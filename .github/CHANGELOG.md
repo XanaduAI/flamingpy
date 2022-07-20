@@ -1,6 +1,7 @@
 ## Release 0.9.0b0 (development release)
 
 ### New features since the last release
+* Add `is_lc_equivalent` method to the EGraph class to check if two EGraphs are equivalent under local complementation.
 
 ### Bug fixes
 
@@ -16,7 +17,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub)
+[Joost Bus](https://github.com/soosub), [smtsjhr](https://github.com/smtsjhr)
 
 See full commit details ...
 
