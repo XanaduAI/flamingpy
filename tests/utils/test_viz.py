@@ -94,3 +94,26 @@ class TestDrawEGraph:
 
         actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
         assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
+
+
+class TestDrawEGraphPlotly:
+    """Tests for visualizing EGraphs with Plotly."""
+
+    @pytest.mark.parametrize("d", (2, 3))
+    def test_draw_egraph_rhg_plotly(self, d):
+        """Test for the draw method of EGraph of RHG lattice."""
+        # Bell state EGraph
+        SC = SurfaceCode(d)
+        RHG = SC.graph
+
+        # Test for drawing the EGraph
+        try:
+            fig = viz.draw_EGraph_plotly(RHG)
+        except:
+            pytest.fail(f"Failed to draw EGraph of distance-{d} RHG lattice with Plotly.")
+
+        # Test for drawing the SurfaceCode
+        try:
+            fig = SC.draw(backend="plotly")
+        except:
+            pytest.fail(f"Failed to draw distance-{d} SurfaceCode object with Plotly.")
