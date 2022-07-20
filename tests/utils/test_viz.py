@@ -109,8 +109,8 @@ class TestDrawEGraphPlotly:
 
         # Test for drawing the EGraph
         fig1 = viz.draw_EGraph_plotly(RHG)
-        assert type(fig1) is plotly.graph_objs._figure.Figure
+        assert type(fig1) == plotly.graph_objs.Figure
 
         # Test for drawing the SurfaceCode
         fig2 = SC.draw(backend="plotly")
-        assert type(fig2) is plotly.graph_objs._figure.Figure
+        assert type(fig2) == plotly.graph_objs.Figure
