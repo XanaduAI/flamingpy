@@ -108,15 +108,9 @@ class TestDrawEGraphPlotly:
         RHG = SC.graph
 
         # Test for drawing the EGraph
-        try:
-            fig1 = viz.draw_EGraph_plotly(RHG)
-        except Exception:
-            pytest.fail(f"Failed to draw EGraph of distance-{d} RHG lattice with Plotly.")
+        fig1 = viz.draw_EGraph_plotly(RHG)
         assert type(fig1) is plotly.graph_objs._figure.Figure
 
         # Test for drawing the SurfaceCode
-        try:
-            fig2 = SC.draw(backend="plotly")
-        except Exception:
-            pytest.fail(f"Failed to draw distance-{d} SurfaceCode object with Plotly.")
+        fig2 = SC.draw(backend="plotly")
         assert type(fig2) is plotly.graph_objs._figure.Figure
