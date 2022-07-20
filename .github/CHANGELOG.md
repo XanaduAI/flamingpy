@@ -5,12 +5,15 @@
 ### Bug fixes
 
 ### Improvements
+- Added plotly backend for `draw` method of `EGraph` and `SurfaceCode` for additional interactivity. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
 
 ### Documentation changes
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+[Joost Bus](https://github.com/soosub), [Avhijit Nair](https://github.com/Avhijit-codeboy)
 
 See full commit details ...
 
