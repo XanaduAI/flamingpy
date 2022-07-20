@@ -98,8 +98,9 @@ def macronize(can_graph, pad_boundary=False, disp=0.1):
     return macro_graph
 
 def RREform_mod2(M, max_cols=None):
-    """Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a maximum number of
-    columns given by max_cols.
+    """Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a
+    maximum number of columns given by max_cols.
+
     Args:
         M (numpy.array): A numpy array
         max_cols (int): Specifies the maximum number of columns of the input array to reduce
@@ -136,8 +137,9 @@ def RREform_mod2(M, max_cols=None):
     return R, p
 
 def system_constraints(G, H):
-    """Constructs a binary system of equations that two graph adjacency matrices G and H must
-    satisfy for lc equivalence.
+    """Constructs a binary system of equations that two graph adjacency
+    matrices G and H must satisfy for lc equivalence.
+
     Args:
         G and H are n x n adjacency matrices defined for n qubit graph states with n nodes.
     Returns:
@@ -166,8 +168,9 @@ def system_constraints(G, H):
     return np.block(M).astype(int)
 
 def nullspace_basis(M):
-    """Constructs an array whose rows are binary basis vectors of the right null space of
-    input matrix array.
+    """Constructs an array whose rows are binary basis vectors of the right
+    null space of input matrix array.
+
     Args:
         M (numpy.array): A binary matrix
     Returns:
@@ -185,8 +188,9 @@ def nullspace_basis(M):
     return basis
 
 def search_nullspace(basis):
-    """Search through sums of pairs of basis vectors of the null space, and check if any
-    satisfy the determinant constraints.
+    """Search through sums of pairs of basis vectors of the null space, and
+    check if any satisfy the determinant constraints.
+
     Args:
         basis (numpy.array): A numpy array whose rows are basis vectors of the nullspace
     Returns:
@@ -399,8 +403,10 @@ class EGraph(nx.Graph):
         return plot_mat_heat_map(adj, **kwargs)
 
     def is_lc_equivalent(self, graph2, clifford_form="tensor"):
-        """Checks if two EGraph objects are LC equivalent by finding a local clifford operation on
-        n qubits, where n is the number of nodes of the graphs.
+        """Checks if two EGraph objects are LC equivalent by finding a local
+        clifford operation on n qubits, where n is the number of nodes of the
+        graphs.
+
         Args:
             graph2 (Egraph): An EGraph object to test equivalence with
             clifford_form: A string describing the output form of Local Clifford operation when it
