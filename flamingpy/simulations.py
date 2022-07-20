@@ -58,14 +58,9 @@ def ec_mc_trial(
     the given code."""
     noise_instance.apply_noise(rng)
 
-    decoding_start_time = perf_counter()
-
     result = correct(code=code_instance, decoder=decoder, weight_options=weight_options)
 
-    decoding_stop_time = perf_counter()
-    decoding_time = decoding_stop_time - decoding_start_time
-
-    return result, decoding_time
+    return result
 
 
 def ec_monte_carlo(
@@ -74,7 +69,6 @@ def ec_monte_carlo(
     noise_instance,
     decoder,
     decoder_args,
-    return_decoding_time=False,
     world_comm=None,
     mpi_rank=0,
     mpi_size=1,
@@ -93,14 +87,10 @@ def ec_monte_carlo(
             (CVLayer, CVMacroLayer, or IidNoise)
         decoder (str): the decoding algorithm ("MWPM" or "UF")
         deocder_args (dict): arguments for the decoder (such as weight options)
-        return_decoding_time (bool, optional): when True, returns the total decoding time
         world_comm, mpi_rank, mpi_size: arguments for the MPI library.
 
     Returns:
-        tuple:
-            errors (integer): the number of errors.
-            prep_time_total (float): the total time in seconds taken by the state prep steps.
-                (This parameter is returned only if return_decoding_time is set to True.)
+        errors (integer): the number of errors.
     """
     weight_opts = decoder_args["weight_opts"]
 
@@ -109,20 +99,15 @@ def ec_monte_carlo(
 
     rng = np.random.default_rng(mpi_rank + int_time)
 
-    if return_decoding_time:
-        decoding_time_total = 0
-
     for i in range(trials):
         if i % mpi_size == mpi_rank:
-            result, decoding_time = ec_mc_trial(
+            result = ec_mc_trial(
                 code_instance,
                 noise_instance,
                 decoder,
                 weight_opts,
                 rng,
             )
-            if return_decoding_time:
-                decoding_time_total += decoding_time
             local_successes[0] += result
 
     if "MPI" in globals():
@@ -131,9 +116,6 @@ def ec_monte_carlo(
         successes[0] = local_successes[0]
 
     errors = int(trials - successes[0])
-
-    if return_decoding_time:
-        return errors, decoding_time_total
 
     return errors
 
@@ -176,6 +158,7 @@ def run_ec_simulation(
     # For iid Z errors
     elif noise == IidNoise:
         weight_opts = {"method": "uniform"}
+
     decoder_args.update({"weight_opts": weight_opts})
 
     if "MPI" in globals():
@@ -189,13 +172,12 @@ def run_ec_simulation(
 
     # Perform and time the simulation
     simulation_start_time = perf_counter()
-    errors, decoding_time_total = ec_monte_carlo(
+    errors = ec_monte_carlo(
         trials,
         code_instance,
         noise_instance,
         decoder,
         decoder_args,
-        True,
         world_comm,
         mpi_rank,
         mpi_size,
@@ -219,12 +201,11 @@ def run_ec_simulation(
                     "boundaries",
                     "delta",
                     "p_swap",
-                    "p_err",
+                    "error_probability",
                     "decoder",
                     "errors",
                     "trials",
                     "current_time",
-                    "decoding_time",
                     "simulation_time",
                     "mpi_size",
                 ]
@@ -234,6 +215,9 @@ def run_ec_simulation(
             file = open(file_name, "a", newline="", encoding="utf8")
             writer = csv.writer(file)
         current_time = datetime.now().time().strftime("%H:%M:%S")
+        for key in ["delta", "p_swap", "error_probability"]:
+            if key not in noise_args:
+                noise_args.update({key: "None"})
         writer.writerow(
             [
                 reverse_noise_dict[noise],
@@ -242,12 +226,11 @@ def run_ec_simulation(
                 code_args["boundaries"],
                 noise_args.get("delta"),
                 noise_args.get("p_swap"),
-                noise_args.get("p_err"),
+                noise_args.get("error_probability"),
                 decoder,
                 errors,
                 trials,
                 current_time,
-                decoding_time_total,
                 (simulation_stop_time - simulation_start_time),
                 mpi_size,
             ]
@@ -265,11 +248,9 @@ if __name__ == "__main__":
         parser.add_argument("-boundaries", type=str)
         parser.add_argument("-delta", type=float)
         parser.add_argument("-pswap", type=float)
+        parser.add_argument("-errprob", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
-        parser.add_argument(
-            "-dir", type=str, help="The directory where the result file should be stored"
-        )
 
         args = parser.parse_args()
         params = {
@@ -279,27 +260,28 @@ if __name__ == "__main__":
             "boundaries": args.boundaries,
             "delta": args.delta,
             "p_swap": args.pswap,
+            "error_probability": args.errprob,
             "trials": args.trials,
             "decoder": args.decoder,
         }
 
     else:
-        # User-specified values, if not using command line.
+        # User can specify values here, if not using command line.
         params = {
             "noise": "passive",
-            "distance": 2,
+            "distance": 3,
             "ec": "primal",
             "boundaries": "open",
             "delta": 0.09,
             "p_swap": 0.25,
-            "p_err": 0.1,
+            "error_probability": 0.1,
             "trials": 100,
             "decoder": "MWPM",
         }
     # Checking that a valid decoder choice is provided
     if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
         params["decoder"] = "UF"
-    elif params["decoder"].lower() in ["mwpm"]:
+    elif params["decoder"].lower() in ["mwpm", "minimum weight perfect matching"]:
         params["decoder"] = "MWPM"
     else:
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
@@ -309,8 +291,20 @@ if __name__ == "__main__":
     code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
     noise = noise_dict[params["noise"]]
-    noise_args = {key: params[key] for key in ["delta", "p_swap", "p_err"]}
+    if params.get("noise") == "iid":
+        if params.get("error_probability") is None:
+            raise ValueError("No argument `err_prob` found for `iid` noise.")
+        noise_args = {"error_probability": params.get("error_probability")}
+    else:
+        noise_args = {key: params[key] for key in ["delta", "p_swap"]}
 
     decoder = params["decoder"]
-    args = [params["trials"], code, code_args, noise, noise_args, decoder]
-    run_ec_simulation(*args)
+    args = {
+        "trials": params["trials"],
+        "code": code,
+        "code_args": code_args,
+        "noise": noise,
+        "noise_args": noise_args,
+        "decoder": decoder,
+    }
+    run_ec_simulation(**args)

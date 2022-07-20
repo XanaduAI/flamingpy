@@ -15,9 +15,11 @@
 
 The networkx implementation is used as a reference.
 """
+from datetime import datetime
 import itertools as it
+import logging
 
-from numpy.random import default_rng
+from numpy.random import default_rng as rng
 import pytest
 
 from flamingpy.codes import alternating_polarity, Stabilizer, SurfaceCode
@@ -25,12 +27,16 @@ from flamingpy.decoders.decoder import assign_weights
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph
 from flamingpy.noise import CVLayer
 
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
+
 # Test parameters
 
 stab_graph_backend = ["retworkx"]
 
 code_params = it.product(
-    [2, 3, 4],
+    [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
     ["open", "toric", "periodic"],
     ["primal", "dual"],
     [1, 0.1, 0.01],
@@ -57,7 +63,7 @@ def compute_enc_state(request):
         "delta": delta,
     }
     # Noise model
-    seed = default_rng().integers(0, 2**32)
+    seed = rng().integers(0, 2**32)
 
     # NX reference code
     nx_DVRHG = SurfaceCode(
@@ -70,7 +76,7 @@ def compute_enc_state(request):
     # CV (inner) code/state
     nx_CVRHG = CVLayer(nx_DVRHG, delta=delta, p_swap=p_swap)
     # Apply noise
-    nx_CVRHG.apply_noise(rng=default_rng(seed))
+    nx_CVRHG.apply_noise(rng=rng(seed))
     assign_weights(nx_DVRHG, "MWPM", **weight_options)
 
     print(f"rx + {ec}")
@@ -83,10 +89,9 @@ def compute_enc_state(request):
         backend=backend,
     )
     # CV (inner) code/state
-    states = {"p": nx_CVRHG.states["p"]}
-    CVRHG = CVLayer(DVRHG, delta=delta, states=states)
+    CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap)
     # Apply noise
-    CVRHG.apply_noise(default_rng(seed))
+    CVRHG.apply_noise(rng(seed))
     assign_weights(DVRHG, "MWPM", **weight_options)
 
     return nx_DVRHG, nx_CVRHG, DVRHG, CVRHG
@@ -141,7 +146,7 @@ def test_shortest_paths_have_same_weight(enc_state):
 
 
 code_params2 = it.product(
-    [3, 4],
+    [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
     ["open", "toric", "periodic"],
     ["primal", "dual"],
     [1, 0.9],

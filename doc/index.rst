@@ -39,7 +39,7 @@ FlamingPy Documentation
 
 .. index-card::
     :name: Key Concepts
-    :link: usage/getting_started.html
+    :link: tutorials/_out/run_getting_started.html
     :description: Learn how to simulate a fault-tolerant quantum computer
 
 .. index-card::
@@ -69,6 +69,19 @@ Features
 * Supports encoding qubits into GKP states (more precisely, combinations of GKP and squeezed states).
 * Is conveniently modularized, allowing the user to insert custom noise models, codes, decoders, backends and other features.
 * Provides a host of visualization tools for ease of verifying correctness.
+
+
+Support
+-------
+
+- **Source Code:** https://github.com/XanaduAI/flamingpy
+- **Issue Tracker:** https://github.com/XanaduAI/flamingpy/issues
+- **FlamingPy Documentation:** https://flamingpy.readthedocs.io/
+- **FlamingPy Discussion Forum:** https://discuss.pennylane.ai/c/flamingpy
+
+If you are having issues, please let us know by posting the issue on our `GitHub Issue Tracker <https://github.com/XanaduAI/flamingpy/issues>`_.
+
+We also have a **#flamingpy** channel on the `Xanadu Slack <https://join.slack.com/t/xanadu-quantum/shared_invite/zt-1bmpli2c0-Qjb_PvCi2ewH6xfbM6mLmw>`_, `GitHub Discussion Pages <https://github.com/XanaduAI/flamingpy/discussions>`_, and a `Discussion Forum <https://discuss.pennylane.ai/c/flamingpy>`_, all great places to start a general discussion and connect with our community members.
 
 
 Attribution for authors
@@ -108,7 +121,7 @@ FlamingPy is **free** and **open source**, and released under the |Apache2|.
    :caption: Using FlamingPy
    :hidden:
 
-   usage/getting_started
+   tutorials/_out/run_getting_started
    usage/tutorials
 
 .. toctree::
@@ -127,7 +140,6 @@ FlamingPy is **free** and **open source**, and released under the |Apache2|.
 
    faq
    help/support
-   help/frequently_encountered_errors
 
 .. toctree::
    :maxdepth: 2

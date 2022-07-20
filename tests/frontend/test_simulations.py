@@ -15,11 +15,14 @@
 
 # pylint: disable=protected-access
 
+from datetime import datetime
+import logging
 import warnings
 
 import itertools as it
-
 import re
+
+from numpy.random import default_rng as rng
 import pytest
 
 try:
@@ -31,8 +34,15 @@ from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 from flamingpy.simulations import ec_monte_carlo, run_ec_simulation
 
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
 
-code_params = it.product([2, 3, 4], ["primal", "dual"], ["open", "toric", "periodic"])
+code_params = it.product(
+    [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
+    ["primal", "dual"],
+    ["open", "toric", "periodic"],
+)
 
 if "MPI" in locals():
     world_comm = MPI.COMM_WORLD
@@ -122,8 +132,8 @@ def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     """Check the content of the simulation benchmark output file."""
 
     expected_header = (
-        "noise,distance,ec,boundaries,delta,p_swap,p_err,decoder,errors,"
-        + "trials,current_time,decoding_time,simulation_time,mpi_size"
+        "noise,distance,ec,boundaries,delta,p_swap,error_probability,decoder,"
+        + "errors,trials,current_time,simulation_time,mpi_size"
     )
 
     f = tmpdir.join("sims_results.csv")

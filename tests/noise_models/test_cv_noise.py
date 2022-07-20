@@ -15,9 +15,9 @@
 
 # pylint: disable=protected-access
 
+from datetime import datetime
 import itertools as it
 import logging
-from datetime import datetime
 
 import networkx as nx
 import numpy as np
@@ -31,7 +31,17 @@ from flamingpy.noise import CVLayer
 # A NetworkX random graph of size N for use in this module.
 N = 20
 
-code_params = it.product([2, 3, 4], [0.0001], [0, 0.5, 1], ["open", "periodic"], ["primal", "dual"])
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
+
+code_params = it.product(
+    [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
+    [0.0001],
+    [0, 0.5, 1],
+    ["open", "periodic"],
+    ["primal", "dual"],
+)
 
 
 @pytest.fixture(scope="module", params=[N])
@@ -117,8 +127,8 @@ class TestCVLayer:
         """Test that _states, p_inds, and gkp_inds are populated with the
         correct indices."""
         n = len(random_graph[0])
-        num_ps = rng().integers(n)
-        p_inds = rng().choice(n, num_ps, replace=False)
+        num_ps = rng(int_time).integers(n)
+        p_inds = rng(int_time).choice(n, num_ps, replace=False)
         gkp_inds = list(set(np.arange(n)) - set(p_inds))
         G = CVLayer(random_graph[0], delta=0.1, states={"p": p_inds})
         G.populate_states()
@@ -130,7 +140,7 @@ class TestCVLayer:
     @pytest.mark.parametrize("order", sorted(["initial", "two-step"]))
     def test_apply_noise(self, random_graph, order):
         """Check delta, sampling_order attributes with default noise model."""
-        delta = rng().random()
+        delta = rng(int_time).random()
         G = CVLayer(random_graph[0], delta=delta, sampling_order=order)
         assert G.delta == delta
         assert G._sampling_order == order
@@ -139,7 +149,7 @@ class TestCVLayer:
         """Compare expected noise objects (quadratures, covariance matrix) with
         those obtained through the GRN model in CVLayer with the initial
         sampling order."""
-        delta = rng().random()
+        delta = rng(int_time).random()
 
         n = len(random_graph[0])
         G = CVLayer(random_graph[0], delta=delta)
@@ -165,7 +175,7 @@ class TestCVLayer:
         """Compare expected noise objects (quadratures, covariance matrix) with
         those obtained through the GRN model in CVLayer with the final sampling
         order."""
-        delta = rng().random()
+        delta = rng(int_time).random()
 
         n = len(random_graph[0])
         G = CVLayer(random_graph[0], delta=delta, sampling_order="two-step")
