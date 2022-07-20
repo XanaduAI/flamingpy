@@ -39,7 +39,7 @@ FlamingPy Documentation
 
 .. index-card::
     :name: Key Concepts
-    :link: usage/getting_started.html
+    :link: tutorials/_out/run_getting_started.html
     :description: Learn how to simulate a fault-tolerant quantum computer
 
 .. index-card::
@@ -121,7 +121,7 @@ FlamingPy is **free** and **open source**, and released under the |Apache2|.
    :caption: Using FlamingPy
    :hidden:
 
-   usage/getting_started
+   tutorials/_out/run_getting_started
    usage/tutorials
 
 .. toctree::
