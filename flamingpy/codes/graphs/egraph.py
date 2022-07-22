@@ -216,25 +216,25 @@ class EGraph(nx.Graph):
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
 
-    # def add_node(self, node, **kwargs):
-    #     """Overwrite add_node function from nx.Graph to raise a warning
-    #     whenever add_qubit should be used."""
-    #     if not (self.to_indices is None and self.adj_mat is None):
-    #         warnings.warn(
-    #             "EGraph attributes are already populated. To add a"
-    #             " node, please use the add_qubit function."
-    #         )
-    #     self.add_node(node, **kwargs)
+    def add_node(self, node, **kwargs):
+        """Overwrite add_node function from nx.Graph to raise a warning
+        whenever add_qubit should be used."""
+        if not (self.to_indices is None and self.adj_mat is None):
+            warnings.warn(
+                "EGraph attributes are already populated. To add a"
+                " node, please use the add_qubit function."
+            )
+        super().add_node(node, **kwargs)
 
-    # def remove_node(self, node):
-    #     """Overwrite remove_node function from nx.Graph to raise a warning
-    #     whenever remove_node should be used."""
-    #     if not (self.to_indices is None and self.adj_mat is None):
-    #         warnings.warn(
-    #             "EGraph attributes are already populated. To remove a"
-    #             " node, please use the remove_qubit function."
-    #         )
-    #     self.remove_node(node)
+    def remove_node(self, node):
+        """Overwrite remove_node function from nx.Graph to raise a warning
+        whenever remove_node should be used."""
+        if not (self.to_indices is None and self.adj_mat is None):
+            warnings.warn(
+                "EGraph attributes are already populated. To remove a"
+                " node, please use the remove_qubit function."
+            )
+        super().remove_node(node)
 
     def add_qubit(self, qubit=None, neighbors=None) -> None:
         """Add qubit to EGraph at position with neigbours in
