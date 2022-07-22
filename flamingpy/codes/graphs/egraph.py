@@ -249,13 +249,13 @@ class EGraph(nx.Graph):
             )
         self.add_node(qubit)
 
-        # Update Neighbors
+        # Update meighbors
         if neighbors is not None:
             if len(neighbors) != 0:
                 if isinstance(neighbors[0], int):
-                    neighbors = [(self.to_points[ind], qubit) for ind in neighbors.copy()]
+                    neighborhood = [(self.to_points[ind], qubit) for ind in neighbors]
                 elif isinstance(neighbors[0], tuple):
-                    neighbors = [(neigh, qubit) for neigh in neighbors.copy()]
+                    neighborhood = [(tup, qubit) for tup in neighbors]
 
                 self.add_edges_from(neighbors)
 
