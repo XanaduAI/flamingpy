@@ -5,7 +5,7 @@
 ### Bug fixes
 
 * `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
-
+* Fix incompatibility between CodeFactor and pylint CI check. [#107](https://github.com/XanaduAI/flamingpy/pull/107)
 ### Improvements
 - Added plotly backend for `draw` method of `EGraph` and `SurfaceCode` for additional interactivity. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
 
@@ -17,7 +17,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Avhijit Nair](https://github.com/Avhijit-codeboy)
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Avhijit Nair](https://github.com/Avhijit-codeboy)
 
 See full commit details ...
 
