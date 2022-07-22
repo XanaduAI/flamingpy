@@ -13,18 +13,26 @@
 # limitations under the License.
 """"Unit tests for the graph state classes in the graphstates module."""
 
-# pylint: disable=protected-access
-
+# pylint: disable=protected-access,no-self-use
+from datetime import datetime
+import logging
 import string
 
+import random
 import networkx as nx
 import numpy as np
 import pytest
 
 from flamingpy.codes.graphs import EGraph
 
+now = datetime.now()
+int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
+logging.info("the following seed was used for random number generation: %i", int_time)
+random.seed(int_time)
+
 # A NetworkX random graph of size N for use in this module.
 N = 20
+N3D = 10
 
 
 @pytest.fixture(scope="module", params=[N])
@@ -36,6 +44,22 @@ def random_graph(request):
     G_adj = nx.to_numpy_array(G)
     G_adj_sparse = nx.to_scipy_sparse_array(G)
     return EGraph(G), G_adj, G_adj_sparse
+
+
+@pytest.fixture(scope="module", params=[N3D])
+def random_graph_3D(request):
+    """A convenience function to initialize random EGraphs for use in this
+    module."""
+    n = request.param
+    G = nx.Graph()
+    random_nodes = [
+        (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100)) for _ in range(n)
+    ]
+    G.add_nodes_from(random_nodes)
+
+    random_edges = [ed for ed in nx.non_edges(G) if random.randint(0, 10) >= 7]
+    G.add_edges_from(random_edges)
+    return G
 
 
 def noise_model(delta, order):
@@ -71,8 +95,71 @@ class TestEGraph:
         E_adj = E.adj_mat
         assert np.array_equal(H_adj, E_adj)
 
-    # def test_macronode(self):
-    # pass
+    def test_add_qubit(self, random_graph_3D):
+        """Test the add_qubit function on a random EGraph."""
 
-    # def test_slice_coords(self):
-    # pass
+        E = EGraph(random_graph_3D)
+        E.adj_generator()
+        max_ind_old = max(E.to_points.keys())
+        n_old = E.number_of_nodes()
+        E.add_qubit()
+        E.add_qubit()
+        assert n_old + 2 == E.number_of_nodes()
+        assert max(E.to_points.keys()) == max_ind_old + 2
+        assert E.adj_mat is None
+
+        E = EGraph(random_graph_3D)
+        E.index_generator()
+        E.add_qubit(qubit=(100, 101, -400))
+        assert (100, 101, -400) in E
+
+        with pytest.raises(Exception) as e:
+            E.add_qubit(qubit=(1, 1, 1, 1))
+        assert e.type == Exception
+
+        with pytest.raises(Exception) as e:
+            E.add_qubit(qubit=0)
+        assert e.type == Exception
+
+        E = EGraph(random_graph_3D)
+        n_edges_old = E.number_of_edges()
+        E.index_generator()
+        E.add_qubit(neighbors=[0, 1])
+        assert n_edges_old + 2 == E.number_of_edges()
+
+        E = EGraph(random_graph_3D)
+        n_edges_old = E.number_of_edges()
+        new_neighs = [neigh for neigh in E.nodes() if random.randint(0, 10) > 7]
+        E.add_qubit(neighbors=new_neighs)
+        assert n_edges_old + len(new_neighs) == E.number_of_edges()
+
+    def test_remove_qubit(self, random_graph_3D):
+        """Test the remove_qubit function on a random EGraph."""
+
+        E = EGraph(random_graph_3D)
+        E.index_generator()
+        to_points_old = E.to_points.copy()
+        n_old = E.number_of_nodes()
+        E.remove_qubit(1)
+        assert n_old == E.number_of_nodes() + 1
+        assert E.adj_mat is None
+        assert to_points_old[2] == E.to_points[2]
+
+        E = EGraph(random_graph_3D)
+        n_old = E.number_of_nodes()
+        nodes = list(E.nodes())
+        E.remove_qubit(nodes[0])
+        E.remove_qubit(nodes[1])
+        assert n_old == E.number_of_nodes() + 2
+        assert E.adj_mat is None
+
+        E = EGraph(random_graph_3D)
+        with pytest.raises(Exception) as e:
+            E.remove_qubit("s")
+        assert e.type == Exception
+
+        # def test_macronode(self):
+        # pass
+
+        # def test_slice_coords(self):
+        # pass

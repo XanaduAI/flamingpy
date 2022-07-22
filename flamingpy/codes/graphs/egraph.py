@@ -15,6 +15,7 @@
 
 # pylint: disable=import-outside-toplevel
 
+import warnings
 import networkx as nx
 import numpy as np
 
@@ -214,3 +215,117 @@ class EGraph(nx.Graph):
 
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
+
+    def add_node(self, node, **kwargs):
+        """Overwrite add_node function from nx.Graph to raise a warning
+        whenever add_qubit should be used."""
+        if not (self.to_indices is None and self.adj_mat is None):
+            warnings.warn(
+                "EGraph attributes are already populated. To add a"
+                " node, please use the add_qubit function."
+            )
+        super().add_node(node, **kwargs)
+
+    def remove_node(self, node):
+        """Overwrite remove_node function from nx.Graph to raise a warning
+        whenever remove_node should be used."""
+        if not (self.to_indices is None and self.adj_mat is None):
+            warnings.warn(
+                "EGraph attributes are already populated. To remove a"
+                " node, please use the remove_qubit function."
+            )
+        super().remove_node(node)
+
+    def add_qubit(self, qubit=None, neighbors=None, macro=False) -> None:
+        """Add qubit to EGraph at position with neigbours in
+        existing_neighbours.
+
+        Args:
+            qubit (3D tuple, or None): qubit to add. If it is a 3D tuple,
+            the qubit is added in that position. If qubit is None, the qubit is
+            positioned one unit further than the maximum position in the z
+            direction in position (0,0,z_max + 1).
+
+            index (int or None): index of qubit. If int, the qubit is
+            positioned at that index. If None, the index of the qubit is the
+            last one.
+
+            neighbours (list[int] or list[tuple]): neighbors of qubit specified
+            with indices or positions, respectively.
+        """
+        # Add qubit
+        if isinstance(qubit, tuple):
+            if len(qubit) != 3:
+                raise Exception(
+                    "The position should be a 3D tuple, but it was given a "
+                    + f"{len(qubit)}D tuple"
+                )
+            if qubit in self:
+                raise Exception(
+                    f"Could not add qubit because there is already a node in position {qubit}."
+                )
+        elif qubit is None:
+            z_max = max(map(lambda tup: tup[2], self.nodes()))
+            qubit = (0, 0, z_max + 1)
+        else:
+            raise Exception(
+                "Qubit type not supported. Excepted 3D tuple or None, but was"
+                + f" given {type(qubit)}"
+            )
+        self.add_node(qubit)
+
+        # Update neighbors
+        if neighbors is not None:
+            if len(neighbors) != 0:
+                if isinstance(neighbors[0], int):
+                    neighborhood = [(self.to_points[ind], qubit) for ind in neighbors]
+                elif isinstance(neighbors[0], tuple):
+                    neighborhood = [(tup, qubit) for tup in neighbors]
+
+                self.add_edges_from(neighborhood)
+
+        # Update dictionaries
+        if self.to_indices is not None:
+            new_index = max(self.to_points.keys()) + 1
+            self.to_points[new_index] = qubit
+            self.to_indices[qubit] = new_index
+
+        # Updates self.macro_to_micro dictionary
+        if macro:
+            self.macro_to_micro[qubit] = [qubit]  # should this be 4 qubits or just one?
+
+        self.adj_mat = None
+
+    def remove_qubit(self, qubit) -> None:
+        """Remove qubit from EGraph.
+
+        Args:
+            qubit (3D tuple, int, or None) : If 3D tuple, remove qubit at that
+            position. For not None self.to_points and not None self.to_indices:
+            If int, remove the qubit at that index. If None, remove
+            the last qubit.
+        """
+        # Remove qubit if dictionaries are not initialized
+        if self.to_indices is None:
+            if isinstance(qubit, tuple):
+                self.remove_node(qubit)
+            else:
+                self.index_generator()
+
+        # Remove qubit if dictionaries are initialized
+        if self.to_indices is not None:
+            if isinstance(qubit, tuple):
+                self.remove_node(qubit)
+                self.to_indices.pop(qubit)
+                self.to_points = {v: k for k, v in self.to_indices.items()}
+            elif isinstance(qubit, int):
+                self.remove_node(self.to_points[qubit])
+                self.to_points.pop(qubit)
+                self.to_indices = {v: k for k, v in self.to_points.items()}
+            else:
+                raise Exception(
+                    "Qubit type not supported. Excepted 3D tuple, int, or None, "
+                    + f"but was given {type(qubit)}"
+                )
+
+        self.adj_mat = None
