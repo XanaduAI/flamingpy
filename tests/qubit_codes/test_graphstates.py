@@ -69,14 +69,13 @@ def noise_model(delta, order):
 
 class TestEGraph:
     """Tests for EGraphs."""
-        
+
     def test_init(self, random_graph):
         """Check that the adjacency matrix of the random graph matches the
         adjancency matrix of the EGraph."""
         E = EGraph(random_graph[0])
         E_array = nx.to_numpy_array(E)
         assert np.all(random_graph[1] == E_array)
-
 
     def test_index(self, random_graph):
         """Tests a graph with nodes from a shuffled alphabet."""
@@ -95,7 +94,6 @@ class TestEGraph:
         E.adj_generator(sparse=False)
         E_adj = E.adj_mat
         assert np.array_equal(H_adj, E_adj)
-
 
     def test_add_qubit(self, random_graph_3D):
         """Test the add_qubit function on a random EGraph."""
@@ -134,7 +132,6 @@ class TestEGraph:
         new_neighs = [neigh for neigh in E.nodes() if random.randint(0, 10) > 7]
         E.add_qubit(neighbors=new_neighs)
         assert n_edges_old + len(new_neighs) == E.number_of_edges()
-
 
     def test_remove_qubit(self, random_graph_3D):
         """Test the remove_qubit function on a random EGraph."""
