@@ -240,7 +240,7 @@ class EGraph(nx.Graph):
                     + f"{len(qubit)}D tuple"
                 )
         elif qubit is None:
-            z_max = max(map(lambda x: x[2], self.nodes()))
+            z_max = max([tup[2] for tup in self])
             qubit = (0, 0, z_max + 1)
         else:
             raise Exception(
