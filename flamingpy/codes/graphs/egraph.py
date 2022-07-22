@@ -260,7 +260,7 @@ class EGraph(nx.Graph):
                 self.add_edges_from(neighbors)
 
         # Update dictionaries
-        if (self.to_points is not None) and (self.to_indices is not None):
+        if self.to_indices is not None:
             self._update_dicts_add_qubit(qubit, index)
 
         self.adj_mat = None
