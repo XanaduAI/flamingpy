@@ -108,8 +108,8 @@ def test_add_qubit(random_graph_3D):
 
     E = EGraph(random_graph_3D)
     E.index_generator()
-    E.add_qubit(qubit=(100, 101, -400), index=0)
-    assert E.to_points[0] == (100, 101, -400)
+    E.add_qubit(qubit=(100, 101, -400))
+    assert (100, 101, -400) in E
 
     with pytest.raises(Exception) as e:
         E.add_qubit(qubit=(1, 1, 1, 1))
@@ -117,10 +117,6 @@ def test_add_qubit(random_graph_3D):
 
     with pytest.raises(Exception) as e:
         E.add_qubit(qubit=0)
-    assert e.type == Exception
-
-    with pytest.raises(Exception) as e:
-        E.add_qubit(index="1")
     assert e.type == Exception
 
     E = EGraph(random_graph_3D)
@@ -146,7 +142,7 @@ def test_remove_qubit(random_graph_3D):
     E.remove_qubit(1)
     assert n_old == E.number_of_nodes() + 1
     assert E.adj_mat is None
-    assert to_points_old[2] == E.to_points[1]
+    assert to_points_old[2] == E.to_points[2]
 
     E = EGraph(random_graph_3D)
     n_old = E.number_of_nodes()
