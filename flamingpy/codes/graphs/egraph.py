@@ -289,10 +289,10 @@ class EGraph(nx.Graph):
             new_index = max(self.to_points.keys()) + 1
             self.to_points[new_index] = qubit
             self.to_indices[qubit] = new_index
-        
+
         # Updates self.macro_to_micro dictionary
         if macro:
-            self.macro_to_micro[qubit] = [qubit] # should this be 4 qubits or just one?
+            self.macro_to_micro[qubit] = [qubit]  # should this be 4 qubits or just one?
 
         self.adj_mat = None
 
