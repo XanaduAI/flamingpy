@@ -236,7 +236,7 @@ class EGraph(nx.Graph):
             )
         super().remove_node(node)
 
-    def add_qubit(self, qubit=None, neighbors=None) -> None:
+    def add_qubit(self, qubit=None, neighbors=None, macro=False) -> None:
         """Add qubit to EGraph at position with neigbours in
         existing_neighbours.
 
@@ -259,6 +259,10 @@ class EGraph(nx.Graph):
                 raise Exception(
                     "The position should be a 3D tuple, but it was given a "
                     + f"{len(qubit)}D tuple"
+                )
+            if qubit in self:
+                raise Exception(
+                    f"Could not add qubit because there is already a node in position {qubit}."
                 )
         elif qubit is None:
             z_max = max(map(lambda tup: tup[2], self.nodes()))
@@ -285,6 +289,10 @@ class EGraph(nx.Graph):
             new_index = max(self.to_points.keys()) + 1
             self.to_points[new_index] = qubit
             self.to_indices[qubit] = new_index
+        
+        # Updates self.macro_to_micro dictionary
+        if macro:
+            self.macro_to_micro[qubit] = [qubit] # should this be 4 qubits or just one?
 
         self.adj_mat = None
 
