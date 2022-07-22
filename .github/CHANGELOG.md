@@ -4,15 +4,19 @@
  * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing nodes of the EGraph while updating internal attributes of the class. [#10](https://github.com/XanaduAI/flamingpy/pull/100).
 ### Bug fixes
 
+* `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
+* Fix incompatibility between CodeFactor and pylint CI check. [#107](https://github.com/XanaduAI/flamingpy/pull/107)
 ### Improvements
 
 ### Documentation changes
+
+* Getting started page is now automatically run, preventing future out-of-date issues [#105](https://github.com/XanaduAI/flamingpy/pull/105)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Luis Mantilla](https://github.com/BestQuark)
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark)
 
 See full commit details ...
 
