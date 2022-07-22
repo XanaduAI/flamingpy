@@ -291,7 +291,7 @@ class EGraph(nx.Graph):
             the last qubit.
         """
         # Remove qubit if dictionaries are not initialized
-        if (self.to_points is None) and (self.to_indices is None):
+        if self.to_indices is None:
             if isinstance(qubit, tuple):
                 self.remove_node(qubit)
             else:
