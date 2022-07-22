@@ -19,6 +19,7 @@ import warnings
 import networkx as nx
 import numpy as np
 
+
 def macronize(can_graph, pad_boundary=False, disp=0.1):
     """Create a macronode graph out of canonical graph can_graph.
 
@@ -234,7 +235,6 @@ class EGraph(nx.Graph):
                 " node, please use the remove_qubit function."
             )
         self.remove_node(node)
-
 
     def add_qubit(self, qubit=None, neighbors=None) -> None:
         """Add qubit to EGraph at position with neigbours in

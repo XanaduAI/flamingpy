@@ -139,7 +139,6 @@ def test_add_qubit(random_graph_3D):
 def test_remove_qubit(random_graph_3D):
     """Test the remove_qubit function on a random EGraph."""
 
-
     E = EGraph(random_graph_3D)
     E.index_generator()
     to_points_old = E.to_points.copy()
