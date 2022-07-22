@@ -26,13 +26,14 @@ To modify the plot parameters use, for example,
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements,singleton-comparison
+# pylint: disable=too-many-statements,singleton-comparison, too-many-lines
 
 import itertools as it
 import math
 
 import numpy as np
 import networkx as nx
+import plotly.graph_objects as go
 import matplotlib as mpl
 from matplotlib.patches import Patch
 from matplotlib.ticker import Formatter
@@ -162,8 +163,27 @@ def plot_Z_err_cond(hom_val, error, alpha, use_hom_val, show=True):
     return fig, ax
 
 
-@mpl.rc_context(plot_params)
 def draw_EGraph(
+    egraph,
+    backend="matplotlib",
+    **kwargs,
+):
+    """Draw an EGraph using the specified backend.
+
+    Args:
+        egraph (EGraph): The EGraph to draw.
+        backend (str): The backend to use. One of "matplotlib" or "plotly".
+        **kwargs: Additional arguments to pass to the backend.
+    """
+    if backend == "matplotlib":
+        return draw_EGraph_matplotlib(egraph, **kwargs)
+    if backend == "plotly":
+        return draw_EGraph_plotly(egraph, **kwargs)
+    raise ValueError(f"Unknown backend: {backend}")
+
+
+@mpl.rc_context(plot_params)
+def draw_EGraph_matplotlib(
     egraph,
     color_nodes=False,
     color_edges=False,
@@ -282,6 +302,140 @@ def draw_EGraph(
     plt.draw()
 
     return fig, ax
+
+
+def draw_EGraph_plotly(
+    egraph,
+    color_nodes=False,
+    color_edges=False,
+    label=None,
+    title=False,
+    legend=False,
+    show_axes=True,
+):
+    """Draw the graph state represented by the EGraph with plotly. #TODO: doc
+    out-of-date.
+
+    Args:
+        color_nodes (bool or string or dict): Options are:
+            True: color the nodes based on the 'color' attribute
+            attached to the node. If unavailable, color nodes black.
+            string: color all nodes with the color specified by the string
+            tuple[str, dict]: color nodes based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
+
+                ``["state", {"GKP": "b", "p": "r"}]``
+
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
+
+        color_edges (bool or string or dict):
+            True: color the edges based on the 'color' attribute
+            attached to the node. If unavailable, color nodes grey.
+
+            string: color all edges with the color specified by the stirng
+
+            tuple: color edges based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
+
+        label (NoneType or string): plot values next to each node
+            associated with the node attribute label. For example,
+            to plot bit values, set label to "bit_val". If set to 'index',
+            it will plot the integer indices of the nodes. If the attribute
+            for some or all of the nodes, a message will print indicating
+            for how many nodes the attribute has not been set.
+        title (bool): if True, display the title, depending on the label.
+            For default labels, the titles are converted from attribute
+            name to plane English and capitalized.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
+        show_axes (bool): if False, turn off the axes.
+        dimensions (tuple): Dimensions of the region that should be plotted.
+            Should be of the form:
+
+                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
+
+            If None, sets the dimensions to the smallest rectangular space
+            containing all the nodes.
+
+    Returns:
+        figure: Plotly Express figure.
+    """
+
+    nodes = np.array(egraph.nodes)
+    x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
+
+    x_edges = []
+    y_edges = []
+    z_edges = []
+
+    for edge in egraph.edges:
+        x0, y0, z0 = edge[0]
+        x1, y1, z1 = edge[1]
+        x_edges.extend([x0, x1, None])
+        y_edges.extend([y0, y1, None])
+        z_edges.extend([z0, z1, None])
+
+    nodeColors = [_get_node_color(egraph, color_nodes, node) for node in egraph.nodes]
+    edgeColors = [_get_node_color(egraph, color_edges, edge) for edge in egraph.edges]
+
+    # nodes
+    node_trace = go.Scatter3d(
+        name="nodes",
+        x=x_nodes,
+        y=y_nodes,
+        z=z_nodes,
+        mode="markers",
+        marker=dict(
+            symbol="circle",
+            size=5,
+            color=nodeColors,
+            line=dict(color="black", width=0.5),
+        ),
+        hoverinfo="none",
+    )
+
+    # edges
+    edge_trace = go.Scatter3d(
+        name="edges",
+        x=x_edges,
+        y=y_edges,
+        z=z_edges,
+        line=dict(color="black", width=1),
+        mode="lines",
+        marker=dict(color=edgeColors),
+        hoverinfo="none",
+    )
+
+    axis = dict(
+        showbackground=True,
+        showline=True,
+        zeroline=False,
+        showgrid=True,
+        showticklabels=show_axes,
+        tickmode="linear",
+        tick0=0,
+        dtick=1,
+    )
+
+    layout = go.Layout(
+        width=750,
+        height=750,
+        showlegend=legend,
+        hovermode="closest",
+        scene=dict(
+            xaxis={**dict(title="x"), **axis},
+            yaxis={**dict(title="y"), **axis},
+            zaxis={**dict(title="z"), **axis},
+        ),
+    )
+
+    return go.Figure(data=[node_trace, edge_trace], layout=layout)
 
 
 def _plot_EGraph_edges(ax, egraph, color_edges):
@@ -432,9 +586,9 @@ def _get_node_color(egraph, color_nodes, point):
         color = color_dict.get(node_property)
 
     elif color_nodes == True:
-        color = egraph.nodes[point].get("color") or "k"
+        color = egraph.nodes[point].get("color") or "black"
     else:
-        color = "k"
+        color = "black"
     return color
 
 
@@ -619,7 +773,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
             "show_axes",
         ]
         egraph_opts = {k: drawing_opts[k] for k in egraph_args}
-        fig, ax = draw_EGraph(code.graph, **egraph_opts)
+        fig, ax = draw_EGraph_matplotlib(code.graph, **egraph_opts)
         leg = ax.get_legend()
     # If show_nodes is False, create a new figure with size
     # determined by the dimensions of the lattice.

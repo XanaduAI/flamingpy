@@ -13,6 +13,8 @@
 # limitations under the License.
 """"Unit tests for functions in the viz module."""
 
+# pylint: disable=no-self-use
+
 import math
 
 import numpy as np
@@ -20,6 +22,7 @@ from numpy.random import default_rng as rng
 import pytest
 import matplotlib
 import matplotlib.pyplot as plt
+import plotly
 
 from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
@@ -63,7 +66,7 @@ class TestDrawEGraph:
         bell_state.add_edge(*edge, color="MidnightBlue")
 
         # Test for drawing the EGraph
-        _, a = viz.draw_EGraph(bell_state)
+        _, a = viz.draw_EGraph_matplotlib(bell_state)
         plt.close()
 
         assert len(a.get_xticks()) == 1
@@ -84,7 +87,7 @@ class TestDrawEGraph:
         RHG = SurfaceCode(d).graph
 
         # Test for drawing the EGraph
-        _, a = viz.draw_EGraph(RHG)
+        _, a = viz.draw_EGraph_matplotlib(RHG)
         plt.close()
 
         n_ticks = 2 * d - 1
@@ -94,3 +97,22 @@ class TestDrawEGraph:
 
         actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
         assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
+
+
+class TestDrawEGraphPlotly:
+    """Tests for visualizing EGraphs with Plotly."""
+
+    @pytest.mark.parametrize("d", (2, 3))
+    def test_draw_egraph_rhg_plotly(self, d):
+        """Test for the draw method of EGraph of RHG lattice."""
+        # Bell state EGraph
+        SC = SurfaceCode(d)
+        RHG = SC.graph
+
+        # Test for drawing the EGraph
+        fig1 = viz.draw_EGraph_plotly(RHG)
+        assert isinstance(fig1, plotly.graph_objs.Figure)
+
+        # Test for drawing the SurfaceCode
+        fig2 = SC.draw(backend="plotly")
+        assert isinstance(fig2, plotly.graph_objs.Figure)
