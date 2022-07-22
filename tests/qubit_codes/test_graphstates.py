@@ -139,11 +139,6 @@ def test_add_qubit(random_graph_3D):
 def test_remove_qubit(random_graph_3D):
     """Test the remove_qubit function on a random EGraph."""
 
-    E = EGraph(random_graph_3D)
-    n_old = E.number_of_nodes()
-    E.remove_qubit()
-    assert n_old == E.number_of_nodes() + 1
-    assert E.adj_mat is None
 
     E = EGraph(random_graph_3D)
     E.index_generator()
