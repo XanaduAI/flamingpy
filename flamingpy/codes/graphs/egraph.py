@@ -300,25 +300,17 @@ class EGraph(nx.Graph):
         # Remove qubit if dictionaries are initialized
         if self.to_indices is not None:
             if isinstance(qubit, tuple):
-                index_to_remove = self.to_indices[qubit]
                 self.remove_node(qubit)
+                self.to_indices.pop(qubit)
+                self.to_points = {v: k for k, v in self.to_indices.items()}
             elif isinstance(qubit, int):
-                index_to_remove = qubit
-                self.remove_node(self.to_points[index_to_remove])
-            elif qubit is None:
-                index_to_remove = max(self.to_points.keys())
-                self.remove_node(self.to_points[index_to_remove])
+                self.remove_node(self.to_points[qubit])
+                self.to_points.pop(qubit)
+                self.to_indices - {v: k for k, v in self.to_points.items()}
             else:
                 raise Exception(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
                     + f"but was given {type(qubit)}"
                 )
-
-            position = self.to_points.pop(index_to_remove)
-            self.to_indices.pop(position)
-            self.to_points = {
-                k - 1 if k > index_to_remove else k: v for k, v in self.to_points.items()
-            }
-            self.to_indices = {v: k for k, v in self.to_points.items()}
 
         self.adj_mat = None
