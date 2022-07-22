@@ -98,6 +98,198 @@ def macronize(can_graph, pad_boundary=False, disp=0.1):
     return macro_graph
 
 
+def RREform_mod2(M, max_cols=None):
+    """Puts a binary matrix into Row Reduced Echelon form modulo 2 up to a
+    maximum number of columns given by max_cols.
+
+    Args:
+        M (numpy.array): A numpy array
+        max_cols (int): Specifies the maximum number of columns of the input array to reduce
+    Returns:
+        (numpy.array, int): A tuple of a numpy array of the Row Reduced Echelon form modulo 2, and
+        an int representing the index of pivot column
+    """
+    # number of columns to apply row reduction
+    max_cols = M.shape[1] if max_cols is None else max_cols
+    # row reduced matrix
+    R = M.copy()
+    # pivot index
+    p = 0
+    # perform row reduction
+    for j in range(max_cols):
+        # look for pivot column `j` at or below row `p`
+        index = np.nonzero(R[p:, j])[0]
+        if index.size == 0:
+            continue
+        # pivot row
+        i = p + index[0]
+        # interchange `p` and `i`
+        R[[p, i], :] = R[[i, p], :]
+        # set pivot to 1
+        R[p, :] = R[p, :] / R[p, j]
+        # add zeros above and below the pivot
+        index = np.nonzero(R[:, j])[0].tolist()
+        index.remove(p)
+        R[index, :] = (R[index, :] - np.multiply.outer(R[index, j], R[p, :])) % 2
+        # increment pivot index until final row is reached
+        p += 1
+        if p == R.shape[0]:
+            break
+    return R, p
+
+
+def system_constraints(G, H):
+    """Constructs a binary system of equations that two graph adjacency
+    matrices G and H must satisfy for lc equivalence.
+
+    Args:
+        G and H are n x n adjacency matrices defined for n qubit graph states with n nodes.
+    Returns:
+        (numpy.array): A system given as a numpy array of shape n^2 x 4n with n^2 equations in
+        4n unknowns.
+    """
+    # set the number of qubits
+    n = np.shape(G)[0]
+    # define empty block matrix
+    M = []
+    for j in range(n):
+        # A block
+        A = np.diag(G[j])
+        # B block
+        B = np.zeros((n, n))
+        B[j, j] = 1
+        # C block
+        C = np.array([[G[i, j] * H[i, k] for i in range(n)] for k in range(n)], dtype=int)
+        # D block
+        D = np.zeros((n, n), dtype=int)
+        for k in range(n):
+            D[k, j] = H[j, k]
+        # add row block to M
+        M.append([A, B, C, D])
+    # define numpy block matrix for system of constraints
+    return np.block(M).astype(int)
+
+
+def nullspace_basis(M):
+    """Constructs an array whose rows are binary basis vectors of the right
+    null space of input matrix array.
+
+    Args:
+        M (numpy.array): A binary matrix
+    Returns:
+        (numpy.array): A numpy array whose rows are basis vectors of the right null space
+    """
+    # find left Null space of transposed system, which is equal to right null space
+    M_transposed = M.T
+    m_rows, n_cols = M_transposed.shape
+    # construct augmented block matrix A = [M | I]
+    A = np.concatenate((M_transposed, np.eye(m_rows, dtype=int)), axis=-1)
+    # row reduce left M block of augmented matrix
+    R, p = RREform_mod2(A, max_cols=n_cols)
+    N = R[p:, n_cols:]
+    basis, _ = RREform_mod2(N)
+    return basis
+
+
+def search_nullspace(basis):
+    """Search through sums of pairs of basis vectors of the null space, and
+    check if any satisfy the determinant constraints.
+
+    Args:
+        basis (numpy.array): A numpy array whose rows are basis vectors of the nullspace
+    Returns:
+        clifford_output: If no solution is found, clifford_output is None. If solution is found,
+        clifford_output is a numpy vector specifying the local clifford in the form:
+        (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n, c_1, c_2, ..., c_n, d_1, d_2, ..., d_n),
+        where n is the number of nodes/qubits.
+    """
+    # number of basis vectors of null space
+    d = basis.shape[0]
+    # number of nodes/qubits
+    n = int(basis.shape[1] / 4)
+    # boolean for LC equivalence
+    equivalent = False
+    # array to store potential solutions
+    sols = []
+    # search through distinct pairs of basis vectors
+    for i in range(d):
+        for j in range(i):
+            # boolean for checking solution constraints
+            sat = True
+            # potential solution as sum (modulo 2) of basis pair
+            sol = np.vectorize(lambda x: x % 2)(np.add(basis[i], basis[j]))
+            # store potential solution
+            sols.append(sol)
+            for k in range(n):
+                # check the determinants (modulo 2)
+                det = (sol[k] * sol[k + 3 * n] + sol[k + n] * sol[k + 2 * n]) % 2
+                if det != 1:
+                    # constraints not satisfied
+                    sat = False
+                    # remove the false solution
+                    sols.pop()
+                    break
+            # if solution found, set equivalent to True
+            if sat:
+                # equivalence is satisfied
+                equivalent = sat
+                break
+        # end search loop
+        if equivalent:
+            break
+    # if no solution found, return None
+    if not equivalent:
+        return None
+    # if solution found, return clifford in vector form
+    solution_vector = np.array(sols[0]).astype(int)
+    return solution_vector
+
+
+def clifford_vec_to_tensors(vec):
+    """Converts a local clifford on n qubits in vector form to a list of n single qubit
+    cliffords given by 2x2 numpy arrays.
+    Args:
+        vec (numpy.array): A vector of size 4n specifying a local clifford on n qubits as:
+        (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n, c_1, c_2, ..., c_n, d_1, d_2, ..., d_n)
+    Returns:
+        clifford_output (list): A list of length n of 2x2 numpy arrays representing single
+        qubit local cliffords, where the array at index k corresponds to the clifford acting on
+        qubit k given as:
+        [a_k, b_k]
+        [c_k, d_k]
+    """
+    # number of nodes/qubits
+    n = int(len(vec) / 4)
+    # initialize empty list
+    local_clifford_list = []
+    for i in range(n):
+        single_qubit_clifford = np.array([[vec[i], vec[i + n]], [vec[i + 2 * n], vec[i + 3 * n]]])
+        local_clifford_list.append(single_qubit_clifford)
+    return local_clifford_list
+
+
+def clifford_vec_to_global(vec):
+    """Converts local clifford on n qubits in vector form to a local clifford on all n qubits.
+    Args:
+        vec (numpy.array): A vector of size 4n specifying a local clifford on n qubits as:
+        (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n, c_1, c_2, ..., c_n, d_1, d_2, ..., d_n)
+    Returns:
+        clifford_output (numpy.array): A single 2n x 2n numpy array representing a local
+        clifford acting on all n qubits given as the block matrix:
+        [A, B]
+        [C, D]
+        where each block is a n x n diagonal matrix:
+        A = diag(a_1, a_2, ..., a_n)
+        B = diag(b_1, b_2, ..., b_n)
+        C = diag(c_1, c_2, ..., c_n)
+        D = diag(d_1, d_2, ..., d_n)
+    """
+    # number of nodes/qubits
+    n = int(len(vec) / 4)
+    blocks = [np.diag([vec[i + k * n] for i in range(n)]) for k in range(4)]
+    return np.block([[blocks[0], blocks[1]], [blocks[2], blocks[3]]])
+
+
 class EGraph(nx.Graph):
     """An enhanced graph for representing quantum graph states.
 
@@ -214,3 +406,72 @@ class EGraph(nx.Graph):
 
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
+
+    def is_lc_equivalent(self, graph2, clifford_form="tensor"):
+        """Checks if two EGraph objects are LC equivalent by finding a local
+        clifford operation on n qubits, where n is the number of nodes of the
+        graphs.
+
+        Args:
+            graph2 (Egraph): An EGraph object to test equivalence with
+            clifford_form: A string describing the output form of Local Clifford operation when it
+            exists. Default string is 'tensor' which returns a list of length n of 2x2 numpy arrays
+            corresponding to single qubit tensor factors. 'global' returns a single 2nx2n numpy
+            array corresponding to the global operator acting on all n qubits.
+        Returns:
+            (equivalent, clifford): A tuple where 'equivalent' is a boolean.
+            If equivalent is True, 'clifford' is the local clifford output according to
+            'clifford_form' specification.
+        """
+        # get adjacency matrices of input graphs
+        self.adj_generator(sparse=False)
+        G = self.adj_mat
+        graph2.adj_generator(sparse=False)
+        H = graph2.adj_mat
+
+        # handle input and edge cases
+        #
+        # adjacency matrices of input graphs must have type 'np.ndarray'
+        if not isinstance(G, np.ndarray) or not isinstance(H, np.ndarray):
+            raise ValueError(
+                "Input EGraphs must have their 'adj_mat' property as type 'numpy.ndarray'."
+            )
+        # demand input graphs must have nonzero number of nodes.
+        # check adjacency matrices for same non-empty square shape
+        if np.shape(G) == (0, 0) or np.shape(H) == (0, 0):
+            # raise ValueError('Input Graphs must be non-empty')
+            # Mark this case as not equivalent
+            return False, None
+        if np.shape(G) != np.shape(H):
+            # raise ValueError('Input Graphs must have same number of nodes.')
+            # Mark this case as not equivalent
+            return False, None
+        # adjacency matrices must be square
+        if np.shape(G)[0] != np.shape(G)[1]:
+            raise ValueError("Input matrices must be square.")
+
+        # perform algorithm to search for solution
+        #
+        # construct system of constraints for two adjacency matrices G and H
+        system = system_constraints(G, H)
+        # construct nullspace basis of system of constraints
+        nullspace = nullspace_basis(system)
+        # search nullspace for solution vector
+        solution_vector = search_nullspace(nullspace)
+
+        # if graphs are not equivalent set clifford_output to None
+        if solution_vector is None:
+            equivalent = False
+            clifford_output = None
+        # if graphs are equivalent and clifford_form == "tensor", convert clifford_output to
+        # tensor factors
+        elif clifford_form == "tensor":
+            equivalent = True
+            clifford_output = clifford_vec_to_tensors(solution_vector)
+        # if graphs are equivalent and clifford_form == "global", convert clifford_output to
+        # global form
+        elif clifford_form == "global":
+            equivalent = True
+            clifford_output = clifford_vec_to_global(solution_vector)
+        # return equivalence and clifford_output
+        return equivalent, clifford_output
