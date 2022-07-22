@@ -1,8 +1,7 @@
 ## Release 0.9.0b0 (development release)
 
 ### New features since the last release
- * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing
- nodes of the EGraph while updating internal attributes of the class.
+ * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing nodes of the EGraph while updating internal attributes of the class. [#10](https://github.com/XanaduAI/flamingpy/pull/100).
 ### Bug fixes
 
 ### Improvements
