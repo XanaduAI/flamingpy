@@ -15,9 +15,9 @@
 
 # pylint: disable=import-outside-toplevel
 
+import warnings
 import networkx as nx
 import numpy as np
-
 
 def macronize(can_graph, pad_boundary=False, disp=0.1):
     """Create a macronode graph out of canonical graph can_graph.
@@ -215,7 +215,28 @@ class EGraph(nx.Graph):
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
 
-    def add_qubit(self, qubit=None, index=None, neighbors=None) -> None:
+    def add_node(self, node, **kwargs):
+        """Overwrite add_node function from nx.Graph to raise a warning
+        whenever add_qubit should be used."""
+        if not (self.to_indices is None and self.adj_mat is None):
+            warnings.warn(
+                "EGraph attributes are already populated. To add a"
+                " node, please use the add_qubit function."
+            )
+        self.add_node(node, **kwargs)
+
+    def remove_node(self, node):
+        """Overwrite remove_node function from nx.Graph to raise a warning
+        whenever remove_node should be used."""
+        if not (self.to_indices is None and self.adj_mat is None):
+            warnings.warn(
+                "EGraph attributes are already populated. To remove a"
+                " node, please use the remove_qubit function."
+            )
+        self.remove_node(node)
+
+
+    def add_qubit(self, qubit=None, neighbors=None) -> None:
         """Add qubit to EGraph at position with neigbours in
         existing_neighbours.
 
@@ -249,7 +270,7 @@ class EGraph(nx.Graph):
             )
         self.add_node(qubit)
 
-        # Update meighbors
+        # Update neighbors
         if neighbors is not None:
             if len(neighbors) != 0:
                 if isinstance(neighbors[0], int):
@@ -257,31 +278,17 @@ class EGraph(nx.Graph):
                 elif isinstance(neighbors[0], tuple):
                     neighborhood = [(tup, qubit) for tup in neighbors]
 
-                self.add_edges_from(neighbors)
+                self.add_edges_from(neighborhood)
 
         # Update dictionaries
         if self.to_indices is not None:
-            self._update_dicts_add_qubit(qubit, index)
+            new_index = max(self.to_points.keys()) + 1
+            self.to_points[new_index] = qubit
+            self.to_indices[qubit] = new_index
 
         self.adj_mat = None
 
-    def _update_dicts_add_qubit(self, qubit, index):
-        """Update dictionaries of class when adding a qubit."""
-
-        if isinstance(index, int):
-            self.to_points = {k + 1 if k >= index else k: v for k, v in self.to_points.items()}
-            self.to_indices = {v: k for k, v in self.to_points.items()}
-            new_index = index
-        elif index is None:
-            new_index = max(self.to_points.keys()) + 1
-        else:
-            raise Exception(
-                "Index type not supported. Expected int or None, but was given" + f" {type(index)}"
-            )
-        self.to_points[new_index] = qubit
-        self.to_indices[qubit] = new_index
-
-    def remove_qubit(self, qubit=None) -> None:
+    def remove_qubit(self, qubit) -> None:
         """Remove qubit from EGraph.
 
         Args:
@@ -306,7 +313,7 @@ class EGraph(nx.Graph):
             elif isinstance(qubit, int):
                 self.remove_node(self.to_points[qubit])
                 self.to_points.pop(qubit)
-                self.to_indices - {v: k for k, v in self.to_points.items()}
+                self.to_indices = {v: k for k, v in self.to_points.items()}
             else:
                 raise Exception(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
