@@ -353,7 +353,7 @@ class EGraph(nx.Graph):
 
         # Remove qubit from macro_to_micro dict if EGraph is macronized
         if self.macro_to_micro is not None:
-            for k in self.macro_to_micro:
+            for k in set(self.macro_to_micro.keys()):
                 if qubit in self.macro_to_micro[k]:
                     self.macro_to_micro[k].remove(qubit)
 

@@ -121,6 +121,10 @@ class TestEGraph:
             E.add_qubit(qubit=0)
         assert e.type == TypeError
 
+        with pytest.raises(Exception) as e:
+            E.add_qubit(qubit=(1, 1, 100), neighbors=["a", "b"])
+        assert e.type == TypeError
+
         E = EGraph(random_graph_3D)
         n_edges_old = E.number_of_edges()
         E.index_generator()
@@ -169,6 +173,11 @@ class TestEGraph:
         MEG.add_qubit(new_q, macro=mn)
         assert new_q in MEG.macro_to_micro[mn]
 
+        new_q = (199, 100, 991)
+        MEG.add_qubit(new_q, macro=(199, 100, 991))
+        assert new_q in MEG.macro_to_micro
+        assert new_q in MEG.macro_to_micro[new_q]
+
     def test_remove_qubit_macro(self, random_graph_3D):
         """Test remove_qubit if graph is macronized."""
         EG = EGraph(random_graph_3D)
@@ -179,6 +188,14 @@ class TestEGraph:
         qubit_rm = MEG.macro_to_micro[mn][0]
         MEG.remove_qubit(qubit_rm)
         assert qubit_rm not in MEG.macro_to_micro[mn]
+
+        EG = EGraph(random_graph_3D)
+        MEG = EG.macronize(True)
+        new_q = (199, 100, 991)
+        MEG.add_qubit(new_q, macro=(199, 100, 991))
+        MEG.remove_qubit(new_q)
+        assert new_q not in MEG.macro_to_micro
+
         # def test_macronode(self):
         # pass
 
