@@ -124,7 +124,7 @@ class EGraph(nx.Graph):
         self._macronodes = macronodes
         self.macro_to_micro = None
         if macronodes:
-            self.macro_to_micro = self.graph.get("macro_dict")            
+            self.macro_to_micro = self.graph.get("macro_dict")
         self.to_indices = None
         self.to_points = None
         self.adj_mat = None
@@ -336,7 +336,7 @@ class EGraph(nx.Graph):
 
         # Remove qubit if dictionaries are initialized
         if self.to_indices is not None:
-            if not (isinstance(qubit,int) or isinstance(qubit,tuple)):
+            if not (isinstance(qubit, int) or isinstance(qubit, tuple)):
                 raise TypeError(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
                     + f"but was given {type(qubit)}"
@@ -346,10 +346,14 @@ class EGraph(nx.Graph):
             self.to_indices.pop(qubit)
             self.to_points = {v: k for k, v in self.to_indices.items()}
 
-        # Remove qubit from macro_to_micro dict if EGraph is macronized.
+        # Remove qubit from macro_to_micro dict if EGraph is macronized
         if self.macro_to_micro is not None:
             for k in self.macro_to_micro:
                 if qubit in self.macro_to_micro[k]:
                     self.macro_to_micro[k].remove(qubit)
+
+                    # If macronode is empty, then delete it from macro_to_micro
+                    if not self.macro_to_micro[k]:
+                        del self.macro_to_micro[k]
 
         self.adj_mat = None

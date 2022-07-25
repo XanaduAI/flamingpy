@@ -161,10 +161,25 @@ class TestEGraph:
 
     def test_add_qubit_macro(self, random_graph_3D):
         """Test add_qubit if graph is macronized."""
+        EG = EGraph(random_graph_3D)
+        MEG = EG.macronize(True)
+
+        # try adding a qubit on a defined macronode
+        mn = next(iter(MEG.macro_to_micro.keys()))
+        new_q = tuple(np.subtract(mn, (0, 0, 0.01)))
+        MEG.add_qubit(new_q, macro=mn)
+        assert new_q in MEG.macro_to_micro[mn]
 
     def test_remove_qubit_macro(self, random_graph_3D):
         """Test remove_qubit if graph is macronized."""
+        EG = EGraph(random_graph_3D)
+        MEG = EG.macronize(True)
 
+        # try adding a qubit on a defined macronode
+        mn = next(iter(MEG.macro_to_micro.keys()))
+        qubit_rm = MEG.macro_to_micro[mn][0]
+        MEG.remove_qubit(qubit_rm)
+        assert qubit_rm not in MEG.macro_to_micro[mn]
         # def test_macronode(self):
         # pass
 
