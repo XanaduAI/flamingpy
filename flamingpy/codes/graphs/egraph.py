@@ -14,6 +14,8 @@
 """A class for representing quantum graph states."""
 
 # pylint: disable=import-outside-toplevel
+from multiprocessing.sharedctypes import Value
+from typing import Union
 
 import warnings
 import networkx as nx
@@ -216,7 +218,7 @@ class EGraph(nx.Graph):
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
 
-    def add_node(self, node, **kwargs):
+    def add_node(self, node : tuple, **kwargs):
         """Overwrite add_node function from nx.Graph to raise a warning
         whenever add_qubit should be used."""
         if not (self.to_indices is None and self.adj_mat is None):
@@ -226,7 +228,7 @@ class EGraph(nx.Graph):
             )
         super().add_node(node, **kwargs)
 
-    def remove_node(self, node):
+    def remove_node(self, node : tuple):
         """Overwrite remove_node function from nx.Graph to raise a warning
         whenever remove_node should be used."""
         if not (self.to_indices is None and self.adj_mat is None):
@@ -236,7 +238,7 @@ class EGraph(nx.Graph):
             )
         super().remove_node(node)
 
-    def add_qubit(self, qubit=None, neighbors=None, macro=False) -> None:
+    def add_qubit(self, qubit: Union[None, tuple] = None, neighbors : Union[None,list[int], list[tuple] ] = None, macro : Union[None, tuple] = None) -> None:
         """Add qubit to EGraph at position with neigbours in
         existing_neighbours.
 
@@ -246,33 +248,45 @@ class EGraph(nx.Graph):
             positioned one unit further than the maximum position in the z
             direction in position (0,0,z_max + 1).
 
-            index (int or None): index of qubit. If int, the qubit is
-            positioned at that index. If None, the index of the qubit is the
-            last one.
-
-            neighbours (list[int] or list[tuple]): neighbors of qubit specified
+            neighbours (list[int], list[tuple], or None): neighbors of qubit specified
             with indices or positions, respectively.
         """
-        # Add qubit
+        
+        # Makes sure that input qubit value and type is supported
         if isinstance(qubit, tuple):
             if len(qubit) != 3:
-                raise Exception(
+                raise ValueError(
                     "The position should be a 3D tuple, but it was given a "
                     + f"{len(qubit)}D tuple"
                 )
             if qubit in self:
-                raise Exception(
+                raise ValueError(
                     f"Could not add qubit because there is already a node in position {qubit}."
                 )
         elif qubit is None:
             z_max = max(map(lambda tup: tup[2], self.nodes()))
             qubit = (0, 0, z_max + 1)
         else:
-            raise Exception(
+            raise ValueError(
                 "Qubit type not supported. Excepted 3D tuple or None, but was"
                 + f" given {type(qubit)}"
             )
+
+        # Add node
         self.add_node(qubit)
+
+        # Add qubit to macro_to_micro dictionary
+        if isinstance(macro,tuple):
+            if macro in self.macro_to_micro:
+                self.macro_to_micro[macro].append(qubit)
+            else:
+                self.macro_to_micro[macro] = [qubit]
+
+        # Update dictionaries
+        if self.to_indices is not None:
+            new_index = max(self.to_points.keys()) + 1
+            self.to_points[new_index] = qubit
+            self.to_indices[qubit] = new_index
 
         # Update neighbors
         if neighbors is not None:
@@ -281,26 +295,20 @@ class EGraph(nx.Graph):
                     neighborhood = [(self.to_points[ind], qubit) for ind in neighbors]
                 elif isinstance(neighbors[0], tuple):
                     neighborhood = [(tup, qubit) for tup in neighbors]
+                else:
+                    raise TypeError("Unsupported type of neighbors. Expected tuples but"
+                    f" {type(neighbors[0])} was given. Type ints can only be used when "
+                    "macro is False.")
 
                 self.add_edges_from(neighborhood)
 
-        # Update dictionaries
-        if self.to_indices is not None:
-            new_index = max(self.to_points.keys()) + 1
-            self.to_points[new_index] = qubit
-            self.to_indices[qubit] = new_index
-
-        # Updates self.macro_to_micro dictionary
-        if macro:
-            self.macro_to_micro[qubit] = [qubit]  # should this be 4 qubits or just one?
-
         self.adj_mat = None
 
-    def remove_qubit(self, qubit) -> None:
+    def remove_qubit(self, qubit : Union[tuple, int]) -> None:
         """Remove qubit from EGraph.
 
         Args:
-            qubit (3D tuple, int, or None) : If 3D tuple, remove qubit at that
+            qubit (3D tuple or int) : If 3D tuple, remove qubit at that
             position. For not None self.to_points and not None self.to_indices:
             If int, remove the qubit at that index. If None, remove
             the last qubit.
