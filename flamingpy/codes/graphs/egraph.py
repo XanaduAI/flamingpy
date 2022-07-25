@@ -286,7 +286,7 @@ class EGraph(nx.Graph):
         # Add node
         self.add_node(qubit)
 
-        # Update dictionaries when adding qubit 
+        # Update dictionaries when adding qubit
         self._update_attributes_add_qubit(qubit, macro)
 
         # Update neighbors
@@ -323,7 +323,6 @@ class EGraph(nx.Graph):
             self.to_points[new_index] = qubit
             self.to_indices[qubit] = new_index
 
-
     def remove_qubit(self, qubit: Union[tuple, int]) -> None:
         """Remove qubit from EGraph.
 
@@ -342,7 +341,7 @@ class EGraph(nx.Graph):
 
         # Remove qubit if dictionaries are initialized
         if self.to_indices is not None:
-            if not isinstance(qubit, (int,tuple)):
+            if not isinstance(qubit, (int, tuple)):
                 raise TypeError(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
                     + f"but was given {type(qubit)}"
