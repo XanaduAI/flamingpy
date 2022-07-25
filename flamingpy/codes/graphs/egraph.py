@@ -14,7 +14,6 @@
 """A class for representing quantum graph states."""
 
 # pylint: disable=import-outside-toplevel
-from multiprocessing.sharedctypes import Value
 from typing import Union
 
 import warnings
@@ -287,18 +286,8 @@ class EGraph(nx.Graph):
         # Add node
         self.add_node(qubit)
 
-        # Add qubit to macro_to_micro dictionary
-        if isinstance(macro, tuple):
-            if macro in self.macro_to_micro:
-                self.macro_to_micro[macro].append(qubit)
-            else:
-                self.macro_to_micro[macro] = [qubit]
-
-        # Update dictionaries
-        if self.to_indices is not None:
-            new_index = max(self.to_points.keys()) + 1
-            self.to_points[new_index] = qubit
-            self.to_indices[qubit] = new_index
+        # Update dictionaries when adding qubit 
+        self._update_attributes_add_qubit(qubit, macro)
 
         # Update neighbors
         if neighbors is not None:
@@ -318,6 +307,23 @@ class EGraph(nx.Graph):
 
         self.adj_mat = None
 
+    def _update_attributes_add_qubit(self, qubit, macro):
+        """Update self.macro_to_micro, self.to_points, and self.to_indices."""
+
+        # Add qubit to macro_to_micro dictionary
+        if isinstance(macro, tuple):
+            if macro in self.macro_to_micro:
+                self.macro_to_micro[macro].append(qubit)
+            else:
+                self.macro_to_micro[macro] = [qubit]
+
+        # Update dictionaries
+        if self.to_indices is not None:
+            new_index = max(self.to_points.keys()) + 1
+            self.to_points[new_index] = qubit
+            self.to_indices[qubit] = new_index
+
+
     def remove_qubit(self, qubit: Union[tuple, int]) -> None:
         """Remove qubit from EGraph.
 
@@ -336,7 +342,7 @@ class EGraph(nx.Graph):
 
         # Remove qubit if dictionaries are initialized
         if self.to_indices is not None:
-            if not (isinstance(qubit, int) or isinstance(qubit, tuple)):
+            if not isinstance(qubit, (int,tuple)):
                 raise TypeError(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
                     + f"but was given {type(qubit)}"
