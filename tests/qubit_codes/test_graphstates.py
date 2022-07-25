@@ -16,6 +16,7 @@
 # pylint: disable=protected-access,no-self-use
 from datetime import datetime
 import logging
+from multiprocessing.sharedctypes import Value
 import string
 
 import random
@@ -115,11 +116,11 @@ class TestEGraph:
 
         with pytest.raises(Exception) as e:
             E.add_qubit(qubit=(1, 1, 1, 1))
-        assert e.type == Exception
+        assert e.type == ValueError
 
         with pytest.raises(Exception) as e:
             E.add_qubit(qubit=0)
-        assert e.type == Exception
+        assert e.type == TypeError
 
         E = EGraph(random_graph_3D)
         n_edges_old = E.number_of_edges()
@@ -156,7 +157,13 @@ class TestEGraph:
         E = EGraph(random_graph_3D)
         with pytest.raises(Exception) as e:
             E.remove_qubit("s")
-        assert e.type == Exception
+        assert e.type == TypeError
+
+    def test_add_qubit_macro(self, random_graph_3D):
+        """Test add_qubit if graph is macronized."""
+
+    def test_remove_qubit_macro(self, random_graph_3D):
+        """Test remove_qubit if graph is macronized."""
 
         # def test_macronode(self):
         # pass

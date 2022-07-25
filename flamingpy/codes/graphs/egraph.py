@@ -122,8 +122,9 @@ class EGraph(nx.Graph):
     def __init__(self, *args, indexer="default", macronodes=False, **kwargs):
         super().__init__(*args, **kwargs)
         self._macronodes = macronodes
+        self.macro_to_micro = None
         if macronodes:
-            self.macro_to_micro = self.graph.get("macro_dict")
+            self.macro_to_micro = self.graph.get("macro_dict")            
         self.to_indices = None
         self.to_points = None
         self.adj_mat = None
@@ -241,7 +242,7 @@ class EGraph(nx.Graph):
     def add_qubit(
         self,
         qubit: Union[None, tuple] = None,
-        neighbors: Union[None, list[int], list[tuple]] = None,
+        neighbors: Union[None, list] = None,
         macro: Union[None, tuple] = None,
     ) -> None:
         """Add qubit to EGraph at position with neigbours in
@@ -272,7 +273,7 @@ class EGraph(nx.Graph):
             z_max = max(map(lambda tup: tup[2], self.nodes()))
             qubit = (0, 0, z_max + 1)
         else:
-            raise ValueError(
+            raise TypeError(
                 "Qubit type not supported. Excepted 3D tuple or None, but was"
                 + f" given {type(qubit)}"
             )
@@ -335,8 +336,8 @@ class EGraph(nx.Graph):
 
         # Remove qubit if dictionaries are initialized
         if self.to_indices is not None:
-            if not isinstance(qubit, Union[tuple, int]):
-                raise Exception(
+            if not (isinstance(qubit,int) or isinstance(qubit,tuple)):
+                raise TypeError(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
                     + f"but was given {type(qubit)}"
                 )
