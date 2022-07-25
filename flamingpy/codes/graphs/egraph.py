@@ -218,7 +218,7 @@ class EGraph(nx.Graph):
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
 
-    def add_node(self, node : tuple, **kwargs):
+    def add_node(self, node: tuple, **kwargs):
         """Overwrite add_node function from nx.Graph to raise a warning
         whenever add_qubit should be used."""
         if not (self.to_indices is None and self.adj_mat is None):
@@ -228,7 +228,7 @@ class EGraph(nx.Graph):
             )
         super().add_node(node, **kwargs)
 
-    def remove_node(self, node : tuple):
+    def remove_node(self, node: tuple):
         """Overwrite remove_node function from nx.Graph to raise a warning
         whenever remove_node should be used."""
         if not (self.to_indices is None and self.adj_mat is None):
@@ -238,7 +238,12 @@ class EGraph(nx.Graph):
             )
         super().remove_node(node)
 
-    def add_qubit(self, qubit: Union[None, tuple] = None, neighbors : Union[None,list[int], list[tuple] ] = None, macro : Union[None, tuple] = None) -> None:
+    def add_qubit(
+        self,
+        qubit: Union[None, tuple] = None,
+        neighbors: Union[None, list[int], list[tuple]] = None,
+        macro: Union[None, tuple] = None,
+    ) -> None:
         """Add qubit to EGraph at position with neigbours in
         existing_neighbours.
 
@@ -251,7 +256,7 @@ class EGraph(nx.Graph):
             neighbours (list[int], list[tuple], or None): neighbors of qubit specified
             with indices or positions, respectively.
         """
-        
+
         # Makes sure that input qubit value and type is supported
         if isinstance(qubit, tuple):
             if len(qubit) != 3:
@@ -272,11 +277,17 @@ class EGraph(nx.Graph):
                 + f" given {type(qubit)}"
             )
 
+        # Check that if macro is not None, then self should be macronized EGraph
+        if isinstance(macro, tuple) and self.macro_to_micro is None:
+            raise ValueError(
+                "Cannot add a qubit to macronode because current EGraph is not macronized."
+            )
+
         # Add node
         self.add_node(qubit)
 
         # Add qubit to macro_to_micro dictionary
-        if isinstance(macro,tuple):
+        if isinstance(macro, tuple):
             if macro in self.macro_to_micro:
                 self.macro_to_micro[macro].append(qubit)
             else:
@@ -296,15 +307,17 @@ class EGraph(nx.Graph):
                 elif isinstance(neighbors[0], tuple):
                     neighborhood = [(tup, qubit) for tup in neighbors]
                 else:
-                    raise TypeError("Unsupported type of neighbors. Expected tuples but"
-                    f" {type(neighbors[0])} was given. Type ints can only be used when "
-                    "macro is False.")
+                    raise TypeError(
+                        "Unsupported type of neighbors. Expected tuples but"
+                        f" {type(neighbors[0])} was given. Type ints can only be used when "
+                        "macro is False."
+                    )
 
                 self.add_edges_from(neighborhood)
 
         self.adj_mat = None
 
-    def remove_qubit(self, qubit : Union[tuple, int]) -> None:
+    def remove_qubit(self, qubit: Union[tuple, int]) -> None:
         """Remove qubit from EGraph.
 
         Args:
@@ -322,18 +335,20 @@ class EGraph(nx.Graph):
 
         # Remove qubit if dictionaries are initialized
         if self.to_indices is not None:
-            if isinstance(qubit, tuple):
-                self.remove_node(qubit)
-                self.to_indices.pop(qubit)
-                self.to_points = {v: k for k, v in self.to_indices.items()}
-            elif isinstance(qubit, int):
-                self.remove_node(self.to_points[qubit])
-                self.to_points.pop(qubit)
-                self.to_indices = {v: k for k, v in self.to_points.items()}
-            else:
+            if not isinstance(qubit, Union[tuple, int]):
                 raise Exception(
                     "Qubit type not supported. Excepted 3D tuple, int, or None, "
                     + f"but was given {type(qubit)}"
                 )
+            qubit = self.to_points[qubit] if isinstance(qubit, int) else qubit
+            self.remove_node(qubit)
+            self.to_indices.pop(qubit)
+            self.to_points = {v: k for k, v in self.to_indices.items()}
+
+        # Remove qubit from macro_to_micro dict if EGraph is macronized.
+        if self.macro_to_micro is not None:
+            for k in self.macro_to_micro:
+                if qubit in self.macro_to_micro[k]:
+                    self.macro_to_micro[k].remove(qubit)
 
         self.adj_mat = None
