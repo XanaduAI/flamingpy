@@ -218,26 +218,6 @@ class EGraph(nx.Graph):
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
 
-    def add_node(self, node: tuple, **kwargs):
-        """Overwrite add_node function from nx.Graph to raise a warning
-        whenever add_qubit should be used."""
-        if not (self.to_indices is None and self.adj_mat is None):
-            warnings.warn(
-                "EGraph attributes are already populated. To add a"
-                " node, please use the add_qubit function."
-            )
-        super().add_node(node, **kwargs)
-
-    def remove_node(self, node: tuple):
-        """Overwrite remove_node function from nx.Graph to raise a warning
-        whenever remove_node should be used."""
-        if not (self.to_indices is None and self.adj_mat is None):
-            warnings.warn(
-                "EGraph attributes are already populated. To remove a"
-                " node, please use the remove_qubit function."
-            )
-        super().remove_node(node)
-
     def add_qubit(
         self,
         qubit: Union[None, tuple] = None,
@@ -250,7 +230,7 @@ class EGraph(nx.Graph):
             qubit (tuple[int, int, int] or None): qubit to add. If a 3-tuple,
                 the qubit is added in that position. If qubit is None, the qubit is
                 positioned one unit further than the maximum position in the z
-                direction, in position (0, 0, z_max + 1).
+                direction, in position (x_max + 1, 0, 0).
 
             neighbours (list[int], list[tuple], or None): neighbors of qubit specified
                 with indices or positions.
@@ -271,8 +251,8 @@ class EGraph(nx.Graph):
                     f"Could not add qubit because there is already a node in position {qubit}."
                 )
         elif qubit is None:
-            z_max = max(map(lambda tup: tup[2], self.nodes()))
-            qubit = (0, 0, z_max + 1)
+            x_max = max(map(lambda tup: tup[0], self.nodes()))
+            qubit = (x_max + 1, 0, 0)
         else:
             raise TypeError(
                 "Qubit type not supported. Excepted 3-tuple or None, but was"
