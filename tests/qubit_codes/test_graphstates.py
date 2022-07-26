@@ -100,7 +100,7 @@ class TestEGraph:
 
         E = EGraph(random_graph_3D)
         E.adj_generator()
-        max_ind_old = max(E.to_points.keys())
+        max_ind_old = max(E.to_points)
         n_old = E.number_of_nodes()
         E.add_qubit()
         E.add_qubit()
