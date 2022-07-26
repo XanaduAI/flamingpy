@@ -157,9 +157,9 @@ class TestCVLayer:
         G.populate_states(), H.populate_states()
         H._covs_sampler()
         G._covs_sampler()
-        init_noise_all_GKP = np.full(2 * n, (delta / 2) ** 0.5, dtype=np.float32)
+        init_noise_all_GKP = np.full(2 * n, delta, dtype=np.float32)
         init_noise_all_p = np.array(
-            [1 / (2 * delta) ** 0.5] * n + [(delta / 2) ** 0.5] * n, dtype=np.float32
+            [1 / delta] * n + [delta] * n, dtype=np.float32
         )
         assert np.array_equal(G._init_covs, init_noise_all_GKP)
         assert np.array_equal(H._init_covs, init_noise_all_p)
