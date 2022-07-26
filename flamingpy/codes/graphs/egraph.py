@@ -244,17 +244,19 @@ class EGraph(nx.Graph):
         neighbors: Union[None, list] = None,
         macro: Union[None, tuple] = None,
     ) -> None:
-        """Add qubit to EGraph at position with neigbours in
-        existing_neighbours.
+        """Add qubit to EGraph connected to neighbors.
 
         Args:
-            qubit (3D tuple, or None): qubit to add. If it is a 3D tuple,
-            the qubit is added in that position. If qubit is None, the qubit is
-            positioned one unit further than the maximum position in the z
-            direction in position (0,0,z_max + 1).
+            qubit (tuple[int, int, int] or None): qubit to add. If a 3-tuple,
+                the qubit is added in that position. If qubit is None, the qubit is
+                positioned one unit further than the maximum position in the z
+                direction, in position (0, 0, z_max + 1).
 
             neighbours (list[int], list[tuple], or None): neighbors of qubit specified
-            with indices or positions, respectively.
+                with indices or positions.
+            
+            macro (tuple[int, int, int], optional): the macronode into which to add
+                the qubit. The EGraph must be macronized.
         """
 
         # Makes sure that input qubit value and type is supported
