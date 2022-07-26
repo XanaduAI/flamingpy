@@ -320,7 +320,7 @@ class EGraph(nx.Graph):
 
         # Update dictionaries
         if self.to_indices is not None:
-            new_index = max(self.to_points.keys()) + 1
+            new_index = max(self.to_points) + 1
             self.to_points[new_index] = qubit
             self.to_indices[qubit] = new_index
 
