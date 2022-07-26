@@ -349,7 +349,7 @@ class EGraph(nx.Graph):
                     + f"but was given {type(qubit)}"
                 )
             qubit = self.to_points[qubit] if isinstance(qubit, int) else qubit
-            self.remove_node(qubit)
+            super().remove_node(qubit)
             self.to_indices.pop(qubit)
             self.to_points = {v: k for k, v in self.to_indices.items()}
 
