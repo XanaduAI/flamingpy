@@ -262,7 +262,7 @@ class EGraph(nx.Graph):
             if len(qubit) != 3:
                 raise ValueError(
                     "The position should be a 3D tuple, but it was given a "
-                    + f"{len(qubit)}D tuple"
+                    + f"{len(qubit)}D tuple."
                 )
             if qubit in self:
                 raise ValueError(
