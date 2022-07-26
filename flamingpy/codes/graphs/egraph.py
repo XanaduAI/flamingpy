@@ -273,7 +273,7 @@ class EGraph(nx.Graph):
             qubit = (0, 0, z_max + 1)
         else:
             raise TypeError(
-                "Qubit type not supported. Excepted 3D tuple or None, but was"
+                "Qubit type not supported. Excepted 3-tuple or None, but was"
                 + f" given {type(qubit)}"
             )
 
