@@ -328,10 +328,9 @@ class EGraph(nx.Graph):
         """Remove qubit from EGraph.
 
         Args:
-            qubit (3D tuple or int) : If 3D tuple, remove qubit at that
-            position. For not None self.to_points and not None self.to_indices:
-            If int, remove the qubit at that index. If None, remove
-            the last qubit.
+            qubit (tuple[int, int, int] or int): if 3-tuple, remove qubit at that
+                position. If int and index/point dictionary is available, remove 
+                qubit at that index.
         """
         # Remove qubit if dictionaries are not initialized
         if self.to_indices is None:
