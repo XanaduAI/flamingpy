@@ -105,7 +105,7 @@ class TestEGraph:
         E.add_qubit()
         E.add_qubit()
         assert n_old + 2 == E.number_of_nodes()
-        assert max(E.to_points.keys()) == max_ind_old + 2
+        assert max(E.to_points) == max_ind_old + 2
         assert E.adj_mat is None
 
         E = EGraph(random_graph_3D)
