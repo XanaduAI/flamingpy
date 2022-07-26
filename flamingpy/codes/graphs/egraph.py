@@ -243,7 +243,7 @@ class EGraph(nx.Graph):
         if isinstance(qubit, tuple):
             if len(qubit) != 3:
                 raise ValueError(
-                    "The position should be a 3D tuple, but it was given a "
+                    "The position should be a 3-tuple, but it was given a "
                     + f"{len(qubit)}D tuple."
                 )
             if qubit in self:
@@ -319,14 +319,14 @@ class EGraph(nx.Graph):
             if isinstance(qubit, tuple):
                 super().remove_node(qubit)
             else:
-                self.index_generator()
+                raise ValueError("Cannot remove qubit index because self.to_indices is None.")
 
         # Remove qubit if dictionaries are initialized
-        if self.to_indices is not None:
+        else:
             if not isinstance(qubit, (int, tuple)):
                 raise TypeError(
-                    "Qubit type not supported. Excepted 3D tuple, int, or None, "
-                    + f"but was given {type(qubit)}"
+                    "Qubit type not supported. Excepted 3-tuple, int, or None, "
+                    + f"but was given {type(qubit)}."
                 )
             qubit = self.to_points[qubit] if isinstance(qubit, int) else qubit
             super().remove_node(qubit)
@@ -334,13 +334,15 @@ class EGraph(nx.Graph):
             self.to_points = {v: k for k, v in self.to_indices.items()}
 
         # Remove qubit from macro_to_micro dict if EGraph is macronized
-        if self.macro_to_micro is not None:
-            for k in set(self.macro_to_micro.keys()):
-                if qubit in self.macro_to_micro[k]:
-                    self.macro_to_micro[k].remove(qubit)
+        macro_dict = self.macro_to_micro if self.macro_to_micro is not None else {}
 
-                    # If macronode is empty, then delete it from macro_to_micro
-                    if not self.macro_to_micro[k]:
-                        del self.macro_to_micro[k]
+        for k in set(macro_dict):
+            if qubit in macro_dict[k]:
+                macro_dict[k].remove(qubit)
 
+                # If macronode is empty, then delete it from macro_to_micro
+                if not macro_dict[k]:
+                    del macro_dict[k]
+
+        self.macro_to_micro = macro_dict if self.macro_to_micro is not None else None
         self.adj_mat = None

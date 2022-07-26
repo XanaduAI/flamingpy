@@ -159,6 +159,12 @@ class TestEGraph:
         E = EGraph(random_graph_3D)
         with pytest.raises(Exception) as e:
             E.remove_qubit("s")
+        assert e.type == ValueError
+
+        E = EGraph(random_graph_3D)
+        E.index_generator()
+        with pytest.raises(Exception) as e:
+            E.remove_qubit("s")
         assert e.type == TypeError
 
     def test_add_qubit_macro(self, random_graph_3D):
