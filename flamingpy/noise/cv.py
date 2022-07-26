@@ -194,6 +194,8 @@ class CVLayer:
 
         if updated_covs is None:
             covs = self._covs_sampler(inds=inds)
+            if self._sampling_order == "initial":
+                covs = (1 / np.sqrt(2)) * np.sqrt(covs) 
         else:
             if quad == "q":
                 covs = updated_covs[:N][inds]
@@ -279,8 +281,8 @@ class CVLayer:
         delta = self.delta
         covs = np.zeros(2 * self._N, dtype=np.float32)
         if self._sampling_order == "initial":
-            noise_q = {"p": 1 / (2 * delta) ** 0.5, "GKP": (delta / 2) ** 0.5}
-            noise_p = {"p": (delta / 2) ** 0.5, "GKP": (delta / 2) ** 0.5}
+            noise_q = {"p": 1 / delta, "GKP": delta}
+            noise_p = {"p": delta, "GKP": delta}
             for state, indices in self.states.items():
                 if self._perfect_inds:
                     indices = np.array(list(set(indices).difference(self._perfect_inds)))
