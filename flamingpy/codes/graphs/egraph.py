@@ -234,7 +234,7 @@ class EGraph(nx.Graph):
 
             neighbours (list[int], list[tuple], or None): neighbors of qubit specified
                 with indices or positions.
-            
+
             macro (tuple[int, int, int], optional): the macronode into which to add
                 the qubit. The EGraph must be macronized.
         """
@@ -311,7 +311,7 @@ class EGraph(nx.Graph):
 
         Args:
             qubit (tuple[int, int, int] or int): if 3-tuple, remove qubit at that
-                position. If int and index/point dictionary is available, remove 
+                position. If int and index/point dictionary is available, remove
                 qubit at that index.
         """
         # Remove qubit if dictionaries are not initialized
