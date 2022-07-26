@@ -27,7 +27,7 @@ from flamingpy.codes.graphs import EGraph
 now = datetime.now()
 int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
 logging.info("the following seed was used for random number generation: %i", int_time)
-rng = np.random.default_rng(seed = int_time)
+rng = np.random.default_rng(seed=int_time)
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
