@@ -18,7 +18,6 @@ from datetime import datetime
 import logging
 import string
 
-import random
 import networkx as nx
 import numpy as np
 import pytest
@@ -28,7 +27,7 @@ from flamingpy.codes.graphs import EGraph
 now = datetime.now()
 int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
 logging.info("the following seed was used for random number generation: %i", int_time)
-random.seed(int_time)
+rng = np.random.default_rng(seed = int_time)
 
 # A NetworkX random graph of size N for use in this module.
 N = 20
@@ -53,11 +52,11 @@ def random_graph_3D(request):
     n = request.param
     G = nx.Graph()
     random_nodes = [
-        (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100)) for _ in range(n)
+        (rng.integers(0, 100), rng.integers(0, 100), rng.integers(0, 100)) for _ in range(n)
     ]
     G.add_nodes_from(random_nodes)
 
-    random_edges = [ed for ed in nx.non_edges(G) if random.randint(0, 10) >= 7]
+    random_edges = [ed for ed in nx.non_edges(G) if rng.integers(0, 10) >= 7]
     G.add_edges_from(random_edges)
     return G
 
@@ -80,7 +79,7 @@ class TestEGraph:
     def test_index(self, random_graph):
         """Tests a graph with nodes from a shuffled alphabet."""
         alph = list(string.ascii_lowercase)
-        np.random.shuffle(alph)
+        rng.shuffle(alph)
         reduced_alph = alph[:N]
         label_dict = dict(zip(range(N), reduced_alph))
         H = nx.relabel_nodes(random_graph[0], label_dict)
@@ -133,7 +132,7 @@ class TestEGraph:
 
         E = EGraph(random_graph_3D)
         n_edges_old = E.number_of_edges()
-        new_neighs = [neigh for neigh in E.nodes() if random.randint(0, 10) > 7]
+        new_neighs = [neigh for neigh in E.nodes() if rng.integers(0, 10) > 7]
         E.add_qubit(neighbors=new_neighs)
         assert n_edges_old + len(new_neighs) == E.number_of_edges()
 
