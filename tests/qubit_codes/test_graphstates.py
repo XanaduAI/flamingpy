@@ -56,7 +56,7 @@ def random_graph_3D(request):
     ]
     G.add_nodes_from(random_nodes)
 
-    random_edges = [ed for ed in nx.non_edges(G) if rng.integers(0, 10) >= 7]
+    random_edges = [ed for ed in nx.non_edges(G)]
     G.add_edges_from(random_edges)
     return G
 
