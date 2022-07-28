@@ -122,34 +122,33 @@ def run_ec_simulation(
     trials, code, code_args, noise, noise_args, decoder, weight_opts=None, fname=None
 ):
     """Run full Monte Carlo error-correction simulations."""
+    if weight_opts is None:
+        weight_opts = {}
+
     # Instance of the qubit QEC code
     code_instance = code(**code_args)
     noise_instance = noise(code_instance, **noise_args)
 
-    # For the blueprint
+    # Default options for the blueprint
     if noise == CVLayer:
         if decoder == "MWPM":
-            if weight_opts is None:
+            if weight_opts == {}:
                 weight_opts = {
                     "method": "blueprint",
                     "integer": False,
                     "multiplier": 1,
                     "delta": noise_args.get("delta"),
                 }
-        else:
-            weight_opts = None
 
-    # For the passive architecture
+    # Default options for the passive architecture
     elif noise == CVMacroLayer:
         if decoder == "MWPM":
-            if weight_opts is None:
+            if weight_opts == {}:
                 weight_opts = {"method": "blueprint", "prob_precomputed": True}
-        else:
-            weight_opts = None
 
-    # For iid Z errors
+    # Default options for iid Z errors
     elif noise == IidNoise:
-        if weight_opts is None:
+        if weight_opts == {}:
             weight_opts = {"method": "uniform"}
 
     if "MPI" in globals():
@@ -242,7 +241,7 @@ if __name__ == "__main__":
         parser.add_argument("-errprob", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
-        parser.add_argument("-weight_opts", type=dict)
+        parser.add_argument("-weight_opts", type=str)
 
         args = parser.parse_args()
         params = {
@@ -269,7 +268,7 @@ if __name__ == "__main__":
             "error_probability": 0.1,
             "trials": 100,
             "decoder": "MWPM",
-            "weight_opts": None,
+            "weight_opts": "{}",
         }
 
     # Checking that a valid decoder choice is provided
@@ -293,7 +292,8 @@ if __name__ == "__main__":
         noise_args = {key: params[key] for key in ["delta", "p_swap"]}
 
     decoder = params["decoder"]
-    weight_opts = params["weight_opts"]
+    weight_opts = eval(params["weight_opts"])
+
     args = {
         "trials": params["trials"],
         "code": code,
