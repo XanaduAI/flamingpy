@@ -51,14 +51,14 @@ def ec_mc_trial(
     code_instance,
     noise_instance,
     decoder,
-    weight_options,
+    weight_opts,
     rng=default_rng(),
 ):
     """Runs a single trial of Monte Carlo simulations of error-correction for
     the given code."""
     noise_instance.apply_noise(rng)
 
-    result = correct(code=code_instance, decoder=decoder, weight_options=weight_options)
+    result = correct(code=code_instance, decoder=decoder, weight_options=weight_opts)
 
     return result
 
@@ -68,7 +68,7 @@ def ec_monte_carlo(
     code_instance,
     noise_instance,
     decoder,
-    decoder_args,
+    weight_opts,
     world_comm=None,
     mpi_rank=0,
     mpi_size=1,
@@ -86,14 +86,12 @@ def ec_monte_carlo(
         noise_instance (noise object): the initialized noise layer
             (CVLayer, CVMacroLayer, or IidNoise)
         decoder (str): the decoding algorithm ("MWPM" or "UF")
-        deocder_args (dict): arguments for the decoder (such as weight options)
+        weight_opts (dict): weight options for the decoder
         world_comm, mpi_rank, mpi_size: arguments for the MPI library.
 
     Returns:
         errors (integer): the number of errors.
     """
-    weight_opts = decoder_args["weight_opts"]
-
     successes = np.zeros(1)
     local_successes = np.zeros(1)
 
@@ -121,13 +119,9 @@ def ec_monte_carlo(
 
 
 def run_ec_simulation(
-    trials, code, code_args, noise, noise_args, decoder, decoder_args=None, fname=None
+    trials, code, code_args, noise, noise_args, decoder, weight_opts=None, fname=None
 ):
     """Run full Monte Carlo error-correction simulations."""
-    # Set up the objects common to all trials.
-    if decoder_args is None:
-        decoder_args = {}
-
     # Instance of the qubit QEC code
     code_instance = code(**code_args)
     noise_instance = noise(code_instance, **noise_args)
@@ -135,31 +129,28 @@ def run_ec_simulation(
     # For the blueprint
     if noise == CVLayer:
         if decoder == "MWPM":
-            weight_opts = decoder_args.get("weight_opts")
             if weight_opts is None:
-                weight_opts = {}
-            default_weight_opts = {
-                "method": "blueprint",
-                "integer": False,
-                "multiplier": 1,
-                "delta": noise_args.get("delta"),
-            }
-            weight_opts = {**default_weight_opts, **weight_opts}
+                weight_opts = {
+                    "method": "blueprint",
+                    "integer": False,
+                    "multiplier": 1,
+                    "delta": noise_args.get("delta"),
+                }
         else:
             weight_opts = None
 
     # For the passive architecture
     elif noise == CVMacroLayer:
         if decoder == "MWPM":
-            weight_opts = {"method": "blueprint", "prob_precomputed": True}
+            if weight_opts is None:
+                weight_opts = {"method": "blueprint", "prob_precomputed": True}
         else:
             weight_opts = None
 
     # For iid Z errors
     elif noise == IidNoise:
-        weight_opts = {"method": "uniform"}
-
-    decoder_args.update({"weight_opts": weight_opts})
+        if weight_opts is None:
+            weight_opts = {"method": "uniform"}
 
     if "MPI" in globals():
         world_comm = MPI.COMM_WORLD
@@ -177,7 +168,7 @@ def run_ec_simulation(
         code_instance,
         noise_instance,
         decoder,
-        decoder_args,
+        weight_opts,
         world_comm,
         mpi_rank,
         mpi_size,
@@ -251,6 +242,7 @@ if __name__ == "__main__":
         parser.add_argument("-errprob", type=float)
         parser.add_argument("-trials", type=int)
         parser.add_argument("-decoder", type=str)
+        parser.add_argument("-weight_opts", type=dict)
 
         args = parser.parse_args()
         params = {
@@ -263,8 +255,8 @@ if __name__ == "__main__":
             "error_probability": args.errprob,
             "trials": args.trials,
             "decoder": args.decoder,
+            "weight_opts": args.weight_opts,
         }
-
     else:
         # User can specify values here, if not using command line.
         params = {
@@ -277,7 +269,9 @@ if __name__ == "__main__":
             "error_probability": 0.1,
             "trials": 100,
             "decoder": "MWPM",
+            "weight_opts": None,
         }
+
     # Checking that a valid decoder choice is provided
     if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
         params["decoder"] = "UF"
@@ -299,6 +293,7 @@ if __name__ == "__main__":
         noise_args = {key: params[key] for key in ["delta", "p_swap"]}
 
     decoder = params["decoder"]
+    weight_opts = params["weight_opts"]
     args = {
         "trials": params["trials"],
         "code": code,
@@ -306,5 +301,6 @@ if __name__ == "__main__":
         "noise": noise,
         "noise_args": noise_args,
         "decoder": decoder,
+        "weight_opts": weight_opts,
     }
     run_ec_simulation(**args)
