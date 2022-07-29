@@ -287,7 +287,7 @@ def run_ec_simulation_with_profiler(
 
 
 def _simulation_name(
-    decoder, boundaries, noise, ec, error_probability=None, delta=None, p_swap=None
+    code, decoder, noise,
 ):
     """Generate a unique name for a simulation.
 
@@ -303,14 +303,9 @@ def _simulation_name(
         str: The name of the simulation formatted as
             f"{decoder}_{code_args['boundaries']}_{code_args['ec']}_{noise_params}
     """
-    noise_params = f"{noise}"
-    if noise == "iid":
-        noise_params += f"_perr-{error_probability}"
-    elif noise in ("passive", "blueprint"):
-        noise_params += f"_delta-{delta}_pswap-{p_swap}"
-    noise_params = noise_params.replace(".", "")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    return f"{decoder}_{boundaries}_{ec}_{noise_params}"
+    return f"sims_{timestamp}_{code}_{decoder}_{noise}"
 
 
 def simulations(
@@ -398,7 +393,7 @@ def simulations(
         delta=delta,
         p_swap=p_swap,
     )
-    fname = data_folder / f"sims_{simname}.csv"
+    fname = data_folder / f"{simname}.csv"
 
     # Running the simulations
     if not profile:
