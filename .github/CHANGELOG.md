@@ -34,7 +34,7 @@ See full commit details ...
 
 ### Documentation changes
 
-* Getting started page is now automatically run, preventing future out-of-date issues [#105](https://github.com/XanaduAI/flamingpy/pull/105)
+* Getting started page is now automatically run, preventing future out-of-date issues. [#105](https://github.com/XanaduAI/flamingpy/pull/105)
 
 This release contains contributions from (in alphabetical order):
 
