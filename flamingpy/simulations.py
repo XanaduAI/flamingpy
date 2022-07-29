@@ -43,8 +43,8 @@ from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
 
-noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
-reverse_noise_dict = {b: a for a, b in noise_dict.items()}
+str_dict = {"SurfaceCode": SurfaceCode, "CVLayer": CVLayer, "CVMacroLayer": CVMacroLayer, "IidNoise": IidNoise}
+# reverse_noise_dict = {b: a for a, b in noise_dict.items()}
 
 
 def ec_mc_trial(
@@ -68,7 +68,7 @@ def ec_monte_carlo(
     code_instance,
     noise_instance,
     decoder,
-    weight_opts,
+    decoder_args,
     world_comm=None,
     mpi_rank=0,
     mpi_size=1,
@@ -92,6 +92,8 @@ def ec_monte_carlo(
     Returns:
         errors (integer): the number of errors.
     """
+    weight_opts = decoder_args["weight_opts"]
+
     successes = np.zeros(1)
     local_successes = np.zeros(1)
 
@@ -119,37 +121,15 @@ def ec_monte_carlo(
 
 
 def run_ec_simulation(
-    trials, code, code_args, noise, noise_args, decoder, weight_opts=None, fname=None
+    trials, code, code_args, noise, noise_args, decoder, decoder_args, fname=None
 ):
     """Run full Monte Carlo error-correction simulations."""
-    if weight_opts is None:
-        weight_opts = {}
+    #time the simulation
+    simulation_start_time = perf_counter()
 
     # Instance of the qubit QEC code
     code_instance = code(**code_args)
     noise_instance = noise(code_instance, **noise_args)
-
-    # Default options for the blueprint
-    if noise == CVLayer:
-        if decoder == "MWPM":
-            if weight_opts == {}:
-                weight_opts = {
-                    "method": "blueprint",
-                    "integer": False,
-                    "multiplier": 1,
-                    "delta": noise_args.get("delta"),
-                }
-
-    # Default options for the passive architecture
-    elif noise == CVMacroLayer:
-        if decoder == "MWPM":
-            if weight_opts == {}:
-                weight_opts = {"method": "blueprint", "prob_precomputed": True}
-
-    # Default options for iid Z errors
-    elif noise == IidNoise:
-        if weight_opts == {}:
-            weight_opts = {"method": "uniform"}
 
     if "MPI" in globals():
         world_comm = MPI.COMM_WORLD
@@ -160,14 +140,12 @@ def run_ec_simulation(
         mpi_size = 1
         mpi_rank = 0
 
-    # Perform and time the simulation
-    simulation_start_time = perf_counter()
     errors = ec_monte_carlo(
         trials,
         code_instance,
         noise_instance,
         decoder,
-        weight_opts,
+        decoder_args,
         world_comm,
         mpi_rank,
         mpi_size,
@@ -178,53 +156,34 @@ def run_ec_simulation(
         # Store results in the provided file-path or by default in
         # a .sims_data directory in the file simulations_results.csv.
         file_name = fname or "./flamingpy/.sims_data/sims_results.csv"
-
         # Create a CSV file if it doesn't already exist.
         try:
             file = open(file_name, "x", newline="", encoding="utf8")
-            writer = csv.writer(file)
-            writer.writerow(
-                [
-                    "noise",
-                    "distance",
-                    "ec",
-                    "boundaries",
-                    "delta",
-                    "p_swap",
-                    "error_probability",
-                    "decoder",
-                    "errors",
-                    "trials",
-                    "current_time",
-                    "simulation_time",
-                    "mpi_size",
-                ]
-            )
+            file.write("code,")
+            for key in code_args.keys():
+                file.write("%s,"%(key))
+            file.write("noise,")
+            for key in noise_args.keys():
+                file.write("%s,"%(key))
+            file.write("decoder,")
+            for key in decoder_args.keys():
+                file.write("%s,"%(key))
+            file.write("errors,trials,current_time,simulation_time,mpi_size\n")
         # Open the file for appending if it already exists.
         except FileExistsError:
             file = open(file_name, "a", newline="", encoding="utf8")
-            writer = csv.writer(file)
+            #writer = csv.writer(file)
+        file.write("%s,"%(code.__name__))
+        for value in code_args.values():
+            file.write("%s,"%(value))
+        file.write("%s,"%(noise.__name__))
+        for value in noise_args.values():
+            file.write("%s,"%(value))
+        file.write("%s,"%(decoder))
+        for value in decoder_args.values():
+            file.write("%s,"%(value))
         current_time = datetime.now().time().strftime("%H:%M:%S")
-        for key in ["delta", "p_swap", "error_probability"]:
-            if key not in noise_args:
-                noise_args.update({key: "None"})
-        writer.writerow(
-            [
-                reverse_noise_dict[noise],
-                code_args["distance"],
-                code_args["ec"],
-                code_args["boundaries"],
-                noise_args.get("delta"),
-                noise_args.get("p_swap"),
-                noise_args.get("error_probability"),
-                decoder,
-                errors,
-                trials,
-                current_time,
-                (simulation_stop_time - simulation_start_time),
-                mpi_size,
-            ]
-        )
+        file.write("%i,%i,%s,%f,%i\n"%(errors,trials,current_time,(simulation_stop_time-simulation_start_time),mpi_size))
         file.close()
 
 
@@ -232,43 +191,33 @@ if __name__ == "__main__":
     if len(sys.argv) != 1:
         # Parsing input parameters
         parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
+        parser.add_argument("-code", type=str)
+        parser.add_argument("-code_args", type=str)
         parser.add_argument("-noise", type=str)
-        parser.add_argument("-distance", type=int)
-        parser.add_argument("-ec", type=str)
-        parser.add_argument("-boundaries", type=str)
-        parser.add_argument("-delta", type=float)
-        parser.add_argument("-pswap", type=float)
-        parser.add_argument("-errprob", type=float)
-        parser.add_argument("-trials", type=int)
+        parser.add_argument("-noise_args", type=str)
         parser.add_argument("-decoder", type=str)
-        parser.add_argument("-weight_opts", type=str)
-
+        parser.add_argument("-decoder_args", type=str)
+        parser.add_argument("-trials", type=int)
         args = parser.parse_args()
         params = {
+            "code": args.code,
+            "code_args": args.code_args,
             "noise": args.noise,
-            "distance": args.distance,
-            "ec": args.ec,
-            "boundaries": args.boundaries,
-            "delta": args.delta,
-            "p_swap": args.pswap,
-            "error_probability": args.errprob,
-            "trials": args.trials,
+            "noise_args": args.noise_args,
             "decoder": args.decoder,
-            "weight_opts": args.weight_opts,
+            "decoder_args": args.decoder_args,
+            "trials": args.trials,
         }
     else:
         # User can specify values here, if not using command line.
         params = {
-            "noise": "passive",
-            "distance": 3,
-            "ec": "primal",
-            "boundaries": "open",
-            "delta": 0.09,
-            "p_swap": 0.25,
-            "error_probability": 0.1,
-            "trials": 100,
+            "code": "SurfaceCode",
+            "code_args": "{'distance':3, 'ec':'primal', 'boundaries':'open'}",
+            "noise": "CVMacroLayer",
+            "noise_args": "{'delta':0.09, 'p_swap':0.25}",
             "decoder": "MWPM",
-            "weight_opts": "{}",
+            "decoder_args": "{'weight_opts':{'method':'blueprint', 'prob_precomputed':True}}",
+            "trials": 100,
         }
 
     # Checking that a valid decoder choice is provided
@@ -279,28 +228,16 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
 
-    # The Monte Carlo simulations
-    code = SurfaceCode
-    code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
-
-    noise = noise_dict[params["noise"]]
-    if params.get("noise") == "iid":
-        if params.get("error_probability") is None:
-            raise ValueError("No argument `err_prob` found for `iid` noise.")
-        noise_args = {"error_probability": params.get("error_probability")}
-    else:
-        noise_args = {key: params[key] for key in ["delta", "p_swap"]}
-
-    decoder = params["decoder"]
-    weight_opts = eval(params["weight_opts"])
+    noise = str_dict[params["noise"]]
+    code = str_dict[params["code"]]
 
     args = {
         "trials": params["trials"],
         "code": code,
-        "code_args": code_args,
+        "code_args": eval(params["code_args"]),
         "noise": noise,
-        "noise_args": noise_args,
-        "decoder": decoder,
-        "weight_opts": weight_opts,
+        "noise_args": eval(params["noise_args"]),
+        "decoder": params["decoder"],
+        "decoder_args": eval(params["decoder_args"]),
     }
     run_ec_simulation(**args)
