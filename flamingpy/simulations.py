@@ -15,14 +15,16 @@
 
 # pylint: disable=wrong-import-position,consider-using-with
 
-import argparse
 import csv
-import sys
 import warnings
 import logging
+import cProfile
+import pstats
 
 from datetime import datetime
 from time import perf_counter
+from pathlib import Path
+import argh
 
 int_time = int(str(datetime.now().timestamp()).replace(".", ""))
 logging.info("the following seed was used for random number generation: %i", int_time)
@@ -46,6 +48,10 @@ from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
 reverse_noise_dict = {b: a for a, b in noise_dict.items()}
 
+DEFAULT_PATH_DATA = Path("flamingpy/.sims_data/")
+DEFAULT_PATH_PROFILING = Path("flamingpy/.profiling/")
+DEFAULT_PATH_PROFILES = DEFAULT_PATH_PROFILING / "profiles"
+
 
 def ec_mc_trial(
     code_instance,
@@ -57,9 +63,7 @@ def ec_mc_trial(
     """Runs a single trial of Monte Carlo simulations of error-correction for
     the given code."""
     noise_instance.apply_noise(rng)
-
     result = correct(code=code_instance, decoder=decoder, weight_options=weight_options)
-
     return result
 
 
@@ -121,9 +125,19 @@ def ec_monte_carlo(
 
 
 def run_ec_simulation(
-    trials, code, code_args, noise, noise_args, decoder, decoder_args=None, fname=None
+    trials,
+    code,
+    code_args,
+    noise,
+    noise_args,
+    decoder="MWPM",
+    decoder_args=None,
+    fname=None,
 ):
     """Run full Monte Carlo error-correction simulations."""
+    # Start timing the simulation
+    simulation_start_time = perf_counter()
+
     # Set up the objects common to all trials.
     if decoder_args is None:
         decoder_args = {}
@@ -170,8 +184,7 @@ def run_ec_simulation(
         mpi_size = 1
         mpi_rank = 0
 
-    # Perform and time the simulation
-    simulation_start_time = perf_counter()
+    # Perform the simulation
     errors = ec_monte_carlo(
         trials,
         code_instance,
@@ -187,7 +200,7 @@ def run_ec_simulation(
     if mpi_rank == 0:
         # Store results in the provided file-path or by default in
         # a .sims_data directory in the file simulations_results.csv.
-        file_name = fname or "./flamingpy/.sims_data/sims_results.csv"
+        file_name = fname or Path("./flamingpy/.sims_data/sims_results.csv")
 
         # Create a CSV file if it doesn't already exist.
         try:
@@ -208,6 +221,8 @@ def run_ec_simulation(
                     "current_time",
                     "simulation_time",
                     "mpi_size",
+                    "backend_code",
+                    "backend_decoder",
                 ]
             )
         # Open the file for appending if it already exists.
@@ -233,78 +248,171 @@ def run_ec_simulation(
                 current_time,
                 (simulation_stop_time - simulation_start_time),
                 mpi_size,
+                code_args["backend"],
+                decoder_args["backend"],
             ]
         )
         file.close()
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 1:
-        # Parsing input parameters
-        parser = argparse.ArgumentParser(description="Arguments for Monte Carlo FT simulations.")
-        parser.add_argument("-noise", type=str)
-        parser.add_argument("-distance", type=int)
-        parser.add_argument("-ec", type=str)
-        parser.add_argument("-boundaries", type=str)
-        parser.add_argument("-delta", type=float)
-        parser.add_argument("-pswap", type=float)
-        parser.add_argument("-errprob", type=float)
-        parser.add_argument("-trials", type=int)
-        parser.add_argument("-decoder", type=str)
+def run_ec_simulation_with_profiler(
+    trials,
+    code,
+    code_args,
+    noise,
+    noise_args,
+    decoder="MWPM",
+    decoder_args=None,
+    fname=None,
+    profilename=None,
+):
 
-        args = parser.parse_args()
-        params = {
-            "noise": args.noise,
-            "distance": args.distance,
-            "ec": args.ec,
-            "boundaries": args.boundaries,
-            "delta": args.delta,
-            "p_swap": args.pswap,
-            "error_probability": args.errprob,
-            "trials": args.trials,
-            "decoder": args.decoder,
-        }
+    # Running simulation with profiler
+    with cProfile.Profile() as profiler:
+        run_ec_simulation(
+            trials,
+            code,
+            code_args,
+            noise,
+            noise_args,
+            decoder=decoder,
+            decoder_args=decoder_args,
+            fname=fname,
+        )
 
-    else:
-        # User can specify values here, if not using command line.
-        params = {
-            "noise": "passive",
-            "distance": 3,
-            "ec": "primal",
-            "boundaries": "open",
-            "delta": 0.09,
-            "p_swap": 0.25,
-            "error_probability": 0.1,
-            "trials": 100,
-            "decoder": "MWPM",
-        }
+    # Saving profiling results
+    stats = pstats.Stats(profiler).sort_stats("cumtime")
+
+    stats.dump_stats(profilename)
+
+
+def _simulation_name(
+    decoder, boundaries, noise, ec, error_probability=None, delta=None, p_swap=None
+):
+    """Generate a unique name for a simulation.
+
+    Args:
+        decoder (str): The decoder used in the simulation.
+        boundaries (str): The boundaries used in the simulation.
+        noise (str): The noise used in the simulation.
+        error_probability (float): The error probability used in the simulation.
+        delta (float): The delta used in the simulation.
+        p_swap (float): The probability of a swap used in the simulation.
+
+    Returns:
+        str: The name of the simulation formatted as
+            f"{decoder}_{code_args['boundaries']}_{code_args['ec']}_{noise_params}
+    """
+    noise_params = f"{noise}"
+    if noise == "iid":
+        noise_params += f"_perr-{error_probability}"
+    elif noise in ("passive", "blueprint"):
+        noise_params += f"_delta-{delta}_pswap-{p_swap}"
+    noise_params = noise_params.replace(".", "")
+
+    return f"{decoder}_{boundaries}_{ec}_{noise_params}"
+
+
+def simulations(
+    noise="passive",
+    distance=3,
+    ec="primal",
+    boundaries="open",
+    delta=0.09,
+    p_swap=0.25,
+    error_probability=0.1,
+    trials=100,
+    decoder="MWPM",
+    backend="retworkx",
+    profile=False,
+    data_folder=DEFAULT_PATH_DATA,
+    profile_folder=DEFAULT_PATH_PROFILES,
+):
+    """Run simulations for the given parameters.
+
+    Args:
+        noise (str): The noise used in the simulation. Options are "iid", "passive", and
+            "blueprint".
+        distance (int): Code distance of the surface code.
+        ec (str): The error complex used in the simulation. Options are "primal" or "dual".
+        boundaries (str): The boundaries of the surface code. Options are "open", "periodic", or
+            "toric".
+        delta (float): The finite-energy parameter delta in case of "blueprint" or "passive" noise.
+        p_swap (float): The probability of a swap-out in the hybrid CV cluster state in case of
+            "blueprint" or "passive" noise.
+        error_probability (float): The error probability used in the simulation in case of "iid"
+            noise.
+        trials (int): The number of trials used in the Monte-Carlo simulation.
+        decoder (str): The decoder used. Options are "MWPM" (Minimum Weight Perfect Matching
+            decoder) and "UF" (Union Find decoder)
+        backend (str): The backend used for the code and decoder
+        profile (bool): Whether to run the simulation with profiler.
+        data_folder (str): The path to the folder where the data will be saved.
+        profile_folder (str): The path to the folder where the profiling data will be saved if
+            `profiling == True`.
+
+    Example for running on the command line::
+        python flamingpy/simulations.py --distance 5 --noise passive --ec primal --boundaries open
+            --delta 0.08 --p-swap 0.25 --decoder MWPM --trials 1000 --backend retworkx --profile
+
+    """
+
     # Checking that a valid decoder choice is provided
-    if params["decoder"].lower() in ["unionfind", "uf", "union-find", "union find"]:
-        params["decoder"] = "UF"
-    elif params["decoder"].lower() in ["mwpm", "minimum weight perfect matching"]:
-        params["decoder"] = "MWPM"
+    if decoder.lower() in ["unionfind", "uf", "union-find", "union find"]:
+        decoder = "UF"
+    elif decoder.lower() in ["mwpm", "minimum weight perfect matching"]:
+        decoder = "MWPM"
     else:
-        raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
+        raise ValueError(f"Decoder {decoder} is either invalid or not yet implemented.")
+
+    noise_class = noise_dict[noise]
+    noise_args = {"delta": delta, "p_swap": p_swap}
+    # check that arg error_probability is provided for iid noise
+    if noise == "iid":
+        if error_probability is None:
+            raise ValueError(f"No argument `error_probability` found for iid noise.")
+
+        # set to None unused args and update noise_args
+        delta, p_swap = None, None
+        noise_args = {"error_probability": error_probability}
 
     # The Monte Carlo simulations
     code = SurfaceCode
-    code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
 
-    noise = noise_dict[params["noise"]]
-    if params.get("noise") == "iid":
-        if params.get("error_probability") is None:
-            raise ValueError("No argument `err_prob` found for `iid` noise.")
-        noise_args = {"error_probability": params.get("error_probability")}
+    # Code args
+    code_args = {"distance": distance, "ec": ec, "boundaries": boundaries, "backend": backend}
+
+    # Decoder args
+    decoder_args = {"backend": backend}
+
+    # Collective args
+    args = [trials, code, code_args, noise_class, noise_args, decoder, decoder_args]
+
+    # Setting up file paths for data storage
+    simname = _simulation_name(
+        decoder,
+        boundaries,
+        noise,
+        ec,
+        error_probability=error_probability,
+        delta=delta,
+        p_swap=p_swap,
+    )
+    fname = data_folder / f"sims_{simname}.csv"
+
+    # Running the simulations
+    if not profile:
+        # Simulation without profiler
+        run_ec_simulation(*args, fname=fname)
     else:
-        noise_args = {key: params[key] for key in ["delta", "p_swap"]}
+        # Simulation with profiler
+        profilename = profile_folder / f"profile_distance_{code_args['distance']}_{simname}"
+        run_ec_simulation_with_profiler(
+            *args,
+            fname=fname,
+            profilename=profilename,
+        )
 
-    decoder = params["decoder"]
-    args = {
-        "trials": params["trials"],
-        "code": code,
-        "code_args": code_args,
-        "noise": noise,
-        "noise_args": noise_args,
-        "decoder": decoder,
-    }
-    run_ec_simulation(**args)
+
+if __name__ == "__main__":
+    argh.dispatch_command(simulations)
