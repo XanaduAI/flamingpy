@@ -36,6 +36,8 @@ See full commit details ...
 
 * Getting started page is now automatically run, preventing future out-of-date issues. [#105](https://github.com/XanaduAI/flamingpy/pull/105)
 
+### Contributors
+
 This release contains contributions from (in alphabetical order):
 
 [Joost Bus](https://github.com/soosub), [Josh Izaac](https://github.com/josh146), [Luis Mantilla](https://github.com/BestQuark), [Ilan Tzitrin](https://github.com/ilan-tz)
