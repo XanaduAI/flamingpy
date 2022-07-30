@@ -1,18 +1,40 @@
-## Release 0.9.0b0 (development release)
+## Release 0.9.1b0 (development release)
 
 ### New features since the last release
 
+
 ### Bug fixes
 
-* `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
+
+### Improvements
+
+
+### Documentation changes
+
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+See full commit details ...
+
+
+---
+
+## Release 0.9.1b0 (current release)
+
+### Bug fixes since the last release
+
+* `rng` arguments are added, which were missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
 * Fix incompatibility between CodeFactor and pylint CI check. [#107](https://github.com/XanaduAI/flamingpy/pull/107)
 
 ### Improvements
+
 * The FlamingPy logo has been updated. [#109](https://github.com/XanaduAI/flamingpy/pull/109)
 
 ### Documentation changes
 
-* Getting started page is now automatically run, preventing future out-of-date issues [#105](https://github.com/XanaduAI/flamingpy/pull/105)
+* Getting started page is now automatically run, preventing future out-of-date issues. [#105](https://github.com/XanaduAI/flamingpy/pull/105)
 
 ### Contributors
 
@@ -20,12 +42,10 @@ This release contains contributions from (in alphabetical order):
 
 [Joost Bus](https://github.com/soosub), [Josh Izaac](https://github.com/josh146), [Luis Mantilla](https://github.com/BestQuark), [Ilan Tzitrin](https://github.com/ilan-tz)
 
-See full commit details ...
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.9.0b0...v0.9.1b0).
 
 
----
-
-## Release 0.9.0b0 (current release)
+## Release 0.9.0b0
 
 ### New features since the last release
 
