@@ -46,8 +46,8 @@ str_dict = {
     "SurfaceCode": SurfaceCode,
     "CVLayer": CVLayer,
     "CVMacroLayer": CVMacroLayer,
-    "IidNoise": IidNoise
-    }
+    "IidNoise": IidNoise,
+}
 # reverse_noise_dict = {b: a for a, b in noise_dict.items()}
 
 
@@ -128,7 +128,7 @@ def run_ec_simulation(
     trials, code, code_args, noise, noise_args, decoder, decoder_args, fname=None
 ):
     """Run full Monte Carlo error-correction simulations."""
-    #time the simulation
+    # time the simulation
     simulation_start_time = perf_counter()
 
     # Instance of the qubit QEC code
@@ -165,35 +165,38 @@ def run_ec_simulation(
             file = open(file_name, "x", newline="", encoding="utf8")
             file.write("code,")
             for key in code_args.keys():
-                file.write("%s,"%(key))
+                file.write("%s," % (key))
             file.write("noise,")
             for key in noise_args.keys():
-                file.write("%s,"%(key))
+                file.write("%s," % (key))
             file.write("decoder,")
             for key in decoder_args.keys():
-                file.write("%s,"%(key))
+                file.write("%s," % (key))
             file.write("errors,trials,current_time,simulation_time,mpi_size\n")
         # Open the file for appending if it already exists.
         except FileExistsError:
             file = open(file_name, "a", newline="", encoding="utf8")
-            #writer = csv.writer(file)
-        file.write("%s,"%(code.__name__))
+            # writer = csv.writer(file)
+        file.write("%s," % (code.__name__))
         for value in code_args.values():
-            file.write("%s,"%(value))
-        file.write("%s,"%(noise.__name__))
+            file.write("%s," % (value))
+        file.write("%s," % (noise.__name__))
         for value in noise_args.values():
-            file.write("%s,"%(value))
-        file.write("%s,"%(decoder))
+            file.write("%s," % (value))
+        file.write("%s," % (decoder))
         for value in decoder_args.values():
-            file.write("%s,"%(value))
+            file.write("%s," % (value))
         current_time = datetime.now().time().strftime("%H:%M:%S")
-        file.write("%i,%i,%s,%f,%i\n"%(
-            errors,
-            trials,
-            current_time,
-            (simulation_stop_time-simulation_start_time),
-            mpi_size
-            ))
+        file.write(
+            "%i,%i,%s,%f,%i\n"
+            % (
+                errors,
+                trials,
+                current_time,
+                (simulation_stop_time - simulation_start_time),
+                mpi_size,
+            )
+        )
         file.close()
 
 
