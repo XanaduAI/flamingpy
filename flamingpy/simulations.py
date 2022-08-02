@@ -16,7 +16,6 @@
 # pylint: disable=wrong-import-position,consider-using-with
 
 import argparse
-import csv
 import sys
 import warnings
 import logging
@@ -43,7 +42,12 @@ from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
 
-str_dict = {"SurfaceCode": SurfaceCode, "CVLayer": CVLayer, "CVMacroLayer": CVMacroLayer, "IidNoise": IidNoise}
+str_dict = {
+    "SurfaceCode": SurfaceCode,
+    "CVLayer": CVLayer,
+    "CVMacroLayer": CVMacroLayer,
+    "IidNoise": IidNoise
+    }
 # reverse_noise_dict = {b: a for a, b in noise_dict.items()}
 
 
@@ -183,7 +187,13 @@ def run_ec_simulation(
         for value in decoder_args.values():
             file.write("%s,"%(value))
         current_time = datetime.now().time().strftime("%H:%M:%S")
-        file.write("%i,%i,%s,%f,%i\n"%(errors,trials,current_time,(simulation_stop_time-simulation_start_time),mpi_size))
+        file.write("%i,%i,%s,%f,%i\n"%(
+            errors,
+            trials,
+            current_time,
+            (simulation_stop_time-simulation_start_time),
+            mpi_size
+            ))
         file.close()
 
 
