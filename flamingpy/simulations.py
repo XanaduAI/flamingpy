@@ -19,6 +19,7 @@ import argparse
 import sys
 import warnings
 import logging
+from ast import literal_eval as l_eval 
 
 from datetime import datetime
 from time import perf_counter
@@ -247,10 +248,10 @@ if __name__ == "__main__":
     args = {
         "trials": params["trials"],
         "code": code,
-        "code_args": eval(params["code_args"]),
+        "code_args": l_eval(params["code_args"]),
         "noise": noise,
-        "noise_args": eval(params["noise_args"]),
+        "noise_args": l_eval(params["noise_args"]),
         "decoder": params["decoder"],
-        "decoder_args": eval(params["decoder_args"]),
+        "decoder_args": l_eval(params["decoder_args"]),
     }
     run_ec_simulation(**args)
