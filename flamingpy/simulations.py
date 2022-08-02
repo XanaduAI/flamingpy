@@ -19,7 +19,7 @@ import argparse
 import sys
 import warnings
 import logging
-from ast import literal_eval as l_eval 
+from ast import literal_eval as l_eval
 
 from datetime import datetime
 from time import perf_counter
