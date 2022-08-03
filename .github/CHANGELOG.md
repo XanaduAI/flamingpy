@@ -2,7 +2,7 @@
 
 ### New features since the last release
 
-* The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid FlamingPy will run error corrections and automatically set up the output file based on inputs. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
+* The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid, FlamingPy will run simulations and automatically set up the output file based on inputs. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
   * An example run will be 
     ```
     python flamingpy/simulations.py -code "SurfaceCode" -code_args "{'distance':3, 'ec':'primal', 'boundaries':'open'}" -noise "CVLayer" -noise_args "{'delta':0.09, 'p_swap':0.25}" -decoder "MWPM" -decoder_args "{'weight_opts':{'method':'blueprint', 'integer':False, 'multiplier':1, 'delta':0.09}}" -trials 100
