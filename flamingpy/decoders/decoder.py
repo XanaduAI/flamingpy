@@ -59,7 +59,8 @@ def assign_weights(code, decoder, **kwargs):
         if decoder == "MWPM":
             for node in qubit_coords:
                 neighbors = G[node]
-                # Obtain the list and the number of p-squeezed states in the neighborhood of the node.
+                # Obtain the list and the number of p-squeezed states in 
+                # the neighborhood of the node.
                 p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
                 p_count = len(p_list)
                 if p_count in (0, 1):

@@ -13,7 +13,7 @@
 # limitations under the License.
 """Monte Carlo simulations for estimating FT thresholds."""
 
-# pylint: disable=wrong-import-position,consider-using-with
+# pylint: disable=wrong-import-position,consider-using-with,unused-import
 
 import argparse
 import sys
@@ -41,8 +41,6 @@ from numpy.random import default_rng
 from flamingpy.codes import SurfaceCode
 from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
-
-
 
 
 def ec_mc_trial(
