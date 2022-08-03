@@ -317,7 +317,7 @@ class EGraph(nx.Graph):
         # Remove qubit if dictionaries are not initialized
         if self.to_indices is None:
             if isinstance(qubit, tuple):
-                super().remove_node(qubit)
+                self.remove_node(qubit)
             else:
                 raise ValueError("Cannot remove qubit index because self.to_indices is None.")
 
