@@ -232,7 +232,7 @@ class EGraph(nx.Graph):
                 positioned one unit further than the maximum position in the x
                 direction, in position (x_max + 1, 0, 0).
 
-            neighbours (list[int], list[tuple], or None): neighbors of qubit specified
+            neighbors (list[int], list[tuple], or None): neighbors of qubit specified
                 with indices or positions.
 
             macro (tuple[int, int, int], optional): the macronode into which to add
