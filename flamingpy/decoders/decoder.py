@@ -13,7 +13,7 @@
 # limitations under the License.
 """Decoding and recovery functions."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-statements
 
 import sys
 import numpy as np
@@ -55,42 +55,44 @@ def assign_weights(code, decoder, **kwargs):
 
     # Blueprint weight assignment or weighted-union-find weight assignment
     # dependent on the type of neighbours.
-    if weight_options.get("method") == "blueprint" and decoder == "MWPM":
-        for node in qubit_coords:
-            neighbors = G[node]
-            # Obtain the list and the number of p-squeezed states in the neighborhood of the node.
-            p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
-            p_count = len(p_list)
-            if p_count in (0, 1):
-                if weight_options.get("prob_precomputed"):
-                    err_prob = G.nodes[node]["p_phase_cond"]
+    if weight_options.get("method") == "blueprint":
+        if decoder == "MWPM":
+            for node in qubit_coords:
+                neighbors = G[node]
+                # Obtain the list and the number of p-squeezed states in
+                # the neighborhood of the node.
+                p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
+                p_count = len(p_list)
+                if p_count in (0, 1):
+                    if weight_options.get("prob_precomputed"):
+                        err_prob = G.nodes[node]["p_phase_cond"]
+                    else:
+                        delta_effective = (len(neighbors) + 1) * weight_options.get("delta")
+                        hom_val = G.nodes[node]["hom_val_p"]
+                        err_prob = Z_err_cond(delta_effective, hom_val)
+                    # Allow for taking log of 0.
+                    err_prob = min(err_prob, 0.5)
+                    # TODO: Can I just choose an arbitrary small number?
+                    if err_prob == 0:
+                        err_prob = smallest_number
+                    if weight_options.get("integer"):
+                        multiplier = weight_options.get("multiplier")
+                        weight = round(-multiplier * np.log(err_prob))
+                    else:
+                        weight = -np.log(err_prob)
+                    G.nodes[node]["weight"] = weight
                 else:
-                    delta_effective = (len(neighbors) + 1) * weight_options.get("delta")
-                    hom_val = G.nodes[node]["hom_val_p"]
-                    err_prob = Z_err_cond(delta_effective, hom_val)
-                # Allow for taking log of 0.
-                err_prob = min(err_prob, 0.5)
-                # TODO: Can I just choose an arbitrary small number?
-                if err_prob == 0:
-                    err_prob = smallest_number
-                if weight_options.get("integer"):
-                    multiplier = weight_options.get("multiplier")
-                    weight = round(-multiplier * np.log(err_prob))
-                else:
-                    weight = -np.log(err_prob)
-                G.nodes[node]["weight"] = weight
-            else:
-                # Dictionary of the form number of swapouts: error probability.
-                weight_dict = {2: 1 / 4, 3: 1 / 3, 4: 2 / 5}
-                err_prob = weight_dict[p_count]
-                if weight_options.get("integer"):
-                    multiplier = weight_options.get("multiplier")
-                    weight = round(-multiplier * np.log(err_prob))
-                else:
-                    weight = -np.log(err_prob)
-                G.nodes[node]["weight"] = weight
-        if decoder == "UF":
-            raise Exception("Incompatible decoder/weight options.")
+                    # Dictionary of the form number of swapouts: error probability.
+                    weight_dict = {2: 1 / 4, 3: 1 / 3, 4: 2 / 5}
+                    err_prob = weight_dict[p_count]
+                    if weight_options.get("integer"):
+                        multiplier = weight_options.get("multiplier")
+                        weight = round(-multiplier * np.log(err_prob))
+                    else:
+                        weight = -np.log(err_prob)
+                    G.nodes[node]["weight"] = weight
+        elif decoder == "UF":
+            raise Exception("Incompatible decoder & weight options combination.")
     # Naive weight assignment, unity weights.
     elif weight_options.get("method") == "uniform":
         if decoder == "UF":
