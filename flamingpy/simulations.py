@@ -43,13 +43,6 @@ from flamingpy.decoders.decoder import correct
 from flamingpy.noise import CVLayer, CVMacroLayer, IidNoise
 
 
-str_dict = {
-    "SurfaceCode": SurfaceCode,
-    "CVLayer": CVLayer,
-    "CVMacroLayer": CVMacroLayer,
-    "IidNoise": IidNoise,
-}
-# reverse_noise_dict = {b: a for a, b in noise_dict.items()}
 
 
 def ec_mc_trial(
