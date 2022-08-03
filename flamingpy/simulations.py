@@ -187,7 +187,7 @@ def run_ec_simulation(
         file.write("%s," % (decoder))
         for key, value in decoder_args.items():
             if key == "weight_opts":
-                file.write("\"%s\"," % (value))
+                file.write('"%s",' % (value))
             else:
                 file.write("%s," % (value))
         current_time = datetime.now().time().strftime("%H:%M:%S")
