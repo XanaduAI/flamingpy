@@ -91,7 +91,7 @@ def ec_monte_carlo(
         noise_instance (noise object): the initialized noise layer
             (CVLayer, CVMacroLayer, or IidNoise)
         decoder (str): the decoding algorithm ("MWPM" or "UF")
-        weight_opts (dict): weight options for the decoder
+        decoder_args (dict): arguments for the decoder (such as weight options)
         world_comm, mpi_rank, mpi_size: arguments for the MPI library.
 
     Returns:
