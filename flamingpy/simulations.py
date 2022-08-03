@@ -245,14 +245,11 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Decoder {params['decoder']} is either invalid or not yet implemented.")
 
-    noise = str_dict[params["noise"]]
-    code = str_dict[params["code"]]
-
     args = {
         "trials": params["trials"],
-        "code": code,
+        "code": getattr(sys.modules[__name__], params["code"]),
         "code_args": l_eval(params["code_args"]),
-        "noise": noise,
+        "noise": getattr(sys.modules[__name__], params["noise"]),
         "noise_args": l_eval(params["noise_args"]),
         "decoder": params["decoder"],
         "decoder_args": l_eval(params["decoder_args"]),
