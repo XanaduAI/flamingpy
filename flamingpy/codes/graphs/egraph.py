@@ -235,8 +235,9 @@ class EGraph(nx.Graph):
             neighbors (list[int], list[tuple], or None): neighbors of qubit specified
                 with indices or positions.
 
-            macro (tuple[int, int, int], optional): the macronode into which to add
-                the qubit. The EGraph must be macronized.
+            add_to_macronode (bool, optional): if True, add qubit to a macronode.
+                The qubit must be a tuple that rounds to an integer tuple corresponding
+                to the macronode.
         """
 
         # Makes sure that input qubit value and type is supported
