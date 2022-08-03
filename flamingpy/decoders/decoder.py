@@ -13,7 +13,7 @@
 # limitations under the License.
 """Decoding and recovery functions."""
 
-# pylint: disable=import-outside-toplevel
+# pylint: disable=import-outside-toplevel,too-many-statements
 
 import sys
 import numpy as np
@@ -59,7 +59,7 @@ def assign_weights(code, decoder, **kwargs):
         if decoder == "MWPM":
             for node in qubit_coords:
                 neighbors = G[node]
-                # Obtain the list and the number of p-squeezed states in 
+                # Obtain the list and the number of p-squeezed states in
                 # the neighborhood of the node.
                 p_list = [G.nodes[v]["state"] for v in neighbors if G.nodes[v]["state"] == "p"]
                 p_count = len(p_list)
