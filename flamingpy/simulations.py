@@ -229,11 +229,11 @@ if __name__ == "__main__":
         # User can specify values here, if not using command line.
         params = {
             "code": "SurfaceCode",
-            "code_args": "{'distance':3, 'ec':'primal', 'boundaries':'open'}",
+            "code_args": "{'distance': 3, 'ec': 'primal', 'boundaries': 'open'}",
             "noise": "CVMacroLayer",
-            "noise_args": "{'delta':0.09, 'p_swap':0.25}",
+            "noise_args": "{'delta': 0.09, 'p_swap': 0.25}",
             "decoder": "MWPM",
-            "decoder_args": "{'weight_opts':{'method':'blueprint', 'prob_precomputed':True}}",
+            "decoder_args": "{'weight_opts': {'method': 'blueprint', 'prob_precomputed': True}}",
             "trials": 100,
         }
 
