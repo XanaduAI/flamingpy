@@ -291,7 +291,7 @@ class EGraph(nx.Graph):
 
     def _update_attributes_add_qubit(self, qubit, macro):
         """Update self.macro_to_micro, self.to_points, and self.to_indices."""
-        # NOTE: this method was created to reduce complexity of self.add_qubit()
+        # This method reduces the complexity of self.add_qubit
 
         # Add qubit to macro_to_micro dictionary
         if isinstance(macro, tuple):
