@@ -165,13 +165,13 @@ def run_ec_simulation(
         try:
             file = open(file_name, "x", newline="", encoding="utf8")
             file.write("code,")
-            for key in code_args.keys():
+            for key in code_args:
                 file.write("%s," % (key))
             file.write("noise,")
-            for key in noise_args.keys():
+            for key in noise_args:
                 file.write("%s," % (key))
             file.write("decoder,")
-            for key in decoder_args.keys():
+            for key in decoder_args:
                 file.write("%s," % (key))
             file.write("errors,trials,current_time,simulation_time,mpi_size\n")
         # Open the file for appending if it already exists.
