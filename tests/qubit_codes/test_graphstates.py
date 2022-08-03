@@ -136,6 +136,12 @@ class TestEGraph:
         E.add_qubit(neighbors=new_neighs)
         assert n_edges_old + len(new_neighs) == E.number_of_edges()
 
+        E = EGraph(random_graph_3D)
+        n_edges_old = E.number_of_edges()
+        new_neighs = [0, 1, 2]
+        E.add_qubit(neighbors=new_neighs)
+        assert n_edges_old + len(new_neighs) == E.number_of_edges()
+
     def test_remove_qubit(self, random_graph_3D):
         """Test the remove_qubit function on a random EGraph."""
 
