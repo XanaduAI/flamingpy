@@ -281,7 +281,7 @@ class EGraph(nx.Graph):
                 else:
                     raise TypeError(
                         "Unsupported type of neighbors. Expected tuples but"
-                        f" {type(neighbors[0])} was given. Type ints can only be used when "
+                        f" {type(neighbors[0])} was given. Type int can only be used when "
                         "macro is False."
                     )
 
