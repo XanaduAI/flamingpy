@@ -296,11 +296,12 @@ class EGraph(nx.Graph):
         # This method reduces the complexity of self.add_qubit
 
         # Add qubit to macro_to_micro dictionary
-        if isinstance(macro, tuple):
-            if macro in self.macro_to_micro:
-                self.macro_to_micro[macro].append(qubit)
+        if add_to_macronode:
+            macronode = tuple(round(i) for i in qubit)
+            if macronode in self.macro_to_micro:
+                self.macro_to_micro[macronode].append(qubit)
             else:
-                self.macro_to_micro[macro] = [qubit]
+                self.macro_to_micro[macronode] = [qubit]
 
         # Update dictionaries
         if self.to_indices is not None:
