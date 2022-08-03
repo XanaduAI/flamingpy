@@ -175,11 +175,11 @@ class TestEGraph:
         # try adding a qubit on a defined macronode
         mn = next(iter(MEG.macro_to_micro.keys()))
         new_q = tuple(np.subtract(mn, (0, 0, 0.01)))
-        MEG.add_qubit(new_q, macro=mn)
+        MEG.add_qubit(new_q, add_to_macronode=True)
         assert new_q in MEG.macro_to_micro[mn]
 
         new_q = (199, 100, 991)
-        MEG.add_qubit(new_q, macro=(199, 100, 991))
+        MEG.add_qubit(new_q, add_to_macronode=True)
         assert new_q in MEG.macro_to_micro
         assert new_q in MEG.macro_to_micro[new_q]
 
@@ -197,7 +197,7 @@ class TestEGraph:
         EG = EGraph(random_graph_3D)
         MEG = EG.macronize(True)
         new_q = (199, 100, 991)
-        MEG.add_qubit(new_q, macro=(199, 100, 991))
+        MEG.add_qubit(new_q, add_to_macronode=True)
         MEG.remove_qubit(new_q)
         assert new_q not in MEG.macro_to_micro
 

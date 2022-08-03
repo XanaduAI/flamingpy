@@ -14,7 +14,7 @@
 """A class for representing quantum graph states."""
 
 # pylint: disable=import-outside-toplevel
-from typing import Union
+from typing import Union, Optional
 
 import warnings
 import networkx as nx
@@ -220,9 +220,9 @@ class EGraph(nx.Graph):
 
     def add_qubit(
         self,
-        qubit: Union[None, tuple] = None,
-        neighbors: Union[None, list] = None,
-        macro: Union[None, tuple] = None,
+        qubit: Optional[tuple] = None,
+        neighbors: Optional[list] = None,
+        add_to_macronode: Optional[bool] = None,
     ) -> None:
         """Add qubit to EGraph connected to neighbors.
 
@@ -269,7 +269,7 @@ class EGraph(nx.Graph):
         self.add_node(qubit)
 
         # Update dictionaries when adding qubit
-        self._update_attributes_add_qubit(qubit, macro)
+        self._update_attributes_add_qubit(qubit, add_to_macronode)
 
         # Update neighbors
         if neighbors is not None:
@@ -296,7 +296,7 @@ class EGraph(nx.Graph):
         # This method reduces the complexity of self.add_qubit
 
         # Add qubit to macro_to_micro dictionary
-        if add_to_macronode:
+        if add_to_macro:
             macronode = tuple(round(i) for i in qubit)
             if macronode in self.macro_to_micro:
                 self.macro_to_micro[macronode].append(qubit)
