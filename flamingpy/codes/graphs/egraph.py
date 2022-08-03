@@ -266,7 +266,7 @@ class EGraph(nx.Graph):
             )
 
         # Add node
-        super().add_node(qubit)
+        self.add_node(qubit)
 
         # Update dictionaries when adding qubit
         self._update_attributes_add_qubit(qubit, macro)
