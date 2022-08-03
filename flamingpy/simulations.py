@@ -60,7 +60,7 @@ def ec_mc_trial(
     rng=default_rng(),
 ):
     """Runs a single trial of Monte Carlo simulations of error-correction for
-    the given code."""
+    the given code, noise model, and decoder."""
     noise_instance.apply_noise(rng)
 
     result = correct(code=code_instance, decoder=decoder, weight_options=weight_opts)
