@@ -275,6 +275,8 @@ class EGraph(nx.Graph):
         if neighbors is not None:
             if len(neighbors) != 0:
                 if isinstance(neighbors[0], int):
+                    if self.to_points is None:
+                        self.index_generator()
                     neighborhood = [(self.to_points[ind], qubit) for ind in neighbors]
                 elif isinstance(neighbors[0], tuple):
                     neighborhood = [(tup, qubit) for tup in neighbors]
