@@ -185,8 +185,11 @@ def run_ec_simulation(
         for value in noise_args.values():
             file.write("%s," % (value))
         file.write("%s," % (decoder))
-        for value in decoder_args.values():
-            file.write("%s," % (value))
+        for key, value in decoder_args.items():
+            if key == "weight_opts":
+                file.write("\"%s\"," % (value))
+            else:
+                file.write("%s," % (value))
         current_time = datetime.now().time().strftime("%H:%M:%S")
         file.write(
             "%i,%i,%s,%f,%i\n"
