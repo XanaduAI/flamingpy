@@ -229,7 +229,7 @@ class EGraph(nx.Graph):
         Args:
             qubit (tuple[int, int, int] or None): qubit to add. If a 3-tuple,
                 the qubit is added in that position. If qubit is None, the qubit is
-                positioned one unit further than the maximum position in the z
+                positioned one unit further than the maximum position in the x
                 direction, in position (x_max + 1, 0, 0).
 
             neighbours (list[int], list[tuple], or None): neighbors of qubit specified
