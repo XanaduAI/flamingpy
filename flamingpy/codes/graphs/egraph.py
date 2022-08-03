@@ -260,8 +260,7 @@ class EGraph(nx.Graph):
                 + f" given {type(qubit)}"
             )
 
-        # Check that if macro is not None, then self should be macronized EGraph
-        if isinstance(macro, tuple) and self.macro_to_micro is None:
+        if add_to_macronode and self.macro_to_micro is None:
             raise ValueError(
                 "Cannot add a qubit to macronode because current EGraph is not macronized."
             )
