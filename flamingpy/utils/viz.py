@@ -182,13 +182,31 @@ def draw_EGraph(
     raise ValueError(f"Unknown backend: {backend}")
 
 
+def _get_title(title=None, label="index"):
+    if isinstance(title, bool) and title:
+        title_dict = {
+            "p_phase": "Phase error probabilities",
+            "p_phase_cond": "Conditional phase error probabilities",
+            "hom_val_p": "p-homodyne outcomes",
+            "hom_val_q": "q-homodyne outcomes",
+            "bit_val": "Bit values",
+            "weight": "Weights",
+            "index": "Indices",
+        }
+        return title_dict.get(label, label)
+    elif isinstance(title, str):
+        return title
+    else:
+        return None
+
+
 @mpl.rc_context(plot_params)
 def draw_EGraph_matplotlib(
     egraph,
     color_nodes=False,
     color_edges=False,
     label=None,
-    title=False,
+    title=None,
     legend=False,
     show_axes=True,
     dimensions=None,
@@ -260,20 +278,9 @@ def draw_EGraph_matplotlib(
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
 
-    # set title
-    title_dict = {
-        "p_phase": "Phase error probabilities",
-        "p_phase_cond": "Conditional phase error probabilities",
-        "hom_val_p": "p-homodyne outcomes",
-        "hom_val_q": "q-homodyne outcomes",
-        "bit_val": "Bit values",
-        "weight": "Weights",
-        "index": "Indices",
-    }
-
-    name = title_dict.get(label, label)
-    if title and label:
-        ax.set_title(name)
+    title = _get_title(title, label)
+    if title:
+        ax.set_title(title)
         ax.title.set_size(plot_params.get("axes.titlesize"))
 
     # plot graph
@@ -442,7 +449,7 @@ def draw_EGraph_plotly(
             yaxis={**dict(title="y"), **axis},
             zaxis={**dict(title="z"), **axis},
         ),
-        title=title,
+        title=_get_title(title, label),
     )
 
     return go.Figure(data=[node_trace, edge_trace], layout=layout)
