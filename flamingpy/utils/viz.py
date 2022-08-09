@@ -312,6 +312,7 @@ def draw_EGraph_plotly(
     title=False,
     legend=False,
     show_axes=True,
+    **kwargs,
 ):
     """Draw the graph state represented by the EGraph with plotly. #TODO: doc
     out-of-date.
@@ -363,6 +364,10 @@ def draw_EGraph_plotly(
             If None, sets the dimensions to the smallest rectangular space
             containing all the nodes.
 
+    Key word arguments:
+        showspikes (bool): if True, shows coordinate-lines when hovering over a node. Default is
+            False.
+
     Returns:
         figure: Plotly Express figure.
     """
@@ -371,6 +376,7 @@ def draw_EGraph_plotly(
     x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
 
     nodeColors = [_get_node_color(egraph, color_nodes, node) for node in egraph.nodes]
+    print(nodeColors)
 
     node_trace = go.Scatter3d(
         name="nodes",
@@ -414,6 +420,7 @@ def draw_EGraph_plotly(
     axis = dict(
         showbackground=True,
         showline=True,
+        showspikes=kwargs.get("showspikes", False),
         zeroline=False,
         showgrid=True,
         showticklabels=show_axes,
