@@ -194,10 +194,9 @@ def _get_title(title=None, label="index"):
             "index": "Indices",
         }
         return title_dict.get(label, label)
-    elif isinstance(title, str):
+    if isinstance(title, str):
         return title
-    else:
-        return None
+    return None
 
 
 @mpl.rc_context(plot_params)
@@ -602,24 +601,23 @@ def _get_node_info(egraph, node, information="coordinates"):
     """
     if information == "coordinates":
         return str(node)
-    elif information is None:
+    if information is None:
         return None
-    elif isinstance(information, str):
+    if isinstance(information, str):
         node_property = egraph.nodes[node].get(information)
         return f"{information}: {node_property}"
-    elif isinstance(information, (tuple, list)):
+    if isinstance(information, (tuple, list)):
         node_info = str(node)
         for key in information:
             node_property = egraph.nodes[node].get(key, None)
             if node_property is not None:
                 node_info += "<br />" + f"{key}: {node_property}"
         return node_info
-    else:
-        raise ValueError(
-            "Inappropiate value for `information` argument:"
-            "Check that it complies with the type `str`,"
-            "`tuple` or `list`, or has value `None`."
-        )
+    raise ValueError(
+        "Inappropiate value for `information` argument:"
+        "Check that it complies with the type `str`,"
+        "`tuple` or `list`, or has value `None`."
+    )
 
 
 def _get_edge_color(egraph, edge, color_edges):
