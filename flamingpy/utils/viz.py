@@ -366,25 +366,12 @@ def draw_EGraph_plotly(
     Returns:
         figure: Plotly Express figure.
     """
-
+    # nodes
     nodes = np.array(egraph.nodes)
     x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
 
-    x_edges = []
-    y_edges = []
-    z_edges = []
-
-    for edge in egraph.edges:
-        x0, y0, z0 = edge[0]
-        x1, y1, z1 = edge[1]
-        x_edges.extend([x0, x1, None])
-        y_edges.extend([y0, y1, None])
-        z_edges.extend([z0, z1, None])
-
     nodeColors = [_get_node_color(egraph, color_nodes, node) for node in egraph.nodes]
-    edgeColors = [_get_edge_color(egraph, color_edges, edge) for edge in egraph.edges]
 
-    # nodes
     node_trace = go.Scatter3d(
         name="nodes",
         x=x_nodes,
@@ -401,6 +388,17 @@ def draw_EGraph_plotly(
     )
 
     # edges
+    x_edges, y_edges, z_edges = [], [], []
+
+    for edge in egraph.edges:
+        x0, y0, z0 = edge[0]
+        x1, y1, z1 = edge[1]
+        x_edges.extend([x0, x1, None])
+        y_edges.extend([y0, y1, None])
+        z_edges.extend([z0, z1, None])
+
+    edgeColors = [_get_edge_color(egraph, color_edges, edge) for edge in egraph.edges]
+
     edge_trace = go.Scatter3d(
         name="edges",
         x=x_edges,
@@ -412,6 +410,7 @@ def draw_EGraph_plotly(
         hoverinfo="none",
     )
 
+    # axis
     axis = dict(
         showbackground=True,
         showline=True,
@@ -423,6 +422,7 @@ def draw_EGraph_plotly(
         dtick=1,
     )
 
+    # layout
     layout = go.Layout(
         width=750,
         height=750,
