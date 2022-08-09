@@ -604,6 +604,12 @@ def _get_node_info(egraph, node, information="coordinates"):
             if node_property is not None:
                 node_info += "<br />" + f"{key}: {node_property}"
         return node_info
+    else:
+        raise ValueError(
+            "Inappropiate value for `information` argument:"
+            "Check that it complies with the type `str`,"
+            "`tuple` or `list`, or has value `None`."
+        )
 
 
 def _get_edge_color(egraph, edge, color_edges):
