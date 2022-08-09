@@ -308,7 +308,7 @@ def draw_EGraph_plotly(
     egraph,
     color_nodes=False,
     color_edges=False,
-    label=None,
+    label="coordinates",
     title=False,
     legend=False,
     show_axes=True,
@@ -344,7 +344,7 @@ def draw_EGraph_plotly(
 
                 ``("weight", {-1: minus_color, +1: plus_color})``
 
-        label (NoneType or string): plot values next to each node
+        label (NoneType, string or iterable): plot values next to each node
             associated with the node attribute label. For example,
             to plot bit values, set label to "bit_val". If set to 'index',
             it will plot the integer indices of the nodes. If the attribute
@@ -375,7 +375,8 @@ def draw_EGraph_plotly(
     nodes = np.array(egraph.nodes)
     x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
 
-    nodeColors = [_get_node_color(egraph, color_nodes, node) for node in egraph.nodes]
+    nodeColors = [_get_node_color(egraph, node, color_nodes) for node in egraph.nodes]
+    nodeInfo = [_get_node_info(egraph, node, information=label) for node in egraph.nodes]
 
     node_trace = go.Scatter3d(
         name="nodes",
@@ -389,7 +390,8 @@ def draw_EGraph_plotly(
             color=nodeColors,
             line=dict(color="black", width=0.5),
         ),
-        hoverinfo="none",
+        hovertext=nodeInfo,
+        hoverinfo="text",
     )
 
     # edges
@@ -402,7 +404,7 @@ def draw_EGraph_plotly(
         y_edges.extend([y0, y1, None])
         z_edges.extend([z0, z1, None])
 
-    edgeColors = [_get_edge_color(egraph, color_edges, edge) for edge in egraph.edges]
+    edgeColors = [_get_edge_color(egraph, edge, color_edges) for edge in egraph.edges]
 
     edge_trace = go.Scatter3d(
         name="edges",
@@ -465,7 +467,7 @@ def _plot_EGraph_edges(ax, egraph, color_edges):
     """
     # Plotting edges.
     for edge in egraph.edges:
-        color = _get_edge_color(egraph, color_edges, edge)
+        color = _get_edge_color(egraph, edge, color_edges)
 
         x1, z1, y1 = edge[0]
         x2, z2, y2 = edge[1]
@@ -509,13 +511,13 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
 
     # Plotting points. y and z are swapped in the loops so that
     # z goes into the page; however, the axes labels are correct.
-    for point in egraph.nodes:
-        x, z, y = point
-        color = _get_node_color(egraph, color_nodes, point)
+    for node in egraph.nodes:
+        x, z, y = node
+        color = _get_node_color(egraph, node, color_nodes)
         ax.scatter(x, y, z, c=color)
 
         if label:
-            value = egraph.nodes[point].get(label) if label != "index" else indices[point]
+            value = egraph.nodes[node].get(label) if label != "index" else indices[node]
             if value is not None:
                 # Raise negative sign above node.
                 sign = "^{-}" if value < 0 else " "
@@ -550,7 +552,7 @@ def _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend):
     return ax
 
 
-def _get_node_color(egraph, color_nodes, point):
+def _get_node_color(egraph, node, color_nodes):
     """Color nodes based on ``color_nodes`` arg:
 
     - if `color_nodes` is a string use the string as color,
@@ -570,17 +572,40 @@ def _get_node_color(egraph, color_nodes, point):
                 "the dictionary keys to valid attribute values and"
                 "dictionary values to valid matplotlib color strings."
             )
-        node_property = egraph.nodes[point].get(node_attribute)
+        node_property = egraph.nodes[node].get(node_attribute)
         color = color_dict.get(node_property)
 
     elif color_nodes == True:
-        color = egraph.nodes[point].get("color") or "black"
+        color = egraph.nodes[node].get("color") or "black"
     else:
         color = "black"
     return color
 
 
-def _get_edge_color(egraph, color_edges, edge):
+def _get_node_info(egraph, node, information="coordinates"):
+    """Information to be displayed when hovering over a node based on
+    ``color_nodes`` arg:
+
+    - using the attribute and color dict if `color_nodes` is a tuple(str,dict),
+    - or based on color attribute (when available) if `color_nodes` is bool and True;
+    - coordinates otherwise.
+    """
+    if information == "coordinates":
+        return str(node)
+    elif information is None:
+        return None
+    elif isinstance(information, str):
+        node_property = egraph.nodes[node].get(information)
+        return f"{information}: {node_property}"
+    elif isinstance(information, tuple) or isinstance(information, list):
+        node_info = str(node)
+        for key in information:
+            node_property = egraph.nodes[node].get(key)
+            node_info += "<br />" + f"{key}: {node_property}"
+        return node_info
+
+
+def _get_edge_color(egraph, edge, color_edges):
     """Return the color of an EGraph edge.
 
     Args:
