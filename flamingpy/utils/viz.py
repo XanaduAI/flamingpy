@@ -382,7 +382,7 @@ def draw_EGraph_plotly(
         z_edges.extend([z0, z1, None])
 
     nodeColors = [_get_node_color(egraph, color_nodes, node) for node in egraph.nodes]
-    edgeColors = [_get_node_color(egraph, color_edges, edge) for edge in egraph.edges]
+    edgeColors = [_get_edge_color(egraph, color_edges, edge) for edge in egraph.edges]
 
     # nodes
     node_trace = go.Scatter3d(
