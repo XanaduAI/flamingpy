@@ -42,7 +42,7 @@ Classes
     <style>
         .wrapper{
         width: 100%;
-        overflow-x: scroll;     
+        overflow-x: scroll;
         white-space: nowrap;
         }
     </style>
@@ -65,7 +65,6 @@ Module relationships
         width: 100%;
         overflow-x: scroll;
         white-space: nowrap;
-
         }
     </style>
 

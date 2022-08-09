@@ -1,13 +1,23 @@
-## Release 0.9.0b0 (development release)
+## Release 0.9.1b0 (development release)
 
 ### New features since the last release
+
+* The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid, FlamingPy will run simulations and automatically set up the output file based on inputs. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
+  * An example run will be 
+    ```
+    python flamingpy/simulations.py -code "SurfaceCode" -code_args "{'distance':3, 'ec':'primal', 'boundaries':'open'}" -noise "CVLayer" -noise_args "{'delta':0.09, 'p_swap':0.25}" -decoder "MWPM" -decoder_args "{'weight_opts':{'method':'blueprint', 'integer':False, 'multiplier':1, 'delta':0.09}}" -trials 100
+    ```
+    which generates
+    ```
+    code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,errors,trials,current_time,simulation_time,mpi_size
+    SurfaceCode,3,primal,open,CVLayer,0.09,0.25,MWPM,{'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': 0.09},10,100,00:15:50,0.370795,1
+    ```
 
 ### Bug fixes
 
 * `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
 * Fix incompatibility between CodeFactor and pylint CI check. [#107](https://github.com/XanaduAI/flamingpy/pull/107)
 ### Improvements
-- Added plotly backend for `draw` method of `EGraph` and `SurfaceCode` for additional interactivity. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
 
 ### Documentation changes
 
@@ -17,14 +27,38 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Avhijit Nair](https://github.com/Avhijit-codeboy)
+Nariman Saadatmand
 
 See full commit details ...
 
 
 ---
 
-## Release 0.9.0b0 (current release)
+## Release 0.9.1b0 (current release)
+
+### Bug fixes since the last release
+
+* `rng` arguments are added, which were missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
+* Fix incompatibility between CodeFactor and pylint CI check. [#107](https://github.com/XanaduAI/flamingpy/pull/107)
+
+### Improvements
+
+* The FlamingPy logo has been updated. [#109](https://github.com/XanaduAI/flamingpy/pull/109)
+
+### Documentation changes
+
+* Getting started page is now automatically run, preventing future out-of-date issues. [#105](https://github.com/XanaduAI/flamingpy/pull/105)
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+[Joost Bus](https://github.com/soosub), [Josh Izaac](https://github.com/josh146), [Luis Mantilla](https://github.com/BestQuark), [Ilan Tzitrin](https://github.com/ilan-tz)
+
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.9.0b0...v0.9.1b0).
+
+
+## Release 0.9.0b0
 
 ### New features since the last release
 

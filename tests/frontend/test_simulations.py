@@ -38,7 +38,7 @@ now = datetime.now()
 int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
 logging.info("the following seed was used for random number generation: %i", int_time)
 
-code_params = it.product(
+code_args = it.product(
     [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
     ["primal", "dual"],
     ["open", "toric", "periodic"],
@@ -54,7 +54,7 @@ else:
     mpi_rank = 0
 
 
-@pytest.fixture(scope="module", params=code_params)
+@pytest.fixture(scope="module", params=code_args)
 def code(request):
     """A SurfaceCode object for use in this module."""
     distance, ec, boundaries = request.param
@@ -69,10 +69,8 @@ class TestBlueprint:
     def test_all_GKP_high_squeezing(self, code):
         """Tests Monte Carlo simulations for FT threshold estimation of a
         system with zero swap-out probability and high squeezing."""
-        p_swap = 0
-        delta = 0.001
         trials = 10
-        noise_args = {"delta": delta, "p_swap": p_swap}
+        noise_args = {"delta": 0.001, "p_swap": 0}
         decoder_args = {}
         decoder_args["weight_opts"] = {
             "method": "blueprint",
@@ -81,7 +79,7 @@ class TestBlueprint:
             "delta": noise_args.get("delta"),
         }
 
-        noise_instance = CVLayer(code, delta=delta, p_swap=p_swap)
+        noise_instance = CVLayer(code, **noise_args)
 
         errors = ec_monte_carlo(
             trials,
@@ -104,11 +102,9 @@ class TestPassive:
     def test_all_GKP_high_squeezing(self, code):
         """Tests Monte Carlo simulations for FT threshold estimation of a
         system with zero swap-out probability and high squeezing."""
-        p_swap = 0
-        delta = 0.001
         trials = 10
-
-        noise_instance = CVMacroLayer(code, delta=delta, p_swap=p_swap)
+        noise_args = {"delta": 0.001, "p_swap": 0}
+        noise_instance = CVMacroLayer(code, **noise_args)
         decoder_args = {"weight_opts": None}
 
         errors = ec_monte_carlo(
@@ -126,15 +122,36 @@ class TestPassive:
 
 
 @pytest.mark.parametrize("empty_file", sorted([True, False]))
-@pytest.mark.parametrize("noise", sorted(["blueprint", "passive", "iid"]))
+@pytest.mark.parametrize("noise", sorted(["CVLayer", "CVMacroLayer", "IidNoise"]))
 @pytest.mark.parametrize("decoder", sorted(["MWPM", "UF"]))
 def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     """Check the content of the simulation benchmark output file."""
+    # The Monte Carlo simulation params
+    trials = 100
 
-    expected_header = (
-        "noise,distance,ec,boundaries,delta,p_swap,error_probability,decoder,"
-        + "errors,trials,current_time,simulation_time,mpi_size"
-    )
+    code = SurfaceCode
+    code_args = {
+        "distance": 3,
+        "ec": "primal",
+        "boundaries": "open",
+    }
+
+    if noise in ["CVLayer", "CVMacroLayer"]:
+        noise_args = {"delta": 0.09, "p_swap": 0.25}
+        expected_header = (
+            "code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,"
+            + "errors,trials,current_time,simulation_time,mpi_size"
+        )
+    else:
+        noise_args = {"error_probability": 0.1}
+        expected_header = (
+            "code,distance,ec,boundaries,noise,error_probability,decoder,weight_opts,"
+            + "errors,trials,current_time,simulation_time,mpi_size"
+        )
+    noise_dict = {"CVLayer": CVLayer, "CVMacroLayer": CVMacroLayer, "IidNoise": IidNoise}
+    noise = noise_dict[noise]
+
+    decoder_args = {"weight_opts": {}}
 
     f = tmpdir.join("sims_results.csv")
     if not empty_file:
@@ -143,26 +160,7 @@ def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
             encoding="UTF-8",
         )
 
-    # simulation params
-    params = {
-        "distance": 3,
-        "ec": "primal",
-        "boundaries": "open",
-        "trials": 100,
-    }
-
-    # The Monte Carlo simulations
-    code = SurfaceCode
-    code_args = {key: params[key] for key in ["distance", "ec", "boundaries"]}
-
-    if noise in ["blueprint", "passive"]:
-        noise_args = {"delta": 0.09, "p_swap": 0.25}
-    else:
-        noise_args = {"error_probability": 0.1}
-    noise_dict = {"blueprint": CVLayer, "passive": CVMacroLayer, "iid": IidNoise}
-    noise = noise_dict[noise]
-
-    args = [params["trials"], code, code_args, noise, noise_args, decoder]
+    args = [trials, code, code_args, noise, noise_args, decoder, decoder_args]
     run_ec_simulation(*args, fname=f)
 
     file_lines = f.readlines()
