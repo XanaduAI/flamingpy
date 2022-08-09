@@ -248,7 +248,8 @@ def draw_EGraph_matplotlib(
             it will plot the integer indices of the nodes. If the attribute
             for some or all of the nodes, a message will print indicating
             for how many nodes the attribute has not been set.
-        title (bool): if True, display the title, depending on the label.
+        title (string or bool): title of the plot. If a string is passed, it's simply the string.
+            If boolean and True, display the title, depending on the label.
             For default labels, the titles are converted from attribute
             name to plane English and capitalized.
         legend (bool): if True and color_nodes argument is a tuple(str, dict),
@@ -284,7 +285,7 @@ def draw_EGraph_matplotlib(
         ax.title.set_size(plot_params.get("axes.titlesize"))
 
     # plot graph
-    ax = _plot_EGraph_nodes(ax, egraph, color_nodes, label, name, legend)
+    ax = _plot_EGraph_nodes(ax, egraph, color_nodes, label, title, legend)
     ax = _plot_EGraph_edges(ax, egraph, color_edges)
 
     # plot generalities
