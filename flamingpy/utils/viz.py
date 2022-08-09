@@ -215,7 +215,7 @@ def draw_EGraph_matplotlib(
             True: color the edges based on the 'color' attribute
             attached to the node. If unavailable, color nodes grey.
 
-            string: color all edges with the color specified by the stirng
+            string: color all edges with the color specified by the string
 
             tuple: color edges based on attribute and defined colour
             string by providing a tuple with [attribute, color_dictionary],
