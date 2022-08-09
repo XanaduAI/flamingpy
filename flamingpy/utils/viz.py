@@ -270,6 +270,7 @@ def draw_EGraph_matplotlib(
         "weight": "Weights",
         "index": "Indices",
     }
+
     name = title_dict.get(label, label)
     if title and label:
         ax.set_title(name)
