@@ -309,7 +309,7 @@ def draw_EGraph_plotly(
     color_nodes=False,
     color_edges=False,
     label="coordinates",
-    title=False,
+    title=None,
     legend=False,
     show_axes=True,
     **kwargs,
@@ -441,6 +441,7 @@ def draw_EGraph_plotly(
             yaxis={**dict(title="y"), **axis},
             zaxis={**dict(title="z"), **axis},
         ),
+        title=title,
     )
 
     return go.Figure(data=[node_trace, edge_trace], layout=layout)
