@@ -15,15 +15,18 @@
 
 ### Bug fixes
 
+
 ### Improvements
 
+
 ### Documentation changes
+
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand
+[Joost Bus](https://github.com/soosub), [Nariman Saadatmand](https://github.com/nariman87)
 
 See full commit details ...
 
