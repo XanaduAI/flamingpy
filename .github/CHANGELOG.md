@@ -17,6 +17,7 @@
 
 * `rng` arguments are added where missing in `CVMacroLayer`. [#104](https://github.com/XanaduAI/flamingpy/pull/104)
 * Fix incompatibility between CodeFactor and pylint CI check. [#107](https://github.com/XanaduAI/flamingpy/pull/107)
+
 ### Improvements
 
 ### Documentation changes
