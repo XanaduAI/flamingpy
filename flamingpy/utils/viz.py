@@ -600,8 +600,9 @@ def _get_node_info(egraph, node, information="coordinates"):
     elif isinstance(information, tuple) or isinstance(information, list):
         node_info = str(node)
         for key in information:
-            node_property = egraph.nodes[node].get(key)
-            node_info += "<br />" + f"{key}: {node_property}"
+            node_property = egraph.nodes[node].get(key, None)
+            if node_property is not None:
+                node_info += "<br />" + f"{key}: {node_property}"
         return node_info
 
 
