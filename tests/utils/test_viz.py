@@ -116,3 +116,14 @@ class TestDrawEGraphPlotly:
         # Test for drawing the SurfaceCode
         fig2 = SC.draw(backend="plotly")
         assert isinstance(fig2, plotly.graph_objs.Figure)
+
+
+def test_node_info():
+    """Test the _get_node_info function."""
+    code = SurfaceCode(3)
+    egraph = code.graph
+    node = list(egraph.nodes())[0]
+
+    assert viz._get_node_info(egraph, node) == str(node)
+    assert "primal" in viz._get_node_info(egraph, node, information="type")
+    assert "primal" and str(node) in viz._get_node_info(egraph, node, information=("primal",))
