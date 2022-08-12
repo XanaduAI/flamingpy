@@ -106,15 +106,15 @@ class TestDrawEGraphPlotly:
     def test_draw_egraph_rhg_plotly(self, d):
         """Test for the draw method of EGraph of RHG lattice."""
         # Bell state EGraph
-        SC = SurfaceCode(d)
-        RHG = SC.graph
+        code = SurfaceCode(d)
+        RHG = code.graph
 
         # Test for drawing the EGraph
         fig1 = viz.draw_EGraph_plotly(RHG)
         assert isinstance(fig1, plotly.graph_objs.Figure)
 
         # Test for drawing the SurfaceCode
-        fig2 = SC.draw(backend="plotly")
+        fig2 = code.draw(backend="plotly")
         assert isinstance(fig2, plotly.graph_objs.Figure)
 
 
