@@ -254,8 +254,8 @@ def draw_EGraph_matplotlib(
     """Draw the graph state represented by the EGraph.
 
     Args:
-        See draw_EGraph for general keyword arguments, see keyword arguments below for matplotlib-specific
-            arguments.
+        See draw_EGraph for general keyword arguments, see keyword arguments below for
+            matplotlib-specific arguments.
 
     Keyword args:
         dimensions (tuple): Dimensions of the region that should be plotted.

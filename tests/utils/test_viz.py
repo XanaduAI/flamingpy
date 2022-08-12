@@ -126,4 +126,6 @@ def test_node_info():
 
     assert viz._get_node_info(egraph, node) == str(node)
     assert "primal" in viz._get_node_info(egraph, node, information="type")
-    assert "primal" and str(node) in viz._get_node_info(egraph, node, information=("primal",))
+
+    info = viz._get_node_info(egraph, node, information=("primal",))
+    assert ("primal" in info) and (str(node) in info)
