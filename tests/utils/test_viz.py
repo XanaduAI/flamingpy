@@ -55,7 +55,7 @@ def test_to_pi_string():
     assert viz.to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 
-class TestDrawEGraph:
+class TestDrawEGraphMaplotlib:
     """Tests for visualizing EGraphs."""
 
     def test_draw_egraph_bell(self):
