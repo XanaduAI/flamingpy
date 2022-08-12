@@ -139,14 +139,14 @@ def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     if noise in ["CVLayer", "CVMacroLayer"]:
         noise_args = {"delta": 0.09, "p_swap": 0.25}
         expected_header = (
-            "code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,"
-            + "errors,trials,current_time,simulation_time,mpi_size"
+            "code;distance;ec;boundaries;noise;delta;p_swap;decoder;weight_opts;"
+            + "errors;trials;current_time;simulation_time;mpi_size"
         )
     else:
         noise_args = {"error_probability": 0.1}
         expected_header = (
-            "code,distance,ec,boundaries,noise,error_probability,decoder,weight_opts,"
-            + "errors,trials,current_time,simulation_time,mpi_size"
+            "code;distance;ec;boundaries;noise;error_probability;decoder;weight_opts;"
+            + "errors;trials;current_time;simulation_time;mpi_size"
         )
     noise_dict = {"CVLayer": CVLayer, "CVMacroLayer": CVMacroLayer, "IidNoise": IidNoise}
     noise = noise_dict[noise]
@@ -171,4 +171,4 @@ def test_simulations_output_file(tmpdir, empty_file, noise, decoder):
     assert file_lines[0] == expected_header + "\n"
 
     # contents has the expected number of columns
-    assert len(re.split(",", file_lines[-1])) == len(re.split(",", expected_header))
+    assert len(re.split(";", file_lines[-1])) == len(re.split(";", expected_header))
