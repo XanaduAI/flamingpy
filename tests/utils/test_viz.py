@@ -13,7 +13,7 @@
 # limitations under the License.
 """"Unit tests for functions in the viz module."""
 
-# pylint: disable=no-self-use
+# pylint: disable=no-self-use,protected-access
 
 import math
 
