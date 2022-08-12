@@ -372,7 +372,7 @@ def draw_EGraph_plotly(
             If None, sets the dimensions to the smallest rectangular space
             containing all the nodes.
 
-    Key word arguments:
+    Keyword args:
         showspikes (bool): if True, shows coordinate-lines when hovering over a node. Default is
             False.
 
@@ -933,7 +933,7 @@ def _plot_cubes_at(positions, sizes=None, colors=None, **kwargs):
         colors (Iterable): An iterable of size ``N`` containing the colors of the cube.
             This can be any of the option allowed by matplolib.
 
-    Keyword arguments:
+    Keyword args:
         **kwargs: all other parameters are forwarded to
             ```Poly3DColletion``
             <https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.art3d.Poly3DCollection.html>`_.
