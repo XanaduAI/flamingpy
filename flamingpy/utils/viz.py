@@ -168,12 +168,53 @@ def draw_EGraph(
     backend="matplotlib",
     **kwargs,
 ):
-    """Draw an EGraph using the specified backend.
+    """Draw an EGraph using either matplotlib or plotly as backend.
 
     Args:
         egraph (EGraph): The EGraph to draw.
-        backend (str): The backend to use. One of "matplotlib" or "plotly".
-        **kwargs: Additional arguments to pass to the backend.
+        backend (str): The backend to use, either "matplotlib" or "plotly".
+
+    Keyword args:
+        color_nodes (bool or string or dict): Options are:
+            True: color the nodes based on the 'color' attribute
+            attached to the node. If unavailable, color nodes black.
+            string: color all nodes with the color specified by the string
+            tuple[str, dict]: color nodes based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example:
+
+                ``["state", {"GKP": "b", "p": "r"}]``
+
+            will look at the "state" attribute of the node, and colour
+            according to the dictionary.
+
+        color_edges (bool or string or dict):
+            True: color the edges based on the 'color' attribute
+            attached to the node. If unavailable, color nodes grey.
+
+            string: color all edges with the color specified by the stirng
+
+            tuple: color edges based on attribute and defined colour
+            string by providing a tuple with [attribute, color_dictionary],
+            for example: if the edge attribute "weight" can be +1 or -1,
+            the tuple should be of the form:
+
+                ``("weight", {-1: minus_color, +1: plus_color})``
+
+        label (NoneType, string or iterable): plot values next to each node
+            associated with the node attribute label. For example,
+            to plot bit values, set label to "bit_val". If set to 'index',
+            it will plot the integer indices of the nodes. If the attribute
+            for some or all of the nodes, a message will print indicating
+            for how many nodes the attribute has not been set.
+        title (bool): if True, display the title, depending on the label.
+            For default labels, the titles are converted from attribute
+            name to plane English and capitalized.
+        legend (bool): if True and color_nodes argument is a tuple(str, dict),
+            display the a color legend with node attributes.
+        show_axes (bool): if False, turn off the axes.
+
+    See draw_EGraph_matplotlib or draw_EGraph_plotly for backend specific keyword arguments.
     """
     if backend == "matplotlib":
         return draw_EGraph_matplotlib(egraph, **kwargs)
@@ -208,52 +249,15 @@ def draw_EGraph_matplotlib(
     title=None,
     legend=False,
     show_axes=True,
-    dimensions=None,
+    **kwargs,
 ):
     """Draw the graph state represented by the EGraph.
 
     Args:
-        color_nodes (bool or string or dict): Options are:
-            True: color the nodes based on the 'color' attribute
-            attached to the node. If unavailable, color nodes black.
+        See draw_EGraph for general keyword arguments, see keyword arguments below for matplotlib-specific
+            arguments.
 
-            string: color all nodes with the color specified by the string
-
-            tuple[str, dict]: color nodes based on attribute and defined colour
-            string by providing a tuple with [attribute, color_dictionary],
-            for example:
-
-                ``["state", {"GKP": "b", "p": "r"}]``
-
-            will look at the "state" attribute of the node, and colour
-            according to the dictionary.
-
-        color_edges (bool or string or dict):
-            True: color the edges based on the 'color' attribute
-            attached to the node. If unavailable, color nodes grey.
-
-            string: color all edges with the color specified by the string
-
-            tuple: color edges based on attribute and defined colour
-            string by providing a tuple with [attribute, color_dictionary],
-            for example: if the edge attribute "weight" can be +1 or -1,
-            the tuple should be of the form:
-
-                ``("weight", {-1: minus_color, +1: plus_color})``
-
-        label (NoneType or string): plot values next to each node
-            associated with the node attribute label. For example,
-            to plot bit values, set label to "bit_val". If set to 'index',
-            it will plot the integer indices of the nodes. If the attribute
-            for some or all of the nodes, a message will print indicating
-            for how many nodes the attribute has not been set.
-        title (string or bool): title of the plot. If a string is passed, it's simply the string.
-            If boolean and True, display the title, depending on the label.
-            For default labels, the titles are converted from attribute
-            name to plane English and capitalized.
-        legend (bool): if True and color_nodes argument is a tuple(str, dict),
-            display the a color legend with node attributes.
-        show_axes (bool): if False, turn off the axes.
+    Keyword args:
         dimensions (tuple): Dimensions of the region that should be plotted.
             Should be of the form:
 
@@ -265,6 +269,8 @@ def draw_EGraph_matplotlib(
     Returns:
         tuple: Matplotib Figure and Axes.
     """
+
+    dimensions = kwargs.get("dimensions", None)
 
     if dimensions is None:
         mins = map(min, zip(*egraph.nodes))
@@ -326,55 +332,16 @@ def draw_EGraph_plotly(
     out-of-date.
 
     Args:
-        color_nodes (bool or string or dict): Options are:
-            True: color the nodes based on the 'color' attribute
-            attached to the node. If unavailable, color nodes black.
-            string: color all nodes with the color specified by the string
-            tuple[str, dict]: color nodes based on attribute and defined colour
-            string by providing a tuple with [attribute, color_dictionary],
-            for example:
-
-                ``["state", {"GKP": "b", "p": "r"}]``
-
-            will look at the "state" attribute of the node, and colour
-            according to the dictionary.
-
-        color_edges (bool or string or dict):
-            True: color the edges based on the 'color' attribute
-            attached to the node. If unavailable, color nodes grey.
-
-            string: color all edges with the color specified by the stirng
-
-            tuple: color edges based on attribute and defined colour
-            string by providing a tuple with [attribute, color_dictionary],
-            for example: if the edge attribute "weight" can be +1 or -1,
-            the tuple should be of the form:
-
-                ``("weight", {-1: minus_color, +1: plus_color})``
-
-        label (NoneType, string or iterable): plot values next to each node
-            associated with the node attribute label. For example,
-            to plot bit values, set label to "bit_val". If set to 'index',
-            it will plot the integer indices of the nodes. If the attribute
-            for some or all of the nodes, a message will print indicating
-            for how many nodes the attribute has not been set.
-        title (bool): if True, display the title, depending on the label.
-            For default labels, the titles are converted from attribute
-            name to plane English and capitalized.
-        legend (bool): if True and color_nodes argument is a tuple(str, dict),
-            display the a color legend with node attributes.
-        show_axes (bool): if False, turn off the axes.
-        dimensions (tuple): Dimensions of the region that should be plotted.
-            Should be of the form:
-
-                ``([xmin, xmax], [ymin, ymax], [zmin, zmax])``
-
-            If None, sets the dimensions to the smallest rectangular space
-            containing all the nodes.
+        See draw_EGraph for general keyword arguments, see keyword arguments below for
+            matplotlib-specific arguments.
 
     Keyword args:
+        showbackground (bool): if True, shows the background of the graph. Default is False.
         showspikes (bool): if True, shows coordinate-lines when hovering over a node. Default is
             False.
+        showgrid (bool): if True, shows the grid of the graph. Default is True.
+        width (int): width of the graph. Default is 750.
+        height (int): height of the graph. Default is 750.
 
     Returns:
         figure: Plotly Express figure.
@@ -427,11 +394,11 @@ def draw_EGraph_plotly(
 
     # axis
     axis = dict(
-        showbackground=True,
+        showbackground=kwargs.get("showbackground", False),
         showline=True,
         showspikes=kwargs.get("showspikes", False),
         zeroline=False,
-        showgrid=True,
+        showgrid=kwargs.get("showgrid", True),
         showticklabels=show_axes,
         tickmode="linear",
         tick0=0,
@@ -440,8 +407,8 @@ def draw_EGraph_plotly(
 
     # layout
     layout = go.Layout(
-        width=750,
-        height=750,
+        width=kwargs.get("width", 750),
+        height=kwargs.get("height", 750),
         showlegend=legend,
         hovermode="closest",
         scene=dict(
