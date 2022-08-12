@@ -155,35 +155,35 @@ def run_ec_simulation(
         # Create a CSV file if it doesn't already exist.
         try:
             file = open(file_name, "x", newline="", encoding="utf8")
-            file.write("code,")
+            file.write("code;")
             for key in code_args:
-                file.write("%s," % (key))
-            file.write("noise,")
+                file.write("%s;" % (key))
+            file.write("noise;")
             for key in noise_args:
-                file.write("%s," % (key))
-            file.write("decoder,")
+                file.write("%s;" % (key))
+            file.write("decoder;")
             for key in decoder_args:
-                file.write("%s," % (key))
-            file.write("errors,trials,current_time,simulation_time,mpi_size\n")
+                file.write("%s;" % (key))
+            file.write("errors;trials;current_time;simulation_time;mpi_size\n")
         # Open the file for appending if it already exists.
         except FileExistsError:
             file = open(file_name, "a", newline="", encoding="utf8")
             # writer = csv.writer(file)
-        file.write("%s," % (code.__name__))
+        file.write("%s;" % (code.__name__))
         for value in code_args.values():
-            file.write("%s," % (value))
-        file.write("%s," % (noise.__name__))
+            file.write("%s;" % (value))
+        file.write("%s;" % (noise.__name__))
         for value in noise_args.values():
-            file.write("%s," % (value))
-        file.write("%s," % (decoder))
+            file.write("%s;" % (value))
+        file.write("%s;" % (decoder))
         for key, value in decoder_args.items():
             if key == "weight_opts":
-                file.write('"%s",' % (value))
+                file.write('"%s";' % (value))
             else:
-                file.write("%s," % (value))
+                file.write("%s;" % (value))
         current_time = datetime.now().time().strftime("%H:%M:%S")
         file.write(
-            "%i,%i,%s,%f,%i\n"
+            "%i;%i;%s;%f;%i\n"
             % (
                 errors,
                 trials,
