@@ -189,9 +189,9 @@ def nullspace_basis(M):
     # construct augmented block matrix A = [M | I]
     A = np.concatenate((M_transposed, np.eye(m_rows, dtype=int)), axis=-1)
     # row reduce left M block of augmented matrix
-    R, p = RREform_mod2(A, max_cols=n_cols)
+    R, p = reduce_RREform_mod2(A, max_cols=n_cols)
     N = R[p:, n_cols:]
-    basis, _ = RREform_mod2(N)
+    basis, _ = reduce_RREform_mod2(N)
     return basis
 
 
@@ -479,7 +479,7 @@ class EGraph(nx.Graph):
         # perform algorithm to search for solution
         #
         # construct system of constraints for two adjacency matrices G and H
-        system = system_constraints(G, H)
+        system = lc_constraint_system(G, H)
         # construct nullspace basis of system of constraints
         nullspace = nullspace_basis(system)
         # search nullspace for solution vector
