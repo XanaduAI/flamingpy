@@ -232,14 +232,14 @@ def are_lc_equivalent(graph1, graph2, clifford_form="tensor"):
         clifford_form: a string describing the output form of local Clifford operation, if
             it exists.
 
-            If 'tensor' (default), produce a list of length n of 2x2 numpy arrays corresponding to single-qubit
-                tensor factors.
-            If 'global', return a single 2nx2n numpy array corresponding to the global operator acting on all n
-                qubits.
+            If 'tensor' (default), produce a list of length n of 2x2 numpy arrays corresponding to
+                single-qubit tensor factors.
+            If 'global', return a single 2nx2n numpy array corresponding to the global operator
+                acting on all n qubits.
 
     Returns:
-        (bool, numpy.array): whether the states are LC equivalent, and if they are, the local Clifford
-            output according to 'clifford_form' specification.
+        (bool, numpy.array): whether the states are LC equivalent, and if they are, the local
+            Clifford output according to 'clifford_form' specification.
     """
     # get adjacency matrices of input graphs
     graph1.adj_generator(sparse=False)
