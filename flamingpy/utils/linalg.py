@@ -43,14 +43,14 @@ def reduce_RREform_mod2(M, max_cols=None):
 
 def lc_constraint_system(G, H):
     """Build the constraint for LC-equivalence of two adjacency matrices.
-    
+
     Construct a binary system of equations that two adjacency matrices
     G and H must satisfy for equivalence through local complementations.
 
     Args:
         G, H (numpy.array): n x n adjacency matrices.
     Returns:
-        numpy.array: an array of shape n^2 x 4n representing a system of n^2 
+        numpy.array: an array of shape n^2 x 4n representing a system of n^2
             binary linear equations with 4n unknowns.
     """
     # set the number of qubits
@@ -77,14 +77,14 @@ def lc_constraint_system(G, H):
 
 def nullspace_basis(M):
     """Return the nullspace basis of matrix M.
-    
+
     Construct an array whose rows are binary basis vectors of the right
     nullspace of input matrix array.
 
     Args:
         M (numpy.array): a binary matrix.
     Returns:
-        numpy.array: an array whose rows are basis vectors of the right 
+        numpy.array: an array whose rows are basis vectors of the right
             nullspace of M.
     """
     # find left Null space of transposed system, which is equal to right null space
@@ -103,14 +103,14 @@ def search_nullspace(basis):
     """Check if the nullspace satisfies the determinant constraints.
 
      Search through sums of pairs of basis vectors of the nullspace and
-     see if any satisfy the determinant constraints. If no solution is found, 
-     output None. If a solution is found, return a vector specifying the local 
+     see if any satisfy the determinant constraints. If no solution is found,
+     output None. If a solution is found, return a vector specifying the local
      Clifford in the form:
-        
+
         (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n, c_1, c_2, ..., c_n, d_1, d_2, ..., d_n),
-        
+
      where n is the number of nodes of the graph.
- 
+
     Args:
         basis (numpy.array): an array whose rows are basis vectors of the nullspace
     Returns:
@@ -159,21 +159,22 @@ def search_nullspace(basis):
 
 
 def clifford_vec_to_tensors(vec):
-    """Convert a local Clifford gate on n qubits to a list of n single-qubit Cliffords.
-    
+    """Convert a local Clifford gate on n qubits to a list of n single-qubit
+    Cliffords.
+
     Take a local Clifford operation on n qubits in the form
-    
+
     (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n, c_1, c_2, ..., c_n, d_1, d_2, ..., d_n),
-    
-    and return a list of single-qubit Clifford gates as a list of 2x2 arrays, where the array 
+
+    and return a list of single-qubit Clifford gates as a list of 2x2 arrays, where the array
     at index k corresponds to the Clifford acting on qubit k given as:
-    
+
         [a_k, b_k]
         [c_k, d_k].
-    
+
     Args:
         vec (numpy.array): a vector of size 4n specifying a local Clifford gate on n qubits.
-    
+
     Returns:
         list[numpy.array]: n 2x2 arrays representing single-qubit local Clifford gates.
     """
@@ -188,25 +189,26 @@ def clifford_vec_to_tensors(vec):
 
 
 def clifford_vec_to_global(vec):
-    """Convert a local Clifford gate on n qubits to a local Clifford gate on all n qubits.
-    
-    Take a vector corresponding to a local Clifford gate on n qubits, 
-    
+    """Convert a local Clifford gate on n qubits to a local Clifford gate on
+    all n qubits.
+
+    Take a vector corresponding to a local Clifford gate on n qubits,
+
     (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n, c_1, c_2, ..., c_n, d_1, d_2, ..., d_n),
-    
-    and return a single 2n x 2n array representing a local Clifford acting on 
+
+    and return a single 2n x 2n array representing a local Clifford acting on
     all n qubits, given as the block matrix:
-    
+
             [A, B]
             [C, D]
-            
+
         where each block is a n x n diagonal matrix:
-        
+
             A = diag(a_1, a_2, ..., a_n)
             B = diag(b_1, b_2, ..., b_n)
             C = diag(c_1, c_2, ..., c_n)
             D = diag(d_1, d_2, ..., d_n).
-    
+
     Args:
         vec (numpy.array): a vector of size 4n specifying a local Clifford on n qubits.
     Returns:
@@ -220,21 +222,22 @@ def clifford_vec_to_global(vec):
 
 
 def are_lc_equivalent(graph1, graph2, clifford_form="tensor"):
-    """Check if two EGraphs are LC equivalent, and return the Clifford operation if so. Implemented as in arXiv:quant-ph/0405023.
+    """Check if two EGraphs are LC equivalent, and return the Clifford
+    operation if so. Implemented as in arXiv:quant-ph/0405023.
 
     Args:
         graph1 (EGraph): the initial graph to check Clifford equivalence with.
         graph2 (EGraph): the graph to check Clifford equivalence against.
         clifford_form: a string describing the output form of local Clifford operation, if
             it exists.
-            
-            If 'tensor' (default), produce a list of length n of 2x2 numpy arrays corresponding to single-qubit 
-                tensor factors. 
-            If 'global', return a single 2nx2n numpy array corresponding to the global operator acting on all n 
+
+            If 'tensor' (default), produce a list of length n of 2x2 numpy arrays corresponding to single-qubit
+                tensor factors.
+            If 'global', return a single 2nx2n numpy array corresponding to the global operator acting on all n
                 qubits.
-            
+
     Returns:
-        (bool, numpy.array): whether the states are LC equivalent, and if they are, the local Clifford 
+        (bool, numpy.array): whether the states are LC equivalent, and if they are, the local Clifford
             output according to 'clifford_form' specification.
     """
     # get adjacency matrices of input graphs
