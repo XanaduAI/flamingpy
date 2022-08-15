@@ -433,7 +433,7 @@ class EGraph(nx.Graph):
         return plot_mat_heat_map(adj, **kwargs)
 
     def is_lc_equivalent(self, graph2, clifford_form="tensor"):
-        """Check if two EGraphs are LC equivalent, and return the Clifford operation if so.
+        """Check if two EGraphs are LC equivalent, and return the Clifford operation if so. Implemented as in arXiv:quant-ph/0405023.
 
         Args:
             graph2 (EGraph): the graph to check Clifford equivalence against.
