@@ -20,6 +20,7 @@ import networkx as nx
 import numpy as np
 from flamingpy.utils.linalg import are_lc_equivalent
 
+
 def macronize(can_graph, pad_boundary=False, disp=0.1):
     """Create a macronode graph out of canonical graph can_graph.
 
@@ -97,8 +98,6 @@ def macronize(can_graph, pad_boundary=False, disp=0.1):
         new_perfect_qubits = [macro_dict[point] for point in old_perfect_points]
         macro_graph.graph["perfect_points"] = [a for b in new_perfect_qubits for a in b]
     return macro_graph
-
-
 
 
 class EGraph(nx.Graph):

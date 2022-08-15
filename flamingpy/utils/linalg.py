@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 def reduce_RREform_mod2(M, max_cols=None):
     """Put a binary matrix into row reduced echelon form modulo 2, up to a
     maximum number of columns given by max_cols.
