@@ -585,25 +585,25 @@ def _get_node_info(egraph, node, information="coordinates"):
             - if ``information`` contains ``"index"``, include the index from
                 ``egraph.to_indices[node]``.
     """
+    # information dictionary
+    info_dict = egraph.nodes[node].copy()
+    if "index" in information:
+        info_dict["index"] = egraph.to_indices[node]
+
+    # returning relevant information
     if information == "coordinates":
         return str(node)
-    if information == "index":
-        egraph.nodes[node]["index"] = egraph.to_indices[node]
     if information is None:
         return None
     if isinstance(information, str):
-        node_property = egraph.nodes[node].get(information)
+        node_property = info_dict.get(information)
         return f"{information}: {node_property}"
     if isinstance(information, (tuple, list)):
         node_info = str(node)
         for key in information:
-            if key == "index":
-                index = egraph.to_indices(node)
-                node_info += "<br />" + f"index: {index}"
-            else:
-                node_property = egraph.nodes[node].get(key, None)
-                if node_property is not None:
-                    node_info += "<br />" + f"{key}: {node_property}"
+            node_property = info_dict.get(key, None)
+            if node_property is not None:
+                node_info += "<br />" + f"{key}: {node_property}"
         return node_info
     raise ValueError(
         "Inappropiate value for `information` argument:"
