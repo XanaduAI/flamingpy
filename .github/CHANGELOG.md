@@ -27,7 +27,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), Nariman Saadatmand
+[Joost Bus](https://github.com/soosub), [Avhijit Nair](https://github.com/Avhijit-codeboy), Nariman Saadatmand
 
 See full commit details ...
 
