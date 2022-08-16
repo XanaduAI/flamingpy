@@ -583,12 +583,12 @@ def _get_node_info(egraph, node, information="coordinates"):
             - if ``information`` is an iterable, a list of the values of the node attributes in ``information``,
             - if ``information`` is None, the coordinates of the node.
             - if ``information`` contains ``"index"``, include the index from
-                ``egraph.to_indeces[node]``.
+                ``egraph.to_indices[node]``.
     """
     if information == "coordinates":
         return str(node)
     if information == "index":
-        egraph.nodes[node]["index"] = egraph.to_indeces[node]
+        egraph.nodes[node]["index"] = egraph.to_indices[node]
     if information is None:
         return None
     if isinstance(information, str):
@@ -598,7 +598,7 @@ def _get_node_info(egraph, node, information="coordinates"):
         node_info = str(node)
         for key in information:
             if key == "index":
-                index = egraph.to_indeces(node)
+                index = egraph.to_indices(node)
                 node_info += "<br />" + f"index: {index}"
             else:
                 node_property = egraph.nodes[node].get(key, None)
