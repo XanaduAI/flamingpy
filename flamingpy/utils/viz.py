@@ -570,11 +570,15 @@ def _get_node_color(egraph, node, color_nodes):
 
 def _get_node_info(egraph, node, information="coordinates"):
     """Information to be displayed when hovering over a node based on
-    ``color_nodes`` arg:
+    ``color_nodes``
 
-    - using the attribute and color dict if `color_nodes` is a tuple(str,dict),
-    - or based on color attribute (when available) if `color_nodes` is bool and True;
-    - coordinates otherwise.
+    Arguments:
+        egraph (EGraph): the EGraph with the node of interest.
+        node (tuple): the node to get the information from.
+        information (str, iterable or NoneType): the information to be displayed:
+            - if ``information`` is a string, the value of the node attribute ``information``,
+            - if ``information`` is an iterable, a list of the values of the node attributes in ``information``,
+            - if ``information`` is None, the coordinates of the node.
     """
     if information == "coordinates":
         return str(node)
