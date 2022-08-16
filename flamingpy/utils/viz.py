@@ -549,6 +549,7 @@ def _get_node_color(egraph, node, color_nodes):
     - or based on color attribute (when available) if `color_nodes` is bool and True;
     - black otherwise.
     """
+    default_color = "black"
     if isinstance(color_nodes, str):
         color = color_nodes
     elif isinstance(color_nodes, tuple):
@@ -562,12 +563,11 @@ def _get_node_color(egraph, node, color_nodes):
                 "dictionary values to valid matplotlib color strings."
             )
         node_property = egraph.nodes[node].get(node_attribute)
-        color = color_dict.get(node_property)
-
+        color = color_dict.get(node_property, default_color)
     elif color_nodes == True:
-        color = egraph.nodes[node].get("color") or "black"
+        color = egraph.nodes[node].get("color", default_color)
     else:
-        color = "black"
+        color = default_color
     return color
 
 
