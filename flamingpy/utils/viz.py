@@ -573,7 +573,7 @@ def _get_node_color(egraph, node, color_nodes):
 
 def _get_node_info(egraph, node, information="coordinates"):
     """Information to be displayed when hovering over a node based on
-    ``color_nodes``
+    ``information``
 
     Arguments:
         egraph (EGraph): the EGraph with the node of interest.
