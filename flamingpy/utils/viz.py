@@ -341,8 +341,8 @@ def draw_EGraph_plotly(
 ):
     """Draw the graph state represented by the EGraph with plotly. NOTE: Plotly
     gives you a wide range of options for how and where to display your
-    figures. Please refer to the `Plotly documentation
-    <https://plotly.com/python/renderers/>`_ for more information.
+    figures. Please refer to the :ref:`Plotly
+    documentation<https://plotly.com/python/renderers/>`_ for more information.
 
     Args:
         See draw_EGraph for general keyword arguments, see keyword arguments below for
