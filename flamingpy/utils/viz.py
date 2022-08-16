@@ -585,6 +585,8 @@ def _get_node_info(egraph, node, information="coordinates"):
     """
     if information == "coordinates":
         return str(node)
+    if information == "index":
+        egraph.nodes[node]["index"] = egraph.to_indeces(node)
     if information is None:
         return None
     if isinstance(information, str):
@@ -593,9 +595,13 @@ def _get_node_info(egraph, node, information="coordinates"):
     if isinstance(information, (tuple, list)):
         node_info = str(node)
         for key in information:
-            node_property = egraph.nodes[node].get(key, None)
-            if node_property is not None:
-                node_info += "<br />" + f"{key}: {node_property}"
+            if key == "index":
+                index = egraph.to_indeces(node)
+                node_info += "<br />" + f"index: {index}"
+            else:
+                node_property = egraph.nodes[node].get(key, None)
+                if node_property is not None:
+                    node_info += "<br />" + f"{key}: {node_property}"
         return node_info
     raise ValueError(
         "Inappropiate value for `information` argument:"
