@@ -224,6 +224,17 @@ def draw_EGraph(
 
 
 def _get_title(title=None, label="index"):
+    """Get the title for the EGraph plot, depending on the label if title is a
+    boolean.
+
+    Args:
+        title (string, boolean or NoneType): variable to determine the returned title. If ``title``
+            is a string, it will simply return the string. Else, if ``title is None``, it will
+            return None. If the title is a boolean set to True, it will return the label converted
+            to a plane English word. In all other cases, the function will return None (i.e. there
+            will be no title on the figure).
+    """
+
     if isinstance(title, bool) and title:
         title_dict = {
             "p_phase": "Phase error probabilities",
