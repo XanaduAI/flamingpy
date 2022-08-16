@@ -328,8 +328,7 @@ def draw_EGraph_plotly(
     show_axes=True,
     **kwargs,
 ):
-    """Draw the graph state represented by the EGraph with plotly. #TODO: doc
-    out-of-date.
+    """Draw the graph state represented by the EGraph with plotly.
 
     Args:
         See draw_EGraph for general keyword arguments, see keyword arguments below for
