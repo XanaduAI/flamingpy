@@ -1093,11 +1093,3 @@ class PiFormatter(Formatter):
 
     def __call__(self, x, pos=None):
         return to_pi_string(x, tex=self.tex, d=self.d)
-
-
-if __name__ == "__main__":
-    import flamingpy
-
-    code = flamingpy.codes.SurfaceCode(3)
-    fig = code.draw(backend="plotly", height=400, width=400, label="index", legend=True)
-    fig.show()
