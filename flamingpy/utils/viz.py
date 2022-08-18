@@ -388,17 +388,7 @@ def draw_EGraph_plotly(
     # Figure object
     fig = go.Figure(layout=layout)
 
-    # Nodes - legend
-    if legend:
-        names = [
-            egraph.nodes[node].get("state", egraph.nodes[node].get("type"))
-            for node in egraph.nodes()
-        ]
-        print(names)
-    else:
-        names = None
-
-    # Nodes - plotting
+    # Nodes
     nodes = np.array(egraph.nodes)
     x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
 
