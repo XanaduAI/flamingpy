@@ -359,53 +359,7 @@ def draw_EGraph_plotly(
     Returns:
         figure: Plotly Express figure.
     """
-    # nodes
-    nodes = np.array(egraph.nodes)
-    x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
-
-    nodeColors = [_get_node_color(egraph, node, color_nodes) for node in egraph.nodes]
-    nodeInfo = [_get_node_info(egraph, node, information=label) for node in egraph.nodes]
-
-    node_trace = go.Scatter3d(
-        name="nodes",
-        x=x_nodes,
-        y=y_nodes,
-        z=z_nodes,
-        mode="markers",
-        marker=dict(
-            symbol="circle",
-            size=5,
-            color=nodeColors,
-            line=dict(color="black", width=0.5),
-        ),
-        hovertext=nodeInfo,
-        hoverinfo="text",
-    )
-
-    # edges
-    x_edges, y_edges, z_edges = [], [], []
-
-    for edge in egraph.edges:
-        x0, y0, z0 = edge[0]
-        x1, y1, z1 = edge[1]
-        x_edges.extend([x0, x1, None])
-        y_edges.extend([y0, y1, None])
-        z_edges.extend([z0, z1, None])
-
-    edgeColors = [_get_edge_color(egraph, edge, color_edges) for edge in egraph.edges]
-
-    edge_trace = go.Scatter3d(
-        name="edges",
-        x=x_edges,
-        y=y_edges,
-        z=z_edges,
-        line=dict(color="black", width=1),
-        mode="lines",
-        marker=dict(color=edgeColors),
-        hoverinfo="none",
-    )
-
-    # axis
+    # Layout and axis
     axis = dict(
         showbackground=kwargs.get("showbackground", False),
         showline=True,
@@ -418,7 +372,6 @@ def draw_EGraph_plotly(
         dtick=1,
     )
 
-    # layout
     layout = go.Layout(
         width=kwargs.get("width", 750),
         height=kwargs.get("height", 750),
@@ -432,7 +385,70 @@ def draw_EGraph_plotly(
         title=_get_title(title, label),
     )
 
-    return go.Figure(data=[node_trace, edge_trace], layout=layout)
+    # Figure object
+    fig = go.Figure(layout=layout)
+
+    # Nodes - legend
+    if legend:
+        names = [
+            egraph.nodes[node].get("state", egraph.nodes[node].get("type"))
+            for node in egraph.nodes()
+        ]
+        print(names)
+    else:
+        names = None
+
+    # Nodes - plotting
+    nodes = np.array(egraph.nodes)
+    x_nodes, y_nodes, z_nodes = nodes[:, 0], nodes[:, 1], nodes[:, 2]
+
+    nodeColors = [_get_node_color(egraph, node, color_nodes) for node in egraph.nodes]
+    nodeInfo = [_get_node_info(egraph, node, information=label) for node in egraph.nodes]
+
+    fig.add_traces(
+        go.Scatter3d(
+            name="nodes",
+            x=x_nodes,
+            y=y_nodes,
+            z=z_nodes,
+            mode="markers",
+            marker=dict(
+                symbol="circle",
+                size=5,
+                color=nodeColors,
+                line=dict(color="black", width=0.5),
+            ),
+            hovertext=nodeInfo,
+            hoverinfo="text",
+        )
+    )
+
+    # Edges
+    x_edges, y_edges, z_edges = [], [], []
+
+    for edge in egraph.edges:
+        x0, y0, z0 = edge[0]
+        x1, y1, z1 = edge[1]
+        x_edges.extend([x0, x1, None])
+        y_edges.extend([y0, y1, None])
+        z_edges.extend([z0, z1, None])
+
+    edgeColors = [_get_edge_color(egraph, edge, color_edges) for edge in egraph.edges]
+
+    fig.add_traces(
+        go.Scatter3d(
+            name="edges",
+            x=x_edges,
+            y=y_edges,
+            z=z_edges,
+            line=dict(color="black", width=1),
+            mode="lines",
+            marker=dict(color=edgeColors),
+            hoverinfo="none",
+        )
+    )
+
+    return fig
 
 
 def _plot_EGraph_edges(ax, egraph, color_edges):
@@ -1087,3 +1103,11 @@ class PiFormatter(Formatter):
 
     def __call__(self, x, pos=None):
         return to_pi_string(x, tex=self.tex, d=self.d)
+
+
+if __name__ == "__main__":
+    import flamingpy
+
+    code = flamingpy.codes.SurfaceCode(3)
+    fig = code.draw(backend="plotly", height=400, width=400, label="index", legend=True)
+    fig.show()
