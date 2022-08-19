@@ -13,10 +13,10 @@
 # limitations under the License.
 """Helper functions to draw various graphs and generate plots using Matplotlib.
 
-Plots are configured via the `plot_params` dictionary. These parameters
+Plots are configured via the ``plot_params`` dictionary. These parameters
 are associated with Matplolib's rc settings and are modified within the
-plotting functions using the `rc_context` context manager. This approach
-avoids having to modify the global Matplotlib `rc_params`.
+plotting functions using the ``rc_context`` context manager. This approach
+avoids having to modify the global Matplotlib ``rc_params``.
 
 To modify the plot parameters use, for example,
 
