@@ -230,9 +230,10 @@ def _get_title(title=None, label="index"):
     Args:
         title (string, boolean or NoneType): variable to determine the returned title. If ``title``
             is a string, it will simply return the string. Else, if ``title is None``, it will
-            return None. If the title is a boolean set to True, it will return the label converted
-            to a plane English word. In all other cases, the function will return None (i.e. there
-            will be no title on the figure).
+            return None. If the title is a boolean set to True, it will return the label. If the
+            label is set to p_phase, p_phase_cond, hom_val_p, hom_val_q, bit_val, weight or index,
+            the label will be converted to a plane English word. In all other cases, the function
+            will return None (i.e. there will be no title on the figure).
     """
 
     if isinstance(title, bool) and title:
