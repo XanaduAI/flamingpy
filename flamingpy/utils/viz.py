@@ -339,10 +339,11 @@ def draw_EGraph_plotly(
     show_axes=True,
     **kwargs,
 ):
-    """Draw the graph state represented by the EGraph with plotly. NOTE: Plotly
-    gives you a wide range of options for how and where to display your
-    figures. Please refer to the :ref:`Plotly
-    documentation<https://plotly.com/python/renderers/>`_ for more information.
+    """Draw the graph state represented by the EGraph with plotly.
+
+    NOTE: Plotly gives you a wide range of options for how and where to
+    display your figures. Refer to the `Plotly documentation
+    <https://plotly.com/python/renderers/>`_ for more information.
 
     Args:
         See draw_EGraph for general keyword arguments, see keyword arguments below for
