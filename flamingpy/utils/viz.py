@@ -245,7 +245,7 @@ def _get_title(title=None, label="index"):
             "weight": "Weights",
             "index": "Indices",
         }
-        return title_dict.get(label, label)
+        return title_dict.get(str(label), ", ".join(label))
     if isinstance(title, str):
         return title
     return None
