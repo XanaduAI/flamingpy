@@ -9,8 +9,9 @@ Available modules
 .. autosummary::
     :toctree: api
 
-    ~viz
     ~graph_states
+    ~linalg
+    ~viz
 
 Module members
 --------------
