@@ -26,7 +26,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand
+[Luis Mantilla](https://github.com/BestQuark), Nariman Saadatmand
 
 See full commit details ...
 
