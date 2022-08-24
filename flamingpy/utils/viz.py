@@ -241,16 +241,22 @@ def _get_title(title=None, label="index"):
             - if the label is a list or tuple of strings, the title will be the list or tuple
                 unpacked separated by a comma.
     """
+    # Return nothing is not title
+    if not title:
+        return None
+
+    # Unpack list or tuple...
     if isinstance(label, (tuple, list)):
         if len(label) > 1:
             return ", ".join(label)
+        # or convert to a single string
         else:
             label = label[0]
 
-    if not title:
-        return None
+    # Return title directly...
     if isinstance(title, str):
         return title
+    # ... or base it on label value
     if isinstance(label, str):
         if isinstance(title, bool):
             title_dict = {
