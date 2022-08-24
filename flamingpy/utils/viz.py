@@ -609,6 +609,12 @@ def _get_node_info(egraph, node, information="coordinates"):
     """
     # information dictionary
     info_dict = egraph.nodes[node].copy()
+
+    # list all available information
+    if information == "all":
+        information = ["index"] + [key for key in info_dict.keys()]
+
+    # add index if desired
     if "index" in information:
         info_dict["index"] = egraph.to_indices[node]
 
