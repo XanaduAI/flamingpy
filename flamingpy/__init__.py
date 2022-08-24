@@ -41,8 +41,8 @@ __all__ = ["version", "about"]
 
 
 def version():
-    r"""
-    Version number of FlamingPy.
+    r"""Version number of FlamingPy.
+
     Returns:
       str: package version number
     """
