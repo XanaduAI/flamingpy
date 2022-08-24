@@ -236,19 +236,24 @@ def _get_title(title=None, label="index"):
             will return None (i.e. there will be no title on the figure).
     """
 
-    if isinstance(title, bool) and title:
-        title_dict = {
-            "p_phase": "Phase error probabilities",
-            "p_phase_cond": "Conditional phase error probabilities",
-            "hom_val_p": "p-homodyne outcomes",
-            "hom_val_q": "q-homodyne outcomes",
-            "bit_val": "Bit values",
-            "weight": "Weights",
-            "index": "Indices",
-        }
-        return title_dict.get(str(label), ", ".join(label))
+    if not title:
+        return None
     if isinstance(title, str):
         return title
+    if isinstance(label, str):
+        if isinstance(title, bool):
+            title_dict = {
+                "p_phase": "Phase error probabilities",
+                "p_phase_cond": "Conditional phase error probabilities",
+                "hom_val_p": "p-homodyne outcomes",
+                "hom_val_q": "q-homodyne outcomes",
+                "bit_val": "Bit values",
+                "weight": "Weights",
+                "index": "Indices",
+            }
+        return title_dict.get(label, label)
+    if isinstance(label, (tuple, list)):
+        return ", ".join(label)
     return None
 
 
