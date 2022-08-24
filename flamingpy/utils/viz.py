@@ -599,7 +599,7 @@ def _get_node_color(egraph, node, color_nodes):
     return color
 
 
-def _get_node_info(egraph, node, information="all"):
+def _get_node_info(egraph, node, information="coordinates"):
     """Information to be displayed when hovering over a node based on
     ``information``
 
@@ -609,7 +609,7 @@ def _get_node_info(egraph, node, information="all"):
         information (str, iterable or NoneType): the information to be displayed:
             - if ``information`` is a string, the value of the node attribute ``information``,
             - if ``information`` is an iterable, a list of the values of the node attributes in ``information``,
-            - if ``information`` is None, the coordinates of the node.
+            - if ``information`` is None, return None (nothing will be displayed).
             - if ``information`` contains ``"index"``, include the index from
                 ``egraph.to_indices[node]``.
             - if ``information`` is "all" it will display the coordinates, index and all the
