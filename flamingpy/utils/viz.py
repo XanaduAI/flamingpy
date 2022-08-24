@@ -380,9 +380,9 @@ def draw_EGraph_plotly(
         showlegend=legend,
         hovermode="closest",
         scene=dict(
-            xaxis={**dict(title="x"), **axis},
-            yaxis={**dict(title="y"), **axis},
-            zaxis={**dict(title="z"), **axis},
+            xaxis={**dict(title="x" * show_axes), **axis},
+            yaxis={**dict(title="y" * show_axes), **axis},
+            zaxis={**dict(title="z" * show_axes), **axis},
         ),
         title=_get_title(title, label),
     )
