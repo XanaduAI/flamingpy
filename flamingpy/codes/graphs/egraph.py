@@ -14,7 +14,9 @@
 """A class for representing quantum graph states."""
 
 # pylint: disable=import-outside-toplevel
+from typing import Union, Optional
 
+import warnings
 import networkx as nx
 import numpy as np
 
@@ -119,6 +121,7 @@ class EGraph(nx.Graph):
     def __init__(self, *args, indexer="default", macronodes=False, **kwargs):
         super().__init__(*args, **kwargs)
         self._macronodes = macronodes
+        self.macro_to_micro = None
         if macronodes:
             self.macro_to_micro = self.graph.get("macro_dict")
         self.to_indices = None
@@ -214,3 +217,137 @@ class EGraph(nx.Graph):
 
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)
+
+    def add_qubit(
+        self,
+        qubit: Optional[tuple] = None,
+        neighbors: Optional[list] = None,
+        add_to_macronode: Optional[bool] = None,
+    ) -> None:
+        """Add qubit to EGraph connected to neighbors.
+
+        Args:
+            qubit (tuple[int, int, int] or None): qubit to add. If a 3-tuple,
+                the qubit is added in that position. If qubit is None, the qubit is
+                positioned one unit further than the maximum position in the x
+                direction, in position (x_max + 1, 0, 0).
+
+            neighbors (list[int], list[tuple], or None): neighbors of qubit specified
+                with indices or positions.
+
+            add_to_macronode (bool, optional): if True, add qubit to a macronode.
+                The qubit must be a tuple that rounds to an integer tuple corresponding
+                to the macronode.
+        """
+
+        # Makes sure that input qubit value and type is supported
+        if isinstance(qubit, tuple):
+            if len(qubit) != 3:
+                raise ValueError(
+                    "The position should be a 3-tuple, but it was given a "
+                    + f"{len(qubit)}D tuple."
+                )
+            if qubit in self:
+                raise ValueError(
+                    f"Could not add qubit because there is already a node in position {qubit}."
+                )
+        elif qubit is None:
+            x_max = max(map(lambda tup: tup[0], self.nodes()))
+            qubit = (x_max + 1, 0, 0)
+        else:
+            raise TypeError(
+                "Qubit type not supported. Excepted 3-tuple or None, but was"
+                + f" given {type(qubit)}"
+            )
+
+        if add_to_macronode and self.macro_to_micro is None:
+            raise ValueError(
+                "Cannot add a qubit to macronode because current EGraph is not macronized."
+            )
+
+        # Add node
+        self.add_node(qubit)
+
+        # Update dictionaries when adding qubit
+        self._update_attributes_add_qubit(qubit, add_to_macronode)
+
+        # Update neighbors
+        if neighbors is not None:
+            if len(neighbors) != 0:
+                if isinstance(neighbors[0], int):
+                    if self.to_points is None:
+                        self.index_generator()
+                    neighborhood = [(self.to_points[ind], qubit) for ind in neighbors]
+                elif isinstance(neighbors[0], tuple):
+                    neighborhood = [(tup, qubit) for tup in neighbors]
+                else:
+                    raise TypeError(
+                        "Unsupported type of neighbors. Expected tuples but"
+                        f" {type(neighbors[0])} was given. Type int can only be used when "
+                        "macro is False."
+                    )
+
+                self.add_edges_from(neighborhood)
+
+        self.adj_mat = None
+
+    def _update_attributes_add_qubit(self, qubit, add_to_macro):
+        """Update self.macro_to_micro, self.to_points, and self.to_indices."""
+        # This method reduces the complexity of self.add_qubit
+
+        # Add qubit to macro_to_micro dictionary
+        if add_to_macro:
+            macronode = tuple(round(i) for i in qubit)
+            if macronode in self.macro_to_micro:
+                self.macro_to_micro[macronode].append(qubit)
+            else:
+                self.macro_to_micro[macronode] = [qubit]
+
+        # Update dictionaries
+        if self.to_indices is not None:
+            new_index = max(self.to_points) + 1
+            self.to_points[new_index] = qubit
+            self.to_indices[qubit] = new_index
+
+    def remove_qubit(self, qubit: Union[tuple, int]) -> None:
+        """Remove qubit from EGraph.
+
+        Args:
+            qubit (tuple[int, int, int] or int): if 3-tuple, remove qubit at that
+                position. If int and index/point dictionary is available, remove
+                qubit at that index.
+        """
+        # Remove qubit if dictionaries are not initialized
+        if self.to_indices is None:
+            if isinstance(qubit, tuple):
+                self.remove_node(qubit)
+            else:
+                raise ValueError(
+                    "Cannot remove qubit at given index because indices have not been generated."
+                )
+
+        # Remove qubit if dictionaries are initialized
+        else:
+            if not isinstance(qubit, (int, tuple)):
+                raise TypeError(
+                    "Qubit type not supported. Excepted 3-tuple, int, or None, "
+                    + f"but was given {type(qubit)}."
+                )
+            qubit = self.to_points[qubit] if isinstance(qubit, int) else qubit
+            self.remove_node(qubit)
+            self.to_indices.pop(qubit)
+            self.to_points = {v: k for k, v in self.to_indices.items()}
+
+        # Remove qubit from macro_to_micro dict if EGraph is macronized
+        macro_dict = self.macro_to_micro if self.macro_to_micro is not None else {}
+
+        for k in set(macro_dict):
+            if qubit in macro_dict[k]:
+                macro_dict[k].remove(qubit)
+
+                # If macronode is empty, then delete it from macro_to_micro
+                if not macro_dict[k]:
+                    del macro_dict[k]
+
+        self.macro_to_micro = macro_dict if self.macro_to_micro is not None else None
+        self.adj_mat = None
