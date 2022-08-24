@@ -13,6 +13,8 @@
 # limitations under the License.
 """"Unit tests for functions in the viz module."""
 
+# pylint: disable=no-self-use,protected-access
+
 import math
 
 import numpy as np
@@ -20,6 +22,7 @@ from numpy.random import default_rng as rng
 import pytest
 import matplotlib
 import matplotlib.pyplot as plt
+import plotly
 
 from flamingpy.utils import viz
 from flamingpy.codes.graphs import EGraph
@@ -52,7 +55,7 @@ def test_to_pi_string():
     assert viz.to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 
-class TestDrawEGraph:
+class TestDrawEGraphMaplotlib:
     """Tests for visualizing EGraphs."""
 
     def test_draw_egraph_bell(self):
@@ -63,7 +66,7 @@ class TestDrawEGraph:
         bell_state.add_edge(*edge, color="MidnightBlue")
 
         # Test for drawing the EGraph
-        _, a = viz.draw_EGraph(bell_state)
+        _, a = viz.draw_EGraph_matplotlib(bell_state)
         plt.close()
 
         assert len(a.get_xticks()) == 1
@@ -84,7 +87,7 @@ class TestDrawEGraph:
         RHG = SurfaceCode(d).graph
 
         # Test for drawing the EGraph
-        _, a = viz.draw_EGraph(RHG)
+        _, a = viz.draw_EGraph_matplotlib(RHG)
         plt.close()
 
         n_ticks = 2 * d - 1
@@ -94,3 +97,35 @@ class TestDrawEGraph:
 
         actual_lims = (a.get_xlim(), a.get_ylim(), a.get_zlim())
         assert actual_lims == ((0, n_ticks - 1), (1, n_ticks), (1, n_ticks))
+
+
+class TestDrawEGraphPlotly:
+    """Tests for visualizing EGraphs with Plotly."""
+
+    @pytest.mark.parametrize("d", (2, 3))
+    def test_draw_egraph_rhg_plotly(self, d):
+        """Test for the draw method of EGraph of RHG lattice."""
+        # Bell state EGraph
+        code = SurfaceCode(d)
+        RHG = code.graph
+
+        # Test for drawing the EGraph
+        fig1 = viz.draw_EGraph_plotly(RHG)
+        assert isinstance(fig1, plotly.graph_objs.Figure)
+
+        # Test for drawing the SurfaceCode
+        fig2 = code.draw(backend="plotly")
+        assert isinstance(fig2, plotly.graph_objs.Figure)
+
+
+def test_node_info():
+    """Test the _get_node_info function."""
+    code = SurfaceCode(3)
+    egraph = code.graph
+    node = list(egraph.nodes())[0]
+
+    assert viz._get_node_info(egraph, node) == str(node)
+    assert "primal" in viz._get_node_info(egraph, node, information="type")
+
+    info = viz._get_node_info(egraph, node, information=("type",))
+    assert ("primal" in info) and (str(node) in info)
