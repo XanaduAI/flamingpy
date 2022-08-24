@@ -1,7 +1,7 @@
 ## Release 0.9.1b0 (development release)
 
 ### New features since the last release
-
+ * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing nodes of the EGraph while updating internal attributes of the class. [#10](https://github.com/XanaduAI/flamingpy/pull/100).
 * The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid, FlamingPy will run simulations and automatically set up the output file based on inputs. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
   * An example run will be 
     ```
@@ -12,6 +12,7 @@
     code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,errors,trials,current_time,simulation_time,mpi_size
     SurfaceCode,3,primal,open,CVLayer,0.09,0.25,MWPM,{'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': 0.09},10,100,00:15:50,0.370795,1
     ```
+* Added Plotly backend for visualizing graph states [#103](https://github.com/XanaduAI/flamingpy/pull/103)
 
 ### Bug fixes
 
@@ -28,7 +29,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Avhijit Nair](https://github.com/Avhijit-codeboy), Nariman Saadatmand, [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details ...
 
