@@ -15,7 +15,6 @@
 
 # pylint: disable=import-outside-toplevel
 
-from importlib.resources import path
 import networkx as nx
 import numpy as np
 
