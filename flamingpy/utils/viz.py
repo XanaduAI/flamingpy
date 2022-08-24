@@ -614,7 +614,9 @@ def _get_node_info(egraph, node, information="all"):
 
     # list all available information
     if information == "all":
-        information = ["index"] + [key for key in info_dict.keys()]
+        info_list = [key for key in info_dict.keys()]
+        info_list.sort()
+        information = ["index"] + info_list
 
     # add index if desired
     if "index" in information:
