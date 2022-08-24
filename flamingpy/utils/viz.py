@@ -235,8 +235,8 @@ def _get_title(title=None, label="index"):
             title on the figure).
         label (string, list or tuple): Only relevant if ``title == True``. In that case, there are
             three options
-            - if the label is set to p_phase, p_phase_cond, hom_val_p, hom_val_q, bit_val, weight or index,
-                the title will be the label converted to a plane English word.
+            - if the label is set to p_phase, p_phase_cond, hom_val_p, hom_val_q, bit_val, weight
+                or index, the title will be the label converted to a plane English word.
             - if the label is another string, the title will simply be that string.
             - if the label is a list or tuple of strings, the title will be the list or tuple
                 unpacked separated by a comma.
@@ -250,8 +250,7 @@ def _get_title(title=None, label="index"):
         if len(label) > 1:
             return ", ".join(label)
         # or convert to a single string
-        else:
-            label = label[0]
+        label = label[0]
 
     # Return title directly...
     if isinstance(title, str):
@@ -608,7 +607,8 @@ def _get_node_info(egraph, node, information="coordinates"):
         node (tuple): the node to get the information from.
         information (str, iterable or NoneType): the information to be displayed:
             - if ``information`` is a string, the value of the node attribute ``information``,
-            - if ``information`` is an iterable, a list of the values of the node attributes in ``information``,
+            - if ``information`` is an iterable, a list of the values of the node attributes in
+                ``information``,
             - if ``information`` is None, return None (nothing will be displayed).
             - if ``information`` contains ``"index"``, include the index from
                 ``egraph.to_indices[node]``.
@@ -620,7 +620,7 @@ def _get_node_info(egraph, node, information="coordinates"):
 
     # list all available information
     if information == "all":
-        info_list = [key for key in info_dict.keys()]
+        info_list = list(info_dict.keys())
         info_list.sort()
         information = ["index"] + info_list
 
