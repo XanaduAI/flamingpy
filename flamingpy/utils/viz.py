@@ -348,7 +348,7 @@ def draw_EGraph_plotly(
     egraph,
     color_nodes=False,
     color_edges=False,
-    label="coordinates",
+    label="all",
     title=None,
     legend=False,
     show_axes=True,
@@ -593,7 +593,7 @@ def _get_node_color(egraph, node, color_nodes):
     return color
 
 
-def _get_node_info(egraph, node, information="coordinates"):
+def _get_node_info(egraph, node, information="all"):
     """Information to be displayed when hovering over a node based on
     ``information``
 
@@ -606,6 +606,8 @@ def _get_node_info(egraph, node, information="coordinates"):
             - if ``information`` is None, the coordinates of the node.
             - if ``information`` contains ``"index"``, include the index from
                 ``egraph.to_indices[node]``.
+            - if ``information`` is "all" it will display the coordinates, index and all the
+                information avaible in the node.
     """
     # information dictionary
     info_dict = egraph.nodes[node].copy()
