@@ -18,6 +18,7 @@
 from importlib.resources import path
 import networkx as nx
 import numpy as np
+
 from flamingpy.utils.linalg import are_lc_equivalent
 
 
