@@ -230,11 +230,22 @@ def _get_title(title=None, label="index"):
     Args:
         title (string, boolean or NoneType): variable to determine the returned title. If ``title``
             is a string, it will simply return the string. Else, if ``title is None``, it will
-            return None. If the title is a boolean set to True, it will return the label. If the
-            label is set to p_phase, p_phase_cond, hom_val_p, hom_val_q, bit_val, weight or index,
-            the label will be converted to a plane English word. In all other cases, the function
-            will return None (i.e. there will be no title on the figure).
+            return None. If the ``title`` is a boolean set to ``True``, it will return a title based
+            on ``label``. In all other cases, the function will return None (i.e. there will be no
+            title on the figure).
+        label (string, list or tuple): Only relevant if ``title == True``. In that case, there are
+            three options
+            - if the label is set to p_phase, p_phase_cond, hom_val_p, hom_val_q, bit_val, weight or index,
+                the title will be the label converted to a plane English word.
+            - if the label is another string, the title will simply be that string.
+            - if the label is a list or tuple of strings, the title will be the list or tuple
+                unpacked separated by a comma.
     """
+    if isinstance(label, (tuple, list)):
+        if len(label) > 1:
+            return ", ".join(label)
+        else:
+            label = label[0]
 
     if not title:
         return None
@@ -252,8 +263,6 @@ def _get_title(title=None, label="index"):
                 "index": "Indices",
             }
         return title_dict.get(label, label)
-    if isinstance(label, (tuple, list)):
-        return ", ".join(label)
     return None
 
 
