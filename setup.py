@@ -126,7 +126,7 @@ elif sys.argv[1] == "build_cmake":
 elif sys.argv[1] == "install" or sys.argv[1] == "develop" or sys.argv[1] == "bdist_wheel":
     ext_modules = []
 else:
-    raise NotImplementedError
+    ext_modules = []
 
 classifiers = [
     "Development Status :: 4 - Beta",
