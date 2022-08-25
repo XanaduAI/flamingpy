@@ -1,5 +1,5 @@
-![flamingpy_logo_light](https://user-images.githubusercontent.com/25132802/159598111-fcf6b75a-26a0-4d24-b267-d9d7597bdf39.svg#gh-light-mode-only)
-![flamingpy_logo_dark](https://user-images.githubusercontent.com/25132802/159598097-6a16733c-a954-49ba-a29c-ce469ae19fcc.svg#gh-dark-mode-only)
+![flamingpy_logo_light](https://user-images.githubusercontent.com/57886357/180842159-8fe780a9-8bbe-4421-ae51-c8bd9614aa91.svg#gh-light-mode-only)
+![flamingpy_logo_dark](https://user-images.githubusercontent.com/57886357/180842174-0f2785ba-b065-4a76-b288-b75645ebd67a.svg#gh-dark-mode-only)
 
 <p align="center">
   <!-- Tests (GitHub actions) -->
