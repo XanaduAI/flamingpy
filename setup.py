@@ -123,10 +123,12 @@ if sys.argv[1] == "build_cython":
     ]
 elif sys.argv[1] == "build_cmake":
     ext_modules = [CMakeExtension("flamingpy.cpp.lemonpy")]
-elif sys.argv[1] == "install" or sys.argv[1] == "develop" or sys.argv[1] == "bdist_wheel":
+elif sys.argv[1] in ("install", "develop", "bdist_wheel", "egg_info"):
     ext_modules = []
 else:
-    ext_modules = []
+    raise NotImplementedError(
+        f"'{sys.argv[1]}' is not a recognized argument for setup.py of FlamingPy"
+    )
 
 classifiers = [
     "Development Status :: 4 - Beta",
