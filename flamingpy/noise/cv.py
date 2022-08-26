@@ -229,9 +229,8 @@ class CVLayer:
 
         See flamingpy.utils.viz.draw_EGraph for more details.
         """
-        cv_opts = {"color_nodes": ("state", {"GKP": "gold", "p": "blue"})}
-        updated_opts = {**cv_opts, **kwargs}
-        return self.egraph.draw(**updated_opts)
+        color_nodes = kwargs.pop("color_nodes", ("state", {"GKP": "gold", "p": "blue"}))
+        return self.egraph.draw(color_nodes=color_nodes, **kwargs)
 
     def draw_SCZ(self, **kwargs):
         """Draw the adjacency matrix of a CV graph state with matplotlib.

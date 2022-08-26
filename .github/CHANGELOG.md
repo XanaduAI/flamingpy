@@ -14,21 +14,25 @@
     code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,errors,trials,current_time,simulation_time,mpi_size
     SurfaceCode,3,primal,open,CVLayer,0.09,0.25,MWPM,{'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': 0.09},10,100,00:15:50,0.370795,1
     ```
+* Added Plotly backend for visualizing graph states. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
+* Users can install FlamingPy from git with pip. [#118](https://github.com/XanaduAI/flamingpy/pull/118)
 
 ### Bug fixes
 
+* `dev_requirements` was updated with the latest version of `docformatter` to prevent failing tests. [#116](https://github.com/XanaduAI/flamingpy/pull/116)
 
 ### Improvements
 
 
 ### Documentation changes
 
+* `give_for_devs.rst` was updated to match the latest `dev_requirements` file. [#116](https://github.com/XanaduAI/flamingpy/pull/116)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
 
-[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [smtsjhr](https://github.com/smtsjhr)
+[Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Avhijit Nair](https://github.com/Avhijit-codeboy), Nariman Saadatmand, [smtsjhr](https://github.com/smtsjhr), [Ilan Tzitrin](https://github.com/ilan-tz)
 
 See full commit details ...
 

@@ -200,15 +200,14 @@ class EGraph(nx.Graph):
         """
         return EGraph(macronize(self, pad_boundary, disp), macronodes=True)
 
-    def draw(self, **kwargs):
+    def draw(self, backend="matplotlib", **kwargs):
         """Draw the graph state with Matplotlib.
 
         See flamingpy.utils.viz.draw_EGraph for more details.
         """
         from flamingpy.utils.viz import draw_EGraph
 
-        fig, ax = draw_EGraph(self, **kwargs)
-        return fig, ax
+        return draw_EGraph(self, backend=backend, **kwargs)
 
     def draw_adj(self, **kwargs):
         """Draw the adjacency matrix with matplotlib.

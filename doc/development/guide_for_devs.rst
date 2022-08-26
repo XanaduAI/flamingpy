@@ -14,11 +14,12 @@ as well as the following Python packages for development purposes:
 * |cmake| >= 3.14
 * |codecov| >= 2.1.12
 * |cython| >= 0.29.28
-* |docformatter| >= 1.4
+* |docformatter| >= 1.5
 * |matplotlib| >= 3.3.3
 * |mpi4py| >= 3.1.3 (optional, only for Linux users)
 * |networkx| >= 2.5
 * |NumPy| >= 1.21
+* |pylint| ==2.13.5
 * |pytest| >= 6.2
 * |pytest-cov| >= 3.0
 * |pytest-logger| >= 0.5.1
@@ -170,6 +171,10 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 .. |NumPy| raw:: html
 
    <a href="http://numpy.org/" target="_blank">NumPy</a>
+
+.. |pylint| raw:: html
+
+   <a href="https://pylint.pycqa.org/en/latest/" target="_blank">pytest</a>
 
 .. |pytest| raw:: html
 
