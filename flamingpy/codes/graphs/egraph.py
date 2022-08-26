@@ -20,6 +20,8 @@ import warnings
 import networkx as nx
 import numpy as np
 
+from flamingpy.utils.linalg import are_lc_equivalent
+
 
 def macronize(can_graph, pad_boundary=False, disp=0.1):
     """Create a macronode graph out of canonical graph can_graph.
@@ -350,3 +352,24 @@ class EGraph(nx.Graph):
 
         self.macro_to_micro = macro_dict if self.macro_to_micro is not None else None
         self.adj_mat = None
+
+    def is_lc_equivalent(self, graph2, clifford_form="tensor"):
+        """Check if two EGraphs are LC equivalent, and return the Clifford
+        operation if so. Implemented as in arXiv:quant-ph/0405023.
+
+        Args:
+            graph2 (EGraph): the graph to check Clifford equivalence against.
+            clifford_form: a string describing the output form of local Clifford operation, if
+                it exists.
+
+                If 'tensor' (default), produce a list of length n of 2x2 numpy arrays corresponding
+                    to single-qubit tensor factors.
+                If 'global', return a single 2nx2n numpy array corresponding to the global operator
+                    acting on all n qubits.
+
+        Returns:
+            (bool, numpy.array): whether the states are LC equivalent, and if they are, the local
+                Clifford output according to 'clifford_form' specification.
+        """
+        # wrapper using utils function from utils/linalg.py module
+        return are_lc_equivalent(self, graph2, clifford_form)
