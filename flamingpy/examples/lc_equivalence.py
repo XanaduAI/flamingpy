@@ -8,7 +8,7 @@ nodes = 3
 print("Number of nodes/qubits: ", nodes)
 
 # output form of local Clifford (can be 'tensor' or 'global')
-clifford_form = 'tensor' # 'global
+clifford_form = "tensor"  # 'global
 print("Clifford form: ", f"{clifford_form}", "\n")
 
 # test LC equivalence with star_graph and complete_graph
