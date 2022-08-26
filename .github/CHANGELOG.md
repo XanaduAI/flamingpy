@@ -1,8 +1,9 @@
 ## Release 0.9.1b0 (development release)
 
 ### New features since the last release
-* Add `is_lc_equivalent` method to the EGraph class to check if two EGraphs are equivalent under local complementation, as well as related linear algebra helper functions inside `utils\linalg.py`. [#89](https://github.com/XanaduAI/flamingpy/pull/89).
 
+* Add `is_lc_equivalent` method to the EGraph class to check if two EGraphs are equivalent under local complementation, as well as related linear algebra helper functions inside `utils\linalg.py`. [#89](https://github.com/XanaduAI/flamingpy/pull/89)
+ * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing nodes of the EGraph while updating internal attributes of the class. [#10](https://github.com/XanaduAI/flamingpy/pull/100).
 * The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid, FlamingPy will run simulations and automatically set up the output file based on inputs. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
   * An example run will be 
     ```
