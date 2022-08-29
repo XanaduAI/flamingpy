@@ -34,7 +34,7 @@ See full commit details ...
     code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,errors,trials,current_time,simulation_time,mpi_size
     SurfaceCode,3,primal,open,CVLayer,0.09,0.25,MWPM,{'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': 0.09},10,100,00:15:50,0.370795,1
     ```
-* Users can install FlamingPy from `git` with `pip`. This also mean installing through `python setup.py egg_info` is now valid. [#118](https://github.com/XanaduAI/flamingpy/pull/118) (backward compatible)
+* Users can now install FlamingPy from `git` with `pip`. This also means installing through `python setup.py egg_info` is now valid. [#118](https://github.com/XanaduAI/flamingpy/pull/118) (backward compatible)
 
 ### Bug fixes
 
