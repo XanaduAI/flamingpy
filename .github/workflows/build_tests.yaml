@@ -26,7 +26,7 @@ jobs:
 
     env:
       USE_MPI: ${{ matrix.config.use_mpi }}
-      # Please retain a cov score ~96% to avoid unit tests marginally failing. 
+      # Please retain a cov score ~96% to avoid unit tests marginally failing.
       COVERAGE_FLAGS: "--cov=flamingpy --cov-report=xml --cov-report=term-missing --cov-fail-under=95"
       XDIST_FLAGS: "-n auto --dist=loadfile"
 
