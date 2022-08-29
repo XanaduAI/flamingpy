@@ -67,7 +67,6 @@ Finally, change to the directory where FlamingPy was cloned and run:
 ```bash
 python -m pip install -r dev_requirements.txt
 python setup.py develop # only installs Python libraries
-python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backends
 python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 ```
 

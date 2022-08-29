@@ -1,10 +1,30 @@
-## Release 0.9.1b0 (development release)
+## Release 0.10.0b1 (development release)
 
 ### New features since the last release
 
-* Add `is_lc_equivalent` method to the EGraph class to check if two EGraphs are equivalent under local complementation, as well as related linear algebra helper functions inside `utils\linalg.py`. [#89](https://github.com/XanaduAI/flamingpy/pull/89), [#117](https://github.com/XanaduAI/flamingpy/pull/117)
- * Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing nodes of the EGraph while updating internal attributes of the class. [#10](https://github.com/XanaduAI/flamingpy/pull/100).
-* The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid, FlamingPy will run simulations and automatically set up the output file based on inputs. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
+### Bug fixes
+
+### Improvements
+
+### Documentation changes
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+See full commit details ...
+
+
+---
+
+## Release 0.10.0b1 (current release)
+
+### New features since the last release
+
+* Add `is_lc_equivalent` method to the EGraph class to check if two EGraphs are equivalent under local complementation, as well as related linear algebra helper functions inside `utils\linalg.py`. [#89](https://github.com/XanaduAI/flamingpy/pull/89), [#117](https://github.com/XanaduAI/flamingpy/pull/117) (backward compatible)
+* Add functions `add_qubit` and `remove_qubit` to the `EGraph` class, which allow adding and removing nodes of the EGraph while updating internal attributes of the class. [#100](https://github.com/XanaduAI/flamingpy/pull/100) (backward compatible)
+* Added Plotly backend for visualizing graph states. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
+* The I/O of frontend `simulations.py` has been improved. The input has been simplified to an intuitive set of `code`, `code_args`, `noise`, and `noise_args`. As long as those combinations are valid, FlamingPy will run simulations and automatically set up the output file based on the input. [#111](https://github.com/XanaduAI/flamingpy/pull/111) (backward incompatible)
   * An example run will be 
     ```
     python flamingpy/simulations.py -code "SurfaceCode" -code_args "{'distance':3, 'ec':'primal', 'boundaries':'open'}" -noise "CVLayer" -noise_args "{'delta':0.09, 'p_swap':0.25}" -decoder "MWPM" -decoder_args "{'weight_opts':{'method':'blueprint', 'integer':False, 'multiplier':1, 'delta':0.09}}" -trials 100
@@ -14,19 +34,19 @@
     code,distance,ec,boundaries,noise,delta,p_swap,decoder,weight_opts,errors,trials,current_time,simulation_time,mpi_size
     SurfaceCode,3,primal,open,CVLayer,0.09,0.25,MWPM,{'method': 'blueprint', 'integer': False, 'multiplier': 1, 'delta': 0.09},10,100,00:15:50,0.370795,1
     ```
-* Added Plotly backend for visualizing graph states. [#103](https://github.com/XanaduAI/flamingpy/pull/103)
-* Users can install FlamingPy from git with pip. [#118](https://github.com/XanaduAI/flamingpy/pull/118)
+* Users can install FlamingPy from `git` with `pip`. This also mean installing through `python setup.py egg_info` is now valid. [#118](https://github.com/XanaduAI/flamingpy/pull/118) (backward compatible)
 
 ### Bug fixes
 
-* `dev_requirements` was updated with the latest version of `docformatter` to prevent failing tests. [#116](https://github.com/XanaduAI/flamingpy/pull/116)
+* `dev_requirements` was updated with the latest version of `docformatter` to prevent failing unit tests. [#116](https://github.com/XanaduAI/flamingpy/pull/116)
 
 ### Improvements
 
+* Cython example code, `cpp_mc_loop.pyx`, and its installation instructions were removed form everywhere as it was unused. New developer can refer to historic commits to help adding new Cython files. [#119](https://github.com/XanaduAI/flamingpy/pull/119)    
 
 ### Documentation changes
 
-* `give_for_devs.rst` was updated to match the latest `dev_requirements` file. [#116](https://github.com/XanaduAI/flamingpy/pull/116)
+* `give_for_devs.rst` was updated to match the latest `dev_requirements` file and removal of the Cython example. [#116](https://github.com/XanaduAI/flamingpy/pull/116), [#119](https://github.com/XanaduAI/flamingpy/pull/119)
 
 ### Contributors
 
@@ -34,12 +54,10 @@ This release contains contributions from (in alphabetical order):
 
 [Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Avhijit Nair](https://github.com/Avhijit-codeboy), Nariman Saadatmand, [smtsjhr](https://github.com/smtsjhr), [Ilan Tzitrin](https://github.com/ilan-tz)
 
-See full commit details ...
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.9.1b0...0.10.0b1).
 
 
----
-
-## Release 0.9.1b0 (current release)
+## Release 0.9.1b0
 
 ### Bug fixes since the last release
 

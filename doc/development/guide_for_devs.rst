@@ -13,7 +13,6 @@ as well as the following Python packages for development purposes:
 * |black| >= 19.3b0
 * |cmake| >= 3.14
 * |codecov| >= 2.1.12
-* |cython| >= 0.29.28
 * |docformatter| >= 1.5
 * |matplotlib| >= 3.3.3
 * |mpi4py| >= 3.1.3 (optional, only for Linux users)
@@ -85,7 +84,6 @@ To install FlamingPy from Source, next change to the directory where FlamingPy w
 .. code-block:: bash
 
     python setup.py develop # only installs Python libraries
-    python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backends
     python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 
 The purpose of the commands is as follows:
@@ -147,10 +145,6 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 .. |codecov| raw:: html
 
    <a href="https://about.codecov.io/language/python/" target="_blank">codecov</a>
-
-.. |cython| raw:: html
-
-   <a href="https://cython.org/" target="_blank">cython</a>
 
 .. |docformatter| raw:: html
 
