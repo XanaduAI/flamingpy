@@ -42,7 +42,7 @@ See full commit details ...
 
 ### Improvements
 
-* Cython example code, `cpp_mc_loop.pyx`, and its installation instructions were removed form everywhere as it was unused. New developer can refer to historic commits to help adding new Cython files. [#119](https://github.com/XanaduAI/flamingpy/pull/119)    
+* Cython example code, `cpp_mc_loop.pyx`, and its installation instructions were removed form everywhere as it was unused. New developers can refer to historic commits to help adding new Cython files. [#119](https://github.com/XanaduAI/flamingpy/pull/119)    
 
 ### Documentation changes
 
