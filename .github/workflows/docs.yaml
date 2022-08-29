@@ -16,8 +16,8 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Get the latest pip
-      run: python -m pip install --upgrade pip  
- 
+      run: python -m pip install --upgrade pip
+
     - name: Build sphinx documentation
       uses: XanaduAI/sphinx-action@master
       with:
