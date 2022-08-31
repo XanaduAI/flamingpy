@@ -26,6 +26,7 @@ jobs:
 
     env:
       USE_MPI: ${{ matrix.config.use_mpi }}
+      # Please retain a cov score of ~96% to avoid unit tests marginally failing.
       COVERAGE_FLAGS: "--cov=flamingpy --cov-report=xml --cov-report=term-missing --cov-fail-under=95"
       XDIST_FLAGS: "-n auto --dist=loadfile"
 
@@ -51,7 +52,6 @@ jobs:
       - name: Build flamingpy from Source
         run: |
           python setup.py develop
-          python setup.py build_cython --inplace
           python setup.py build_cmake --inplace
 
       - name: Run tests

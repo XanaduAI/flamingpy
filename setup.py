@@ -112,16 +112,7 @@ with open(os.path.join(this_directory, "README.md"), encoding="utf8") as f:
 
 
 # setup parameters
-if sys.argv[1] == "build_cython":
-    ext_modules = [
-        Extension(
-            "flamingpy.cpp.cpp_mc_loop",
-            sources=["flamingpy/cpp/cpp_mc_loop.pyx"],
-            extra_compile_args=["-O3", "-w"],
-            language="c++",
-        )
-    ]
-elif sys.argv[1] == "build_cmake":
+if sys.argv[1] == "build_cmake":
     ext_modules = [CMakeExtension("flamingpy.cpp.lemonpy")]
 elif sys.argv[1] in ("install", "develop", "bdist_wheel", "egg_info"):
     ext_modules = []
@@ -179,7 +170,6 @@ setup(
     cmdclass={
         "install": install,
         "develop": develop,
-        "build_cython": build_ext,
         "build_cmake": CMakeBuild,
     },
     ext_modules=ext_modules,

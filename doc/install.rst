@@ -76,7 +76,6 @@ Installation
     python -m pip install -r dev_requirements.txt
     # Choose one or some of the following:
     python setup.py develop # Only install Python libraries.
-    python setup.py build_cython --inplace # Compile Cython-based backends.
     python setup.py build_cmake --inplace # Compile CMake-based backends.
                     </code>
                 </pre>

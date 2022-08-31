@@ -67,14 +67,13 @@ Finally, change to the directory where FlamingPy was cloned and run:
 ```bash
 python -m pip install -r dev_requirements.txt
 python setup.py develop # only installs Python libraries
-python setup.py build_cython --inplace # [OPTIONAL] compiles Cython-based backends
 python setup.py build_cmake --inplace # [OPTIONAL] compiles CMake-based backends
 ```
 
 Note you will need to remove the comments manually if you use Windows prompt. The purpose of the commands is as follows:
 - The first command installs dependencies for building the project and testing purposes, and can be skipped if already satisfied. 
 - The second command (develop) installs FlamingPy Python libraries without compiling the optional backends. 
-- The next optional commands compile various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
+- The next optional command compiles various FlamingPy backends as required (given you have appropriate compilers pre-installed). 
 
 If you encountered **CMake** errors, you may need to (re-)install it through `conda install cmake` or other means before re-attempting the above. Furthermore, you may wish to try `conda install git` for **git**-related errors. 
 

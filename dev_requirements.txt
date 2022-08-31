@@ -1,7 +1,6 @@
 black>=19.3b0
 cmake>=3.14
 codecov>=2.1.12
-cython>=0.29.28
 docformatter>=1.5
 matplotlib>=3.3.3
 networkx>=2.5
