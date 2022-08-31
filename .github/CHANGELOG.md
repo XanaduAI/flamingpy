@@ -1,4 +1,4 @@
-## Release 0.10.0b1 (development release)
+## Release 0.10.1b1 (development release)
 
 ### New features since the last release
 
@@ -17,7 +17,7 @@ See full commit details ...
 
 ---
 
-## Release 0.10.0b1 (current release)
+## Release 0.10.1b1 (current release)
 
 ### New features since the last release
 
@@ -42,11 +42,11 @@ See full commit details ...
 
 ### Improvements
 
-* Cython example code, `cpp_mc_loop.pyx`, and its installation instructions were removed form everywhere as it was unused. New developers can refer to historic commits to help adding new Cython files. [#119](https://github.com/XanaduAI/flamingpy/pull/119)    
+* Cython example code, `cpp_mc_loop.pyx`, and its installation instructions were removed from everywhere as it was unused. New developers can refer to historic commits to help add new Cython files. [#119](https://github.com/XanaduAI/flamingpy/pull/119)    
 
 ### Documentation changes
 
-* `give_for_devs.rst` was updated to match the latest `dev_requirements` file and removal of the Cython example. [#116](https://github.com/XanaduAI/flamingpy/pull/116), [#119](https://github.com/XanaduAI/flamingpy/pull/119)
+* `give_for_devs.rst` was updated to match the latest `dev_requirements` file and deletion of the Cython example. [#116](https://github.com/XanaduAI/flamingpy/pull/116), [#119](https://github.com/XanaduAI/flamingpy/pull/119)
 
 ### Contributors
 
@@ -54,7 +54,7 @@ This release contains contributions from (in alphabetical order):
 
 [Joost Bus](https://github.com/soosub), [Luis Mantilla](https://github.com/BestQuark), [Avhijit Nair](https://github.com/Avhijit-codeboy), Nariman Saadatmand, [smtsjhr](https://github.com/smtsjhr), [Ilan Tzitrin](https://github.com/ilan-tz)
 
-See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.9.1b0...0.10.0b1).
+See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.9.1b0...0.10.1b1).
 
 
 ## Release 0.9.1b0
