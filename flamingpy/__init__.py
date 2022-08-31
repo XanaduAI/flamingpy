@@ -27,7 +27,6 @@ import matplotlib
 
 try:
     import flamingpy.cpp.lemonpy as lp
-    import flamingpy.cpp.cpp_mc_loop as cmc
 
     cpp_libraries_available = True
 except ImportError:  # pragma: no cover
@@ -75,10 +74,5 @@ def about():
     print(
         "lemonpy shared object:       {}".format(
             "Not installed" if not cpp_libraries_available else lp
-        )
-    )
-    print(
-        "cpp_mc_loop shared object:   {}".format(
-            "Not installed" if not cpp_libraries_available else cmc
         )
     )

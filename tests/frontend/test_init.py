@@ -46,4 +46,3 @@ def test_about():
     assert "RetworkX version:" in out
     assert "Matplotlib version:" in out
     assert "lemonpy shared object:" in out
-    assert "cpp_mc_loop shared object:" in out
