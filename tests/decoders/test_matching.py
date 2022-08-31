@@ -34,7 +34,6 @@ from flamingpy.noise import CVLayer
 
 try:
     import flamingpy.cpp.lemonpy as lp
-    import flamingpy.cpp.cpp_mc_loop as cmc
 
     cpp_libraries_available = True
 except ImportError:  # pragma: no cover
