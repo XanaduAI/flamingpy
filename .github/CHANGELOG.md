@@ -6,7 +6,7 @@
 
 ### Improvements
 
-* Our Cython example and instructions were removed on [#109](https://github.com/XanaduAI/flamingpy/pull/109), however, there were some leftover Cython tests in parts of the code including main `__init__.py`. These unnecessary Cython lines are now fully removed. [#122](https://github.com/XanaduAI/flamingpy/pull/122)
+* Our Cython example and instructions were removed on [#119](https://github.com/XanaduAI/flamingpy/pull/119), however, there were some leftover Cython tests in parts of the code including main `__init__.py`. These unnecessary Cython lines are now fully removed. [#122](https://github.com/XanaduAI/flamingpy/pull/122)
 
 ### Documentation changes
 
