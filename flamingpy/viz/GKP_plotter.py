@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helper functions to draw various parts of real-numbers-mode-alpha and
-GKP states.
+"""Helper functions to visualize real-numbers-mode-alpha and GKP states.
 
 Plots are configured via the ``plot_params`` dictionary. These parameters
 are associated with Matplolib's rc settings and are modified within the
@@ -27,19 +26,12 @@ To modify the plot parameters use, for example,
     fp_plot_params["font.size"] = 20
 """
 
-# pylint: disable=too-many-statements,singleton-comparison, too-many-lines
+# pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 
 import numpy as np
-import networkx as nx
-import plotly.graph_objects as go
 import matplotlib as mpl
-from matplotlib.patches import Patch
-from matplotlib.ticker import Formatter
 import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from flamingpy.codes import Stabilizer
 from flamingpy.cv import gkp
 
 plot_params = {
