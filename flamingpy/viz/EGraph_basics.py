@@ -11,19 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helper functions to draw various graphs and generate plots using Matplotlib.
-
-Plots are configured via the ``plot_params`` dictionary. These parameters
-are associated with Matplolib's rc settings and are modified within the
-plotting functions using the ``rc_context`` context manager. This approach
-avoids having to modify the global Matplotlib ``rc_params``.
-
-To modify the plot parameters use, for example,
-
-.. code-block:: python
-
-    from flamingpy.utils.viz import plot_params as fp_plot_params
-    fp_plot_params["font.size"] = 20
+"""A series of functions to draw and extract the properties of EGraphs
+using various backends.
 """
 
 # pylint: disable=too-many-statements,singleton-comparison, too-many-lines
