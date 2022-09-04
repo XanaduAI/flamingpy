@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""""Unit tests for functions in the viz module."""
+""""Unit tests for the functions in the viz module."""
 
 # pylint: disable=no-self-use,protected-access
 
@@ -24,7 +24,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import plotly
 
-from flamingpy.utils import viz
+from flamingpy.viz import pi_formatters, GraphStates, EGraph_basics
 from flamingpy.codes.graphs import EGraph
 from flamingpy.codes import SurfaceCode
 
@@ -32,27 +32,30 @@ from flamingpy.codes import SurfaceCode
 def test_to_pi_string():
     """Test for the convenience function to_pi_string."""
     # Test +- sqrt(pi) and sqrt(pi)/2.
-    assert viz.to_pi_string(np.sqrt(np.pi)) == "$\\sqrt{\\pi}$"
-    assert viz.to_pi_string(-np.sqrt(np.pi)) == "$-\\sqrt{\\pi}$"
-    assert viz.to_pi_string(np.sqrt(np.pi) / 2) == "$\\sqrt{\\pi}/2$"
-    assert viz.to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
+    assert pi_formatters.to_pi_string(np.sqrt(np.pi)) == "$\\sqrt{\\pi}$"
+    assert pi_formatters.to_pi_string(-np.sqrt(np.pi)) == "$-\\sqrt{\\pi}$"
+    assert pi_formatters.to_pi_string(np.sqrt(np.pi) / 2) == "$\\sqrt{\\pi}/2$"
+    assert pi_formatters.to_pi_string(-np.sqrt(np.pi) / 2) == "$-\\sqrt{\\pi}/2$"
 
     # Test random odd integer multiples of sqrt(pi)/2, eccept 1 and -1
     odd_int = (2 * rng().integers(2, 25) - 1) * (-1) ** rng().integers(2)
-    assert viz.to_pi_string(odd_int * np.sqrt(np.pi) / 2) == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
+    assert pi_formatters.to_pi_string(odd_int * np.sqrt(np.pi) / 2) \
+        == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
 
     #  Test random even multiples of sqrt(pi).
     even_int = odd_int + 1
-    assert viz.to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(even_int)
+    assert pi_formatters.to_pi_string(even_int * np.sqrt(np.pi)) \
+        == "${}\\sqrt{{\\pi}}$".format(even_int)
 
     # Check everything else converted into a str.
     rand_numb = rng().random()
     rand_d = rng().integers(2, 25)
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
-        assert viz.to_pi_string(rand_numb, d=rand_d) == "{:.{}f}".format(rand_numb, rand_d)
+        assert pi_formatters.to_pi_string(rand_numb, d=rand_d) \
+            == "{:.{}f}".format(rand_numb, rand_d)
 
     # Test for tex=False
-    assert viz.to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
+    assert pi_formatters.to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"
 
 
 class TestDrawEGraphMaplotlib:
@@ -66,7 +69,7 @@ class TestDrawEGraphMaplotlib:
         bell_state.add_edge(*edge, color="MidnightBlue")
 
         # Test for drawing the EGraph
-        _, a = viz.draw_EGraph_matplotlib(bell_state)
+        _, a = GraphStates.draw_EGraph_matplotlib(bell_state)
         plt.close()
 
         assert len(a.get_xticks()) == 1
@@ -87,7 +90,7 @@ class TestDrawEGraphMaplotlib:
         RHG = SurfaceCode(d).graph
 
         # Test for drawing the EGraph
-        _, a = viz.draw_EGraph_matplotlib(RHG)
+        _, a = GraphStates.draw_EGraph_matplotlib(RHG)
         plt.close()
 
         n_ticks = 2 * d - 1
@@ -110,7 +113,7 @@ class TestDrawEGraphPlotly:
         RHG = code.graph
 
         # Test for drawing the EGraph
-        fig1 = viz.draw_EGraph_plotly(RHG)
+        fig1 = GraphStates.draw_EGraph_plotly(RHG)
         assert isinstance(fig1, plotly.graph_objs.Figure)
 
         # Test for drawing the SurfaceCode
@@ -124,8 +127,8 @@ def test_node_info():
     egraph = code.graph
     node = list(egraph.nodes())[0]
 
-    assert viz._get_node_info(egraph, node) == str(node)
-    assert "primal" in viz._get_node_info(egraph, node, information="type")
+    assert EGraph_basics._get_node_info(egraph, node) == str(node)
+    assert "primal" in EGraph_basics._get_node_info(egraph, node, information="type")
 
-    info = viz._get_node_info(egraph, node, information=("type",))
+    info = EGraph_basics._get_node_info(egraph, node, information=("type",))
     assert ("primal" in info) and (str(node) in info)

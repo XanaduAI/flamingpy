@@ -30,10 +30,16 @@ To modify the plot parameters use, for example,
 
 # pylint: disable=too-many-statements,singleton-comparison, too-many-lines
 
+import itertools as it
+
 import numpy as np
 import matplotlib as mpl
 from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
+
+from flamingpy.codes import Stabilizer
+from flamingpy.viz.GraphStates import draw_EGraph_matplotlib
+from flamingpy.viz.cube_helper import _plot_cubes_at
 
 plot_params = {
     "font.size": 10,
@@ -188,6 +194,44 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         ax.set_title(ec.capitalize() + " syndrome")
 
     return fig, ax
+
+
+@mpl.rc_context(plot_params)
+def add_recovery_drawing(ax, **kwargs):
+    """Plot the recovery."""
+    if kwargs.get("show_title"):
+        ax.set_title("Syndrome and recovery")
+    recovery_set = kwargs.get("recovery_set")
+    if recovery_set:
+        for point in recovery_set:
+            ax.plot(*point, "o", c="k", markersize=6)
+    matching = kwargs.get("matching")
+    G_match = kwargs.get("matching_graph")
+    if matching:
+        virtual_points = G_match.virtual_points
+        for pair in matching:
+            if pair not in it.product(virtual_points, virtual_points):
+                xlist, ylist, zlist = [], [], []
+                path = G_match.edge_path(pair)
+                for node in path:
+                    if isinstance(node, Stabilizer):
+                        x, y, z = node.midpoint()
+                    else:
+                        x, y, z = node
+                        plt.plot(x, y, z, marker="2", markersize=15, c="k")
+                    xlist += [x]
+                    ylist += [y]
+                    zlist += [z]
+                ax.plot(
+                    xlist,
+                    ylist,
+                    zlist,
+                    "o-",
+                    c=np.random.rand(3),
+                    linewidth=plot_params.get("lines.linewidth", None) * 0.9,
+                )
+
+    return ax
 
 
 def draw_decoding(code, ec, dec_objects=None, drawing_opts=None):
