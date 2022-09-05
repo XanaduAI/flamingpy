@@ -18,9 +18,12 @@ using various backends.
 # pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 
 import numpy as np
+import plotly.graph_objects as go
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+
+from flamingpy.viz.EGraph_basics import _get_title, _get_node_info, _get_node_color, _get_edge_color
 
 plot_params = {
     "font.size": 10,

@@ -15,11 +15,10 @@
 the NetworkX backend.
 """
 
-# pylint: disable=too-many-statements,singleton-comparison, too-many-lines
+# pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 
 import numpy as np
 import networkx as nx
-import plotly.graph_objects as go
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 

@@ -33,6 +33,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from flamingpy.cv import gkp
+from flamingpy.viz.pi_formatters import PiFormatter
 
 plot_params = {
     "font.size": 10,
