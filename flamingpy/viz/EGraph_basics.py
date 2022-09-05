@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A series of functions to draw and extract the properties of EGraphs
-using various backends.
-"""
+"""A series of functions to draw and extract the properties of EGraphs using
+various backends."""
 
 # pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 

@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """A series of functions and classes to help processing and visualizing
-multiples of sqrt(pi)/2.
-"""
+multiples of sqrt(pi)/2."""
 
 # pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 

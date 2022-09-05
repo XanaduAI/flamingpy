@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Helper functions to draw Graph States that is represented by the EGraph
-using various backends.
-"""
+using various backends."""
 
 # pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 

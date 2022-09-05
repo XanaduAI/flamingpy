@@ -25,7 +25,6 @@ To modify the plot parameters use, for example,
 
     from flamingpy.viz.syndrome_plot import plot_params as fp_plot_params
     fp_plot_params["font.size"] = 20
-
 """
 
 # pylint: disable=too-many-statements,singleton-comparison, too-many-lines

@@ -39,20 +39,23 @@ def test_to_pi_string():
 
     # Test random odd integer multiples of sqrt(pi)/2, eccept 1 and -1
     odd_int = (2 * rng().integers(2, 25) - 1) * (-1) ** rng().integers(2)
-    assert pi_formatters.to_pi_string(odd_int * np.sqrt(np.pi) / 2) \
-        == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
+    assert pi_formatters.to_pi_string(
+        odd_int * np.sqrt(np.pi) / 2
+    ) == "${}\\sqrt{{\\pi}}/2$".format(odd_int)
 
     #  Test random even multiples of sqrt(pi).
     even_int = odd_int + 1
-    assert pi_formatters.to_pi_string(even_int * np.sqrt(np.pi)) \
-        == "${}\\sqrt{{\\pi}}$".format(even_int)
+    assert pi_formatters.to_pi_string(even_int * np.sqrt(np.pi)) == "${}\\sqrt{{\\pi}}$".format(
+        even_int
+    )
 
     # Check everything else converted into a str.
     rand_numb = rng().random()
     rand_d = rng().integers(2, 25)
     if not np.isclose(math.remainder(rand_numb, np.sqrt(np.pi) / 2), 0):
-        assert pi_formatters.to_pi_string(rand_numb, d=rand_d) \
-            == "{:.{}f}".format(rand_numb, rand_d)
+        assert pi_formatters.to_pi_string(rand_numb, d=rand_d) == "{:.{}f}".format(
+            rand_numb, rand_d
+        )
 
     # Test for tex=False
     assert pi_formatters.to_pi_string(-np.sqrt(np.pi) / 2, tex=False) == "-\\sqrt{\\pi}/2"

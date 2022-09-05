@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helper functions to draw and manipulate graphs that are implemented with
-the NetworkX backend.
-"""
+"""Helper functions to draw and manipulate graphs that are implemented with the
+NetworkX backend."""
 
 # pylint: disable=too-many-statements,singleton-comparison,too-many-lines
 
