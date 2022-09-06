@@ -528,8 +528,8 @@ class SurfaceCode:
     def draw(self, backend="matplotlib", **kwargs):
         """Draw the cluster state with matplotlib.
 
-        See ``flamingpy.viz.GraphStates.draw_EGraph`` for more details. Use
-        the default colour options: black for primal nodes, grey for
+        See ``flamingpy.viz.GraphStates.draw_EGraph`` for more details.
+        Use the default colour options: black for primal nodes, grey for
         dual nodes; blue for weight +1 edges, red for weight -1 edges.
         """
         edge_colors = "grey"
