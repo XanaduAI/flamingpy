@@ -203,9 +203,9 @@ class EGraph(nx.Graph):
     def draw(self, backend="matplotlib", **kwargs):
         """Draw the graph state with Matplotlib.
 
-        See flamingpy.viz.EGraph_basics.draw_EGraph for more details.
+        See flamingpy.viz.GraphStates.draw_EGraph for more details.
         """
-        from flamingpy.viz.EGraph_basics import draw_EGraph
+        from flamingpy.viz.GraphStates import draw_EGraph
 
         return draw_EGraph(self, backend=backend, **kwargs)
 

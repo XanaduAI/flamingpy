@@ -227,7 +227,7 @@ class CVLayer:
         Use the default colours: gold for GKP states and blue for p-squeezed
         states.
 
-        See flamingpy.viz.EGraph_basics.draw_EGraph for more details.
+        See flamingpy.viz.GraphStates.draw_EGraph for more details.
         """
         color_nodes = kwargs.pop("color_nodes", ("state", {"GKP": "gold", "p": "blue"}))
         return self.egraph.draw(color_nodes=color_nodes, **kwargs)
