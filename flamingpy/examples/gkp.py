@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from flamingpy.cv import gkp
-from flamingpy.utils import viz
+from flamingpy import viz
 
 show = __name__ == "__main__"
 
@@ -24,18 +24,18 @@ alpha = np.sqrt(np.pi)
 xs = np.arange(-10, 10, 0.01)
 
 ns, fs = gkp.integer_fractional(xs, alpha)
-viz.plot_integer_part(xs, ns, alpha, show)
-viz.plot_fractional_part(xs, fs, alpha, show)
+viz.GKP_plotter.plot_integer_part(xs, ns, alpha, show)
+viz.GKP_plotter.plot_fractional_part(xs, fs, alpha, show)
 
 bit_values = gkp.GKP_binner(xs)
-viz.plot_GKP_bins(xs, bit_values, alpha, show)
+viz.GKP_plotter.plot_GKP_bins(xs, bit_values, alpha, show)
 
 delta = 0.1
 error_hom_val = gkp.Z_err_cond([delta] * len(xs), xs, use_hom_val=True)
 error_no_hom_val = gkp.Z_err_cond([delta] * len(xs), xs)
 
-viz.plot_Z_err_cond(xs, error_hom_val, alpha, True, show)
-viz.plot_Z_err_cond(xs, error_no_hom_val, alpha, False, show)
+viz.GKP_plotter.plot_Z_err_cond(xs, error_hom_val, alpha, True, show)
+viz.GKP_plotter.plot_Z_err_cond(xs, error_no_hom_val, alpha, False, show)
 
 if not show:
     plt.close()
