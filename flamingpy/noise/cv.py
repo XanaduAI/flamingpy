@@ -227,7 +227,7 @@ class CVLayer:
         Use the default colours: gold for GKP states and blue for p-squeezed
         states.
 
-        See flamingpy.utils.viz.draw_EGraph for more details.
+        See flamingpy.viz.EGraph_basics.draw_EGraph for more details.
         """
         color_nodes = kwargs.pop("color_nodes", ("state", {"GKP": "gold", "p": "blue"}))
         return self.egraph.draw(color_nodes=color_nodes, **kwargs)
@@ -235,9 +235,9 @@ class CVLayer:
     def draw_SCZ(self, **kwargs):
         """Draw the adjacency matrix of a CV graph state with matplotlib.
 
-        See flamingpy.utils.viz.plot_mat_heat_map for more details.
+        See flamingpy.viz.heat_maps.plot_mat_heat_map for more details.
         """
-        from flamingpy.utils.viz import plot_mat_heat_map
+        from flamingpy.viz.heat_maps import plot_mat_heat_map
 
         return plot_mat_heat_map(self.SCZ(), **kwargs)
 

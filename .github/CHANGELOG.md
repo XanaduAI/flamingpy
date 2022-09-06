@@ -2,6 +2,8 @@
 
 ### New features since the last release
 
+* FlamingPy visualization tools were all placed in `viz.py`, which made extending and testing this module very difficult -- also an improper software architecture and dev practice. In this PR, we have created a proper `viz` module with many submodules as before and a series of unit tests. The new submodules were partitioned based on their functionality as `GKP_plotter.py`, `pi_formatter.py`, `EGraph_basics.py`, `GraphStates.py`, `heat_maps.py`, `cube_helper.py`, `graph_helper.py`, and `EC_plotter.py`. [#124](https://github.com/XanaduAI/flamingpy/pull/124) (backward incompatible)
+
 ### Bug fixes
 
 ### Improvements
@@ -11,6 +13,8 @@
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Nariman Saadatmand
 
 See full commit details ...
 

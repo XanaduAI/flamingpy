@@ -346,9 +346,9 @@ class StabilizerGraph(ABC):
     def draw(self, **kwargs):
         """Draw the stabilizer graph with matplotlib.
 
-        See flamingpy.utils.viz.draw_dec_graph for more details.
+        See flamingpy.viz.graph_helper.draw_dec_graph for more details.
         """
-        from flamingpy.utils.viz import draw_dec_graph
+        from flamingpy.viz.graph_helper import draw_dec_graph
 
         return draw_dec_graph(self.to_nx(), **kwargs)
 

@@ -528,7 +528,7 @@ class SurfaceCode:
     def draw(self, backend="matplotlib", **kwargs):
         """Draw the cluster state with matplotlib.
 
-        See ``flamingpy.utils.viz.draw_EGraph`` for more details. Use
+        See ``flamingpy.viz.EGraph_basics.draw_EGraph`` for more details. Use
         the default colour options: black for primal nodes, grey for
         dual nodes; blue for weight +1 edges, red for weight -1 edges.
         """
@@ -546,7 +546,7 @@ class SurfaceCode:
     def draw_stabilizer_graph(self, ec, **kwargs):
         """Draw the stabilizer graph with matplotlib.
 
-        See flamingpy.utils.viz.draw_dec_graph for more details.
+        See flamingpy.viz.graph_helper.draw_dec_graph for more details.
         """
         graph = getattr(self, ec + "_stab_graph")
         graph.assign_weights(self)

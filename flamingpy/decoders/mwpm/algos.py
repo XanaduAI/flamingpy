@@ -76,7 +76,7 @@ def mwpm_decoder(code, ec, backend="retworkx", draw=False, drawing_opts=None):
     # Draw the stabilizer graph, matching graph, and syndrome, if
     # desired.
     if draw:
-        from flamingpy.utils.viz import draw_decoding
+        from flamingpy.viz.EC_plotter import draw_decoding
 
         draw_decoding(
             code,

@@ -136,7 +136,7 @@ Graph States
 #
 
 from flamingpy.codes.graphs import EGraph
-import flamingpy.utils.viz as viz
+from flamingpy import viz
 
 
 ######################################################################

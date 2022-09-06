@@ -203,18 +203,18 @@ class EGraph(nx.Graph):
     def draw(self, backend="matplotlib", **kwargs):
         """Draw the graph state with Matplotlib.
 
-        See flamingpy.utils.viz.draw_EGraph for more details.
+        See flamingpy.viz.EGraph_basics.draw_EGraph for more details.
         """
-        from flamingpy.utils.viz import draw_EGraph
+        from flamingpy.viz.EGraph_basics import draw_EGraph
 
         return draw_EGraph(self, backend=backend, **kwargs)
 
     def draw_adj(self, **kwargs):
         """Draw the adjacency matrix with matplotlib.
 
-        See flamingpy.utils.viz.plot_mat_heat_map for more details.
+        See flamingpy.viz.heat_maps.plot_mat_heat_map for more details.
         """
-        from flamingpy.utils.viz import plot_mat_heat_map
+        from flamingpy.viz.heat_maps import plot_mat_heat_map
 
         adj = self.adj_generator(sparse=False)
         return plot_mat_heat_map(adj, **kwargs)

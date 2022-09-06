@@ -324,7 +324,7 @@ def uf_decoder(code, ec, **kwargs):
     recovery_set = peeling(spanning_forest, parity_dict)
 
     if kwargs.get("draw"):
-        from flamingpy.utils.viz import draw_decoding
+        from flamingpy.viz.EC_plotter import draw_decoding
 
         dec_objects = {"recovery_set": recovery_set}
         draw_decoding(code, ec, dec_objects, kwargs.get("drawing_opts"))
