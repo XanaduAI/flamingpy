@@ -252,8 +252,8 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 * `codecov.yml` was introduced to customize codecov automated tests. For this version, we have added a `threshold: 0.5%` to avoid undesired delta failures due to just removing a few lines, etc. [#25](https://github.com/XanaduAI/flamingpy/pull/25)
 * The Walrus has been re-added as a dependency and its functions are used instead of a verbatim
   copy of the code. [#27](https://github.com/XanaduAI/flamingpy/pull/27)
-* Since `rustworkx` and `lemon` are the fastest backends and `rustworkx` follows the same convention
-  as `networkx`, the default backend for stabilizer graphs and MWPM has been changed to `rustworkx`. [#28](https://github.com/XanaduAI/flamingpy/pull/28)
+* Since `retworkx` and `lemon` are the fastest backends and `retworkx` follows the same convention
+  as `networkx`, the default backend for stabilizer graphs and MWPM has been changed to `retworkx`. [#28](https://github.com/XanaduAI/flamingpy/pull/28)
 * Some more tests were added to `test_matching.py` to compare the output of different matching backends. [#28](https://github.com/XanaduAI/flamingpy/pull/28)
 * The _display_axes_ option has been changed to show_axes and title to show_title for consistency. The show_title option is now respected. [#37](https://github.com/XanaduAI/flamingpy/pull/37)
 * Decoders have become more organized and compartmentalized. [#37](https://github.com/XanaduAI/flamingpy/pull/37)
@@ -264,7 +264,7 @@ See full commit details [here](https://github.com/XanaduAI/flamingpy/compare/v0.
 
 ### Documentation changes
 
-* The documentation now mentions that `rustworkx` is the default backend. [#28](https://github.com/XanaduAI/flamingpy/pull/28)
+* The documentation now mentions that `retworkx` is the default backend. [#28](https://github.com/XanaduAI/flamingpy/pull/28)
 
 ### Contributors
 
