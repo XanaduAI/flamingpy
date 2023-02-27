@@ -1,4 +1,4 @@
-black>=19.3b0
+black>=23.1.0
 cmake>=3.14
 codecov>=2.1.12
 docformatter>=1.5

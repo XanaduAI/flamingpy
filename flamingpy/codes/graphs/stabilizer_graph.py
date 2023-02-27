@@ -292,11 +292,11 @@ class StabilizerGraph(ABC):
         Returns:
             The updated stabilizer graph.
         """
-        for (stab1, stab2) in it.combinations(self.stabilizers, 2):
+        for stab1, stab2 in it.combinations(self.stabilizers, 2):
             common_vertex = set(stab1.coords()) & set(stab2.coords())
             if common_vertex:
                 self.add_edge(stab1, stab2, common_vertex=common_vertex.pop())
-        for (stab, point) in it.product(self.stabilizers, self.bound_points()):
+        for stab, point in it.product(self.stabilizers, self.bound_points()):
             if point in stab.coords():
                 self.add_edge(stab, point, common_vertex=point)
         return self

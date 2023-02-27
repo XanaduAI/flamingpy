@@ -889,7 +889,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # parity and red for odd pariy.
     positions, colors, sizes = [], [], []
     for cube in cubes:
-
         # Obtain smallest, largest, and middle coordinates for each
         # cube.
         xmin, xmax = np.array(cube.xlims())
@@ -911,7 +910,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         colors.append(color)
 
         if drawing_opts["label_stabilizers"] and index_dict:
-
             if cube in index_dict:
                 ax.text(xmid, ymid, zmid, index_dict[cube])
 

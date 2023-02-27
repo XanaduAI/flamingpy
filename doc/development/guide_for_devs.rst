@@ -10,7 +10,7 @@ FlamingPy requires the following Python version to be installed:
 
 as well as the following Python packages for development purposes:
 
-* |black| >= 19.3b0
+* |black| >= 23.1.0
 * |cmake| >= 3.14
 * |codecov| >= 2.1.12
 * |docformatter| >= 1.5

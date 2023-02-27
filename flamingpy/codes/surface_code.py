@@ -495,7 +495,6 @@ class SurfaceCode:
         """
 
         for ec in self.ec:
-
             if "periodic" in self.bound_str:
                 ec_bound_points = []
             else:

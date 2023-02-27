@@ -298,7 +298,7 @@ class RxMatchingGraph(MatchingGraph):
         networkx graph representation.
         """
         nx_graph = NxMatchingGraph(self.ec)
-        for (idx0, idx1) in iter(self.graph.edge_list()):
+        for idx0, idx1 in iter(self.graph.edge_list()):
             edge = (self.graph.nodes()[idx0], self.graph.nodes()[idx1])
             nx_graph.add_edge(edge, self.edge_weight(edge), self.edge_path(edge))
         return nx_graph
