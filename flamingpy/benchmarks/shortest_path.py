@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Benchmark shortest-path-finding algorithms between networkx and rustworkx."""
+"""Benchmark shortest-path-finding algorithms between networkx and
+rustworkx."""
 import time
 
 import matplotlib.pyplot as plt
