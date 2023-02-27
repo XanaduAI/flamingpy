@@ -5,6 +5,7 @@
 ### Bug fixes
 
 * `retworkx` package was renamed to `rustworkx`, and its version upgraded, to reflect the package's name change and resolve error when running `flamingpy.about`. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
+* An instance of a depracated `fig.gca` with a keyword argument was fixed. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
 
 ### Improvements
 
