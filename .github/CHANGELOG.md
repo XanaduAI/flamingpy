@@ -4,6 +4,8 @@
 
 ### Bug fixes
 
+* `retworkx` package was renamed to `rustworkx`, and its version upgraded, to reflect the package's name change and resolve error when running `flamingpy.about`. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
+
 ### Improvements
 
 * Our Cython example and instructions were removed on [#119](https://github.com/XanaduAI/flamingpy/pull/119), however, there were some leftover Cython tests in parts of the code including main `__init__.py`. These unnecessary Cython lines are now fully removed. [#122](https://github.com/XanaduAI/flamingpy/pull/122)
