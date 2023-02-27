@@ -22,7 +22,7 @@ import warnings
 import numpy
 import scipy
 import networkx
-import retworkx
+import rustworkx
 import matplotlib
 
 try:
@@ -69,7 +69,7 @@ def about():
     print("Numpy version:               {}".format(numpy.__version__))
     print("Scipy version:               {}".format(scipy.__version__))
     print("NetworkX version:            {}".format(networkx.__version__))
-    print("RetworkX version:            {}".format(retworkx.__version__))
+    print("rustworkx version:           {}".format(rustworkx.__version__))
     print("Matplotlib version:          {}".format(matplotlib.__version__))
     print(
         "lemonpy shared object:       {}".format(

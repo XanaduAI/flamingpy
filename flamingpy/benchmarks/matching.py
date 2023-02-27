@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Benchmark minimum-weight matching via NetworkX, retworkx, and lemon
+"""Benchmark minimum-weight matching via NetworkX, rustworkx, and lemon
 backends."""
 import time
 
@@ -47,10 +47,10 @@ weight_options = {
 times = {
     "networkx": [],
     "lemon": [],
-    "retworkx": [],
+    "rustworkx": [],
 }
 
-for alg in ["networkx", "lemon", "retworkx"]:
+for alg in ["networkx", "lemon", "rustworkx"]:
     print(f"\n* {alg}")
     for i in range(num_trials):
         print(f"-- {i} --")
@@ -66,7 +66,7 @@ for alg in ["networkx", "lemon", "retworkx"]:
 
 plt.figure()
 # bins = np.logspace(-3, 0, 30)
-for alg in ["networkx", "retworkx", "lemon"]:
+for alg in ["networkx", "rustworkx", "lemon"]:
     plt.hist(times[alg], bins=100, label=alg)
 plt.legend()
 plt.xscale("log")

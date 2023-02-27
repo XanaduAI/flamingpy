@@ -93,7 +93,6 @@ def decode_surface_code(distance, boundaries, ec, noise, decoder="MWPM", draw=Tr
 
 
 if __name__ == "__main__":
-
     params = {
         # QEC code parameters
         "distance": 3,

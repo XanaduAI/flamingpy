@@ -22,6 +22,7 @@ from flamingpy.codes import EGraph
 from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply, splitter_symp
 from flamingpy.cv.gkp import GKP_binner, Z_err_cond
 
+
 # pylint: disable=too-many-instance-attributes
 class CVLayer:
     """A class for applying to a code (or a graph state) a physical layer of

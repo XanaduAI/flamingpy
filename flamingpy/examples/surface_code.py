@@ -77,7 +77,6 @@ def illustrate_surface_code(d, boundaries, err, polarity, stabilizer_inds=None, 
 
 
 if __name__ == "__main__":
-
     params = {
         # Code distance (an integer or a sequence of 3 integers)
         "d": 2,

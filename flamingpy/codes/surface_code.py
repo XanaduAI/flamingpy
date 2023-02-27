@@ -286,8 +286,8 @@ class SurfaceCode:
 
             If not supplied, assumes all edges have weight 1.
         backend (string): The backend to use for the stabilizer graph.
-            Can be "retworkx" (the default) or "networkx".
-            The retworkx backend should be used when speed is a concern.
+            Can be "rustworkx" (the default) or "networkx".
+            The rustworkx backend should be used when speed is a concern.
             The networkx backend is provided for historical reasons.
 
         graph (EGraph): the EGraph corresponding to the code, representing the
@@ -312,7 +312,7 @@ class SurfaceCode:
         ec="primal",
         boundaries="open",
         polarity=None,
-        backend="retworkx",
+        backend="rustworkx",
     ):
         self.distance = distance
         if np.issubdtype(type(distance), np.integer):
@@ -364,10 +364,10 @@ class SurfaceCode:
         for error_type in self.ec:
             if backend == "networkx":
                 stabilizer_graph = NxStabilizerGraph(error_type, self)
-            elif backend == "retworkx":
+            elif backend == "rustworkx":
                 stabilizer_graph = RxStabilizerGraph(error_type, self)
             else:
-                raise ValueError("Invalid backend; options are 'networkx' and 'retworkx'.")
+                raise ValueError("Invalid backend; options are 'networkx' and 'rustworkx'.")
             setattr(self, error_type + "_stab_graph", stabilizer_graph)
 
     def identify_stabilizers(self):
@@ -495,7 +495,6 @@ class SurfaceCode:
         """
 
         for ec in self.ec:
-
             if "periodic" in self.bound_str:
                 ec_bound_points = []
             else:

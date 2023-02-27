@@ -33,7 +33,7 @@ logging.info("the following seed was used for random number generation: %i", int
 
 # Test parameters
 
-stab_graph_backend = ["retworkx"]
+stab_graph_backend = ["rustworkx"]
 
 code_params = it.product(
     [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],
@@ -101,7 +101,7 @@ def convert_dict_of_weights(weights):
     """Convert RHGCubes into tuples of nodes and return a dictionary between
     them and path weights."""
     conversion = {}
-    for (n, w) in weights.items():
+    for n, w in weights.items():
         if isinstance(n, Stabilizer):
             conversion[tuple(n.egraph.nodes())] = int(w)
         else:
@@ -122,7 +122,6 @@ def test_shortest_paths_have_same_weight(enc_state):
     """
     nx_code, code = enc_state[0], enc_state[2]
     for ec_str in nx_code.ec:
-
         nx_stab_graph = getattr(nx_code, ec_str + "_stab_graph")
         nx_stab_graph.assign_weights(nx_code)
         stab_graph = getattr(code, ec_str + "_stab_graph")
@@ -139,7 +138,7 @@ def test_shortest_paths_have_same_weight(enc_state):
         assert_weights(nx_weights, weights)
 
         # Starting from real nodes
-        for (nx_source, source) in zip(nx_stab_graph.real_nodes(), stab_graph.real_nodes()):
+        for nx_source, source in zip(nx_stab_graph.real_nodes(), stab_graph.real_nodes()):
             nx_weights, _ = nx_stab_graph.shortest_paths_without_high_low(nx_source)
             weights, _ = stab_graph.shortest_paths_without_high_low(source)
             assert_weights(nx_weights, weights)
@@ -153,6 +152,8 @@ code_params2 = it.product(
     [0, 0.5, 1],
     stab_graph_backend,
 )
+
+
 # An RHGCode object as well as an encoded CVLayer for use in this module.
 @pytest.fixture(scope="module", params=code_params2)
 def enc_state2(request):

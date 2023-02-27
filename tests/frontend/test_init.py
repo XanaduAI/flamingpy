@@ -43,6 +43,6 @@ def test_about():
     assert "Numpy version:" in out
     assert "Scipy version:" in out
     assert "NetworkX version:" in out
-    assert "RetworkX version:" in out
+    assert "rustworkx version:" in out
     assert "Matplotlib version:" in out
     assert "lemonpy shared object:" in out

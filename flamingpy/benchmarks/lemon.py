@@ -27,7 +27,6 @@ matrix_size = []
 
 # Change this for more data points
 for num_nodes in range(50, 150, 50):
-
     matrix_size.append(num_nodes)
     b = np.random.randint(0, 2001, size=(num_nodes, num_nodes))
     b_symm = (b + b.T) * 0.5

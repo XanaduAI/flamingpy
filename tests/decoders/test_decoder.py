@@ -184,7 +184,6 @@ class TestRecovery:
         boundaries = enc_state[0].bound_str
         failure_events = []
         for i, ec in enumerate(enc_state[0].ec):
-
             if boundaries == "periodic":
                 planes = ["x", "y", "z"]
             elif boundaries in ["periodic_primal", "periodic_dual"]:  # toric code

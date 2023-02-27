@@ -24,7 +24,7 @@ import networkx as nx
 import numpy as np
 from numpy.random import default_rng as rng
 import pytest
-import retworkx as rx
+import rustworkx as rx
 
 from flamingpy.codes import alternating_polarity, SurfaceCode
 from flamingpy.decoders.decoder import assign_weights
@@ -57,7 +57,7 @@ code_params = it.product(
 def enc_state(request):
     """An RHGCode object and an encoded CVLayer for use in this module."""
     distance, ec, boundaries, delta, p_swap = request.param
-    DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="retworkx")
+    DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="rustworkx")
     # CV (inner) code/state
     CVRHG = CVLayer(DVRHG, delta=delta, p_swap=p_swap, sampling_order="initial")
     # Apply noise
@@ -87,7 +87,7 @@ def enc_state_swap_list(request):
 
     states = {"p": np.array(psqueezed)}
 
-    DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="retworkx")
+    DVRHG = SurfaceCode(distance, ec, boundaries, alternating_polarity, backend="rustworkx")
     # CV (inner) code/state
     CVRHG = CVLayer(DVRHG, delta=delta, states=states)
     # Apply noise

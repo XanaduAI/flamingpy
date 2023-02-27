@@ -21,7 +21,7 @@ import itertools as it
 import networkx as nx
 import networkx.algorithms.shortest_paths as sp
 
-import retworkx as rx
+import rustworkx as rx
 
 
 class StabilizerGraph(ABC):
@@ -292,11 +292,11 @@ class StabilizerGraph(ABC):
         Returns:
             The updated stabilizer graph.
         """
-        for (stab1, stab2) in it.combinations(self.stabilizers, 2):
+        for stab1, stab2 in it.combinations(self.stabilizers, 2):
             common_vertex = set(stab1.coords()) & set(stab2.coords())
             if common_vertex:
                 self.add_edge(stab1, stab2, common_vertex=common_vertex.pop())
-        for (stab, point) in it.product(self.stabilizers, self.bound_points()):
+        for stab, point in it.product(self.stabilizers, self.bound_points()):
             if point in stab.coords():
                 self.add_edge(stab, point, common_vertex=point)
         return self
@@ -411,12 +411,12 @@ def nx_shortest_paths_from(graph, source):
 
 
 class RxStabilizerGraph(StabilizerGraph):
-    """An implementation of StabilizerGraph backed by a retworkx graph.
+    """An implementation of StabilizerGraph backed by a rustworkx graph.
 
     See StabilizerGraph for more details.
 
     Attributes:
-        graph (retworkx.PyGraph): The actual graph backend. This graph stores
+        graph (rustworkx.PyGraph): The actual graph backend. This graph stores
             integer indices to represent nodes.
         node_to_index (dict): The map from nodes to the corresponding indices
             in the graph backend.

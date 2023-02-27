@@ -877,7 +877,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # determined by the dimensions of the lattice.
     else:
         fig = plt.figure()
-        ax = fig.gca(projection="3d")
+        ax = fig.add_subplot(projection="3d")
         plt.xticks(range(0, 2 * shape[0] - 1))
         plt.yticks(range(0, 2 * shape[1] - 1))
         ax.set_zticks(range(0, 2 * shape[2] - 1))
@@ -889,7 +889,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # parity and red for odd pariy.
     positions, colors, sizes = [], [], []
     for cube in cubes:
-
         # Obtain smallest, largest, and middle coordinates for each
         # cube.
         xmin, xmax = np.array(cube.xlims())
@@ -911,7 +910,6 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
         colors.append(color)
 
         if drawing_opts["label_stabilizers"] and index_dict:
-
             if cube in index_dict:
                 ax.text(xmid, ymid, zmid, index_dict[cube])
 

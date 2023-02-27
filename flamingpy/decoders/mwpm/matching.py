@@ -22,7 +22,7 @@ from typing import Iterable, List, Tuple, TypeVar, Union
 
 import networkx as nx
 import numpy as np
-import retworkx as rx
+import rustworkx as rx
 
 from flamingpy.decoders.mwpm import lemon
 
@@ -242,7 +242,7 @@ class RxEdgePayload:
 
 
 class RxMatchingGraph(MatchingGraph):
-    """A matching graph backed by retworkx.
+    """A matching graph backed by rustworkx.
 
     The edge weights must be of type int.
 
@@ -294,11 +294,11 @@ class RxMatchingGraph(MatchingGraph):
     def to_nx(self):
         """Convert the same graph into a NxMatchingGraph.
 
-        This involves converting the retworkx graph representation to a
+        This involves converting the rustworkx graph representation to a
         networkx graph representation.
         """
         nx_graph = NxMatchingGraph(self.ec)
-        for (idx0, idx1) in iter(self.graph.edge_list()):
+        for idx0, idx1 in iter(self.graph.edge_list()):
             edge = (self.graph.nodes()[idx0], self.graph.nodes()[idx1])
             nx_graph.add_edge(edge, self.edge_weight(edge), self.edge_path(edge))
         return nx_graph

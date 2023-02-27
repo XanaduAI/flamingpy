@@ -16,7 +16,7 @@ arXiv:1703.01517 ."""
 
 # pylint: disable=import-outside-toplevel
 
-import retworkx as rx
+import rustworkx as rx
 
 from flamingpy.decoders.unionfind.uf_classes import Node, Root, Support, Boundary
 from flamingpy.codes.stabilizer import Stabilizer

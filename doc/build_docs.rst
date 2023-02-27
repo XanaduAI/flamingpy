@@ -10,7 +10,7 @@ The FlamingPy documentation is built using ``sphinx``. To build the documentatio
 * |numba| >= 0.53.1
 * |NumPy| >= 1.21.0
 * |pylint| >= 2.13.9
-* |retworkx| >= 0.10.2
+* |rustworkx| >= 0.12.1
 * |scipy| >= 1.6.0
 * |sphinx| >= 4.3.1
 * |sphinxcontrib_bibtex| >= 0.4.2
@@ -63,9 +63,9 @@ The documentation can be found in the :file:`doc/_build/html/` directory.
 
    <a href="https://pypi.org/project/pylint/" target="_blank">pylint</a>
 
-.. |retworkx| raw:: html
+.. |rustworkx| raw:: html
 
-   <a href="https://qiskit.org/documentation/retworkx/" target="_blank">retworkx</a>
+   <a href="https://qiskit.org/documentation/rustworkx/" target="_blank">rustworkx</a>
 
 .. |scipy| raw:: html
 
