@@ -20,7 +20,7 @@ import itertools as it
 from flamingpy.decoders.mwpm.matching import NxMatchingGraph, RxMatchingGraph, LemonMatchingGraph
 
 
-def build_match_graph(code, ec, matching_backend="retworkx"):
+def build_match_graph(code, ec, matching_backend="rustworkx"):
     """Build the matching graph for the given code.
 
     Args:
@@ -28,17 +28,17 @@ def build_match_graph(code, ec, matching_backend="retworkx"):
         ec (string): the error complex ("primal" or "dual")
         matching_backend (str or flamingpy.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
-            it must be either "networkx", "retworkx" or "lemon" to pick one
+            it must be either "networkx", "rustworkx" or "lemon" to pick one
             of the already implemented backends. Else, the provided type should
             inherit from the MatchingGraph abstract base class and have an empty init.
-            The default is retworkx.
+            The default is rustworkx.
 
     Returns:
         MatchingGraph: The matching graph.
     """
     default_backends = {
         "networkx": NxMatchingGraph,
-        "retworkx": RxMatchingGraph,
+        "rustworkx": RxMatchingGraph,
         "lemon": LemonMatchingGraph,
     }
     if default_backends.get(matching_backend):
@@ -47,7 +47,7 @@ def build_match_graph(code, ec, matching_backend="retworkx"):
     return matching_backend(ec, code)
 
 
-def mwpm_decoder(code, ec, backend="retworkx", draw=False, drawing_opts=None):
+def mwpm_decoder(code, ec, backend="rustworkx", draw=False, drawing_opts=None):
     """Run the minimum-weight perfect matching decoder on code.
 
     Args:
@@ -55,10 +55,10 @@ def mwpm_decoder(code, ec, backend="retworkx", draw=False, drawing_opts=None):
         ec (string): the error complex ("primal" or "dual")
         backend (str or flamingpy.matching.MatchingGraph, optional):
             The type of matching graph to build. If providing a string,
-            it must be either "networkx", "retworkx" or "lemon" to pick one
+            it must be either "networkx", "rustworkx" or "lemon" to pick one
             of the already implemented backends. Else, the provided type should
             inherit from the MatchingGraph abstract base class and have an empty init.
-            The default is the retworkx.
+            The default is the rustworkx.
         draw (bool): whether or not to draw the MWPM decoding process:
                 stabilizer graph, matching graph, syndrome plot, and
                 matching.

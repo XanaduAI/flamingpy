@@ -13,7 +13,7 @@
 # limitations under the License.
 """A collection of classes used for UnionFind decoder."""
 
-import retworkx as rx
+import rustworkx as rx
 
 
 class Node:

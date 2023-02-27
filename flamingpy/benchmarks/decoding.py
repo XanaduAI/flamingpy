@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Benchmark for the complete decoding procedure comparing NetworkX and
-retworkx."""
+rustworkx."""
 import time
 
 import matplotlib.pyplot as plt
@@ -45,10 +45,10 @@ weight_options = {
 
 times = {
     "networkx": [],
-    "retworkx": [],
+    "rustworkx": [],
 }
 
-for backend in ["networkx", "retworkx"]:
+for backend in ["networkx", "rustworkx"]:
     print(f"* {backend}")
     # Build code
     RHG_code = SurfaceCode(
@@ -72,7 +72,7 @@ for backend in ["networkx", "retworkx"]:
         times[backend].append(after - before)
 
 plt.figure()
-for backend in ["networkx", "retworkx"]:
+for backend in ["networkx", "rustworkx"]:
     plt.hist(times[backend], label=backend)
 plt.legend()
 plt.xlabel("Times [seconds]")

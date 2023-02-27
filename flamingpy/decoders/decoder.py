@@ -259,7 +259,7 @@ def correct(
             operation has succeeded and verify that parity is conserved
             among all correlation surfaces
         decoder_opts (dict, optional): a dictionary of decoding options,
-            including the backend ("networkx" or "retworkx" for "MWPM")
+            including the backend ("networkx" or "rustworkx" for "MWPM")
         draw (bool, optional): set to True to illustrate the decoding
             procedure, including the stabilizer graph, syndrome plot, and recovery.
         drawing_opts (dict, optional): the drawing options to be fed into
@@ -274,7 +274,7 @@ def correct(
 
     if decoder_opts is None:
         decoder_opts = {}
-    default_decoder_opts = {"backend": "retworkx", "draw": draw, "drawing_opts": drawing_opts}
+    default_decoder_opts = {"backend": "rustworkx", "draw": draw, "drawing_opts": drawing_opts}
     updated_decoder_opts = {**default_decoder_opts, **decoder_opts}
     decoder_dict = {"MWPM": mwpm_decoder, "UF": uf_decoder}
     decoder_func = decoder_dict[decoder]

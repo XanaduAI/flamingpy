@@ -5,7 +5,7 @@ networkx>=2.5
 numba>=0.53.1
 numpy>=1.21
 pylint>=2.13.9
-retworkx>=0.10.2
+rustworkx>=0.12.1
 scipy>=1.6
 sphinx==4.4.0 # the newer sphinx==5.0.0 has known problems handling quotes for embedding hyperlinks 
 sphinx-autodoc-typehints>=1.10.3

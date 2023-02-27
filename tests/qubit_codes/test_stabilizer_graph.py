@@ -33,7 +33,7 @@ logging.info("the following seed was used for random number generation: %i", int
 
 # Test parameters
 
-stab_graph_backend = ["retworkx"]
+stab_graph_backend = ["rustworkx"]
 
 code_params = it.product(
     [rng(int_time).integers(2, 5), rng(int_time).integers(2, 5, 3)],

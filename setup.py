@@ -144,7 +144,7 @@ install_requires = [
     "networkx>=2.5",
     "numpy>=1.21",
     "pandas>=1.2.1",
-    "retworkx>=0.10.2",
+    "rustworkx>=0.12.1",
     "scipy>=1.6",
     "thewalrus>=0.19.0",
 ]

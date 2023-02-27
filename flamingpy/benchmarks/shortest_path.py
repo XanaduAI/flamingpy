@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Benchmark shortest-path-finding algorithms between networkx and retworkx."""
+"""Benchmark shortest-path-finding algorithms between networkx and rustworkx."""
 import time
 
 import matplotlib.pyplot as plt
@@ -43,10 +43,10 @@ weight_options = {
 
 times = {
     "networkx": [],
-    "retworkx": [],
+    "rustworkx": [],
 }
 
-for backend in ["networkx", "retworkx"]:
+for backend in ["networkx", "rustworkx"]:
     print(f"\n* {backend}")
     # Build code
     RHG_code = SurfaceCode(
@@ -64,7 +64,7 @@ for backend in ["networkx", "retworkx"]:
         after = time.time()
         times[backend].append(after - before)
 
-for backend in ["networkx", "retworkx"]:
+for backend in ["networkx", "rustworkx"]:
     plt.hist(times[backend], label=backend)
 plt.legend()
 plt.xlabel("Times [seconds]")

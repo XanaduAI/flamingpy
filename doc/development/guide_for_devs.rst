@@ -24,7 +24,7 @@ as well as the following Python packages for development purposes:
 * |pytest-logger| >= 0.5.1
 * |pytest-mock| >= 3.6.1
 * |pytest-xdist| >= 1.29.0
-* |retworkx| >= 0.10.2
+* |rustworkx| >= 0.12.1
 * |setuptools| >= 62.3.2
 * |scipy| >= 1.6
 * |thewalrus| >= 0.19.0
@@ -190,9 +190,9 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 
    <a href="https://pypi.org/project/pytest-xdist/" target="_blank">pytest-xdist</a>
 
-.. |retworkx| raw:: html
+.. |rustworkx| raw:: html
 
-   <a href="https://qiskit.org/documentation/retworkx/" target="_blank">retworkx</a>
+   <a href="https://qiskit.org/documentation/rustworkx/" target="_blank">rustworkx</a>
 
 .. |setuptools| raw:: html
 
