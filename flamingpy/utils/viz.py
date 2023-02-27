@@ -877,7 +877,7 @@ def syndrome_plot(code, ec, index_dict=None, drawing_opts=None):
     # determined by the dimensions of the lattice.
     else:
         fig = plt.figure()
-        ax = fig.gca(projection="3d")
+        ax = fig.add_subplot(projection="3d")
         plt.xticks(range(0, 2 * shape[0] - 1))
         plt.yticks(range(0, 2 * shape[1] - 1))
         ax.set_zticks(range(0, 2 * shape[2] - 1))
