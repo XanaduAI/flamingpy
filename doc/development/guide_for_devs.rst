@@ -13,7 +13,6 @@ as well as the following Python packages for development purposes:
 * |black| >= 23.1.0
 * |cmake| >= 3.14
 * |codecov| >= 2.1.12
-* |docformatter| >= 1.5
 * |matplotlib| >= 3.3.3
 * |mpi4py| >= 3.1.3 (optional, only for Linux users)
 * |networkx| >= 2.5
@@ -145,10 +144,6 @@ See :doc:`build_docs` for the details on how to build the HTML documentation.
 .. |codecov| raw:: html
 
    <a href="https://about.codecov.io/language/python/" target="_blank">codecov</a>
-
-.. |docformatter| raw:: html
-
-   <a href="https://pypi.org/project/docformatter/" target="_blank">docformatter</a>
 
 .. |matplotlib| raw:: html
 
