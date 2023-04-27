@@ -343,7 +343,6 @@ def draw_EGraph_matplotlib(
     ax.set_zlabel("y", labelpad=15)
     if not show_axes:
         ax.axis("off")
-    plt.tight_layout(pad=5)
     plt.draw()
 
     return fig, ax

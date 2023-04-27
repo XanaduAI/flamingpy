@@ -12,7 +12,7 @@ on:
       - sims2cloud
 
 jobs:
-  black-n-docformatter:
+  run-black:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
@@ -23,12 +23,9 @@ jobs:
       - name: Get the latest pip and black
         run: |
           python -m pip install --upgrade pip
-          python -m pip install black docformatter --upgrade
+          python -m pip install black --upgrade
 
       - uses: actions/checkout@v2
 
       - name: Run black
         run: python -m black -l 100 tests flamingpy doc --check
-
-      - name: Run docformatter
-        run: python -m docformatter -r --check .

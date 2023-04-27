@@ -4,13 +4,15 @@
 
 ### Bug fixes
 
-* `retworkx` package was renamed to `rustworkx`, and its version upgraded, to reflect the package's name change and resolve error when running `flamingpy.about`. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
-* An instance of a depracated `fig.gca` with a keyword argument was fixed. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
+* `retworkx` package was renamed to `rustworkx`, and its version upgraded, to reflect the package's name change and resolve error when running `flamingpy.about`. [#124](https://github.com/XanaduAI/flamingpy/pull/124)
+* An instance of a depracated `fig.gca` with a keyword argument was fixed. [#124](https://github.com/XanaduAI/flamingpy/pull/124)
+* Remove the tight layout setting from `draw_EGraph_matplotlib`, which was causing a warning. [#125](https://github.com/XanaduAI/flamingpy/pull/125)
 
 ### Improvements
 
 * Our Cython example and instructions were removed on [#119](https://github.com/XanaduAI/flamingpy/pull/119), however, there were some leftover Cython tests in parts of the code including main `__init__.py`. These unnecessary Cython lines are now fully removed. [#122](https://github.com/XanaduAI/flamingpy/pull/122)
 * Modify `dev_requirements` to install `black` version 23.1.0, and format all files with this version. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
+* Remove `docformatter` check from workflow as it did not have great importance. [#125](https://github.com/XanaduAI/flamingpy/pull/125)
 
 ### Documentation changes
 
