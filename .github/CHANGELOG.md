@@ -12,6 +12,7 @@
 
 * Our Cython example and instructions were removed on [#119](https://github.com/XanaduAI/flamingpy/pull/119), however, there were some leftover Cython tests in parts of the code including main `__init__.py`. These unnecessary Cython lines are now fully removed. [#122](https://github.com/XanaduAI/flamingpy/pull/122)
 * Modify `dev_requirements` to install `black` version 23.1.0, and format all files with this version. [#124](https://github.com/XanaduAI/flamingpy/pull/124).
+* Remove `docformatter` check from workflow as it did not have great importance. [#125](https://github.com/XanaduAI/flamingpy/pull/125)
 
 ### Documentation changes
 
