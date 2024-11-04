@@ -21,7 +21,7 @@ jobs:
 
       - name: Get git branch name
         id: branch-name
-        uses: tj-actions/branch-names@v5
+        uses: tj-actions/branch-names@v8
 
       - uses: actions/checkout@v2
 
