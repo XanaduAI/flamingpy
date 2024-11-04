@@ -7,6 +7,7 @@
 * `retworkx` package was renamed to `rustworkx`, and its version upgraded, to reflect the package's name change and resolve error when running `flamingpy.about`. [#124](https://github.com/XanaduAI/flamingpy/pull/124)
 * An instance of a depracated `fig.gca` with a keyword argument was fixed. [#124](https://github.com/XanaduAI/flamingpy/pull/124)
 * Remove the tight layout setting from `draw_EGraph_matplotlib`, which was causing a warning. [#125](https://github.com/XanaduAI/flamingpy/pull/125)
+* Bump tj-actions/branch-names from 5 to 8 to fix vulnerability. [#126](https://github.com/XanaduAI/flamingpy/pull/126)
 
 ### Improvements
 
