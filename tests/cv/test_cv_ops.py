@@ -51,7 +51,7 @@ class TestSCZ:
     """Tests for symplectic CZ matrices."""
 
     @pytest.mark.parametrize(
-        "sparse, expected_out_type", sorted([(True, sp.coo_matrix), (False, np.ndarray)])
+        "sparse, expected_out_type", sorted([(True, sp.coo_array), (False, np.ndarray)])
     )
     def test_SCZ_mat_sparse_param(self, random_graph, sparse, expected_out_type):
         """Tests the SCZ_mat function outputs sparse or dense arrays."""
@@ -65,7 +65,7 @@ class TestSCZ:
         # Check if SCZ_mat adjusts type of output matrix based on
         # type of input.
         assert isinstance(SCZ, np.ndarray)
-        assert isinstance(SCZ_sparse, sp.coo_matrix)
+        assert isinstance(SCZ_sparse, sp.coo_array)
         # Check that structure of SCZ matrix is correct.
         for mat in (SCZ, SCZ_sparse.toarray()):
             assert np.array_equal(mat[:N, :N], np.identity(N))

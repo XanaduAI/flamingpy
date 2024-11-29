@@ -30,7 +30,7 @@ logging.info("the following seed was used for random number generation: %i", int
 try:
     import mpi4py.rc
 
-    mpi4py.rc.threaded = False
+    mpi4py.rc.threads = False
     from mpi4py import MPI
 except ImportError:  # pragma: no cover
     warnings.warn("Failed to import mpi4py libraries.", ImportWarning)

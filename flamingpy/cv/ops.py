@@ -59,7 +59,7 @@ def SCZ_mat(adj, sparse=True):
     # Construct symplectic
     symplectic = block_func([[identity, zeros], [adj, identity]])
 
-    if not sparse and isinstance(symplectic, sp.coo_matrix):
+    if not sparse and isinstance(symplectic, sp.coo_array):
         return symplectic.toarray()
 
     return symplectic

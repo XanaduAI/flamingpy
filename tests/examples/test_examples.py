@@ -17,6 +17,7 @@ the plots."""
 # pylint: disable=import-outside-toplevel,unused-import
 
 import pytest
+import numpy as np
 from flamingpy.codes import alternating_polarity
 
 
@@ -31,7 +32,7 @@ def test_decoder_example(noise, decoder):
     ec = "primal"
 
     result = decode_surface_code(distance, boundaries, ec, noise, decoder, draw=True)
-    assert result.__class__.__name__ == "bool_"
+    assert isinstance(result, np.bool_)
 
 
 def test_gkp_example():
