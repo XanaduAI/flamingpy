@@ -22,7 +22,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand
+Nariman Saadatmand, [Matthew Silverman](https://github.com/timmysilv)
 
 See full commit details ...
 
