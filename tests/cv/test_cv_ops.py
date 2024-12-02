@@ -63,7 +63,7 @@ class TestSCZ:
         # Check if SCZ_mat adjusts type of output matrix based on
         # type of input.
         assert isinstance(SCZ, np.ndarray)
-        assert isinstance(SCZ_sparse, sp.sparray)
+        assert issparse(SCZ_sparse)
         # Check that structure of SCZ matrix is correct.
         for mat in (SCZ, SCZ_sparse.toarray()):
             assert np.array_equal(mat[:N, :N], np.identity(N))
