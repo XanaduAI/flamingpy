@@ -25,7 +25,7 @@ import pytest
 import scipy.sparse as sp
 
 from flamingpy.codes.graphs import EGraph
-from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply
+from flamingpy.cv.ops import invert_permutation, SCZ_mat, SCZ_apply, issparse
 
 now = datetime.now()
 int_time = int(str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute))
@@ -50,13 +50,11 @@ def random_graph(request):
 class TestSCZ:
     """Tests for symplectic CZ matrices."""
 
-    @pytest.mark.parametrize(
-        "sparse, expected_out_type", sorted([(True, sp.coo_matrix), (False, np.ndarray)])
-    )
-    def test_SCZ_mat_sparse_param(self, random_graph, sparse, expected_out_type):
+    @pytest.mark.parametrize("sparse", [True, False])
+    def test_SCZ_mat_sparse_param(self, random_graph, sparse):
         """Tests the SCZ_mat function outputs sparse or dense arrays."""
         SCZ = SCZ_mat(random_graph[2], sparse=sparse)
-        assert isinstance(SCZ, expected_out_type)
+        assert issparse(SCZ) if sparse else isinstance(SCZ, np.ndarray)
 
     def test_SCZ_mat(self, random_graph):
         """Tests the SCZ_mat function."""
@@ -65,7 +63,7 @@ class TestSCZ:
         # Check if SCZ_mat adjusts type of output matrix based on
         # type of input.
         assert isinstance(SCZ, np.ndarray)
-        assert isinstance(SCZ_sparse, sp.coo_matrix)
+        assert issparse(SCZ_sparse)
         # Check that structure of SCZ matrix is correct.
         for mat in (SCZ, SCZ_sparse.toarray()):
             assert np.array_equal(mat[:N, :N], np.identity(N))

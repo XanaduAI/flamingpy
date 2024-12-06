@@ -108,9 +108,9 @@ def initialize_cluster_trees(stabilizer_graph):
         root_stabilizer = erasure_graph_nodes[component.pop()]
         cluster_root = Root(
             node_dict[root_stabilizer],
-            parity=root_stabilizer.parity
-            if isinstance(root_stabilizer, Stabilizer)
-            else "boundary",
+            parity=(
+                root_stabilizer.parity if isinstance(root_stabilizer, Stabilizer) else "boundary"
+            ),
         )  # boundary nodes are represented by tuples
         for vertex in component:
             vertex_stabilizer = erasure_graph_nodes[vertex]
@@ -118,9 +118,11 @@ def initialize_cluster_trees(stabilizer_graph):
                 cluster_root,
                 Root(
                     node_dict[vertex_stabilizer],
-                    parity=vertex_stabilizer.parity
-                    if isinstance(vertex_stabilizer, Stabilizer)
-                    else "boundary",
+                    parity=(
+                        vertex_stabilizer.parity
+                        if isinstance(vertex_stabilizer, Stabilizer)
+                        else "boundary"
+                    ),
                 ),
             )
         if cluster_root.parity:

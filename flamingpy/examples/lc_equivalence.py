@@ -1,4 +1,5 @@
 """Example for testing LC equivalence of graph states."""
+
 from flamingpy.utils.graph_states import star_graph, complete_graph, linear_cluster, ring_graph
 
 print("Testing LC equivalence of graph states:", "\n")

@@ -8,6 +8,7 @@
 * An instance of a depracated `fig.gca` with a keyword argument was fixed. [#124](https://github.com/XanaduAI/flamingpy/pull/124)
 * Remove the tight layout setting from `draw_EGraph_matplotlib`, which was causing a warning. [#125](https://github.com/XanaduAI/flamingpy/pull/125)
 * Bump tj-actions/branch-names from 5 to 8 to fix vulnerability. [#126](https://github.com/XanaduAI/flamingpy/pull/126)
+* Apply minor tweaks to source code and tests to update compatibility across Python versions. [#127](https://github.com/XanaduAI/flamingpy/pull/127)
 
 ### Improvements
 
@@ -21,7 +22,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-Nariman Saadatmand
+Nariman Saadatmand, [Matthew Silverman](https://github.com/timmysilv)
 
 See full commit details ...
 

@@ -28,6 +28,11 @@ def invert_permutation(p):
     return p_inverted
 
 
+def issparse(array):
+    """Check if an array is sparse. Backwards-compatible with old SciPy versions."""
+    return isinstance(array, getattr(sp, "sparray", sp.coo_matrix))
+
+
 def SCZ_mat(adj, sparse=True):
     """Return a symplectic matrix corresponding to CZ gate application.
 
@@ -59,7 +64,7 @@ def SCZ_mat(adj, sparse=True):
     # Construct symplectic
     symplectic = block_func([[identity, zeros], [adj, identity]])
 
-    if not sparse and isinstance(symplectic, sp.coo_matrix):
+    if not sparse and issparse(symplectic):
         return symplectic.toarray()
 
     return symplectic
