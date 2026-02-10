@@ -1,4 +1,9 @@
-`FlamingPy` is no longer being publically developed.
+<div style="background-color: #ffee00; padding: 10px; font-weight:bold; border-radius: 5px; color: #333;">
+    FlamingPy is no longer being publicly developed.
+</div>
+
+<br>
+
 
 ![flamingpy_logo_light](https://user-images.githubusercontent.com/57886357/180842159-8fe780a9-8bbe-4421-ae51-c8bd9614aa91.svg#gh-light-mode-only)
 ![flamingpy_logo_dark](https://user-images.githubusercontent.com/57886357/180842174-0f2785ba-b065-4a76-b288-b75645ebd67a.svg#gh-dark-mode-only)
