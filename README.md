@@ -1,4 +1,4 @@
-<div style="background-color: #ffee00; padding: 10px; font-weight:bold; border-radius: 5px; color: #333;">
+<div 
     FlamingPy is no longer being publicly developed.
 </div>
 
