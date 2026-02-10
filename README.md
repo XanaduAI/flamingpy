@@ -1,8 +1,6 @@
-<div 
-    FlamingPy is no longer being publicly developed.
-</div>
+# FlamingPy is no longer being publicly developed.
 
-<br>
+
 
 
 ![flamingpy_logo_light](https://user-images.githubusercontent.com/57886357/180842159-8fe780a9-8bbe-4421-ae51-c8bd9614aa91.svg#gh-light-mode-only)
